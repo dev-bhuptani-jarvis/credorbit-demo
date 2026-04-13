@@ -60,6 +60,10 @@ export interface ILoanTypeData {
   displayOrder: number;
   isSecuredLoan: number;
   isMarketValueRequired: boolean;
+  loanTenure?: {
+    loanTenureID: number;
+    loanTenureInYears: number;
+  }[];
 }
 
 export interface ILoanUnitOptions {

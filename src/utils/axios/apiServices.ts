@@ -173,6 +173,71 @@ import { IAddCreditsBody, IFetchAllPaymentsResponse, IFetchTabWiseUserListingRes
 import { ISendOTPResponse } from "../../interface/signIn";
 import { IIsProceedForCamReportResponse, IIsProceedForCreditReportResponse, IRefferalCodeResponse, IRefferalDataResponse, IRefferalListingResponse, IWalletListingResponse } from "../../interface/wallet";
 import { PaginateReqEntity } from "../../interface/pagination";
+import {
+  generateDemoPublicToken,
+  sendDemoOTP,
+  verifyDemoOTP,
+  verifyDemoReferralCode,
+} from "../demo/demoAuth";
+import {
+  addDemoUserWithoutOtp,
+  addDemoLoanApplication,
+  convertDemoPartnersToCoApplicants,
+  createDemoLink,
+  generateDemoCpPayoutInvoice,
+  generateDemoSpPayoutInvoice,
+  generateDemoReferralCode,
+  getDemoAddEditRoleUserData,
+  getDemoChannelPartnerDashboard,
+  getDemoClientDetail,
+  getDemoClientMaster,
+  getDemoCpReportClientList,
+  getDemoCpReportDetail,
+  getDemoCpSpList,
+  getDemoLoanApplications,
+  getDemoLoanDetail,
+  getDemoLoanTypeList,
+  getDemoPayOutsDetail,
+  getDemoPayOutsList,
+  getDemoPanDetails,
+  getDemoPincode,
+  getDemoReferralCode,
+  getDemoReferralPoints,
+  getDemoRoleDetail,
+  getDemoRoleMasterList,
+  getDemoSourcingPartners,
+  getDemoSourcingPartnerDetail,
+  getDemoSpPayoutDetail,
+  getDemoSpPayoutsList,
+  getDemoStates,
+  getDemoSubscriptionHistory,
+  getDemoSubscriptionPlans,
+  getDemoSubscriptionUsage,
+  getDemoTrackReferrals,
+  getDemoUserManagementList,
+  getDemoUserProfile,
+  getDemoUserNotifications,
+  getDemoWalletHistory,
+  logoutDemoUser,
+  submitDemoAddEditRoleUserData,
+  updateDemoSpPayoutRequest,
+  updateDemoRoleDetail,
+  updateDemoLoanApplicationStatus,
+  updateDemoNotificationStatus,
+  uploadDemoSanctionLetter,
+  updateDemoUserProfile,
+  deleteDemoUserProfile,
+  getVerifyReferralCode,
+} from "../demo/demoPortal";
+import {
+  getDemoContent as getDemoCmsContent,
+  getDemoContractList as getDemoCmsContractList,
+  getDemoSupportData as getDemoCmsSupportData,
+  getDemoUserListForAdminContractList as getDemoCmsUserContractList,
+  updateDemoContent as updateDemoCmsContent,
+  updateDemoContractStatus as updateDemoCmsContractStatus,
+  updateDemoSupportData as updateDemoCmsSupportData,
+} from "../demo/demoContent";
 
 function checkInternetConnectivity(): boolean {
   return navigator.onLine;
@@ -248,28 +313,25 @@ axios.interceptors.response.use(
 export const generatePublicTokenAPI = async (
   payload: IGeneratePublicTokenRequest
 ): Promise<IGeneratePublicTokenResponse> => {
-  return await axios.post(`${API_URL}/Auth/generatePublicToken`, payload);
+  return await generateDemoPublicToken();
 };
 
 export const sendOTPAPI = async (
   bodyRequestObject: any
 ): Promise<ISendOTPResponse> => {
-  return await axios.post(`${API_URL}/Auth/sendOtp`, bodyRequestObject);
+  return await sendDemoOTP(bodyRequestObject);
 };
 
 export const addUserWithoutOTPAPI = async (
   bodyRequestObject: any
 ): Promise<ILogoutResponse> => {
-  return await axios.post(
-    `${API_URL}/Auth/addUserWithoutOTP`,
-    bodyRequestObject
-  );
+  return await addDemoUserWithoutOtp();
 };
 
 export const verifyEmailOTPAPI = async (
   bodyRequestObject: IVerifyEmailOTPRequest
 ): Promise<IVerifyEmailOTPResponse> => {
-  return await axios.post(`${API_URL}/Auth/verifyEmailOTP`, bodyRequestObject);
+  return await verifyDemoOTP(bodyRequestObject);
 };
 
 export const getChannelPartnerListing = async (
@@ -283,27 +345,23 @@ export const getChannelPartnerListing = async (
 export const fetchDetailsByPan = async (
   payload: OnlyPanNumber
 ): Promise<IAddPanCardResponse> => {
-  return await axios.post(`${API_URL}/Pan/fetchUserDetailsByPan`, payload);
+  return await getDemoPanDetails();
 };
 
 export const fetchUserProfile = async (): Promise<IUserProfileResponse> => {
-  return await axios.get(`${API_URL}/UserMaster/getUserProfile`);
+  return await getDemoUserProfile();
 };
 
 export const updateUserProfile = async (
   data: FormData
 ): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/UserMaster/updateUserProfile`, data, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return await updateDemoUserProfile()
 };
 
 export const deleteUser = async (
   body: IDeleteUser
 ): Promise<ILogoutResponse> => {
-  return await axios.post(`${API_URL}/UserMaster/deleteUser`, body);
+  return await deleteDemoUserProfile();
 };
 
 export const getChannelPartnerDetail = async (
@@ -313,52 +371,48 @@ export const getChannelPartnerDetail = async (
 };
 
 export const logoutAPI = async (): Promise<ILogoutResponse> => {
-  return await axios.get(`${API_URL}/Auth/logout`);
+  return await logoutDemoUser();
 };
 
 export const getClientDetailAPI = async (
   params: IClientPartnerParams
 ): Promise<IClientResponse> => {
-  return await axios.get(`${API_URL}/Client/getClientDetails`, { params });
+  return await getDemoClientDetail();
 };
 
 export const getAllLoanApplicationsAPI = async (
   params: ILoanApplicationParams
 ): Promise<IGetAllLoanApplicationsResponse> => {
-  return await axios.get(`${API_URL}/LoanApplication/getAllLoanApplications`, {
-    params,
+  return await getDemoLoanApplications({
+    statusFilter: params.statusFilter,
+    search: params.search,
+    page: params.page,
+    pageSize: params.pageSize,
   });
 };
 
 export const getLoanDetailAPI = async (
   params: ILoanParams
 ): Promise<ILoanResponse> => {
-  return await axios.get(
-    `${API_URL}/LoanApplication/getLoanApplicationDetails`,
-    {
-      params,
-    }
-  );
+  return await getDemoLoanDetail();
 };
 
 export const getSourcingPartnerAPI = async (
   params: ISourcingPartnerListParams
 ): Promise<ISourcingPartnerResponse> => {
-  return await axios.get(`${API_URL}/UserMaster/getAllSourcingpartners`, {
-    params,
-  });
+  return await getDemoSourcingPartners();
 };
 
 export const getClientMasterAPI = async (
   params: IClientMasterListingParams
 ): Promise<IClientMasterResponse> => {
-  return await axios.get(`${API_URL}/Client/getAllClients`, { params });
+  return await getDemoClientMaster(params);
 };
 
 export const getSourcingPartnerDetailAPI = async (
   params: ISourcingPartnerParams
 ): Promise<ISourcingPartnerDetailsResponse> => {
-  return await axios.get(`${API_URL}/UserMaster/viewSpDetails`, { params });
+  return await getDemoSourcingPartnerDetail();
 };
 
 export const getClientDashboardAPI =
@@ -369,21 +423,19 @@ export const getClientDashboardAPI =
 export const getRoleMasterAPI = async (
   data: IRoleMasterListParams
 ): Promise<IRoleMasterResponse> => {
-  return await axios.get(`${API_URL}/RolesAndRights/getAllRoles`, {
-    params: data,
-  });
+  return await getDemoRoleMasterList();
 };
 
 export const viewRoleDetailAPI = async (
   params: IRoleParams
 ): Promise<IRoleDetailResponse> => {
-  return await axios.get(`${API_URL}/RolesAndRights/viewRole`, { params });
+  return await getDemoRoleDetail();
 };
 
 export const updateRoleDetailAPI = async (
   body: IRoleDetailData
 ): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/RolesAndRights/addEditRole`, body);
+  return await updateDemoRoleDetail();
 };
 
 export const deleteRoleApi = async (
@@ -394,19 +446,19 @@ export const deleteRoleApi = async (
 
 export const getChannelPartnerDashboardAPI =
   async (): Promise<IChannelPartnerDashboardResponse> => {
-    return await axios.get(`${API_URL}/ChannelPartner/getCpDashboard`);
+    return await getDemoChannelPartnerDashboard();
   };
 
 export const getPayOutsListingAPI = async (
   params: IPayOutsParams
 ): Promise<IPayOutsResponse> => {
-  return await axios.get(`${API_URL}/PayOut/getPayOutsList`, { params });
+  return await getDemoPayOutsList();
 };
 
 export const getPayOutsDetailsAPI = async (
   params: IPayOutsDetailParams
 ): Promise<IPayOutsDetailResponse> => {
-  return await axios.get(`${API_URL}/PayOut/getPayOutDetails`, { params });
+  return await getDemoPayOutsDetail();
 };
 
 export const updatePayOutsDetailsAPI = async (body: {
@@ -419,48 +471,35 @@ export const updatePayOutsDetailsAPI = async (body: {
 export const getContractListAPI = async (
   params: IContractListParams
 ): Promise<IContractListResponse> => {
-  return await axios.get(`${API_URL}/ContentManagement/getContractList`, {
-    params,
-  });
+  return await getDemoCmsContractList(params);
 };
 
 export const getContentAPI = async (
   params: IContractParams
 ): Promise<IContractResponse> => {
-  return await axios.get(`${API_URL}/ContentManagement/getContentByPageName`, {
-    params,
-  });
+  return await getDemoCmsContent(params);
 };
 
 export const updateContentAPI = async (
   body: IUpdatedContractBody
 ): Promise<ILogoutResponse> => {
-  return await axios.post(
-    `${API_URL}/ContentManagement/updateContentByPageName`,
-    body
-  );
+  return await updateDemoCmsContent(body);
 };
 
 export const updateContractStatusAPI = async (
   body: IUpdatedContractStatusBody
 ): Promise<APIResponseEntity> => {
-  return await axios.post(
-    `${API_URL}/ContentManagement/updateContractStatus`,
-    body
-  );
+  return await updateDemoCmsContractStatus(body);
 };
 
 export const getSupportDataAPI = async (): Promise<ISupportDataResponse> => {
-  return await axios.get(`${API_URL}/ContentManagement/getSupportData`);
+  return await getDemoCmsSupportData();
 };
 
 export const updateSupportDataAPI = async (
   body: IUpdateSupportData
 ): Promise<APIResponseEntity> => {
-  return await axios.post(
-    `${API_URL}/ContentManagement/updateSupportData`,
-    body
-  );
+  return await updateDemoCmsSupportData(body);
 };
 
 export const getCreditAnalyticsSendOtpAPI = async (
@@ -512,7 +551,7 @@ export const getBankDetailsAPI = async (
 export const fetchCpSpListAPI = async (
   params: IPartnerParams
 ): Promise<IGetPartnerListResponse> => {
-  return await axios.get(`${API_URL}/UserMaster/getCpSpList`, { params });
+  return await getDemoCpSpList();
 };
 
 export const addPanForCPAPI = async (
@@ -534,16 +573,13 @@ export const updateAadharAPI = async (
 };
 
 export const getLoanTypeListAPI = async (): Promise<ILoanTypeListResponse> => {
-  return await axios.get(`${API_URL}/ContentManagement/getLoanTypeList`);
+  return await getDemoLoanTypeList();
 };
 
 export const addLoanApplicationAPI = async (
   body: IAddLoanApplication
 ): Promise<IApplyLoanApplicationResponse> => {
-  return await axios.post(
-    `${API_URL}/LoanApplication/addLoanApplication`,
-    body
-  );
+  return await addDemoLoanApplication();
 };
 
 export const getAdminDashboardAPI =
@@ -554,18 +590,13 @@ export const getAdminDashboardAPI =
 export const getUserListingAPI = async (
   params: IUserMasterListParams
 ): Promise<IUserDataResponse> => {
-  return await axios.get(`${API_URL}/UserMaster/getUserManagementList`, {
-    params,
-  });
+  return await getDemoUserManagementList();
 };
 
 export const submitAddEditRoleUserDataAPI = async (
   userData: ISaveUserDetailData
 ): Promise<IUserDataResponse> => {
-  return await axios.post(
-    `${API_URL}/UserMaster/submitAddEditRoleUserData`,
-    userData
-  );
+  return await submitDemoAddEditRoleUserData(userData);
 };
 
 export const createSpPaymentRequestAPI = async (
@@ -577,33 +608,31 @@ export const createSpPaymentRequestAPI = async (
 export const generateCpPayoutInvoiceAPI = async (
   body: IGenerateCpPayoutInvoiceParams
 ): Promise<IGenerateCpPayoutInvoiceResponse> => {
-  return await axios.post(`${API_URL}/PayOut/generateCpPayoutInvoice`, body);
+  return await generateDemoCpPayoutInvoice();
 };
 
 export const updateSpPayOutRequestAPI = async (
   body: IPayOutsUpdateStatusParams
 ): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/PayOut/updateSpPayOutRequest`, body);
+  return await updateDemoSpPayoutRequest();
 };
 
 export const getSpPayoutsListAPI = async (
   params: ISourcingPartnerPayOutsParams
 ): Promise<ISourcingPartnerPayOutsResponse> => {
-  return await axios.get(`${API_URL}/PayOut/getSpPayoutsList`, { params });
+  return await getDemoSpPayoutsList();
 };
 
 export const getSpPayOutDetailsAPI = async (
   params: ISourcingPartnerPayOutDetailParams
 ): Promise<ISourcingPartnerPayOutDetailResponse> => {
-  return await axios.get(`${API_URL}/PayOut/getSpPayOutDetails`, { params });
+  return await getDemoSpPayoutDetail();
 };
 
 export const getAddEditRoleUserDataAPI = async (params: {
   userID: string | null;
 }): Promise<IGetAddEditRoleUserResponse> => {
-  return await axios.get(`${API_URL}/UserMaster/getAddEditRoleUserData`, {
-    params,
-  });
+  return await getDemoAddEditRoleUserData(params);
 };
 
 export const getUserRightsForUserManagementAPI = async (params: {
@@ -645,10 +674,7 @@ export const getAdminGeographicalReportAPI = async (
 export const updateLoanApplicationStatusAPI = async (
   body: IUpdateLoanStatus
 ): Promise<IUpdateLoanStatusResponse> => {
-  return await axios.post(
-    `${API_URL}/LoanApplication/updateLoanApplicationStatus`,
-    body
-  );
+  return await updateDemoLoanApplicationStatus();
 };
 
 export const getApplyForLoanAPI = async (
@@ -698,34 +724,25 @@ export const getBankingAnalyticsDetailsAPI =
 
 export const getUserNotificationListAPI =
   async (params: PaginateReqEntity): Promise<IGetNotificationResponse> => {
-    return await axios.get(
-      `${API_URL}/UserNotifications/getUserNotificationList`, { params }
-    );
+    return await getDemoUserNotifications();
   };
 
 export const updateNotificationStatusAPI = async (
   body: INotificationBody
 ): Promise<APIResponseEntity> => {
-  return await axios.post(
-    `${API_URL}/UserNotifications/updateNotificationStatus`,
-    body
-  );
+  return await updateDemoNotificationStatus();
 };
 
 export const getCpReportClientListAPI = async (
   params: IChannelPartnerReportParams
 ): Promise<IChannelPartnerClientReportResponse> => {
-  return await axios.get(`${API_URL}/Reports/getCpReportClientList`, {
-    params,
-  });
+  return await getDemoCpReportClientList();
 };
 
 export const getCpReportDetailsAPI = async (
   params: IClientDetailListParams
 ): Promise<IChannelPartnerClientReportDetailResponse> => {
-  return await axios.get(`${API_URL}/Reports/getCpReportDetails`, {
-    params,
-  });
+  return await getDemoCpReportDetail();
 };
 
 export const fetchDocumentStatusAPI = async (body: {
@@ -880,19 +897,19 @@ export const validateBankStatementFilesAPI = async (
 export const createLinkAPI = async (
   body: ISubscriptionBody
 ): Promise<ISubscriptionResponse> => {
-  return await axios.post(`${API_URL}/Payment/createLink`, body);
+  return await createDemoLink();
 };
 
 export const fetchSubsciptionHistoryAPI = async (): Promise<ISubscriptionListingResponse> => {
-  return await axios.get(`${API_URL}/Payment/fetchPaymentHistory`);
+  return await getDemoSubscriptionHistory();
 };
 
 export const fetchSubscriptionPlansAPI = async (): Promise<ISubscriptionPlanListingResponse> => {
-  return await axios.get(`${API_URL}/Payment/fetchSubscriptionPlans`);
+  return await getDemoSubscriptionPlans();
 };
 
 export const fetchSubscriptionUsageAPI = async (): Promise<ISubscriptionUsageResponse> => {
-  return await axios.get(`${API_URL}/Payment/fetchCreditsHistory`);
+  return await getDemoSubscriptionUsage();
 };
 
 export const getSecureUnsecureDocumentListAPI = async (): Promise<IGetSecureUnsecureDocumentListResponse> => {
@@ -904,7 +921,7 @@ export const moveDocumentAPI = async (body: IMoveDocumentBody): Promise<APIRespo
 };
 
 export const generateSpPayoutInvoiceAPI = async (body: IGenerateSpPayoutInvoiceParams): Promise<IGenerateSpPayoutInvoiceResponse> => {
-  return await axios.post(`${API_URL}/PayOut/generateSpPayoutInvoice`, body);
+  return await generateDemoSpPayoutInvoice();
 };
 
 export const generateSubscriptionInvoiceAPI = async (body: IGenerateSubscriptionInvoiceParams): Promise<IGenerateSubscriptionInvoiceResponse> => {
@@ -944,15 +961,11 @@ export const getGstReportForLinkApproachAPI = async (body: { referenceID: string
 };
 
 export const uploadSanctionLetterForLoanApplicationAPI = async (data: FormData): Promise<IUpdateLoanStatusResponse> => {
-  return await axios.post(`${API_URL}/LoanApplication/uploadSanctionLetterForLoanApplication`, data, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    }
-  });
+  return await uploadDemoSanctionLetter();
 };
 
 export const getDataByPincodeAPI = async (params: { pincode: number }): Promise<IPincodeFetchDetailsResponse> => {
-  return await axios.get(`${API_URL}/UserMaster/GetDataByPincode`, { params });
+  return await getDemoPincode();
 }
 
 export const getPaymentFetchUserTabWiseAPI = async (params: IPaginateReqEntityForFetchUserTabWise): Promise<IFetchTabWiseUserListingResponse> => {
@@ -972,31 +985,31 @@ export const addCreditsAPI = async (body: IAddCreditsBody): Promise<APIResponseE
 };
 
 export const getUserListForAdminContractListAPI = async (params: IContractListParams): Promise<IUserListForAdminContractListResponse> => {
-  return await axios.get(`${API_URL}/UserMaster/GetUserListForAdmin`, { params });
+  return await getDemoCmsUserContractList(params);
 };
 
 export const generategenerateReferralCodeAPI = async (): Promise<IGenerateSubscriptionInvoiceResponse> => {
-  return await axios.post(`${API_URL}/Referral/generateReferralCode`);
+  return await generateDemoReferralCode() as unknown as IGenerateSubscriptionInvoiceResponse;
 };
 
-export const fetchVerifyReferralCodeAPI = async (referralCode: string): Promise<ISubscriptionListingResponse> => {
-  return await axios.get(`${API_URL}/Payment/verifyReferralCode?referralCode=${referralCode}`);
+export const fetchVerifyReferralCodeAPI = async (referralCode: string): Promise<IRefferalCodeResponse> => {
+  return await getVerifyReferralCode();
 };
 
 export const fetchTrackReferralsAPI = async (): Promise<IRefferalListingResponse> => {
-  return await axios.get(`${API_URL}/Referral/trackReferrals`);
+  return await getDemoTrackReferrals();
 };
 
 export const fetchWalletAPI = async (): Promise<IWalletListingResponse> => {
-  return await axios.get(`${API_URL}/Wallet/getReferralPointsHistory`);
+  return await getDemoWalletHistory();
 };
 
 export const getReferralPointsAPI = async (): Promise<IRefferalDataResponse> => {
-  return await axios.get(`${API_URL}/Wallet/getReferralPoints`);
+  return await getDemoReferralPoints();
 };
 
 export const verifyReferralCodeAPI = async (referralCode: string): Promise<IRefferalDataResponse> => {
-  return await axios.get(`${API_URL}/Referral/verifyReferralCode?referralCode=${referralCode}`);
+  return await verifyDemoReferralCode(referralCode);
 };
 
 export const fetchSubmitApplicationToBankDetailsAPI = async (body: { loanApplicationID: string, bankID: number }): Promise<ISubmitLoanApplicationToBankResponse> => {
@@ -1004,7 +1017,7 @@ export const fetchSubmitApplicationToBankDetailsAPI = async (body: { loanApplica
 }
 
 export const fetchReferralCodeAPI = async (): Promise<IRefferalCodeResponse> => {
-  return await axios.get(`${API_URL}/Referral/getReferralCode`);
+  return await getDemoReferralCode();
 };
 
 export const IsProceedForCamReport = async (
@@ -1021,11 +1034,11 @@ export const IsProceedForCamReport = async (
 };
 
 export const fetchStatesAPI = async (): Promise<IFetchStateResponse> => {
-  return await axios.get(`${API_URL}/Client/getStatesList`);
+  return await getDemoStates();
 };
 
 export const convertPartnersToCoApplicantsAPI = async (body: { partnersID: string, userType: number }): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/Auth/convertPartnersToCoApplicants`, body);
+  return await convertDemoPartnersToCoApplicants();
 };
 
 export const updateLoanApplicationAmountAPI = async (body: { loanAppID: string, loanAmount: string, loanTypeID: number }): Promise<APIResponseEntity> => {

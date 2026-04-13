@@ -229,6 +229,7 @@ const CustomModal = ({
       netPayment: selectedRowData?.netPayment,
       applicationID,
       payoutId: id,
+      disbursementId: selectedRowData?.disbursementId ?? "",
       saccode: values.saccode ? encryptVAPTData(values.saccode) : "",
       recipientName: values.recipientName,
       recipientGST: values.recipientGST
@@ -287,6 +288,7 @@ const CustomModal = ({
       netPayment: selectedRowData?.netPayment,
       applicationID,
       payoutId: id,
+      disbursementId: selectedRowData?.disbursementId ?? "",
       recipientName: values.recipientName
         ? encryptVAPTData(values.recipientName)
         : "",
@@ -349,6 +351,7 @@ const CustomModal = ({
       applicationID,
       userType: selectedUserType || CLIENT_ROLE.SOURCING_PARTNER,
       status,
+      disbursementId: selectedRowData?.disbursementId ?? "",
     };
 
     if (reason) {
@@ -357,9 +360,18 @@ const CustomModal = ({
 
     if (formValues.remarks && formValues.paymentDate) {
       payload.remarks = formValues.remarks;
-      payload.paymentDate = moment(new Date(formValues.paymentDate))
-        .utcOffset("+05:30")
-        .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+
+      const date = new Date(formValues.paymentDate);
+      const now = new Date();
+
+      date.setHours(
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      );
+
+      payload.paymentDate = moment(date).toISOString();
     }
 
     const response = await updateSpPayOutRequestAPI(payload);
@@ -390,6 +402,7 @@ const CustomModal = ({
           netPayment: selectedRowData?.netPayment,
           applicationID,
           payoutId: id,
+          disbursementId: selectedRowData?.disbursementId ?? "",
           saccode: selectedRowData?.saccode ?? "",
           recipientAddress: values.recipientAddress
             ? encryptVAPTData(values.recipientAddress)

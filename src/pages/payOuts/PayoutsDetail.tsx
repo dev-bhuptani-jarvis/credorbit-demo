@@ -286,9 +286,10 @@ const PayoutsDetail = () => {
     setSelectedApplicationID(applicationID);
   };
 
-  const handleCompleted = (applicationID: string) => {
+  const handleCompleted = (rowData: IPayOutsDetailList, applicationID: string) => {
     setStatus(PAYMENT_REQUEST_STATUS.COMPLETED);
     setPaymentModal(true);
+    setSelectedRowData(rowData);
     setSelectedApplicationID(applicationID);
     setSelectedUserType(CLIENT_ROLE.CHANNEL_PARTNER);
   };
@@ -380,7 +381,7 @@ const PayoutsDetail = () => {
                   if (showContractModalCheck()) {
                     setShowContractAgreement(true);
                   } else {
-                    handleCompleted(rowData.applicationId);
+                    handleCompleted(rowData, rowData.applicationId);
                   }
                 }}
               >

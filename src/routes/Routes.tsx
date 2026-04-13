@@ -9,36 +9,36 @@ const PublicLayout = lazy(() => import("../layout/publicLayout"));
 const PrivateLayout = lazy(() => import("../layout/privateLayout"));
 const AdminDashboard = lazy(() => import("../pages/dashboard/AdminDashboard"));
 const ChannelPartnerManagement = lazy(
-  () => import("../pages/userMaster/ChannelPartnerManagement")
+  () => import("../pages/userMaster/ChannelPartnerManagement"),
 );
 const UserProfile = lazy(() => import("../pages/profile/Profile"));
 const CongratulationsPage = lazy(() => import("../components/congratulations"));
 const ClientDetail = lazy(() => import("../pages/userMaster/ClientDetail"));
 const LoanDetail = lazy(() => import("../pages/userMaster/LoanDetail"));
 const SourcingPartnerDetail = lazy(
-  () => import("../pages/userMaster/SourcingPartnerDetail")
+  () => import("../pages/userMaster/SourcingPartnerDetail"),
 );
 const ClientDashboard = lazy(
-  () => import("../pages/dashboard/ClientDashboard")
+  () => import("../pages/dashboard/ClientDashboard"),
 );
 const SourcingPartner = lazy(
-  () => import("../pages/userMaster/SourcingPartner")
+  () => import("../pages/userMaster/SourcingPartner"),
 );
 const ClientMaster = lazy(() => import("../pages/userMaster/ClientMaster"));
 const RoleMaster = lazy(() => import("../pages/roleMaster/RoleMaster"));
 const RoleMasterDetail = lazy(
-  () => import("../pages/roleMaster/RoleMasterDetail")
+  () => import("../pages/roleMaster/RoleMasterDetail"),
 );
 const ChannelPartnerDashboard = lazy(
-  () => import("../pages/dashboard/ChannelPartnerDashboard")
+  () => import("../pages/dashboard/ChannelPartnerDashboard"),
 );
 const PayOuts = lazy(() => import("../pages/payOuts/Payouts"));
 const PayoutsDetail = lazy(() => import("../pages/payOuts/PayoutsDetail"));
 const ContractChannelPartner = lazy(
-  () => import("../pages/contracts/ContractChannelPartner")
+  () => import("../pages/contracts/ContractChannelPartner"),
 );
 const ContractSourcingPartner = lazy(
-  () => import("../pages/contracts/ContractSourcingPartner")
+  () => import("../pages/contracts/ContractSourcingPartner"),
 );
 const ContractClient = lazy(() => import("../pages/contracts/ContractClient"));
 const PrivacyPolicy = lazy(() => import("../pages/policy/PrivacyPolicy"));
@@ -46,42 +46,42 @@ const Supports = lazy(() => import("../pages/supports/Supports"));
 const ApplyLoan = lazy(() => import("../pages/applyLoan/ApplyLoan"));
 const Documents = lazy(() => import("../pages/documents/Documents"));
 const LoanMarketPlace = lazy(
-  () => import("../pages/applyLoan/LoanMarketPlace")
+  () => import("../pages/applyLoan/LoanMarketPlace"),
 );
 const CheckEligibility = lazy(
-  () => import("../pages/applyLoan/checkEligibilty/CheckEligibility")
+  () => import("../pages/applyLoan/checkEligibilty/CheckEligibility"),
 );
 const TermsConditions = lazy(
-  () => import("../pages/termsConditions/TermsConditions")
+  () => import("../pages/termsConditions/TermsConditions"),
 );
 const AddApplication = lazy(() => import("../pages/applyLoan/AddApplication"));
 const UserManagement = lazy(
-  () => import("../pages/userManagement/UserManagement")
+  () => import("../pages/userManagement/UserManagement"),
 );
 const UserManagementDetail = lazy(
-  () => import("../pages/userManagement/UserManagementDetail")
+  () => import("../pages/userManagement/UserManagementDetail"),
 );
 const SourcingPartnerPayout = lazy(
-  () => import("../pages/payOuts/SourcingPartnerPayout")
+  () => import("../pages/payOuts/SourcingPartnerPayout"),
 );
 const SourcingPartnerPayoutsDetail = lazy(
-  () => import("../pages/payOuts/SourcingPartnerPayoutsDetail")
+  () => import("../pages/payOuts/SourcingPartnerPayoutsDetail"),
 );
 const UserManagementRights = lazy(
-  () => import("../pages/userManagement/UserManagementRights")
+  () => import("../pages/userManagement/UserManagementRights"),
 );
 const ChannelPartnerReports = lazy(
-  () => import("../pages/reports/ChannelPartnerReports")
+  () => import("../pages/reports/ChannelPartnerReports"),
 );
 const GeographicalReports = lazy(
-  () => import("../pages/reports/GeographicalReports")
+  () => import("../pages/reports/GeographicalReports"),
 );
 const IncomeTaxReport = lazy(
-  () => import("../pages/documents/IncomeTaxReport")
+  () => import("../pages/documents/IncomeTaxReport"),
 );
 const GstReport = lazy(() => import("../pages/documents/GstReport"));
 const BankingAnalyticsReport = lazy(
-  () => import("../pages/documents/BankingAnalyticsReport")
+  () => import("../pages/documents/BankingAnalyticsReport"),
 );
 const Subscription = lazy(() => import("../pages/subscription/Subscription"));
 const Reports = lazy(() => import("../pages/reports/Report"));
@@ -91,19 +91,17 @@ const DocumentFolder = lazy(() => import("../pages/documents/DocumentFolder"));
 const PolicyPage = lazy(() => import("../pages/policy/PublicPolicy"));
 const TermsConditionsPage = lazy(() => import("../pages/policy/PublicPolicy"));
 const ClientPolicyPage = lazy(() => import("../pages/policy/PublicPolicy"));
-const ChannelPartnerPolicyPage = lazy(() => import("../pages/policy/PublicPolicy"));
+const ChannelPartnerPolicyPage = lazy(
+  () => import("../pages/policy/PublicPolicy"),
+);
 const BankDetails = lazy(
-  () => import("../pages/applyLoan/checkEligibilty/BankDetails")
+  () => import("../pages/applyLoan/checkEligibilty/BankDetails"),
 );
 const DocumentFileList = lazy(
-  () => import("../pages/documents/DocumentFileList")
+  () => import("../pages/documents/DocumentFileList"),
 );
-const DeleteAccount = lazy(
-  () => import("../pages/auth/DeleteAccont")
-);
-const Wallet = lazy(
-  () => import("../pages/wallet/wallet")
-);
+const DeleteAccount = lazy(() => import("../pages/auth/DeleteAccont"));
+const Wallet = lazy(() => import("../pages/wallet/wallet"));
 
 export const publicRoutes: RouteObject[] = [
   {
@@ -253,14 +251,10 @@ export const privateRoutes: RouteObject[] = [
       },
       {
         path: RoutePathConstant.private.applyLoan,
-        element: <ApplyLoan />,
+        element: <NewApplyLoan />,
       },
       {
         path: RoutePathConstant.private.editLoanDetail,
-        element: <ApplyLoan />,
-      },
-      {
-        path: RoutePathConstant.private.newApplyLoan,
         element: <NewApplyLoan />,
       },
       {

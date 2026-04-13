@@ -48,6 +48,7 @@ export interface ISubscriptionPlanListingData {
 
 export interface ISubscriptionListingData {
     totalCredits: number;
+    reservedCredits?: number;
     subscriptionHistory: ISubscriptionResponseListingData[];
 }
 

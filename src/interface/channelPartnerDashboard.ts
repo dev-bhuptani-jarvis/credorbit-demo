@@ -10,6 +10,14 @@ export interface IChannelPartnerDashboardData {
   totalLoanApplicationsCountByStatus: ITotalCountByStatus[];
   loanApplicationStatusGraphList: LoanApplicationStatusGraph[];
   isAddApplicationEnabled: boolean;
+  userDetails?: {
+    contractEnforcementDate: string;
+    emailID: string;
+    isContractSigned: boolean;
+    profilePicture: string;
+    showPanDetailPopUp: boolean;
+    userName: string;
+  };
 }
 
 export interface LoanApplicationStatusGraph {

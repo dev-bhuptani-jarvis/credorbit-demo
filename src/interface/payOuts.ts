@@ -74,8 +74,9 @@ export interface IPayOutsDetailList {
   requestStatus: number | null;
   disbursementDate: string | null;
   invoiceUrl: string;
-  saccode?: string;
-  userInvoiceNumber?: string;
+  saccode?: string | null;
+  userInvoiceNumber?: string | null;
+  disbursementId: string;
 }
 
 export interface ICreatePayOutsRequestParams {
@@ -97,7 +98,8 @@ export interface IGenerateSpPayoutInvoiceParams {
   recipientName: string,
   recipientGST: string,
   recipientEmail: string,
-  recipientAddress: string
+  recipientAddress: string,
+  disbursementId: string
 }
 
 export interface IGenerateSpPayoutInvoiceResponse extends APIResponseEntity {
@@ -122,7 +124,8 @@ export interface IGenerateCpPayoutInvoiceParams {
   recipientAddress: string,
   recipientStateID: number,
   recipientStateName: string,
-  recipientStateCode: string
+  recipientStateCode: string,
+  disbursementId: string
 }
 
 export interface IGenerateCpPayoutInvoiceResponse extends APIResponseEntity {
@@ -136,6 +139,7 @@ export interface IPayOutsUpdateStatusParams {
   reason?: string;
   remarks?: string;
   paymentDate?: string;
+  disbursementId: string;
 }
 
 export interface ISourcingPartnerPayOutsParams {

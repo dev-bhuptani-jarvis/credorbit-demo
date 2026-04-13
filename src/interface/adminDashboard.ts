@@ -12,6 +12,7 @@ export interface IAdminDashboardData {
 
 export interface ITotalCountByStatus {
   displayName: string;
+  displayOrder?: number;
   amount: number;
   noOfApplications: number;
   formattedAmount: string | null;

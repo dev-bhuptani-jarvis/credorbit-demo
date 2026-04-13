@@ -18,6 +18,7 @@ import {
   OnlyMobileNumber,
 } from "../../interface/contract";
 import {
+  cleanCmsContent,
   formatDate,
   formatTime,
   sanitizeHTML,
@@ -263,7 +264,10 @@ const ContractClient = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      setContract(response.data);
+      setContract({
+        ...response.data,
+        content: cleanCmsContent(response.data.content),
+      });
     } else {
       toastError(response.message);
     }
@@ -288,8 +292,9 @@ const ContractClient = () => {
   const statusBodyTemplate = (
     rowData: IUserListForAdminContractListItemData
   ): JSX.Element => {
-    const statusClass = rowData.isActive ? "greenLine" : "redLine";
-    const statusText = rowData.isActive ? "Agreed" : "Pending";
+    const isSigned = Boolean(rowData.contractSigned);
+    const statusClass = isSigned ? "greenLine" : "redLine";
+    const statusText = isSigned ? "Agreed" : "Pending";
 
     return <span className={`StatusLabel ${statusClass}`}>{statusText}</span>;
   };

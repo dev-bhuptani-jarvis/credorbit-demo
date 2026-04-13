@@ -39,6 +39,7 @@ import usePermission from "../../hooks/usePermission";
 import useDebouncedEffect from "../../hooks/useDebounce";
 import { Dialog } from "primereact/dialog";
 import {
+  cleanCmsContent,
   formatDate,
   formatTime,
   sanitizeHTML,
@@ -226,7 +227,10 @@ const ContractSourcingPartner = () => {
     if (!response) return;
 
     if (response && response?.statusCode === 200) {
-      setContract(response?.data);
+      setContract({
+        ...response.data,
+        content: cleanCmsContent(response.data.content),
+      });
     } else {
       toastError(response?.message);
     }
@@ -348,8 +352,9 @@ const ContractSourcingPartner = () => {
   };
 
   const statusBodyTemplate = (rowData: IContractListItemData): JSX.Element => {
-    const statusClass = rowData.isActive ? "greenLine" : "redLine";
-    const statusText = rowData.isActive ? "Agreed" : "Pending";
+    const isSigned = Boolean(rowData.contractSigned);
+    const statusClass = isSigned ? "greenLine" : "redLine";
+    const statusText = isSigned ? "Agreed" : "Pending";
 
     return <span className={`StatusLabel ${statusClass}`}>{statusText}</span>;
   };
@@ -402,19 +407,13 @@ const ContractSourcingPartner = () => {
     if (!response) return;
 
     if (response && response?.statusCode === 200) {
-      const response: ISendOTPResponse = await sendOTPAPI(body);
+      setShowMobileOTP(true);
+      setOtpValues(undefined);
+      toastSuccess(response?.message);
 
-      if (!response) return;
-
-      if (response && response?.statusCode === 200) {
-        setShowMobileOTP(true);
-        setOtpValues(undefined);
-        toastSuccess(response?.message);
-
-        setTimeLeft(environment.OTP_TIMER);
-      } else {
-        toastError(response?.message);
-      }
+      setTimeLeft(environment.OTP_TIMER);
+    } else {
+      toastError(response?.message);
     }
 
     setLoading(false);

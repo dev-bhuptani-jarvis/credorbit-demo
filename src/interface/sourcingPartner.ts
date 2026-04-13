@@ -7,6 +7,10 @@ export interface ISourcingPartnerResponse extends APIResponseEntity {
 export interface ISourcingPartnerData {
   totalCount: number;
   sourcingPartersList: ISourcingPartner[];
+  categoryList?: {
+    id: number;
+    name: string;
+  }[];
 }
 
 export interface ISourcingPartner {
@@ -16,6 +20,9 @@ export interface ISourcingPartner {
   mobileNumber: string;
   isActive: boolean;
   registeredDate: string;
+  noOfRegisteredSP?: number;
+  activeCredits?: number;
+  reservedCredits?: number;
 }
 
 export interface ISourcingPartnerParams {

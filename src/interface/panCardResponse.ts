@@ -31,7 +31,7 @@ export interface IAddPanCardResponse extends APIResponseEntity {
   data: IAddPanCardResponseData;
 }
 
-export interface IAddPanCardResponseData extends APIResponseEntity {
+export interface IAddPanCardResponseData {
   panNumber: string;
   emailID: string;
   mobileNumber: string;

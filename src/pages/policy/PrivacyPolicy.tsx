@@ -8,6 +8,7 @@ import {
   IUpdatedContractBody,
 } from "../../interface/contract";
 import {
+  cleanCmsContent,
   formatDate,
   sanitizeHTML,
   toastError,
@@ -77,7 +78,10 @@ const PrivacyPolicy = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      setContract(response.data);
+      setContract({
+        ...response.data,
+        content: cleanCmsContent(response.data.content),
+      });
     } else {
       toastError(response.message);
     }

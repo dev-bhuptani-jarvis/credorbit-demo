@@ -300,8 +300,46 @@ export const generateCaptcha = (): string => {
   return generatedCaptcha;
 };
 
+export const normalizeCmsContent = (content: string): string => {
+  if (!content) return "";
+
+  return content
+    .replace(/\uFEFF/g, "")
+    .replace(/\u200B/g, "")
+    .replace(/\u00A0/g, " ")
+    .replace(/ï»¿/g, "")
+    .replace(/â€œ/g, "\u201c")
+    .replace(/â€\u009D|â€\u009c|â€\u009d|â€/g, "\u201d")
+    .replace(/â€˜|â€\u0098/g, "\u2018")
+    .replace(/â€™|â€\u0099/g, "\u2019")
+    .replace(/â€“/g, "\u2013")
+    .replace(/â€”/g, "\u2014")
+    .replace(/â€¦/g, "\u2026")
+    .replace(/â€‘/g, "\u2011")
+    .replace(/Â/g, "");
+};
+
+export const cleanCmsContent = (content: string): string => {
+  if (!content) return "";
+
+  return content
+    .replace(/\uFEFF/g, "")
+    .replace(/\u200B/g, "")
+    .replace(/\u00A0/g, " ")
+    .replace(/\u00EF\u00BB\u00BF/g, "")
+    .replace(/\u00E2\u20AC\u0153/g, "\u201c")
+    .replace(/\u00E2\u20AC(?:\u009D|\u009C)/g, "\u201d")
+    .replace(/\u00E2\u20AC(?:\u02DC|\u0098)/g, "\u2018")
+    .replace(/\u00E2\u20AC(?:\u2122|\u0099)/g, "\u2019")
+    .replace(/\u00E2\u20AC\u201C/g, "\u2013")
+    .replace(/\u00E2\u20AC\u201D/g, "\u2014")
+    .replace(/\u00E2\u20AC\u00A6/g, "\u2026")
+    .replace(/\u00E2\u20AC\u2018/g, "\u2011")
+    .replace(/\u00C2/g, "");
+};
+
 export const sanitizeHTML = (html: string): string => {
-  return DOMPurify.sanitize(html, {
+  return DOMPurify.sanitize(cleanCmsContent(html), {
     USE_PROFILES: { html: true }
   });
 };

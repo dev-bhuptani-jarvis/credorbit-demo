@@ -21,6 +21,7 @@ export interface ILoanApplicationData {
   loanApplicationCode: string;
   bankName: string | null;
   loanTypeID: number;
+  disbursementId: string;
   date: string;
   sanctionedDate: string | null;
   disbursedDate: string | null;
