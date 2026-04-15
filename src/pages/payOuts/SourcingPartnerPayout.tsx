@@ -144,20 +144,14 @@ const SourcingPartnerPayout = () => {
       <div className="table-responsive">
         <DataTable
           className="tableMain"
-          filterDisplay="row"
           value={spPayOutsData}
           emptyMessage="No payouts found"
         >
           <Column field="spCode" header="Sourcing Partner Code" />
 
-          <Column />
-
           <Column
             field="spName"
             header="Sourcing Partner Name"
-            showFilterMenu={false}
-            filter
-            filterElement={renderPartnerInput()}
           />
 
           <Column field="noOfPendingRequests" header="Pending" />

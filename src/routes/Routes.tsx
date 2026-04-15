@@ -2,7 +2,6 @@ import { lazy } from "react";
 import { Navigate, Outlet, RouteObject } from "react-router-dom";
 import { RoutePathConstant } from "../utils/constants/routePaths";
 import ChannelPartnerDetail from "../pages/userMaster/ChannelPartnerDetail";
-import NewApplyLoan from "../pages/applyLoan/NewApplyLoan";
 import NotificationPage from "../pages/notification-page/notification-page";
 
 const PublicLayout = lazy(() => import("../layout/publicLayout"));
@@ -251,11 +250,11 @@ export const privateRoutes: RouteObject[] = [
       },
       {
         path: RoutePathConstant.private.applyLoan,
-        element: <NewApplyLoan />,
+        element: <ApplyLoan />,
       },
       {
         path: RoutePathConstant.private.editLoanDetail,
-        element: <NewApplyLoan />,
+        element: <ApplyLoan />,
       },
       {
         path: RoutePathConstant.private.loanMarketPlace,

@@ -6,7 +6,7 @@ import {
 } from "../../utils/functions/nullCheck";
 import PrimePaginator from "../../components/PrimePaginator";
 import CustomModal from "../../components/CustomModal";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PaginateReqEntity } from "../../interface/pagination";
 import { PaginatorPageChangeEvent } from "primereact/paginator";
 import Loader from "../../components/Loader";
@@ -25,7 +25,6 @@ import {
   shouldShowContractModal,
   toastError,
 } from "../../utils/functions/shared";
-import { Nullable } from "primereact/ts-helpers";
 import {
   IPayOutsDetailList,
   ISourcingPartnerPayOutDetailParams,
@@ -44,6 +43,8 @@ import { Tooltip } from "primereact/tooltip";
 import { decryptVAPTData } from "../../utils/functions/encryptDecrypt";
 
 const SourcingPartnerPayoutsDetail = () => {
+  const dateFilterPopupRef = useRef<HTMLDivElement>(null);
+
   const [sourcingPartnerPayOutsData, setSourcingPartnerPayOutsData] =
     useState<ISourcingPartnerPayOutDetailResponseData>();
 
@@ -56,7 +57,15 @@ const SourcingPartnerPayoutsDetail = () => {
 
   const [totalRecords, setTotalRecords] = useState<number>(0);
 
-  const [dates, setDates] = useState<Nullable<(Date | null)[]>>(null);
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+
+  const [toDate, setToDate] = useState<Date | null>(null);
+
+  const [draftFromDate, setDraftFromDate] = useState<Date | null>(null);
+
+  const [draftToDate, setDraftToDate] = useState<Date | null>(null);
+
+  const [showDateFilterPopup, setShowDateFilterPopup] = useState<boolean>(false);
 
   const [status, setStatus] = useState<number>(0);
 
@@ -74,8 +83,6 @@ const SourcingPartnerPayoutsDetail = () => {
     useState<boolean>(false);
 
   const [clickCounter, setClickCounter] = useState<number>(0);
-
-  const [calendarVisible, setCalendarVisible] = useState<boolean>(false);
 
   const [selectedRowData, setSelectedRowData] =
     useState<IPayOutsDetailList | null>(null);
@@ -103,67 +110,163 @@ const SourcingPartnerPayoutsDetail = () => {
     Remarks: "remarks",
   };
 
-  const handleDateSelect = (clickedDate: Date) => {
-    if (!dates || !dates[0]) {
-      // First click → set start date
-      setDates([clickedDate, null]);
-      setCalendarVisible(true);
-      return;
-    }
-
-    const [start, end] = dates;
-
-    if (start && !end) {
-      if (clickedDate < start) {
-        // Clicked an earlier date → reset start
-        setDates([clickedDate, null]);
-        setCalendarVisible(true);
-      } else if (clickedDate > start) {
-        // Valid end date → set end and close calendar
-        setDates([start, clickedDate]);
-        setCalendarVisible(false);
-      } else {
-        // Same date clicked → just keep as start
-        setDates([clickedDate, null]);
-        setCalendarVisible(true);
-      }
-      return;
-    }
-
-    // Both dates exist → restart selection
-    setDates([clickedDate, null]);
-    setCalendarVisible(true);
+  const updateDateFilters = (
+    nextFromDate: Date | null,
+    nextToDate: Date | null,
+  ) => {
+    setFromDate(nextFromDate);
+    setToDate(nextToDate);
+    setFilterReq((prev) => ({
+      ...prev,
+      pageNumber: 0,
+    }));
   };
 
+  const openDateFilterDialog = () => {
+    setDraftFromDate(fromDate);
+    setDraftToDate(toDate);
+    setShowDateFilterPopup((prev) => !prev);
+  };
+
+  const closeDateFilterDialog = () => {
+    setDraftFromDate(fromDate);
+    setDraftToDate(toDate);
+    setShowDateFilterPopup(false);
+  };
+
+  const applyDateFilter = () => {
+    updateDateFilters(draftFromDate, draftToDate);
+    setShowDateFilterPopup(false);
+  };
+
+  const clearDraftDateFilter = () => {
+    setDraftFromDate(null);
+    setDraftToDate(null);
+    updateDateFilters(null, null);
+    setShowDateFilterPopup(false);
+  };
+
+  const isDateFilterSelectionValid = !!draftFromDate && !!draftToDate;
+
+  useEffect(() => {
+    if (!showDateFilterPopup) return;
+
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        dateFilterPopupRef.current &&
+        !dateFilterPopupRef.current.contains(event.target as Node)
+      ) {
+        closeDateFilterDialog();
+      }
+    };
+
+    const handleViewportChange = () => {
+      setShowDateFilterPopup(false);
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    window.addEventListener("resize", handleViewportChange);
+    window.addEventListener("scroll", handleViewportChange, true);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      window.removeEventListener("resize", handleViewportChange);
+      window.removeEventListener("scroll", handleViewportChange, true);
+    };
+  }, [showDateFilterPopup, fromDate, toDate]);
+
   const renderMonthDropdown = (): JSX.Element => (
-    <Calendar
-      inputId="disbursementDate"
-      value={dates}
-      selectionMode="range"
-      placeholder="From - To"
-      readOnlyInput
-      hideOnRangeSelection={false} // we control visibility manually
-      maxDate={new Date()}
-      showButtonBar
-      style={{ width: "250px" }}
-      visible={calendarVisible}
-      onSelect={(e) => handleDateSelect(e.value as Date)}
-      onChange={(e) => {
-        if (!e.value) {
-          // Clear button clicked → reset state AND close overlay
-          setDates(null);
-          setCalendarVisible(false); // close calendar
-        }
-      }}
-      onVisibleChange={(e) => {
-        // Only allow closing if both dates exist OR overlay is manually closed
-        if (!dates || !dates[0] || !dates[1]) {
-          setCalendarVisible(true); // keep open if incomplete
-        } else {
-          setCalendarVisible(e.visible);
-        }
-      }}
-    />
+    <div className="payout-date-filter-wrapper" ref={dateFilterPopupRef}>
+      <Button
+        type="button"
+        icon="pi pi-sliders-h"
+        label="Filter"
+        className="payout-date-filter-trigger"
+        onClick={openDateFilterDialog}
+      />
+
+      {showDateFilterPopup && (
+        <div className="payout-date-filter-overlay">
+          <div className="payout-date-filter-card p-4">
+          <h5 className="payout-date-filter-title mb-4">Date Range</h5>
+
+          <div className="d-flex align-items-end gap-3 flex-wrap">
+            <div style={{ minWidth: "180px", flex: 1 }}>
+              <label
+                htmlFor="disbursementFromDate"
+                className="payout-date-filter-label d-block mb-2"
+              >
+                From
+              </label>
+              <Calendar
+                inputId="disbursementFromDate"
+                value={draftFromDate}
+                placeholder="From Date"
+                readOnlyInput
+                maxDate={draftToDate || new Date()}
+                showButtonBar
+                className="payout-date-filter-calendar"
+                style={{ width: "100%" }}
+                onChange={(e) => {
+                  const selectedFromDate = e.value as Date | null;
+                  const nextToDate =
+                    selectedFromDate &&
+                    draftToDate &&
+                    draftToDate < selectedFromDate
+                      ? null
+                      : draftToDate;
+
+                  setDraftFromDate(selectedFromDate);
+                  setDraftToDate(nextToDate);
+                }}
+              />
+            </div>
+
+            <div style={{ minWidth: "180px", flex: 1 }}>
+              <label
+                htmlFor="disbursementToDate"
+                className="payout-date-filter-label d-block mb-2"
+              >
+                To
+              </label>
+              <Calendar
+                inputId="disbursementToDate"
+                value={draftToDate}
+                placeholder="To Date"
+                readOnlyInput
+                minDate={draftFromDate || undefined}
+                maxDate={new Date()}
+                showButtonBar
+                className="payout-date-filter-calendar"
+                style={{ width: "100%" }}
+                disabled={!draftFromDate}
+                onChange={(e) =>
+                  setDraftToDate(e.value as Date | null)
+                }
+              />
+            </div>
+          </div>
+
+          <div className="payout-date-filter-actions d-flex justify-content-between align-items-center mt-4 pt-3">
+            <Button
+              type="button"
+              label="Clear"
+              className="btn btn-orange-line"
+              onClick={clearDraftDateFilter}
+            />
+
+            <Button
+              type="button"
+              label="Done"
+              className="payout-date-filter-done"
+              onClick={applyDateFilter}
+              disabled={!isDateFilterSelectionValid}
+            />
+          </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 
   const remarksBodyTemplate = (rowData: IPayOutsDetailList): JSX.Element => {
@@ -201,22 +304,14 @@ const SourcingPartnerPayoutsDetail = () => {
   const fetchSourcingPartnerPayOutsDetailApi = async (): Promise<void> => {
     if (!id) return;
 
-    const startDate = dates?.[0];
-    const endDate = dates?.[1];
-
-    if (dates && (!startDate || !endDate)) {
-      return;
-    }
-
     setLoading(true);
 
-    const formattedFromDate = startDate
-      ? formatDate(startDate, "YYYY-MM-DD")
+    const formattedFromDate = fromDate
+      ? formatDate(fromDate, "YYYY-MM-DD")
       : undefined;
-    const formattedToDate = endDate
-      ? formatDate(endDate, "YYYY-MM-DD")
+    const formattedToDate = toDate
+      ? formatDate(toDate, "YYYY-MM-DD")
       : undefined;
-
     const queryParams: ISourcingPartnerPayOutDetailParams = {
       page: filterReq.pageNumber + 1,
       pageSize: filterReq.pageSize,
@@ -246,9 +341,7 @@ const SourcingPartnerPayoutsDetail = () => {
       };
 
       setSourcingPartnerPayOutsData(decryptedData);
-      setTotalRecords(response.data.totalCount);
-      setCalendarVisible(false);
-    } else {
+      setTotalRecords(response.data.totalCount);    } else {
       toastError(response.message);
     }
 
@@ -305,9 +398,10 @@ const SourcingPartnerPayoutsDetail = () => {
     setSelectedApplicationID(applicationID);
   };
 
-  const handleCompleted = (applicationID: string) => {
+  const handleCompleted = (rowData: IPayOutsDetailList, applicationID: string) => {
     setStatus(PAYMENT_REQUEST_STATUS.COMPLETED);
     setPaymentModal(true);
+    setSelectedRowData(rowData);
     setSelectedApplicationID(applicationID);
   };
 
@@ -418,7 +512,7 @@ const SourcingPartnerPayoutsDetail = () => {
                       ) {
                         setShowContractAgreement(true);
                       } else {
-                        handleCompleted(rowData.applicationId);
+                        handleCompleted(rowData, rowData.applicationId);
                       }
                     }}
                   >
@@ -462,22 +556,12 @@ const SourcingPartnerPayoutsDetail = () => {
 
     setLoading(true);
 
-    const startDate = dates?.[0];
-    const endDate = dates?.[1];
-
-    if (dates && (!startDate || !endDate)) {
-      return;
-    }
-
-    setLoading(true);
-
-    const formattedFromDate = startDate
-      ? formatDate(startDate, "YYYY-MM-DD")
+    const formattedFromDate = fromDate
+      ? formatDate(fromDate, "YYYY-MM-DD")
       : undefined;
-    const formattedToDate = endDate
-      ? formatDate(endDate, "YYYY-MM-DD")
+    const formattedToDate = toDate
+      ? formatDate(toDate, "YYYY-MM-DD")
       : undefined;
-
     const queryParams: ISourcingPartnerPayOutDetailParams = {
       page: 0,
       pageSize: 0,
@@ -509,7 +593,7 @@ const SourcingPartnerPayoutsDetail = () => {
 
   useEffect(() => {
     fetchSourcingPartnerPayOutsDetailApi();
-  }, [filterReq, dates]);
+  }, [filterReq, fromDate, toDate]);
 
   return (
     <div className="whiteBoxHldr p-24">
@@ -711,3 +795,5 @@ const SourcingPartnerPayoutsDetail = () => {
 };
 
 export default SourcingPartnerPayoutsDetail;
+
+

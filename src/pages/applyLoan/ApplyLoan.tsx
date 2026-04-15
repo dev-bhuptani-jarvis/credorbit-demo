@@ -1,8 +1,9 @@
 import { Button } from "primereact/button";
+import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { RadioButton } from "primereact/radiobutton";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import {
   extraToken,
   IsFormValid,
@@ -16,20 +17,23 @@ import { IsStringNullEmptyOrUndefined } from "../../utils/functions/nullCheck";
 import {
   IAddLoanApplication,
   IApplyLoanApplicationResponse,
-  LoanErrors,
-  LoanValues,
 } from "../../interface/applyLoan";
 import {
   addLoanApplicationAPI,
   fetchImpersonateUser,
   fetchUserProfile,
   getClientDashboardAPI,
+  getDataByPincodeAPI,
+  getLoanDetailAPI,
   getLoanTypeListAPI,
+  updateLoanApplicationAmountAPI,
 } from "../../utils/axios/apiServices";
 import {
   BorrowerType,
   ILoanIndustryOptions,
+  ILoanParams,
   ILoanProfessionOptions,
+  ILoanResponse,
   ILoanTypeData,
   ILoanTypeListResponse,
   ILoanUnitOptions,
@@ -41,8 +45,11 @@ import { Steps } from "primereact/steps";
 import Congratulation from "./Congratulation";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
+import { InputTextarea } from "primereact/inputtextarea";
 import {
   LoanApplicationStatusType,
+  MasterEnum,
+  PropertyType,
   StorageKeyEnum,
 } from "../../utils/constants/enum";
 import Loader from "../../components/Loader";
@@ -58,34 +65,158 @@ import { setEncryptedSessionStorage } from "../../utils/functions/sessionStorage
 import { IClientDashboardResponse } from "../../interface/clientDashboard";
 import { setCustomerInfo } from "../../store/reducer/customerSlice";
 import { useDispatch } from "react-redux";
-import { IUserProfileResponse } from "../../interface/userData";
+import {
+  IPincodeFetchDetailsResponse,
+  IUserProfileResponse,
+} from "../../interface/userData";
 import { validationMessages } from "../../utils/constants/messages";
+import {
+  ILoanPropertyPayload,
+  LoanErrors,
+  LoanValues,
+} from "../../interface/new-apply-loan";
+
+const EMPTY_OPTION = { id: 0, displayName: "" };
+const MIN_LOAN_AMOUNT = 10000;
+
+const DEFAULT_LOAN_AMOUNT = new Intl.NumberFormat("en-IN").format(
+  MIN_LOAN_AMOUNT,
+);
+
+type PropertyFieldErrorKey = "pincode" | "approxMarketValue";
+
+type PropertyFieldErrors = Record<
+  number,
+  Record<PropertyFieldErrorKey, string>
+>;
 
 const ApplyLoan = () => {
-  const [formValues, setFormValues] = useState<LoanValues>({
-    isSecuredLoanApp: true,
+  const convertNumberToWords = (value: number): string => {
+    if (!Number.isFinite(value) || value <= 0) {
+      return "";
+    }
+
+    const belowTwenty = [
+      "",
+      "One",
+      "Two",
+      "Three",
+      "Four",
+      "Five",
+      "Six",
+      "Seven",
+      "Eight",
+      "Nine",
+      "Ten",
+      "Eleven",
+      "Twelve",
+      "Thirteen",
+      "Fourteen",
+      "Fifteen",
+      "Sixteen",
+      "Seventeen",
+      "Eighteen",
+      "Nineteen",
+    ];
+
+    const tens = [
+      "",
+      "",
+      "Twenty",
+      "Thirty",
+      "Forty",
+      "Fifty",
+      "Sixty",
+      "Seventy",
+      "Eighty",
+      "Ninety",
+    ];
+
+    const convertBelowThousand = (num: number): string => {
+      if (num === 0) return "";
+      if (num < 20) return belowTwenty[num];
+      if (num < 100) {
+        return `${tens[Math.floor(num / 10)]}${
+          num % 10 ? ` ${belowTwenty[num % 10]}` : ""
+        }`;
+      }
+
+      return `${belowTwenty[Math.floor(num / 100)]} Hundred${
+        num % 100 ? ` ${convertBelowThousand(num % 100)}` : ""
+      }`;
+    };
+
+    let remainingValue = Math.floor(value);
+    const words: string[] = [];
+
+    if (remainingValue >= 10_000_000) {
+      const crore = Math.floor(remainingValue / 10_000_000);
+      words.push(`${convertNumberToWords(crore)} Crore`);
+      remainingValue %= 10_000_000;
+    }
+
+    if (remainingValue >= 100_000) {
+      const lakh = Math.floor(remainingValue / 100_000);
+      words.push(`${convertBelowThousand(lakh)} Lakh`);
+      remainingValue %= 100_000;
+    }
+
+    if (remainingValue >= 1_000) {
+      const thousand = Math.floor(remainingValue / 1_000);
+      words.push(`${convertBelowThousand(thousand)} Thousand`);
+      remainingValue %= 1_000;
+    }
+
+    if (remainingValue > 0) {
+      words.push(convertBelowThousand(remainingValue));
+    }
+
+    return words.join(" ").trim();
+  };
+
+  const createPropertyFieldErrors = (): PropertyFieldErrors => ({
+    [PropertyType.RESIDENTIAL]: { pincode: "", approxMarketValue: "" },
+    [PropertyType.COMMERCIAL]: { pincode: "", approxMarketValue: "" },
+    [PropertyType.INDUSTRIAL]: { pincode: "", approxMarketValue: "" },
+    [PropertyType.PLOT]: { pincode: "", approxMarketValue: "" },
+  });
+
+  const createEmptyProperty = (propertyType: number): ILoanPropertyPayload => ({
+    propertyType,
+    size: "",
+    pincode: "",
+    address: "",
+    location: "",
+    ownership: "",
+    saleDeedValue: "",
+    approxMarketValue: "",
+  });
+
+  const getInitialFormValues = (isSecuredLoanApp = true): LoanValues => ({
+    isSecuredLoanApp,
     loanCategory: 0,
-    loanAmount: "",
+    loanAmount: DEFAULT_LOAN_AMOUNT,
     hasOtherIncome: null,
     directorPartnerRemuneration: "",
     interestIncome: "",
     anyOtherIncome: "",
     averageGrossMonthlySalary: "",
-    saleDeedValue: "",
-    unit: { id: 0, displayName: "" },
-    profession: { id: 0, displayName: "" },
-    industry: { id: 0, displayName: "" },
-    borrowerType: { id: 0, displayName: "" },
-    businessVintage: { id: 0, displayName: "" },
-    typeOfOrganizationWhereEmployeeWorking: { id: 0, displayName: "" },
-    durationOfWorkingAtOrganization: { id: 0, displayName: "" },
-    yearsOfITRFiled: { id: 0, displayName: "" },
-    salarySlipAvailableMonths: { id: 0, displayName: "" },
+    unit: EMPTY_OPTION,
+    profession: EMPTY_OPTION,
+    industry: EMPTY_OPTION,
+    borrowerType: EMPTY_OPTION,
+    businessVintage: EMPTY_OPTION,
+    typeOfOrganizationWhereEmployeeWorking: EMPTY_OPTION,
+    durationOfWorkingAtOrganization: EMPTY_OPTION,
+    yearsOfITRFiled: EMPTY_OPTION,
+    salarySlipAvailableMonths: EMPTY_OPTION,
+    bankName: "",
+    properties: [],
   });
 
-  const [formErrors, setFormErrors] = useState<LoanErrors>({
+  const getInitialFormErrors = (isSecuredLoanApp = true): LoanErrors => ({
     loanCategory: validationMessages.selectLoanType,
-    loanAmount: validationMessages.selectLoanAmount,
+    loanAmount: "",
     hasOtherIncome: "",
     directorPartnerRemuneration: "",
     interestIncome: "",
@@ -93,7 +224,6 @@ const ApplyLoan = () => {
     unit: validationMessages.selectUnit,
     profession: "",
     industry: validationMessages.selectIndustry,
-    approxMarketValue: validationMessages.selectApproxMarketValue,
     borrowerType: validationMessages.selectBorrowerType,
     businessVintage: validationMessages.businessVintage,
     typeOfOrganizationWhereEmployeeWorking:
@@ -101,10 +231,42 @@ const ApplyLoan = () => {
     durationOfWorkingAtOrganization:
       validationMessages.durationOfWorkingAtOrganization,
     yearsOfITRFiled: validationMessages.yearsOfITRFiled,
-    salarySlipAvailableMonths: validationMessages.salarySlipAvailableMonths,
+    salarySlipAvailableMonths: "",
     averageGrossMonthlySalary: validationMessages.averageGrossMonthlySalary,
-    saleDeedValue: validationMessages.saleDeedValue,
+    bankName: "",
   });
+
+  const getUpdateFormErrors = (): LoanErrors => ({
+    loanCategory: "",
+    loanAmount: "",
+    hasOtherIncome: "",
+    directorPartnerRemuneration: "",
+    interestIncome: "",
+    anyOtherIncome: "",
+    unit: "",
+    profession: "",
+    industry: "",
+    borrowerType: "",
+    businessVintage: "",
+    typeOfOrganizationWhereEmployeeWorking: "",
+    durationOfWorkingAtOrganization: "",
+    yearsOfITRFiled: "",
+    salarySlipAvailableMonths: "",
+    averageGrossMonthlySalary: "",
+    bankName: "",
+  });
+
+  const [formValues, setFormValues] = useState<LoanValues>(
+    getInitialFormValues(),
+  );
+
+  const [formErrors, setFormErrors] = useState<LoanErrors>(
+    getInitialFormErrors(),
+  );
+
+  const [propertyErrors, setPropertyErrors] = useState<PropertyFieldErrors>(
+    createPropertyFieldErrors(),
+  );
 
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
@@ -129,62 +291,73 @@ const ApplyLoan = () => {
   const [industryList, setIndustryList] = useState<ILoanProfessionOptions[]>(
     [],
   );
+
   const MASTER_BORROWER_TYPE_LIST: BorrowerType[] = [
-    { id: 1, displayName: "Salaried" },
-    { id: 2, displayName: "Self Employed Professional" },
-    { id: 3, displayName: "Self Employed Non Professional" },
+    { id: MasterEnum.SALARIED, displayName: "Salaried" },
+    {
+      id: MasterEnum.SELF_EMPLOYED_PROFESSIONAL,
+      displayName: "Self Employed Professional",
+    },
+    {
+      id: MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL,
+      displayName: "Self Employed Non Professional",
+    },
   ];
 
   const [borrowerTypeList, setBorrowerTypeList] = useState<BorrowerType[]>([
     {
-      id: 1,
+      id: MasterEnum.SALARIED,
       displayName: "Salaried",
     },
     {
-      id: 2,
+      id: MasterEnum.SELF_EMPLOYED_PROFESSIONAL,
       displayName: "Self Employed Professional",
     },
     {
-      id: 3,
+      id: MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL,
       displayName: "Self Employed Non Professional",
     },
   ]);
 
   const businessVintageList = [
-    { displayName: "1 Year", id: 1 },
-    { displayName: "2 Years", id: 2 },
-    { displayName: "3 Years", id: 3 },
-    { displayName: "3+ Years", id: 4 },
+    { displayName: "1 Year", id: MasterEnum.BUSINESS_1_YEAR },
+    { displayName: "2 Years", id: MasterEnum.BUSINESS_2_YEARS },
+    { displayName: "3 Years", id: MasterEnum.BUSINESS_3_YEARS },
+    { displayName: "3+ Years", id: MasterEnum.BUSINESS_3_PLUS_YEARS },
   ];
 
   const organizationTypeList = [
-    { displayName: "Proprietor", id: 1 },
-    { displayName: "Firm", id: 2 },
-    { displayName: "LLP", id: 3 },
-    { displayName: "Company", id: 4 },
+    { displayName: "Proprietor", id: MasterEnum.PROPRIETOR },
+    { displayName: "Firm", id: MasterEnum.FIRM },
+    { displayName: "LLP", id: MasterEnum.LLP },
+    { displayName: "Company", id: MasterEnum.COMPANY },
   ];
 
   const workingDurationList = [
-    { displayName: "< 3 Months", id: 1 },
-    { displayName: "3 - 6 Months", id: 2 },
-    { displayName: "6 - 12 Months", id: 3 },
-    { displayName: "1 Year", id: 4 },
-    { displayName: "2 Years", id: 5 },
-    { displayName: "3 Years", id: 6 },
-    { displayName: "3+ Years", id: 7 },
+    { displayName: "1 Year", id: MasterEnum.WORK_1_YEAR },
+    { displayName: "2 Years", id: MasterEnum.WORK_2_YEARS },
+    { displayName: "3 Years", id: MasterEnum.WORK_3_YEARS },
+    { displayName: "3+ Years", id: MasterEnum.WORK_3_PLUS_YEARS },
   ];
 
   const itrFiledYearsList = [
-    { displayName: "Not Filed", id: 0 },
-    { displayName: "Filed - 1 Year", id: 1 },
-    { displayName: "Filed - 2 Years", id: 2 },
-    { displayName: "Filed - 3 Years", id: 3 },
+    { displayName: "Not Filed", id: MasterEnum.NOT_FILED },
+    { displayName: "1 Year", id: MasterEnum.ITR_1_YEAR },
+    { displayName: "2 Years", id: MasterEnum.ITR_2_YEARS },
+    { displayName: "3 Years", id: MasterEnum.ITR_3_YEARS },
+    { displayName: "3+ Years", id: MasterEnum.ITR_3_PLUS_YEARS },
   ];
 
-  const salarySlipMonthsList = [
-    { displayName: "3 Months", id: 1 },
-    { displayName: "6 Months", id: 2 },
-    { displayName: "12 Months", id: 3 },
+  const PROPERTY_TYPE_OPTIONS = [
+    { id: PropertyType.RESIDENTIAL, label: "Residential" },
+    { id: PropertyType.COMMERCIAL, label: "Commercial" },
+    { id: PropertyType.INDUSTRIAL, label: "Industrial" },
+    { id: PropertyType.PLOT, label: "Plot/Other" },
+  ];
+
+  const PROPERTY_OWNERSHIP_OPTIONS = [
+    { id: MasterEnum.PROPERTY_OWNED, label: "Owned" },
+    { id: MasterEnum.PROPERTY_RENTED, label: "Rented" },
   ];
 
   const [updatedLoanTypeList, setUpdatedLoanTypeList] = useState<
@@ -199,6 +372,12 @@ const ApplyLoan = () => {
 
   const { id } = useParams();
 
+  const isEditMode = id ? !IsStringNullEmptyOrUndefined(id) : false;
+
+  const hasFetchedLoanDetailsRef = useRef<boolean>(false);
+
+  const formRef = useRef<HTMLFormElement>(null);
+
   const dispatch = useDispatch();
 
   const { userType, userID } = useSelector(
@@ -211,15 +390,249 @@ const ApplyLoan = () => {
     (loan) => loan.loanTypeId === formValues.loanCategory,
   );
 
-  const shouldShowOtherIncomeFields =
-    selectedLoanType?.displayName === "Home Loan" ||
-    selectedLoanType?.displayName.includes("Loan against property");
+  const normalizedLoanTypeName = selectedLoanType?.loanTypeName
+    ?.replace(/[^a-z0-9]/gi, "")
+    .toLowerCase();
+
+  const normalizedLoanDisplayName = selectedLoanType?.displayName
+    ?.replace(/[^a-z0-9]/gi, "")
+    .toLowerCase();
+
+  const loanTypeLookupKey = `${normalizedLoanTypeName ?? ""}${
+    normalizedLoanDisplayName ?? ""
+  }`;
+
+  const isHomeLoanSelected = loanTypeLookupKey.includes("homeloan");
+
+  const isLapLoanSelected = loanTypeLookupKey.includes("loanproperty");
+
+  const isUnsecuredBusinessLoanSelected =
+    loanTypeLookupKey.includes("unsecuredbusinessloan");
+
+  const isCcOdSecuredLoanSelected =
+    loanTypeLookupKey.includes("ccodsecured");
+
+  const isWorkingCapitalLoanSelected = isCcOdSecuredLoanSelected;
+
+  const isPersonalLoanSelected =
+    loanTypeLookupKey.includes("personalloan");
+
+  const restrictedPropertyType = (() => {
+    if (isHomeLoanSelected) {
+      return PropertyType.RESIDENTIAL;
+    }
+
+    if (!isLapLoanSelected) {
+      return null;
+    }
+
+    const loanTypeKey = loanTypeLookupKey;
+
+    if (loanTypeKey.includes("commercial")) {
+      return PropertyType.COMMERCIAL;
+    }
+
+    if (loanTypeKey.includes("industrial")) {
+      return PropertyType.INDUSTRIAL;
+    }
+
+    if (loanTypeKey.includes("plot") || loanTypeKey.includes("other")) {
+      return PropertyType.PLOT;
+    }
+
+    return PropertyType.RESIDENTIAL;
+  })();
+
+  const shouldShowPropertyFields =
+    isHomeLoanSelected || isLapLoanSelected || isWorkingCapitalLoanSelected;
+
+  const shouldShowOtherIncomeFields = isHomeLoanSelected || isLapLoanSelected;
+
+  const isFieldEditable = (fieldName: string): boolean =>
+    !isEditMode || ["loanAmount", "loanCategory"].includes(fieldName);
+
+  const getPropertyByType = (propertyType: number) =>
+    formValues.properties.find(
+      (property) => property.propertyType === propertyType,
+    );
+
+  const residentialProperty = getPropertyByType(PropertyType.RESIDENTIAL);
+
+  const commercialProperty = getPropertyByType(PropertyType.COMMERCIAL);
+
+  const industrialProperty = getPropertyByType(PropertyType.INDUSTRIAL);
+
+  const plotProperty = getPropertyByType(PropertyType.PLOT);
+
+  const getAmountInWords = (value?: string) => {
+    const numericValue = Number((value ?? "").replace(/,/g, ""));
+
+    if (!numericValue || numericValue <= 0) {
+      return "";
+    }
+
+    return `${convertNumberToWords(numericValue)} Only`;
+  };
+
+  const loanAmountNumber = Number(formValues.loanAmount.replace(/,/g, ""));
+
+  const loanAmountInWords =
+    loanAmountNumber >= MIN_LOAN_AMOUNT
+      ? `${convertNumberToWords(loanAmountNumber)} Only`
+      : "";
+
+  const isPropertySelectionLocked = restrictedPropertyType !== null;
+
+  const isPropertyMandatory = (propertyType: number) =>
+    shouldShowPropertyFields &&
+    !!getPropertyByType(propertyType) &&
+    (isPropertySelectionLocked || isWorkingCapitalLoanSelected);
+
+  const availablePropertyOptions = PROPERTY_TYPE_OPTIONS.filter((option) => {
+    if (restrictedPropertyType) {
+      return option.id === restrictedPropertyType;
+    }
+
+    if (option.id === PropertyType.RESIDENTIAL) {
+      return (
+        isHomeLoanSelected ||
+        isLapLoanSelected ||
+        isWorkingCapitalLoanSelected
+      );
+    }
+
+    if (option.id === PropertyType.COMMERCIAL) {
+      return isLapLoanSelected || isWorkingCapitalLoanSelected;
+    }
+
+    if (option.id === PropertyType.INDUSTRIAL) {
+      return isLapLoanSelected || isWorkingCapitalLoanSelected;
+    }
+
+    if (option.id === PropertyType.PLOT) {
+      return isLapLoanSelected || isWorkingCapitalLoanSelected;
+    }
+
+    return false;
+  });
+
+  const availablePropertyOptionIds = availablePropertyOptions
+    .map((option) => option.id)
+    .join(",");
+
+  const addProperty = (propertyType: number) => {
+    setFormValues((prev) => {
+      if (
+        prev.properties.some(
+          (property) => property.propertyType === propertyType,
+        )
+      ) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        properties: [...prev.properties, createEmptyProperty(propertyType)],
+      };
+    });
+  };
+
+  const removeProperty = (propertyType: number) => {
+    setFormValues((prev) => ({
+      ...prev,
+      properties: prev.properties.filter(
+        (property) => property.propertyType !== propertyType,
+      ),
+    }));
+
+    setPropertyErrors((prev) => ({
+      ...prev,
+      [propertyType]: {
+        pincode: "",
+        approxMarketValue: "",
+      },
+    }));
+  };
+
+  const updatePropertyField = (
+    propertyType: number,
+    field: keyof Omit<ILoanPropertyPayload, "propertyType">,
+    value: string,
+  ) => {
+    setFormValues((prev) => ({
+      ...prev,
+      properties: prev.properties.map((property) =>
+        property.propertyType === propertyType
+          ? { ...property, [field]: value }
+          : property,
+        ),
+    }));
+
+    if (field === "pincode" || field === "approxMarketValue") {
+      setPropertyErrors((prev) => ({
+        ...prev,
+        [propertyType]: {
+          ...prev[propertyType],
+          [field]: "",
+        },
+      }));
+    }
+  };
+
+  const handlePropertyAmountChange = (
+    propertyType: number,
+    field: "size" | "saleDeedValue" | "approxMarketValue",
+    value: string,
+  ) => {
+    const rawValue = value.replace(NUMBER, "");
+    const formattedValue = rawValue
+      ? new Intl.NumberFormat("en-IN").format(Number(rawValue))
+      : "";
+
+    updatePropertyField(propertyType, field, formattedValue);
+  };
+
+  const handlePropertyPinCodeChange = async (
+    propertyType: number,
+    value: string,
+  ): Promise<void> => {
+    if (!isFieldEditable("properties")) return;
+
+    const pinCodeValue = value.replace(NUMBER, "").slice(0, 6);
+    updatePropertyField(propertyType, "pincode", pinCodeValue);
+
+    if (pinCodeValue.length !== 6) {
+      updatePropertyField(propertyType, "location", "");
+      return;
+    }
+
+    setLoading(true);
+
+    const response: IPincodeFetchDetailsResponse = await getDataByPincodeAPI({
+      pincode: pinCodeValue ? Number(pinCodeValue) : 0,
+    });
+
+    if (!response) {
+      setLoading(false);
+      return;
+    }
+
+    if (response.data && response.statusCode === 200) {
+      updatePropertyField(propertyType, "location", response.data.circle ?? "");
+    } else {
+      updatePropertyField(propertyType, "location", "");
+
+      toastError(response.message);
+    }
+
+    setLoading(false);
+  };
 
   const handleInputChange = (fieldName: string, value: string | boolean) => {
+    if (!isFieldEditable(fieldName)) return;
+
     if (
       fieldName === "loanAmount" ||
-      fieldName === "approxMarketValue" ||
-      fieldName === "saleDeedValue" ||
       fieldName === "averageGrossMonthlySalary" ||
       fieldName === "directorPartnerRemuneration" ||
       fieldName === "interestIncome" ||
@@ -243,14 +656,12 @@ const ApplyLoan = () => {
       if (
         rawValue.length === 0 ||
         isNaN(Number(rawValue)) ||
-        Number(rawValue) <= 0
+        (fieldName === "loanAmount"
+          ? Number(rawValue) < MIN_LOAN_AMOUNT
+          : Number(rawValue) <= 0)
       ) {
         if (fieldName === "loanAmount") {
-          errorMessage = validationMessages.selectLoanAmount;
-        } else if (fieldName === "approxMarketValue") {
-          errorMessage = validationMessages.selectApproxMarketValue;
-        } else if (fieldName === "saleDeedValue") {
-          errorMessage = validationMessages.saleDeedValue;
+          errorMessage = `Minimum loan amount is ${DEFAULT_LOAN_AMOUNT}`;
         } else if (fieldName === "averageGrossMonthlySalary") {
           errorMessage = validationMessages.averageGrossMonthlySalary;
         }
@@ -269,15 +680,7 @@ const ApplyLoan = () => {
       setFormValues((prev) => ({
         ...prev,
         isSecuredLoanApp: value as boolean,
-        approxMarketValue: value ? prev.approxMarketValue : "",
       }));
-
-      if (!value) {
-        setFormErrors((prev) => ({
-          ...prev,
-          approxMarketValue: "",
-        }));
-      }
       return;
     }
 
@@ -318,9 +721,79 @@ const ApplyLoan = () => {
 
       return {
         ...prev,
-        [fieldName]: IsStringNullEmptyOrUndefined(value as string)
-          ? `Please enter a valid ${fieldName}`
-          : "",
+        [fieldName]:
+          fieldName === "loanCategory"
+            ? value
+              ? ""
+              : validationMessages.selectLoanType
+            : fieldName === "borrowerType"
+              ? IsStringNullEmptyOrUndefined(
+                  (value as { displayName?: string })?.displayName ?? "",
+                )
+                ? validationMessages.selectBorrowerType
+                : ""
+              : fieldName === "unit"
+                ? IsStringNullEmptyOrUndefined(
+                    (value as { displayName?: string })?.displayName ?? "",
+                  )
+                  ? validationMessages.selectUnit
+                  : ""
+                : fieldName === "profession"
+                  ? IsStringNullEmptyOrUndefined(
+                      (value as { displayName?: string })?.displayName ?? "",
+                    )
+                    ? validationMessages.selectProfession
+                    : ""
+                  : fieldName === "industry"
+                    ? IsStringNullEmptyOrUndefined(
+                        (value as { displayName?: string })?.displayName ?? "",
+                      )
+                      ? validationMessages.selectIndustry
+                      : ""
+                    : fieldName === "businessVintage"
+                      ? IsStringNullEmptyOrUndefined(
+                          (value as { displayName?: string })?.displayName ??
+                            "",
+                        )
+                        ? validationMessages.businessVintage
+                        : ""
+                      : fieldName === "yearsOfITRFiled"
+                        ? IsStringNullEmptyOrUndefined(
+                            (value as { displayName?: string })?.displayName ??
+                              "",
+                          )
+                          ? validationMessages.yearsOfITRFiled
+                          : ""
+                        : fieldName === "typeOfOrganizationWhereEmployeeWorking"
+                          ? IsStringNullEmptyOrUndefined(
+                              (value as { displayName?: string })
+                                ?.displayName ?? "",
+                            )
+                            ? validationMessages.typeOfOrganizationWhereEmployeeWorking
+                            : ""
+                          : fieldName === "durationOfWorkingAtOrganization"
+                            ? IsStringNullEmptyOrUndefined(
+                                (value as { displayName?: string })
+                                  ?.displayName ?? "",
+                              )
+                              ? validationMessages.durationOfWorkingAtOrganization
+                              : ""
+                            : fieldName === "salarySlipAvailableMonths"
+                              ? IsStringNullEmptyOrUndefined(
+                                  (value as { displayName?: string })
+                                    ?.displayName ?? "",
+                                )
+                                ? validationMessages.salarySlipAvailableMonths
+                                : ""
+                              : fieldName === "bankName"
+                                ? formValues.borrowerType.id ===
+                                    MasterEnum.SALARIED &&
+                                  IsStringNullEmptyOrUndefined(
+                                    (value as string) ?? "",
+                                  )
+                                  ? validationMessages.bankNameRequired
+                                  : ""
+                                : "",
       };
     });
   };
@@ -450,21 +923,76 @@ const ApplyLoan = () => {
     }
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleCreateLoanApplication = async (
+    e: FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
     e.preventDefault();
     setIsFormSubmitted(true);
 
     let updatedFormErrors = { ...formErrors };
 
-    if (formValues.isSecuredLoanApp) {
-      updatedFormErrors.approxMarketValue = IsStringNullEmptyOrUndefined(
-        formValues.approxMarketValue as string,
-      )
-        ? validationMessages.selectApproxMarketValue
-        : "";
+    if (isEditMode) {
+      updatedFormErrors = {
+        ...getInitialFormErrors(formValues.isSecuredLoanApp),
+        loanAmount:
+          IsStringNullEmptyOrUndefined(formValues.loanAmount) ||
+          Number(formValues.loanAmount.replace(/,/g, "")) < MIN_LOAN_AMOUNT
+            ? `Minimum loan amount is ${DEFAULT_LOAN_AMOUNT}`
+            : "",
+      };
+
+      setFormErrors(updatedFormErrors);
+
+      const isValid = IsFormValid(updatedFormErrors);
+
+      if (!isValid) return;
+
+      setIsFormSubmitted(false);
+      setLoading(true);
+
+      const body = {
+        loanAppID: id,
+        clientID: state?.id || userID,
+        loanTypeID: formValues.loanCategory,
+        loanAmount: formValues.loanAmount.replace(/,/g, ""),
+        isSecuredLoanApp: formValues.isSecuredLoanApp,
+      };
+
+      const response: IApplyLoanApplicationResponse =
+        await addLoanApplicationAPI(body as unknown as IAddLoanApplication);
+
+      if (!response) return;
+
+      if (response.statusCode === 200) {
+        toastSuccess(response.message);
+        handleRedirection();
+      } else {
+        toastError(response.message);
+      }
+
+      setLoading(false);
+      return;
     }
 
-    if (formValues.unit.id === 3) {
+    updatedFormErrors.loanAmount =
+      IsStringNullEmptyOrUndefined(formValues.loanAmount) ||
+      Number(formValues.loanAmount.replace(/,/g, "")) < MIN_LOAN_AMOUNT
+        ? `Minimum loan amount is ${DEFAULT_LOAN_AMOUNT}`
+        : "";
+
+    if (
+      formValues.borrowerType.id === MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL
+    ) {
+      updatedFormErrors.unit = IsStringNullEmptyOrUndefined(
+        formValues.unit.displayName as string,
+      )
+        ? validationMessages.selectUnit
+        : "";
+    } else {
+      updatedFormErrors.unit = "";
+    }
+
+    if (formValues.borrowerType.id === MasterEnum.SELF_EMPLOYED_PROFESSIONAL) {
       updatedFormErrors.profession = IsStringNullEmptyOrUndefined(
         formValues.profession.displayName as string,
       )
@@ -476,7 +1004,7 @@ const ApplyLoan = () => {
 
     if (
       !IsStringNullEmptyOrUndefined(formValues.borrowerType.displayName) &&
-      formValues.borrowerType.id !== 1
+      formValues.borrowerType.id !== MasterEnum.SALARIED
     ) {
       updatedFormErrors.businessVintage = IsStringNullEmptyOrUndefined(
         formValues.businessVintage.displayName,
@@ -496,10 +1024,16 @@ const ApplyLoan = () => {
       ? validationMessages.selectBorrowerType
       : "";
 
+    updatedFormErrors.yearsOfITRFiled = IsStringNullEmptyOrUndefined(
+      formValues.yearsOfITRFiled.displayName,
+    )
+      ? validationMessages.yearsOfITRFiled
+      : "";
+
     // ===============================
     // NON-SALARIED (SEP / SENP)
     // ===============================
-    if (formValues.borrowerType.id !== 1) {
+    if (formValues.borrowerType.id !== MasterEnum.SALARIED) {
       // ✅ Business Vintage required
       updatedFormErrors.businessVintage = IsStringNullEmptyOrUndefined(
         formValues.businessVintage.displayName,
@@ -508,11 +1042,16 @@ const ApplyLoan = () => {
         : "";
 
       // 🚫 Clear ALL salaried errors
+      updatedFormErrors.industry = IsStringNullEmptyOrUndefined(
+        formValues.industry.displayName,
+      )
+        ? validationMessages.selectIndustry
+        : "";
       updatedFormErrors.typeOfOrganizationWhereEmployeeWorking = "";
       updatedFormErrors.durationOfWorkingAtOrganization = "";
-      updatedFormErrors.yearsOfITRFiled = "";
       updatedFormErrors.salarySlipAvailableMonths = "";
       updatedFormErrors.averageGrossMonthlySalary = "";
+      updatedFormErrors.bankName = "";
     } else {
       // ===============================
       // SALARIED FLOW
@@ -539,112 +1078,160 @@ const ApplyLoan = () => {
         ? validationMessages.yearsOfITRFiled
         : "";
 
-      if (!formValues.isSecuredLoanApp) {
-        updatedFormErrors.averageGrossMonthlySalary =
-          IsStringNullEmptyOrUndefined(formValues.averageGrossMonthlySalary)
-            ? validationMessages.averageGrossMonthlySalary
-            : "";
-      }
+      updatedFormErrors.averageGrossMonthlySalary =
+        !formValues.isSecuredLoanApp &&
+        IsStringNullEmptyOrUndefined(formValues.averageGrossMonthlySalary)
+          ? validationMessages.averageGrossMonthlySalary
+          : "";
 
       // 🔹 ITR NOT FILED
-      if (formValues.yearsOfITRFiled.id === 0) {
-        updatedFormErrors.salarySlipAvailableMonths =
-          IsStringNullEmptyOrUndefined(
-            formValues.salarySlipAvailableMonths.displayName,
-          )
-            ? validationMessages.salarySlipAvailableMonths
+      updatedFormErrors.unit = "";
+      updatedFormErrors.profession = "";
+      updatedFormErrors.industry = "";
+      updatedFormErrors.salarySlipAvailableMonths = "";
+      updatedFormErrors.bankName = IsStringNullEmptyOrUndefined(
+        formValues.bankName ?? "",
+      )
+        ? validationMessages.bankNameRequired
+        : "";
+    }
+
+    const updatedPropertyErrors = createPropertyFieldErrors();
+
+    if (shouldShowPropertyFields) {
+      formValues.properties.forEach((property) => {
+        const isMandatory = isPropertyMandatory(property.propertyType);
+
+        if (!isMandatory) {
+          return;
+        }
+
+        updatedPropertyErrors[property.propertyType].pincode =
+          IsStringNullEmptyOrUndefined(property.pincode ?? "")
+            ? validationMessages.propertyPinCode
+            : property.pincode!.trim().length !== 6
+              ? validationMessages.zipCodeInvalid
+              : "";
+
+        const approxMarketValue =
+          property.approxMarketValue?.replace(/,/g, "").trim() ?? "";
+
+        updatedPropertyErrors[property.propertyType].approxMarketValue =
+          IsStringNullEmptyOrUndefined(approxMarketValue) ||
+          Number(approxMarketValue) <= 0
+            ? validationMessages.selectApproxMarketValue
             : "";
-      } else {
-        updatedFormErrors.averageGrossMonthlySalary = "";
-        updatedFormErrors.salarySlipAvailableMonths = "";
-      }
+      });
     }
 
     setFormErrors(updatedFormErrors);
+    setPropertyErrors(updatedPropertyErrors);
 
-    const isValid: boolean = IsFormValid(updatedFormErrors);
+    const hasPropertyErrors = Object.values(updatedPropertyErrors).some(
+      (error) => !!error.pincode || !!error.approxMarketValue,
+    );
+
+    const isValid: boolean = IsFormValid(updatedFormErrors) && !hasPropertyErrors;
 
     if (isValid) {
-      const {
-        isSecuredLoanApp,
-        loanAmount,
-        loanCategory,
-        approxMarketValue,
-        unit,
-        profession,
-        industry,
-        borrowerType,
-        typeOfOrganizationWhereEmployeeWorking,
-        saleDeedValue,
-        yearsOfITRFiled,
-        durationOfWorkingAtOrganization,
-        salarySlipAvailableMonths,
-        averageGrossMonthlySalary,
-        businessVintage,
-        hasOtherIncome,
-        directorPartnerRemuneration,
-        interestIncome,
-        anyOtherIncome,
-      } = formValues;
-
       setIsFormSubmitted(false);
       setLoading(true);
 
-      const body: IAddLoanApplication = {
+      const properties: ILoanPropertyPayload[] = formValues.properties.map(
+        (property) => ({
+          propertyType: property.propertyType,
+          size: property.size?.replace(/,/g, ""),
+          pincode: property.pincode?.trim(),
+          address: property.address?.trim(),
+          location: property.location?.trim(),
+          ownership: property.ownership?.trim(),
+          saleDeedValue: property.saleDeedValue?.replace(/,/g, ""),
+          approxMarketValue: property.approxMarketValue?.replace(/,/g, ""),
+        }),
+      );
+
+      const rawBody = {
         clientID: state?.id || userID,
-        isSecuredLoanApp: isSecuredLoanApp,
-        loanTypeID: loanCategory,
-        loanAmount: Number(loanAmount.replace(/,/g, "")),
-        typeOfBusinessID: unit?.id,
-        professionID: profession?.id,
-        industryID: industry?.id,
-        typeOfBorrower: borrowerType?.id,
-        saleDeedValue: saleDeedValue
-          ? Number(saleDeedValue.replace(/,/g, ""))
-          : 0,
+        isSecuredLoanApp: formValues.isSecuredLoanApp,
+        loanTypeID: formValues.loanCategory,
+        loanAmount: formValues.loanAmount.replace(/,/g, ""),
+        hasOtherIncome:
+          shouldShowOtherIncomeFields && formValues.hasOtherIncome !== null
+            ? formValues.hasOtherIncome
+            : undefined,
+        directorPartnerRemuneration:
+          shouldShowOtherIncomeFields && formValues.hasOtherIncome
+            ? formValues.directorPartnerRemuneration.replace(/,/g, "")
+            : undefined,
+        interestIncome:
+          shouldShowOtherIncomeFields && formValues.hasOtherIncome
+            ? formValues.interestIncome.replace(/,/g, "")
+            : undefined,
+        anyOtherIncome:
+          shouldShowOtherIncomeFields && formValues.hasOtherIncome
+            ? formValues.anyOtherIncome.replace(/,/g, "")
+            : undefined,
+        averageGrossMonthlySalary: formValues.averageGrossMonthlySalary.replace(
+          /,/g,
+          "",
+        ),
+        unit: formValues.unit.id,
+        profession: formValues.profession.id,
+        industry: formValues.industry.id,
+        typeOfBorrower: formValues.borrowerType.id,
+        businessVintage: formValues.businessVintage.id,
+        typeOfOrganizationWhereEmployeeWorking:
+          formValues.typeOfOrganizationWhereEmployeeWorking.id,
+        durationOfWorkingAtOrganization:
+          formValues.durationOfWorkingAtOrganization.id,
+        yearsOfITRFiled: formValues.yearsOfITRFiled.id,
+        salarySlipAvailableMonths: formValues.salarySlipAvailableMonths.id,
+        bankName: formValues.bankName?.trim(),
+        properties,
       };
 
-      if (shouldShowOtherIncomeFields && hasOtherIncome !== null) {
-        body.hasOtherIncome = hasOtherIncome;
-      }
+      const amountFields = new Set([
+        "loanAmount",
+        "averageGrossMonthlySalary",
+        "directorPartnerRemuneration",
+        "interestIncome",
+        "anyOtherIncome",
+      ]);
 
-      if (shouldShowOtherIncomeFields && hasOtherIncome) {
-        body.directorPartnerRemuneration = directorPartnerRemuneration
-          ? Number(directorPartnerRemuneration.replace(/,/g, ""))
-          : 0;
-        body.interestIncome = interestIncome
-          ? Number(interestIncome.replace(/,/g, ""))
-          : 0;
-        body.anyOtherIncome = anyOtherIncome
-          ? Number(anyOtherIncome.replace(/,/g, ""))
-          : 0;
-      }
+      const body = Object.entries(rawBody).reduce(
+        (acc, [key, value]) => {
+          if (value === undefined || value === null) return acc;
 
-      if (isSecuredLoanApp && approxMarketValue) {
-        body.approxMarketValue = Number(approxMarketValue.replace(/,/g, ""));
-      }
+          if (typeof value === "string") {
+            const normalizedValue = value.trim();
 
-      if (borrowerType?.id === 1) {
-        body.typeOfOrganizationWhereEmployeeWorking =
-          typeOfOrganizationWhereEmployeeWorking?.id;
-        body.durationOfWorkingAtOrganization =
-          durationOfWorkingAtOrganization?.id;
-        body.yearsOfITRFiled = yearsOfITRFiled?.id;
-        body.salarySlipAvailableMonths = salarySlipAvailableMonths?.id;
-      }
+            if (normalizedValue === "") return acc;
 
-      if (!isSecuredLoanApp) {
-        body.averageGrossMonthlySalary = averageGrossMonthlySalary
-          ? Number(averageGrossMonthlySalary.replace(/,/g, ""))
-          : 0;
-      }
+            acc[key] = amountFields.has(key)
+              ? normalizedValue
+              : normalizedValue;
 
-      if (borrowerType?.id === 2 || borrowerType?.id === 3) {
-        body.businessVintage = businessVintage?.id;
-      }
+            return acc;
+          }
+
+          if (typeof value === "number") {
+            if (key !== "loanCategory" && value === 0) return acc;
+
+            acc[key] = value;
+            return acc;
+          }
+
+          acc[key] = value;
+          return acc;
+        },
+        {} as Record<
+          string,
+          string | number | boolean | ILoanPropertyPayload[]
+        >,
+      );
 
       const response: IApplyLoanApplicationResponse =
-        await addLoanApplicationAPI(body);
+        await addLoanApplicationAPI(body as unknown as IAddLoanApplication);
 
       if (!response) return;
 
@@ -667,6 +1254,56 @@ const ApplyLoan = () => {
     }
   };
 
+  const handleUpdateLoanApplication = async (
+    e: FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
+    e.preventDefault();
+    setIsFormSubmitted(true);
+
+    const updatedLoanAmount = formValues.loanAmount.replace(/,/g, "");
+
+    const updatedFormErrors = {
+      ...getUpdateFormErrors(),
+      loanAmount:
+        IsStringNullEmptyOrUndefined(updatedLoanAmount) ||
+        Number(updatedLoanAmount) < MIN_LOAN_AMOUNT
+          ? `Minimum loan amount is ${DEFAULT_LOAN_AMOUNT}`
+          : "",
+    };
+
+    setFormErrors(updatedFormErrors);
+
+    const isValid = IsFormValid(updatedFormErrors);
+
+    if (!isValid) return;
+
+    if (!id) {
+      toastError("Loan Application ID is missing");
+      return;
+    }
+
+    setLoading(true);
+    setIsFormSubmitted(false);
+
+    const body = {
+      loanAppID: id,
+      loanAmount: updatedLoanAmount,
+      loanTypeID: formValues.loanCategory,
+    };
+
+    const response = await updateLoanApplicationAmountAPI(body);
+
+    if (!response) return;
+
+    if (response?.statusCode === 200) {
+      toastSuccess(response?.message);
+    } else {
+      toastError(response?.message);
+    }
+
+    setLoading(false);
+  };
+
   const getLoanTypeList = async (): Promise<void> => {
     setLoading(true);
     const response: ILoanTypeListResponse = await getLoanTypeListAPI();
@@ -678,6 +1315,46 @@ const ApplyLoan = () => {
       setProfessionList(response?.data?.professionOptions);
       setLoading(false);
     }
+  };
+
+  const fetchLoanApplicationDetails = async (): Promise<void> => {
+    if (!id) return;
+
+    setLoading(true);
+
+    const params: ILoanParams = { loanAppID: id };
+
+    const response: ILoanResponse = await getLoanDetailAPI(params);
+
+    if (!response) {
+      setLoading(false);
+      return;
+    }
+
+    if (response.statusCode !== 200) {
+      toastError(response.message);
+      setLoading(false);
+      return;
+    }
+
+    const rawValue = response?.data?.loanAmount
+      ?.toString()
+      ?.replace(NUMBER, "");
+
+    const formattedValue = rawValue
+      ? new Intl.NumberFormat("en-IN")?.format(Number(rawValue))
+      : "";
+
+    const nextFormValues = {
+      ...formValues,
+      loanAmount: formattedValue,
+    };
+
+    setFormValues(nextFormValues);
+    setFormErrors(getUpdateFormErrors());
+
+    hasFetchedLoanDetailsRef.current = true;
+    setLoading(false);
   };
 
   const filterOptions = () => {
@@ -695,52 +1372,6 @@ const ApplyLoan = () => {
       filterCriteria.includes(opt.isSecuredLoan),
     );
 
-    setFormValues({
-      isSecuredLoanApp: formValues.isSecuredLoanApp,
-      loanCategory: 0,
-      loanAmount: "",
-      hasOtherIncome: null,
-      directorPartnerRemuneration: "",
-      interestIncome: "",
-      anyOtherIncome: "",
-      averageGrossMonthlySalary: "",
-      saleDeedValue: "",
-      unit: { id: 0, displayName: "" },
-      profession: { id: 0, displayName: "" },
-      industry: { id: 0, displayName: "" },
-      approxMarketValue: formValues.isSecuredLoanApp ? "" : undefined,
-      borrowerType: { id: 0, displayName: "" },
-      businessVintage: { id: 0, displayName: "" },
-      typeOfOrganizationWhereEmployeeWorking: { id: 0, displayName: "" },
-      durationOfWorkingAtOrganization: { id: 0, displayName: "" },
-      yearsOfITRFiled: { id: 0, displayName: "" },
-      salarySlipAvailableMonths: { id: 0, displayName: "" },
-    });
-
-    setFormErrors({
-      loanCategory: validationMessages.selectLoanType,
-      loanAmount: validationMessages.selectLoanAmount,
-      hasOtherIncome: "",
-      directorPartnerRemuneration: "",
-      interestIncome: "",
-      anyOtherIncome: "",
-      unit: validationMessages.selectUnit,
-      profession: "",
-      industry: validationMessages.selectIndustry,
-      borrowerType: validationMessages.selectBorrowerType,
-      businessVintage: validationMessages.businessVintage,
-      typeOfOrganizationWhereEmployeeWorking:
-        validationMessages.typeOfOrganizationWhereEmployeeWorking,
-      durationOfWorkingAtOrganization:
-        validationMessages.durationOfWorkingAtOrganization,
-      yearsOfITRFiled: validationMessages.yearsOfITRFiled,
-      salarySlipAvailableMonths: validationMessages.salarySlipAvailableMonths,
-      averageGrossMonthlySalary: validationMessages.averageGrossMonthlySalary,
-      saleDeedValue: formValues.isSecuredLoanApp
-        ? validationMessages.saleDeedValue
-        : "",
-    });
-
     setUpdatedLoanTypeList(filteredList);
   };
 
@@ -755,30 +1386,157 @@ const ApplyLoan = () => {
   }, [state]);
 
   useEffect(() => {
-    if (!formValues.isSecuredLoanApp && formValues.loanCategory === 4) {
-      const filteredList = MASTER_BORROWER_TYPE_LIST.filter(
-        (item) => item.displayName !== "Salaried",
+    if (isPersonalLoanSelected) {
+      const salariedOnlyList = MASTER_BORROWER_TYPE_LIST.filter(
+        (item) => item.id === MasterEnum.SALARIED,
       );
-      setBorrowerTypeList(filteredList);
-    } else {
-      // ✅ All options restore
-      setBorrowerTypeList(MASTER_BORROWER_TYPE_LIST);
-    }
-  }, [formValues.isSecuredLoanApp, formValues.loanCategory]);
 
-  useEffect(() => {
-    if (formValues.yearsOfITRFiled.id !== 0) {
-      setFormErrors((prev) => ({
-        ...prev,
-        salarySlipAvailableMonths: "",
-        averageGrossMonthlySalary: "",
-      }));
+      setBorrowerTypeList(salariedOnlyList);
+
+      if (formValues.borrowerType.id !== MasterEnum.SALARIED) {
+        setFormValues((prev) => ({
+          ...prev,
+          borrowerType: EMPTY_OPTION,
+        }));
+
+        setFormErrors((prev) => ({
+          ...prev,
+          borrowerType: validationMessages.selectBorrowerType,
+        }));
+      }
+
+      return;
     }
-  }, [formValues.yearsOfITRFiled]);
+
+    if (
+      isLapLoanSelected ||
+      isUnsecuredBusinessLoanSelected ||
+      isCcOdSecuredLoanSelected
+    ) {
+      const filteredList = MASTER_BORROWER_TYPE_LIST.filter(
+        (item) => item.id !== MasterEnum.SALARIED,
+      );
+
+      setBorrowerTypeList(filteredList);
+
+      if (formValues.borrowerType.id === MasterEnum.SALARIED) {
+        setFormValues((prev) => ({
+          ...prev,
+          borrowerType: EMPTY_OPTION,
+        }));
+
+        setFormErrors((prev) => ({
+          ...prev,
+          borrowerType: validationMessages.selectBorrowerType,
+        }));
+      }
+
+      return;
+    }
+
+    setBorrowerTypeList(MASTER_BORROWER_TYPE_LIST);
+  }, [
+    isPersonalLoanSelected,
+    isLapLoanSelected,
+    isUnsecuredBusinessLoanSelected,
+    isCcOdSecuredLoanSelected,
+    formValues.borrowerType.id,
+  ]);
 
   useEffect(() => {
     filterOptions();
   }, [formValues.isSecuredLoanApp, loanTypeList]);
+
+  useEffect(() => {
+    if (!isEditMode || hasFetchedLoanDetailsRef.current) return;
+
+    fetchLoanApplicationDetails();
+  }, [id, isEditMode, loanTypeList, unitList, professionList, industryList]);
+
+  useEffect(() => {
+    if (!shouldShowPropertyFields) {
+      if (formValues.properties.length > 0) {
+        setFormValues((prev) => ({
+          ...prev,
+          properties: [],
+        }));
+      }
+
+      setPropertyErrors(createPropertyFieldErrors());
+
+      return;
+    }
+
+    const allowedPropertyTypeIds = new Set(
+      availablePropertyOptions.map((option) => option.id),
+    );
+
+    if (restrictedPropertyType) {
+      const restrictedProperty = formValues.properties.find(
+        (property) => property.propertyType === restrictedPropertyType,
+      );
+
+      if (
+        formValues.properties.length !== 1 ||
+        !restrictedProperty ||
+        formValues.properties[0]?.propertyType !== restrictedPropertyType
+      ) {
+        setFormValues((prev) => ({
+          ...prev,
+          properties: [
+            prev.properties.find(
+              (property) => property.propertyType === restrictedPropertyType,
+            ) ?? createEmptyProperty(restrictedPropertyType),
+          ],
+        }));
+      }
+
+      setPropertyErrors((prev) => {
+        const nextErrors = {
+          ...createPropertyFieldErrors(),
+          [restrictedPropertyType]: prev[restrictedPropertyType],
+        };
+
+        return JSON.stringify(prev) === JSON.stringify(nextErrors)
+          ? prev
+          : nextErrors;
+      });
+
+      return;
+    }
+
+    if (
+      formValues.properties.some(
+        (property) => !allowedPropertyTypeIds.has(property.propertyType),
+      )
+    ) {
+      setFormValues((prev) => ({
+        ...prev,
+        properties: prev.properties.filter((property) =>
+          allowedPropertyTypeIds.has(property.propertyType),
+        ),
+      }));
+    }
+
+    setPropertyErrors((prev) => {
+      const nextErrors = createPropertyFieldErrors();
+
+      formValues.properties.forEach((property) => {
+        if (allowedPropertyTypeIds.has(property.propertyType)) {
+          nextErrors[property.propertyType] = prev[property.propertyType];
+        }
+      });
+
+      return JSON.stringify(prev) === JSON.stringify(nextErrors)
+        ? prev
+        : nextErrors;
+    });
+  }, [
+    shouldShowPropertyFields,
+    formValues.properties,
+    availablePropertyOptionIds,
+    restrictedPropertyType,
+  ]);
 
   useEffect(() => {
     if (shouldShowOtherIncomeFields) return;
@@ -792,14 +1550,6 @@ const ApplyLoan = () => {
       setFormValues((prev) => ({
         ...prev,
         hasOtherIncome: null,
-        directorPartnerRemuneration: "",
-        interestIncome: "",
-        anyOtherIncome: "",
-      }));
-
-      setFormErrors((prev) => ({
-        ...prev,
-        hasOtherIncome: "",
         directorPartnerRemuneration: "",
         interestIncome: "",
         anyOtherIncome: "",
@@ -821,40 +1571,55 @@ const ApplyLoan = () => {
         <div className="col-lg-12 mb-5">
           <div className="titleMainWrapper">
             <h2 className="txt-24">
-              Application
-              {state?.fullName
-                ? ` for, ${state.fullName}`
-                : ` for, ${userData.userName}`}
+              {isEditMode ? "Edit Loan Application" : "Create Loan Application"}
+              {(state?.fullName || userData?.userName) &&
+                ` for ${state?.fullName || userData?.userName}`}
             </h2>
           </div>
 
-          <form className="col-12" autoComplete="off" onSubmit={handleSubmit}>
+          <form
+            ref={formRef}
+            className="col-12"
+            autoComplete="off"
+            onSubmit={
+              isEditMode
+                ? handleUpdateLoanApplication
+                : handleCreateLoanApplication
+            }
+          >
             <div className="col-12 mt-2">
-              <div className="titleMainWrapper justify-content-center d-flex flex-column">
-                {state && (
-                  <div className="req-det-steps mb-4 mt-3">
-                    <Steps
-                      model={items}
-                      activeIndex={activeIndex}
-                      onSelect={(e) => setActiveIndex(e.index)}
-                    />
-                  </div>
-                )}
+              {!isEditMode && (
+                <div className="titleMainWrapper justify-content-center d-flex flex-column">
+                  {state && (
+                    <div className="req-det-steps mb-4 mt-3">
+                      <Steps
+                        model={items}
+                        activeIndex={activeIndex}
+                        onSelect={(e) => setActiveIndex(e.index)}
+                      />
+                    </div>
+                  )}
 
-                <h2 className="txt-24">Select Loan</h2>
+                  <h2 className="txt-24 mt-4">Select Loan</h2>
 
-                <p className="mt-2 mb-4">
-                  Please choose the type of loan you wish to apply for.
-                </p>
-              </div>
+                  <p className="mt-2 mb-4">
+                    Please choose the type of loan you wish to apply for.
+                  </p>
+                </div>
+              )}
 
-              <div className="form-group mb-4 d-flex gap-3">
+              <div className="form-group mb-4 mt-4 d-flex gap-3">
                 <div className="form-check">
                   <RadioButton
                     inputId="securedLoan"
                     name="loanType"
                     value={true}
-                    onChange={() => handleInputChange("isSecuredLoanApp", true)}
+                    onChange={() => {
+                      if (isEditMode) return;
+                      setFormValues(getInitialFormValues(true));
+                      setFormErrors(getInitialFormErrors(true));
+                      setPropertyErrors(createPropertyFieldErrors());
+                    }}
                     checked={formValues.isSecuredLoanApp === true}
                   />
 
@@ -868,9 +1633,12 @@ const ApplyLoan = () => {
                     inputId="unsecuredLoan"
                     name="loanType"
                     value={false}
-                    onChange={() =>
-                      handleInputChange("isSecuredLoanApp", false)
-                    }
+                    onChange={() => {
+                      if (isEditMode) return;
+                      setFormValues(getInitialFormValues(false));
+                      setFormErrors(getInitialFormErrors(false));
+                      setPropertyErrors(createPropertyFieldErrors());
+                    }}
                     checked={formValues.isSecuredLoanApp === false}
                   />
 
@@ -881,7 +1649,7 @@ const ApplyLoan = () => {
               </div>
 
               <div className="row g-3">
-                <div className="col-lg-4 col-12">
+                <div className="col-lg-4 col-12" data-edit-field="loanCategory">
                   <div className="form-group w-100">
                     <label
                       className="form-label small font-15"
@@ -904,6 +1672,7 @@ const ApplyLoan = () => {
                           value: loan.loanTypeId,
                         }))}
                       placeholder="Select Loan Type"
+                      disabled={!isFieldEditable("loanCategory")}
                     />
 
                     {isFormSubmitted && (
@@ -930,6 +1699,7 @@ const ApplyLoan = () => {
                         a.displayName.localeCompare(b.displayName),
                       )}
                       optionLabel="displayName"
+                      disabled={isEditMode}
                     />
 
                     {isFormSubmitted && (
@@ -949,6 +1719,7 @@ const ApplyLoan = () => {
                     <div className="form-group search">
                       <i className="bi bi-currency-rupee" />
                       <InputText
+                        id="loanAmount"
                         value={formValues.loanAmount}
                         className="form-control"
                         placeholder="Enter the loan amount"
@@ -958,6 +1729,7 @@ const ApplyLoan = () => {
                         onKeyPress={(e) =>
                           restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
                         }
+                        maxLength={15}
                         // onPaste={(e) => e.preventDefault()}
                         // onCopy={(e) => e.preventDefault()}
                         // onCut={(e) => e.preventDefault()}
@@ -967,155 +1739,110 @@ const ApplyLoan = () => {
                     {isFormSubmitted && (
                       <span className="error">{formErrors.loanAmount}</span>
                     )}
+
+                    {loanAmountInWords && (
+                      <small className="d-block mt-2 text-muted">
+                        {loanAmountInWords}
+                      </small>
+                    )}
                   </div>
                 </div>
 
-                {formValues.isSecuredLoanApp && (
+                {formValues.borrowerType.id ===
+                  MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL && (
                   <div className="col-lg-4 col-12">
                     <div className="form-group w-100">
                       <label
                         className="form-label small font-15"
-                        htmlFor="approxMarketValue"
+                        htmlFor="unit"
                       >
-                        Approx. Market Value <sup>*</sup>
+                        Nature of Business Activity <sup>*</sup>
                       </label>
 
-                      <div className="form-group search">
-                        <i className="bi bi-currency-rupee" />
-                        <InputText
-                          value={formValues.approxMarketValue}
-                          className="form-control"
-                          placeholder="Enter the approx. value"
-                          onChange={(e) =>
-                            handleInputChange(
-                              "approxMarketValue",
-                              e.target.value,
-                            )
-                          }
-                          onKeyPress={(e) =>
-                            restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
-                          }
-                          // onPaste={(e) => e.preventDefault()}
-                          // onCopy={(e) => e.preventDefault()}
-                          // onCut={(e) => e.preventDefault()}
-                        />
-                      </div>
+                      <Dropdown
+                        value={formValues.unit}
+                        placeholder="Select nature of business activity"
+                        onChange={(e) => handleInputChange("unit", e.value)}
+                        options={unitList.sort((a, b) =>
+                          a.displayName.localeCompare(b.displayName),
+                        )}
+                        optionLabel="displayName"
+                        disabled={isEditMode}
+                      />
 
                       {isFormSubmitted && (
-                        <span className="error">
-                          {formErrors.approxMarketValue}
-                        </span>
+                        <span className="error">{formErrors.unit}</span>
                       )}
                     </div>
                   </div>
                 )}
 
-                <div className="col-lg-4 col-12">
-                  <div className="form-group w-100">
-                    <label className="form-label small font-15" htmlFor="unit">
-                      Nature of Business Activity <sup>*</sup>
-                    </label>
-
-                    <Dropdown
-                      value={formValues.unit}
-                      placeholder="Select nature of business activity"
-                      onChange={(e) => handleInputChange("unit", e.value)}
-                      options={unitList.sort((a, b) =>
-                        a.displayName.localeCompare(b.displayName),
-                      )}
-                      optionLabel="displayName"
-                    />
-
-                    {isFormSubmitted && (
-                      <span className="error">{formErrors.unit}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-lg-4 col-12">
-                  <div className="form-group w-100">
-                    <label
-                      className="form-label small font-15"
-                      htmlFor="profession"
-                    >
-                      Profession <sup>*</sup>
-                    </label>
-
-                    <Dropdown
-                      value={formValues.profession}
-                      disabled={formValues.unit.id !== 3}
-                      variant={formValues.unit.id === 3 ? "outlined" : "filled"}
-                      placeholder="Select Profession"
-                      onChange={(e) => handleInputChange("profession", e.value)}
-                      options={professionList.sort((a, b) =>
-                        a.displayName.localeCompare(b.displayName),
-                      )}
-                      optionLabel="displayName"
-                    />
-
-                    {isFormSubmitted && (
-                      <span className="error">{formErrors.profession}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-lg-4 col-12">
-                  <div className="form-group w-100">
-                    <label
-                      className="form-label small font-15"
-                      htmlFor="industry"
-                    >
-                      Industry <sup>*</sup>
-                    </label>
-
-                    <Dropdown
-                      value={formValues.industry}
-                      placeholder="Select Industry"
-                      onChange={(e) => handleInputChange("industry", e.value)}
-                      options={industryList.sort((a, b) =>
-                        a.displayName.localeCompare(b.displayName),
-                      )}
-                      optionLabel="displayName"
-                    />
-
-                    {isFormSubmitted && (
-                      <span className="error">{formErrors.industry}</span>
-                    )}
-                  </div>
-                </div>
-
-                {formValues.isSecuredLoanApp && (
+                {formValues.borrowerType.id ===
+                  MasterEnum.SELF_EMPLOYED_PROFESSIONAL && (
                   <div className="col-lg-4 col-12">
                     <div className="form-group w-100">
-                      <label className="form-label small font-15">
-                        Sale Deed Value <sup>*</sup>
+                      <label
+                        className="form-label small font-15"
+                        htmlFor="profession"
+                      >
+                        Profession <sup>*</sup>
                       </label>
 
-                      <div className="form-group search">
-                        <i className="bi bi-currency-rupee" />
-                        <InputText
-                          value={formValues.saleDeedValue}
-                          className="form-control"
-                          placeholder="Enter Sale Deed Value"
-                          onChange={(e) =>
-                            handleInputChange("saleDeedValue", e.target.value)
-                          }
-                          onKeyPress={(e) =>
-                            restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
-                          }
-                        />
-                      </div>
+                      <Dropdown
+                        value={formValues.profession}
+                        placeholder="Select Profession"
+                        onChange={(e) =>
+                          handleInputChange("profession", e.value)
+                        }
+                        options={professionList.sort((a, b) =>
+                          a.displayName.localeCompare(b.displayName),
+                        )}
+                        optionLabel="displayName"
+                        disabled={isEditMode}
+                      />
 
                       {isFormSubmitted && (
-                        <span className="error">
-                          {formErrors.saleDeedValue}
-                        </span>
+                        <span className="error">{formErrors.profession}</span>
                       )}
                     </div>
                   </div>
                 )}
 
-                {!formValues.isSecuredLoanApp && (
+                {(formValues.borrowerType.id ===
+                  MasterEnum.SELF_EMPLOYED_PROFESSIONAL ||
+                  formValues.borrowerType.id ===
+                    MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL) && (
+                  <div className="col-lg-4 col-12">
+                    <div className="form-group w-100">
+                      <label
+                        className="form-label small font-15"
+                        htmlFor="industry"
+                      >
+                        Industry <sup>*</sup>
+                      </label>
+
+                      <Dropdown
+                        value={formValues.industry}
+                        placeholder="Select Industry"
+                        onChange={(e) => handleInputChange("industry", e.value)}
+                        options={industryList.sort((a, b) =>
+                          a.displayName.localeCompare(b.displayName),
+                        )}
+                        optionLabel="displayName"
+                        filter
+                        filterBy="displayName"
+                        filterPlaceholder="Search Industry"
+                        disabled={isEditMode}
+                      />
+
+                      {isFormSubmitted && (
+                        <span className="error">{formErrors.industry}</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {formValues.borrowerType.id === MasterEnum.SALARIED && (
                   <div className="col-lg-4 col-12">
                     <div className="form-group w-100">
                       <label className="form-label small font-15">
@@ -1134,9 +1861,11 @@ const ApplyLoan = () => {
                               e.target.value,
                             )
                           }
+                          maxLength={15}
                           onKeyPress={(e) =>
                             restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
                           }
+                          disabled={isEditMode}
                         />
                       </div>
 
@@ -1145,42 +1874,78 @@ const ApplyLoan = () => {
                           {formErrors.averageGrossMonthlySalary}
                         </span>
                       )}
+
+                      {getAmountInWords(
+                        formValues.averageGrossMonthlySalary,
+                      ) && (
+                        <small className="d-block mt-2 text-muted">
+                          {getAmountInWords(
+                            formValues.averageGrossMonthlySalary,
+                          )}
+                        </small>
+                      )}
                     </div>
                   </div>
                 )}
 
-                {!IsStringNullEmptyOrUndefined(
-                  formValues.borrowerType.displayName,
-                ) &&
-                  formValues.borrowerType.id !== 1 && (
-                    <div className="col-lg-4 col-12">
-                      <div className="form-group w-100">
-                        <label
-                          className="form-label small font-15"
-                          htmlFor="industry"
-                        >
-                          Business Vintage <sup>*</sup>
-                        </label>
+                {(formValues.borrowerType.id ===
+                  MasterEnum.SELF_EMPLOYED_PROFESSIONAL ||
+                  formValues.borrowerType.id ===
+                    MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL) && (
+                  <div className="col-lg-4 col-12">
+                    <div className="form-group w-100">
+                      <label
+                        className="form-label small font-15"
+                        htmlFor="industry"
+                      >
+                        Business Vintage <sup>*</sup>
+                      </label>
 
-                        <Dropdown
-                          value={formValues.businessVintage}
-                          placeholder="Select Business Vintage"
-                          onChange={(e) =>
-                            handleInputChange("businessVintage", e.value)
-                          }
-                          options={businessVintageList}
-                          optionLabel="displayName"
-                        />
-                        {isFormSubmitted && (
-                          <span className="error">
-                            {formErrors.businessVintage}
-                          </span>
-                        )}
-                      </div>
+                      <Dropdown
+                        value={formValues.businessVintage}
+                        placeholder="Select Business Vintage"
+                        onChange={(e) =>
+                          handleInputChange("businessVintage", e.value)
+                        }
+                        options={businessVintageList}
+                        optionLabel="displayName"
+                        disabled={isEditMode}
+                      />
+                      {isFormSubmitted && (
+                        <span className="error">
+                          {formErrors.businessVintage}
+                        </span>
+                      )}
                     </div>
-                  )}
+                  </div>
+                )}
 
-                {formValues.borrowerType.id === 1 && (
+                <div className="col-lg-4 col-12">
+                  <div className="form-group w-100">
+                    <label className="form-label small font-15">
+                      Years Of ITR Filed <sup>*</sup>
+                    </label>
+
+                    <Dropdown
+                      value={formValues.yearsOfITRFiled}
+                      placeholder="Select ITR Filed Years"
+                      onChange={(e) =>
+                        handleInputChange("yearsOfITRFiled", e.value)
+                      }
+                      options={itrFiledYearsList}
+                      optionLabel="displayName"
+                      disabled={isEditMode}
+                    />
+
+                    {isFormSubmitted && (
+                      <span className="error">
+                        {formErrors.yearsOfITRFiled}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {formValues.borrowerType.id === MasterEnum.SALARIED && (
                   <>
                     <div className="col-lg-4 col-12">
                       <div className="form-group w-100">
@@ -1202,6 +1967,7 @@ const ApplyLoan = () => {
                           }
                           options={organizationTypeList}
                           optionLabel="displayName"
+                          disabled={isEditMode}
                         />
 
                         {isFormSubmitted && (
@@ -1211,6 +1977,7 @@ const ApplyLoan = () => {
                         )}
                       </div>
                     </div>
+
                     <div className="col-lg-4 col-12">
                       <div className="form-group w-100">
                         <label className="form-label small font-15">
@@ -1228,6 +1995,7 @@ const ApplyLoan = () => {
                           }
                           options={workingDurationList}
                           optionLabel="displayName"
+                          disabled={isEditMode}
                         />
 
                         {isFormSubmitted && (
@@ -1237,63 +2005,37 @@ const ApplyLoan = () => {
                         )}
                       </div>
                     </div>
+
                     <div className="col-lg-4 col-12">
                       <div className="form-group w-100">
                         <label className="form-label small font-15">
-                          Years Of ITR Filed <sup>*</sup>
+                          Bank Name<sup>*</sup>
                         </label>
 
-                        <Dropdown
-                          value={formValues.yearsOfITRFiled}
-                          placeholder="Select ITR Filed Years"
-                          onChange={(e) =>
-                            handleInputChange("yearsOfITRFiled", e.value)
-                          }
-                          options={itrFiledYearsList}
-                          optionLabel="displayName"
-                        />
+                        <div className="form-group">
+                          <InputText
+                            value={formValues.bankName}
+                            className="form-control"
+                            placeholder="Enter the bank name"
+                            onChange={(e) =>
+                              handleInputChange(
+                                "bankName",
+                                e.target.value.trimStart(),
+                              )
+                            }
+                            maxLength={50}
+                            disabled={isEditMode}
+                            // onPaste={(e) => e.preventDefault()}
+                            // onCopy={(e) => e.preventDefault()}
+                            // onCut={(e) => e.preventDefault()}
+                          />
+                        </div>
 
                         {isFormSubmitted && (
-                          <span className="error">
-                            {formErrors.yearsOfITRFiled}
-                          </span>
+                          <span className="error">{formErrors.bankName}</span>
                         )}
                       </div>
                     </div>
-
-                    {!IsStringNullEmptyOrUndefined(
-                      formValues.yearsOfITRFiled.displayName,
-                    ) &&
-                      formValues.yearsOfITRFiled.id === 0 && (
-                        <>
-                          <div className="col-lg-4 col-12">
-                            <div className="form-group w-100">
-                              <label className="form-label small font-15">
-                                Salary Slip Available Months<sup>*</sup>
-                              </label>
-
-                              <Dropdown
-                                value={formValues.salarySlipAvailableMonths}
-                                placeholder="Select Salary Slip Available Months"
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    "salarySlipAvailableMonths",
-                                    e.value,
-                                  )
-                                }
-                                options={salarySlipMonthsList}
-                                optionLabel="displayName"
-                              />
-
-                              {isFormSubmitted && (
-                                <span className="error">
-                                  {formErrors.salarySlipAvailableMonths}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </>
-                      )}
                   </>
                 )}
 
@@ -1314,8 +2056,8 @@ const ApplyLoan = () => {
                               <div className="d-flex flex-wrap gap-4">
                                 <div className="form-check">
                                   <RadioButton
-                                    inputId="applyLoanOtherIncomeNo"
-                                    name="applyLoanHasOtherIncome"
+                                    inputId="otherIncomeNo"
+                                    name="hasOtherIncome"
                                     value={false}
                                     onChange={(e) =>
                                       handleInputChange(
@@ -1326,11 +2068,11 @@ const ApplyLoan = () => {
                                     checked={
                                       formValues.hasOtherIncome === false
                                     }
+                                    disabled={isEditMode}
                                   />
-
                                   <label
                                     className="form-check-label ms-2"
-                                    htmlFor="applyLoanOtherIncomeNo"
+                                    htmlFor="otherIncomeNo"
                                   >
                                     No
                                   </label>
@@ -1338,8 +2080,8 @@ const ApplyLoan = () => {
 
                                 <div className="form-check">
                                   <RadioButton
-                                    inputId="applyLoanOtherIncomeYes"
-                                    name="applyLoanHasOtherIncome"
+                                    inputId="otherIncomeYes"
+                                    name="hasOtherIncome"
                                     value={true}
                                     onChange={(e) =>
                                       handleInputChange(
@@ -1348,11 +2090,11 @@ const ApplyLoan = () => {
                                       )
                                     }
                                     checked={formValues.hasOtherIncome === true}
+                                    disabled={isEditMode}
                                   />
-
                                   <label
                                     className="form-check-label ms-2"
-                                    htmlFor="applyLoanOtherIncomeYes"
+                                    htmlFor="otherIncomeYes"
                                   >
                                     Yes
                                   </label>
@@ -1383,14 +2125,26 @@ const ApplyLoan = () => {
                                           e.target.value,
                                         )
                                       }
+                                      maxLength={15}
                                       onKeyPress={(e) =>
                                         restrictInputByPattern(
                                           e,
                                           NUMBER_ONLY_PATTERN,
                                         )
                                       }
+                                      disabled={isEditMode}
                                     />
                                   </div>
+
+                                  {getAmountInWords(
+                                    formValues.directorPartnerRemuneration,
+                                  ) && (
+                                    <small className="d-block mt-2 text-muted">
+                                      {getAmountInWords(
+                                        formValues.directorPartnerRemuneration,
+                                      )}
+                                    </small>
+                                  )}
                                 </div>
                               </div>
 
@@ -1412,14 +2166,26 @@ const ApplyLoan = () => {
                                           e.target.value,
                                         )
                                       }
+                                      maxLength={15}
                                       onKeyPress={(e) =>
                                         restrictInputByPattern(
                                           e,
                                           NUMBER_ONLY_PATTERN,
                                         )
                                       }
+                                      disabled={isEditMode}
                                     />
                                   </div>
+
+                                  {getAmountInWords(
+                                    formValues.interestIncome,
+                                  ) && (
+                                    <small className="d-block mt-2 text-muted">
+                                      {getAmountInWords(
+                                        formValues.interestIncome,
+                                      )}
+                                    </small>
+                                  )}
                                 </div>
                               </div>
 
@@ -1441,14 +2207,26 @@ const ApplyLoan = () => {
                                           e.target.value,
                                         )
                                       }
+                                      maxLength={15}
                                       onKeyPress={(e) =>
                                         restrictInputByPattern(
                                           e,
                                           NUMBER_ONLY_PATTERN,
                                         )
                                       }
+                                      disabled={isEditMode}
                                     />
                                   </div>
+
+                                  {getAmountInWords(
+                                    formValues.anyOtherIncome,
+                                  ) && (
+                                    <small className="d-block mt-2 text-muted">
+                                      {getAmountInWords(
+                                        formValues.anyOtherIncome,
+                                      )}
+                                    </small>
+                                  )}
                                 </div>
                               </div>
                             </>
@@ -1456,6 +2234,1135 @@ const ApplyLoan = () => {
                         </div>
                       </div>
                     </div>
+                  </>
+                )}
+
+                {shouldShowPropertyFields && (
+                  <>
+                    <div className="col-12">
+                      <div
+                        className="p-3 rounded"
+                        style={{ backgroundColor: "#f8f9fa" }}
+                      >
+                        <label className="form-label small font-15 mb-3 d-block">
+                          Property Types
+                        </label>
+
+                        <div className="d-flex flex-wrap gap-4">
+                          {availablePropertyOptions.map((option) => (
+                            <div className="form-check" key={option.id}>
+                              <Checkbox
+                                inputId={`toggleProperty-${option.id}`}
+                                onChange={(e) =>
+                                  e.checked
+                                    ? addProperty(option.id)
+                                    : removeProperty(option.id)
+                                }
+                                checked={!!getPropertyByType(option.id)}
+                                disabled={isEditMode || isPropertySelectionLocked}
+                              />
+                              <label
+                                className="form-check-label ms-2"
+                                htmlFor={`toggleProperty-${option.id}`}
+                              >
+                                {option.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {residentialProperty && (
+                      <div className="col-lg-6 col-12">
+                        <div
+                          className="p-3 rounded h-100"
+                          style={{ backgroundColor: "#f8f9fa" }}
+                        >
+                          <div className="d-flex justify-content-between align-items-center mb-3">
+                            <h6 className="mb-0">Residential Property</h6>
+                            {!isEditMode &&
+                              restrictedPropertyType !==
+                                PropertyType.RESIDENTIAL && (
+                              <button
+                                type="button"
+                                className="btn btn-link p-0 text-danger"
+                                onClick={() => removeProperty(1)}
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="row g-3">
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Property Size (in sq.ft.)
+                                </label>
+
+                                <InputText
+                                  value={residentialProperty.size ?? ""}
+                                  placeholder="Enter Property Size in sq.ft."
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    handlePropertyAmountChange(
+                                      1,
+                                      "size",
+                                      e.target.value,
+                                    )
+                                  }
+                                  maxLength={15}
+                                  onKeyPress={(e) =>
+                                    restrictInputByPattern(
+                                      e,
+                                      NUMBER_ONLY_PATTERN,
+                                    )
+                                  }
+                                  disabled={isEditMode}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  PIN Code
+                                  {isPropertyMandatory(
+                                    PropertyType.RESIDENTIAL,
+                                  ) && <sup>*</sup>}
+                                </label>
+
+                                <InputText
+                                  value={residentialProperty.pincode ?? ""}
+                                  placeholder="Enter PIN Code"
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    handlePropertyPinCodeChange(
+                                      1,
+                                      e.target.value,
+                                    )
+                                  }
+                                  maxLength={6}
+                                  onKeyPress={(e) =>
+                                    restrictInputByPattern(
+                                      e,
+                                      NUMBER_ONLY_PATTERN,
+                                    )
+                                  }
+                                  disabled={isEditMode}
+                                />
+
+                                {isFormSubmitted &&
+                                  propertyErrors[PropertyType.RESIDENTIAL]
+                                    ?.pincode && (
+                                    <span className="error">
+                                      {
+                                        propertyErrors[
+                                          PropertyType.RESIDENTIAL
+                                        ].pincode
+                                      }
+                                    </span>
+                                  )}
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Address
+                                </label>
+
+                                <InputTextarea
+                                  value={residentialProperty.address ?? ""}
+                                  placeholder="Enter Residential Address"
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    updatePropertyField(
+                                      1,
+                                      "address",
+                                      e.target.value.trimStart(),
+                                    )
+                                  }
+                                  maxLength={250}
+                                  rows={3}
+                                  disabled={isEditMode}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Location
+                                </label>
+
+                                <InputText
+                                  value={residentialProperty.location ?? ""}
+                                  placeholder="Location will auto-fill from PIN Code"
+                                  className="form-control"
+                                  disabled
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Ownership
+                                </label>
+
+                                <div className="d-flex flex-wrap gap-3 mt-2">
+                                  {PROPERTY_OWNERSHIP_OPTIONS.map((option) => (
+                                    <div className="form-check" key={option.id}>
+                                      <RadioButton
+                                        inputId={`residentialOwnership-${option.id}`}
+                                        name="residentialOwnership"
+                                        value={String(option.id)}
+                                        onChange={(e) =>
+                                          updatePropertyField(
+                                            1,
+                                            "ownership",
+                                            String(e.value),
+                                          )
+                                        }
+                                        checked={
+                                          residentialProperty.ownership ===
+                                          String(option.id)
+                                        }
+                                        disabled={isEditMode}
+                                      />
+
+                                      <label
+                                        className="form-check-label ms-2"
+                                        htmlFor={`residentialOwnership-${option.id}`}
+                                      >
+                                        {option.label}
+                                      </label>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Sale Deed Value
+                                </label>
+
+                                <div className="form-group search">
+                                  <i className="bi bi-currency-rupee" />
+                                  <InputText
+                                    value={
+                                      residentialProperty.saleDeedValue ?? ""
+                                    }
+                                    className="form-control"
+                                    placeholder="Enter Sale Deed Value"
+                                    onChange={(e) =>
+                                      handlePropertyAmountChange(
+                                        1,
+                                        "saleDeedValue",
+                                        e.target.value,
+                                      )
+                                    }
+                                    maxLength={15}
+                                    onKeyPress={(e) =>
+                                      restrictInputByPattern(
+                                        e,
+                                        NUMBER_ONLY_PATTERN,
+                                      )
+                                    }
+                                    disabled={isEditMode}
+                                  />
+                                  {getAmountInWords(
+                                    residentialProperty.saleDeedValue,
+                                  ) && (
+                                    <small className="d-block mt-2 text-muted">
+                                      {getAmountInWords(
+                                        residentialProperty.saleDeedValue,
+                                      )}
+                                    </small>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Approx. Market Value
+                                  {isPropertyMandatory(
+                                    PropertyType.RESIDENTIAL,
+                                  ) && <sup>*</sup>}
+                                </label>
+
+                                <div className="form-group search">
+                                  <i className="bi bi-currency-rupee" />
+                                  <InputText
+                                    value={
+                                      residentialProperty.approxMarketValue ??
+                                      ""
+                                    }
+                                    className="form-control"
+                                    placeholder="Enter Approx. Market Value"
+                                    onChange={(e) =>
+                                      handlePropertyAmountChange(
+                                        1,
+                                        "approxMarketValue",
+                                        e.target.value,
+                                      )
+                                    }
+                                    maxLength={15}
+                                    onKeyPress={(e) =>
+                                      restrictInputByPattern(
+                                        e,
+                                        NUMBER_ONLY_PATTERN,
+                                      )
+                                    }
+                                    disabled={isEditMode}
+                                  />
+
+                                  {isFormSubmitted &&
+                                    propertyErrors[PropertyType.RESIDENTIAL]
+                                      ?.approxMarketValue && (
+                                      <span className="error">
+                                        {
+                                          propertyErrors[
+                                            PropertyType.RESIDENTIAL
+                                          ].approxMarketValue
+                                        }
+                                      </span>
+                                    )}
+
+                                  {getAmountInWords(
+                                    residentialProperty.approxMarketValue,
+                                  ) && (
+                                    <small className="d-block mt-2 text-muted">
+                                      {getAmountInWords(
+                                        residentialProperty.approxMarketValue,
+                                      )}
+                                    </small>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {commercialProperty && (
+                      <div className="col-lg-6 col-12">
+                        <div
+                          className="p-3 rounded h-100"
+                          style={{ backgroundColor: "#f8f9fa" }}
+                        >
+                          <div className="d-flex justify-content-between align-items-center mb-3">
+                            <h6 className="mb-0">Commercial Property</h6>
+                            {!isEditMode &&
+                              restrictedPropertyType !==
+                                PropertyType.COMMERCIAL && (
+                              <button
+                                type="button"
+                                className="btn btn-link p-0 text-danger"
+                                onClick={() =>
+                                  removeProperty(PropertyType.COMMERCIAL)
+                                }
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="row g-3">
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Property Size (in sq.ft.)
+                                </label>
+
+                                <InputText
+                                  value={commercialProperty.size ?? ""}
+                                  placeholder="Enter Property Size in sq.ft."
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    handlePropertyAmountChange(
+                                      PropertyType.COMMERCIAL,
+                                      "size",
+                                      e.target.value,
+                                    )
+                                  }
+                                  maxLength={15}
+                                  onKeyPress={(e) =>
+                                    restrictInputByPattern(
+                                      e,
+                                      NUMBER_ONLY_PATTERN,
+                                    )
+                                  }
+                                  disabled={isEditMode}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  PIN Code
+                                  {isPropertyMandatory(
+                                    PropertyType.COMMERCIAL,
+                                  ) && <sup>*</sup>}
+                                </label>
+
+                                <InputText
+                                  value={commercialProperty.pincode ?? ""}
+                                  placeholder="Enter PIN Code"
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    handlePropertyPinCodeChange(
+                                      PropertyType.COMMERCIAL,
+                                      e.target.value,
+                                    )
+                                  }
+                                  maxLength={6}
+                                  onKeyPress={(e) =>
+                                    restrictInputByPattern(
+                                      e,
+                                      NUMBER_ONLY_PATTERN,
+                                    )
+                                  }
+                                  disabled={isEditMode}
+                                />
+
+                                {isFormSubmitted &&
+                                  propertyErrors[PropertyType.COMMERCIAL]
+                                    ?.pincode && (
+                                    <span className="error">
+                                      {
+                                        propertyErrors[
+                                          PropertyType.COMMERCIAL
+                                        ].pincode
+                                      }
+                                    </span>
+                                  )}
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Address
+                                </label>
+
+                                <InputTextarea
+                                  value={commercialProperty.address ?? ""}
+                                  placeholder="Enter Commercial Address"
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    updatePropertyField(
+                                      PropertyType.COMMERCIAL,
+                                      "address",
+                                      e.target.value,
+                                    )
+                                  }
+                                  rows={3}
+                                  disabled={isEditMode}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Location
+                                </label>
+
+                                <InputText
+                                  value={commercialProperty.location ?? ""}
+                                  placeholder="Location will auto-fill from PIN Code"
+                                  className="form-control"
+                                  disabled
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Ownership
+                                </label>
+
+                                <div className="d-flex flex-wrap gap-3 mt-2">
+                                  {PROPERTY_OWNERSHIP_OPTIONS.map((option) => (
+                                    <div className="form-check" key={option.id}>
+                                      <RadioButton
+                                        inputId={`commercialOwnership-${option.id}`}
+                                        name="commercialOwnership"
+                                        value={String(option.id)}
+                                        onChange={(e) =>
+                                          updatePropertyField(
+                                            PropertyType.COMMERCIAL,
+                                            "ownership",
+                                            String(e.value),
+                                          )
+                                        }
+                                        checked={
+                                          commercialProperty.ownership ===
+                                          String(option.id)
+                                        }
+                                        disabled={isEditMode}
+                                      />
+
+                                      <label
+                                        className="form-check-label ms-2"
+                                        htmlFor={`commercialOwnership-${option.id}`}
+                                      >
+                                        {option.label}
+                                      </label>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Sale Deed Value
+                                </label>
+
+                                <div className="form-group search">
+                                  <i className="bi bi-currency-rupee" />
+                                  <InputText
+                                    value={
+                                      commercialProperty.saleDeedValue ?? ""
+                                    }
+                                    className="form-control"
+                                    placeholder="Enter Sale Deed Value"
+                                    onChange={(e) =>
+                                      handlePropertyAmountChange(
+                                        PropertyType.COMMERCIAL,
+                                        "saleDeedValue",
+                                        e.target.value,
+                                      )
+                                    }
+                                    maxLength={15}
+                                    onKeyPress={(e) =>
+                                      restrictInputByPattern(
+                                        e,
+                                        NUMBER_ONLY_PATTERN,
+                                      )
+                                    }
+                                    disabled={isEditMode}
+                                  />
+                                  {getAmountInWords(
+                                    commercialProperty.saleDeedValue,
+                                  ) && (
+                                    <small className="d-block mt-2 text-muted">
+                                      {getAmountInWords(
+                                        commercialProperty.saleDeedValue,
+                                      )}
+                                    </small>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Approx. Market Value
+                                  {isPropertyMandatory(
+                                    PropertyType.COMMERCIAL,
+                                  ) && <sup>*</sup>}
+                                </label>
+
+                                <div className="form-group search">
+                                  <i className="bi bi-currency-rupee" />
+                                  <InputText
+                                    value={
+                                      commercialProperty.approxMarketValue ?? ""
+                                    }
+                                    className="form-control"
+                                    placeholder="Enter Approx. Market Value"
+                                    onChange={(e) =>
+                                      handlePropertyAmountChange(
+                                        PropertyType.COMMERCIAL,
+                                        "approxMarketValue",
+                                        e.target.value,
+                                      )
+                                    }
+                                    maxLength={15}
+                                    onKeyPress={(e) =>
+                                      restrictInputByPattern(
+                                        e,
+                                        NUMBER_ONLY_PATTERN,
+                                      )
+                                    }
+                                    disabled={isEditMode}
+                                  />
+
+                                  {isFormSubmitted &&
+                                    propertyErrors[PropertyType.COMMERCIAL]
+                                      ?.approxMarketValue && (
+                                      <span className="error">
+                                        {
+                                          propertyErrors[
+                                            PropertyType.COMMERCIAL
+                                          ].approxMarketValue
+                                        }
+                                      </span>
+                                    )}
+
+                                  {getAmountInWords(
+                                    commercialProperty.approxMarketValue,
+                                  ) && (
+                                    <small className="d-block mt-2 text-muted">
+                                      {getAmountInWords(
+                                        commercialProperty.approxMarketValue,
+                                      )}
+                                    </small>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {industrialProperty && (
+                      <div className="col-lg-6 col-12">
+                        <div
+                          className="p-3 rounded h-100"
+                          style={{ backgroundColor: "#f8f9fa" }}
+                        >
+                          <div className="d-flex justify-content-between align-items-center mb-3">
+                            <h6 className="mb-0">Industrial Property</h6>
+                            {!isEditMode &&
+                              restrictedPropertyType !==
+                                PropertyType.INDUSTRIAL && (
+                              <button
+                                type="button"
+                                className="btn btn-link p-0 text-danger"
+                                onClick={() =>
+                                  removeProperty(PropertyType.INDUSTRIAL)
+                                }
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="row g-3">
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Property Size (in sq.ft.)
+                                </label>
+                                <InputText
+                                  value={industrialProperty.size ?? ""}
+                                  placeholder="Enter Property Size in sq.ft."
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    handlePropertyAmountChange(
+                                      PropertyType.INDUSTRIAL,
+                                      "size",
+                                      e.target.value,
+                                    )
+                                  }
+                                  maxLength={15}
+                                  onKeyPress={(e) =>
+                                    restrictInputByPattern(
+                                      e,
+                                      NUMBER_ONLY_PATTERN,
+                                    )
+                                  }
+                                  disabled={isEditMode}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  PIN Code
+                                  {isPropertyMandatory(
+                                    PropertyType.INDUSTRIAL,
+                                  ) && <sup>*</sup>}
+                                </label>
+                                <InputText
+                                  value={industrialProperty.pincode ?? ""}
+                                  placeholder="Enter PIN Code"
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    handlePropertyPinCodeChange(
+                                      PropertyType.INDUSTRIAL,
+                                      e.target.value,
+                                    )
+                                  }
+                                  maxLength={6}
+                                  onKeyPress={(e) =>
+                                    restrictInputByPattern(
+                                      e,
+                                      NUMBER_ONLY_PATTERN,
+                                    )
+                                  }
+                                  disabled={isEditMode}
+                                />
+
+                                {isFormSubmitted &&
+                                  propertyErrors[PropertyType.INDUSTRIAL]
+                                    ?.pincode && (
+                                    <span className="error">
+                                      {
+                                        propertyErrors[
+                                          PropertyType.INDUSTRIAL
+                                        ].pincode
+                                      }
+                                    </span>
+                                  )}
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Address
+                                </label>
+                                <InputTextarea
+                                  value={industrialProperty.address ?? ""}
+                                  placeholder="Enter Industrial Address"
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    updatePropertyField(
+                                      PropertyType.INDUSTRIAL,
+                                      "address",
+                                      e.target.value,
+                                    )
+                                  }
+                                  rows={3}
+                                  disabled={isEditMode}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Location
+                                </label>
+                                <InputText
+                                  value={industrialProperty.location ?? ""}
+                                  placeholder="Location will auto-fill from PIN Code"
+                                  className="form-control"
+                                  disabled
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Ownership
+                                </label>
+                                <div className="d-flex flex-wrap gap-3 mt-2">
+                                  {PROPERTY_OWNERSHIP_OPTIONS.map((option) => (
+                                    <div className="form-check" key={option.id}>
+                                      <RadioButton
+                                        inputId={`industrialOwnership-${option.id}`}
+                                        name="industrialOwnership"
+                                        value={String(option.id)}
+                                        onChange={(e) =>
+                                          updatePropertyField(
+                                            PropertyType.INDUSTRIAL,
+                                            "ownership",
+                                            String(e.value),
+                                          )
+                                        }
+                                        checked={
+                                          industrialProperty.ownership ===
+                                          String(option.id)
+                                        }
+                                        disabled={isEditMode}
+                                      />
+                                      <label
+                                        className="form-check-label ms-2"
+                                        htmlFor={`industrialOwnership-${option.id}`}
+                                      >
+                                        {option.label}
+                                      </label>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Sale Deed Value
+                                </label>
+                                <div className="form-group search">
+                                  <i className="bi bi-currency-rupee" />
+                                  <InputText
+                                    value={
+                                      industrialProperty.saleDeedValue ?? ""
+                                    }
+                                    className="form-control"
+                                    placeholder="Enter Sale Deed Value"
+                                    onChange={(e) =>
+                                      handlePropertyAmountChange(
+                                        PropertyType.INDUSTRIAL,
+                                        "saleDeedValue",
+                                        e.target.value,
+                                      )
+                                    }
+                                    maxLength={15}
+                                    onKeyPress={(e) =>
+                                      restrictInputByPattern(
+                                        e,
+                                        NUMBER_ONLY_PATTERN,
+                                      )
+                                    }
+                                    disabled={isEditMode}
+                                  />
+                                  {getAmountInWords(
+                                    industrialProperty.saleDeedValue,
+                                  ) && (
+                                    <small className="d-block mt-2 text-muted">
+                                      {getAmountInWords(
+                                        industrialProperty.saleDeedValue,
+                                      )}
+                                    </small>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Approx. Market Value
+                                  {isPropertyMandatory(
+                                    PropertyType.INDUSTRIAL,
+                                  ) && <sup>*</sup>}
+                                </label>
+                                <div className="form-group search">
+                                  <i className="bi bi-currency-rupee" />
+                                  <InputText
+                                    value={
+                                      industrialProperty.approxMarketValue ?? ""
+                                    }
+                                    className="form-control"
+                                    placeholder="Enter Approx. Market Value"
+                                    onChange={(e) =>
+                                      handlePropertyAmountChange(
+                                        PropertyType.INDUSTRIAL,
+                                        "approxMarketValue",
+                                        e.target.value,
+                                      )
+                                    }
+                                    maxLength={15}
+                                    onKeyPress={(e) =>
+                                      restrictInputByPattern(
+                                        e,
+                                        NUMBER_ONLY_PATTERN,
+                                      )
+                                    }
+                                    disabled={isEditMode}
+                                  />
+
+                                  {isFormSubmitted &&
+                                    propertyErrors[PropertyType.INDUSTRIAL]
+                                      ?.approxMarketValue && (
+                                      <span className="error">
+                                        {
+                                          propertyErrors[
+                                            PropertyType.INDUSTRIAL
+                                          ].approxMarketValue
+                                        }
+                                      </span>
+                                    )}
+
+                                  {getAmountInWords(
+                                    industrialProperty.approxMarketValue,
+                                  ) && (
+                                    <small className="d-block mt-2 text-muted">
+                                      {getAmountInWords(
+                                        industrialProperty.approxMarketValue,
+                                      )}
+                                    </small>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {plotProperty && (
+                      <div className="col-lg-6 col-12">
+                        <div
+                          className="p-3 rounded h-100"
+                          style={{ backgroundColor: "#f8f9fa" }}
+                        >
+                          <div className="d-flex justify-content-between align-items-center mb-3">
+                            <h6 className="mb-0">Plot/Other Property</h6>
+                            {!isEditMode &&
+                              restrictedPropertyType !== PropertyType.PLOT && (
+                              <button
+                                type="button"
+                                className="btn btn-link p-0 text-danger"
+                                onClick={() =>
+                                  removeProperty(PropertyType.PLOT)
+                                }
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="row g-3">
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Property Size (in sq.ft.)
+                                </label>
+                                <InputText
+                                  value={plotProperty.size ?? ""}
+                                  placeholder="Enter Property Size in sq.ft."
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    handlePropertyAmountChange(
+                                      PropertyType.PLOT,
+                                      "size",
+                                      e.target.value,
+                                    )
+                                  }
+                                  maxLength={15}
+                                  onKeyPress={(e) =>
+                                    restrictInputByPattern(
+                                      e,
+                                      NUMBER_ONLY_PATTERN,
+                                    )
+                                  }
+                                  disabled={isEditMode}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  PIN Code
+                                  {isPropertyMandatory(PropertyType.PLOT) && (
+                                    <sup>*</sup>
+                                  )}
+                                </label>
+                                <InputText
+                                  value={plotProperty.pincode ?? ""}
+                                  placeholder="Enter PIN Code"
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    handlePropertyPinCodeChange(
+                                      PropertyType.PLOT,
+                                      e.target.value,
+                                    )
+                                  }
+                                  maxLength={6}
+                                  onKeyPress={(e) =>
+                                    restrictInputByPattern(
+                                      e,
+                                      NUMBER_ONLY_PATTERN,
+                                    )
+                                  }
+                                  disabled={isEditMode}
+                                />
+
+                                {isFormSubmitted &&
+                                  propertyErrors[PropertyType.PLOT]
+                                    ?.pincode && (
+                                    <span className="error">
+                                      {propertyErrors[PropertyType.PLOT].pincode}
+                                    </span>
+                                  )}
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Address
+                                </label>
+                                <InputTextarea
+                                  value={plotProperty.address ?? ""}
+                                  placeholder="Enter Plot Address"
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    updatePropertyField(
+                                      PropertyType.PLOT,
+                                      "address",
+                                      e.target.value,
+                                    )
+                                  }
+                                  rows={3}
+                                  disabled={isEditMode}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Location
+                                </label>
+                                <InputText
+                                  value={plotProperty.location ?? ""}
+                                  placeholder="Location will auto-fill from PIN Code"
+                                  className="form-control"
+                                  disabled
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Ownership
+                                </label>
+                                <div className="d-flex flex-wrap gap-3 mt-2">
+                                  {PROPERTY_OWNERSHIP_OPTIONS.map((option) => (
+                                    <div className="form-check" key={option.id}>
+                                      <RadioButton
+                                        inputId={`plotOwnership-${option.id}`}
+                                        name="plotOwnership"
+                                        value={String(option.id)}
+                                        onChange={(e) =>
+                                          updatePropertyField(
+                                            PropertyType.PLOT,
+                                            "ownership",
+                                            String(e.value),
+                                          )
+                                        }
+                                        checked={
+                                          plotProperty.ownership ===
+                                          String(option.id)
+                                        }
+                                        disabled={isEditMode}
+                                      />
+                                      <label
+                                        className="form-check-label ms-2"
+                                        htmlFor={`plotOwnership-${option.id}`}
+                                      >
+                                        {option.label}
+                                      </label>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Sale Deed Value
+                                </label>
+                                <div className="form-group search">
+                                  <i className="bi bi-currency-rupee" />
+                                  <InputText
+                                    value={plotProperty.saleDeedValue ?? ""}
+                                    className="form-control"
+                                    placeholder="Enter Sale Deed Value"
+                                    onChange={(e) =>
+                                      handlePropertyAmountChange(
+                                        PropertyType.PLOT,
+                                        "saleDeedValue",
+                                        e.target.value,
+                                      )
+                                    }
+                                    maxLength={15}
+                                    onKeyPress={(e) =>
+                                      restrictInputByPattern(
+                                        e,
+                                        NUMBER_ONLY_PATTERN,
+                                      )
+                                    }
+                                    disabled={isEditMode}
+                                  />
+
+                                  {getAmountInWords(
+                                    plotProperty.saleDeedValue,
+                                  ) && (
+                                    <small className="d-block mt-2 text-muted">
+                                      {getAmountInWords(
+                                        plotProperty.saleDeedValue,
+                                      )}
+                                    </small>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="col-lg-6 col-12">
+                              <div className="form-group w-100">
+                                <label className="form-label small font-15">
+                                  Approx. Market Value
+                                  {isPropertyMandatory(PropertyType.PLOT) && (
+                                    <sup>*</sup>
+                                  )}
+                                </label>
+                                <div className="form-group search">
+                                  <i className="bi bi-currency-rupee" />
+                                  <InputText
+                                    value={plotProperty.approxMarketValue ?? ""}
+                                    className="form-control"
+                                    placeholder="Enter Approx. Market Value"
+                                    onChange={(e) =>
+                                      handlePropertyAmountChange(
+                                        PropertyType.PLOT,
+                                        "approxMarketValue",
+                                        e.target.value,
+                                      )
+                                    }
+                                    maxLength={15}
+                                    onKeyPress={(e) =>
+                                      restrictInputByPattern(
+                                        e,
+                                        NUMBER_ONLY_PATTERN,
+                                      )
+                                    }
+                                    disabled={isEditMode}
+                                  />
+
+                                  {isFormSubmitted &&
+                                    propertyErrors[PropertyType.PLOT]
+                                      ?.approxMarketValue && (
+                                      <span className="error">
+                                        {
+                                          propertyErrors[PropertyType.PLOT]
+                                            .approxMarketValue
+                                        }
+                                      </span>
+                                    )}
+
+                                  {getAmountInWords(
+                                    plotProperty.approxMarketValue,
+                                  ) && (
+                                    <small className="d-block mt-2 text-muted">
+                                      {getAmountInWords(
+                                        plotProperty.approxMarketValue,
+                                      )}
+                                    </small>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
@@ -1474,7 +3381,9 @@ const ApplyLoan = () => {
                     loading ? "btn-orange-disabled" : "btn-orange"
                   } ms-2 text-center`}
                   disabled={loading}
-                  label={loading ? "Loading..." : "Next"}
+                  label={
+                    loading ? "Loading..." : isEditMode ? "Update" : "Next"
+                  }
                   type="submit"
                 />
               </div>

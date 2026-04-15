@@ -147,20 +147,14 @@ const PayOuts = () => {
       <div className="table-responsive">
         <DataTable
           className="tableMain"
-          filterDisplay="row"
           value={payOutsData}
           emptyMessage="No payouts found"
         >
           <Column field="month" header="Period" />
 
-          <Column />
-
           <Column
             field="userName"
-            header="Client Name"
-            showFilterMenu={false}
-            filter
-            filterElement={renderPartnerInput()}
+            header="Name"
           />
 
           <Column

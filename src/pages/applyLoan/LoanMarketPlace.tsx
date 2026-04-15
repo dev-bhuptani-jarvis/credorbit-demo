@@ -22,10 +22,20 @@ import { IBankInfo } from "../../interface/applyLoan";
 import { ILoanDetailData, ILoanResponse } from "../../interface/loanDetail";
 import moment from "moment";
 
+interface IMarketplaceMessageSection {
+  title: string;
+  points: string[];
+}
+
 const LoanMarketPlace = () => {
   const [loanMarketPlaceData, setLoanMarketPlaceData] = useState<
     ILoanMarketBankDetails[]
   >([]);
+
+  const [marketplaceMessage, setMarketplaceMessage] = useState<string>("");
+
+  const [showMarketplaceTable, setShowMarketplaceTable] =
+    useState<boolean>(true);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -62,8 +72,21 @@ const LoanMarketPlace = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      setLoanMarketPlaceData(response.data.bankDetails || []);
+      const bankDetails = response.data?.bankDetails;
+
+      if (bankDetails == null) {
+        setLoanMarketPlaceData([]);
+        setMarketplaceMessage(response.message || "");
+        setShowMarketplaceTable(false);
+      } else {
+        setLoanMarketPlaceData(bankDetails);
+        setMarketplaceMessage("");
+        setShowMarketplaceTable(true);
+      }
     } else {
+      setLoanMarketPlaceData([]);
+      setMarketplaceMessage("");
+      setShowMarketplaceTable(true);
       toastError(response.message);
     }
 
@@ -125,6 +148,58 @@ const LoanMarketPlace = () => {
     },
   ];
 
+  const parseMarketplaceMessage = (
+    message: string,
+  ): IMarketplaceMessageSection[] => {
+    const normalizedLines = message
+      .replace(/\r\n/g, "\n")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    const sections: IMarketplaceMessageSection[] = [];
+    let activeSection: IMarketplaceMessageSection | null = null;
+
+    normalizedLines.forEach((line) => {
+      if (line.endsWith(":")) {
+        activeSection = {
+          title: line.replace(/:$/, ""),
+          points: [],
+        };
+        sections.push(activeSection);
+        return;
+      }
+
+      const cleanedPoint = line.replace(/^-+\s*/, "").trim();
+
+      if (!activeSection) {
+        activeSection = {
+          title: "Details",
+          points: [],
+        };
+        sections.push(activeSection);
+      }
+
+      if (cleanedPoint) {
+        activeSection.points.push(cleanedPoint);
+      }
+    });
+
+    return sections.filter((section) => section.points.length > 0);
+  };
+
+  const marketplaceSections = marketplaceMessage
+    ? parseMarketplaceMessage(marketplaceMessage)
+    : [];
+
+  const lenderSections = marketplaceSections.filter(
+    (section) => section.title.toLowerCase() !== "summary",
+  );
+
+  const hasLenderMatches = loanMarketPlaceData.length > 0;
+
+  const showNoMatchState = !hasLenderMatches;
+
   return (
     <>
       <Loader isLoading={loading} />
@@ -185,130 +260,295 @@ const LoanMarketPlace = () => {
 
             <div className="row CheckEligibilityWrapper">
               <div className="col-12">
-                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
-                  <div>
-                    <h3 className="mb-1 fw-bold">Available Lender Matches</h3>
-                    <p className="mb-0 text-muted">
-                      Offers are calculated against the selected loan
-                      application.
-                    </p>
-                  </div>
-                  <div
-                    className="px-3 py-2 align-self-start align-self-md-center"
-                    style={{
-                      borderRadius: "999px",
-                      backgroundColor: "#fff4eb",
-                      color: "#c86a1a",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {loanMarketPlaceData.length} option
-                    {loanMarketPlaceData.length === 1 ? "" : "s"}
-                  </div>
-                </div>
+                <div className="table-responsive">
+                  {hasLenderMatches && !marketplaceMessage && (
+                    <div
+                      className="mb-4"
+                      style={{
+                        border: "1px solid #dbe8de",
+                        borderRadius: "24px",
+                        padding: "24px",
+                        background:
+                          "linear-gradient(135deg, #f4fbf5 0%, #ffffff 65%)",
+                        boxShadow: "0 18px 40px rgba(15, 23, 42, 0.05)",
+                      }}
+                    >
+                      <div className="d-flex flex-column flex-lg-row justify-content-between gap-3">
+                        <div>
+                          <h4
+                            className="mb-2"
+                            style={{
+                              color: "#1f2937",
+                              fontWeight: 700,
+                              fontSize: "28px",
+                            }}
+                          >
+                            Matching lenders are available for this application
+                          </h4>
+                          <p
+                            className="mb-0"
+                            style={{
+                              color: "#6b7280",
+                              maxWidth: "760px",
+                              lineHeight: 1.7,
+                            }}
+                          >
+                            Compare the shortlisted lenders below and continue
+                            with the option that best fits the application.
+                          </p>
+                        </div>
 
-                <div className="my-5 table-responsive">
-                  <DataTable
-                    removableSort
-                    className="tableMain"
-                    value={loanMarketPlaceData}
-                    emptyMessage="No loan market found"
-                  >
-                    <Column
-                      body={(rowData: ILoanMarketBankDetails) => (
-                        <div className="CheckEligibiltyTable d-flex align-items-center">
-                          <div className="checkEligMain">
-                            <h3>{rowData.bankName}</h3>
+                        <div
+                          className="align-self-start"
+                          style={{
+                            minWidth: "180px",
+                            borderRadius: "20px",
+                            padding: "18px 20px",
+                            backgroundColor: "#fff",
+                            border: "1px solid #dbe8de",
+                          }}
+                        >
+                          <p
+                            className="mb-1"
+                            style={{
+                              color: "#2f7a45",
+                              fontSize: "12px",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.08em",
+                              fontWeight: 700,
+                            }}
+                          >
+                            Eligible Lenders
+                          </p>
+                          <h3
+                            className="mb-0"
+                            style={{
+                              color: "#1f2937",
+                              fontSize: "30px",
+                              fontWeight: 700,
+                            }}
+                          >
+                            {loanMarketPlaceData.length}
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {showNoMatchState && (
+                    <div className="mb-4">
+                      <div
+                        className="mb-4"
+                        style={{
+                          border: "1px solid #f0dfcf",
+                          borderRadius: "24px",
+                          padding: "24px",
+                          background:
+                            "linear-gradient(135deg, #fff5eb 0%, #ffffff 65%)",
+                          boxShadow: "0 18px 40px rgba(15, 23, 42, 0.06)",
+                        }}
+                      >
+                        <div className="d-flex flex-column flex-lg-row justify-content-between gap-3">
+                          <div>
+                            <h4
+                              className="mb-2"
+                              style={{
+                                color: "#1f2937",
+                                fontWeight: 700,
+                                fontSize: "28px",
+                              }}
+                            >
+                              No lender matched this application right now
+                            </h4>
+                            <p
+                              className="mb-0"
+                              style={{
+                                color: "#6b7280",
+                                maxWidth: "760px",
+                                lineHeight: 1.7,
+                              }}
+                            >
+                              {marketplaceMessage
+                                ? "We checked this application against the current lender rules. The reasons below explain why offers are not available yet."
+                                : "We checked the marketplace, but no lender matched this application right now."}
+                            </p>
                           </div>
                         </div>
-                      )}
-                      header="Bank Name"
-                    />
+                      </div>
 
-                    <Column
-                      field="loanAmount"
-                      body={(rowData: ILoanMarketBankDetails) =>
-                        formatCurrencyAmount(rowData.loanAmount)
-                      }
-                      sortable
-                      header="Loan Amount"
-                    />
-
-                    <Column
-                      field="roI_Min"
-                      body={(rowData: ILoanMarketBankDetails) =>
-                        `${rowData.roI_Min} %`
-                      }
-                      sortable
-                      header="ROI (Min)"
-                    />
-
-                    <Column
-                      field="roI_Max"
-                      body={(rowData: ILoanMarketBankDetails) =>
-                        `${rowData.roI_Max} %`
-                      }
-                      sortable
-                      header="ROI (Max)"
-                    />
-
-                    <Column
-                      field="tenure"
-                      body={(rowData: ILoanMarketBankDetails) =>
-                        `${rowData.tenure} ${
-                          rowData.tenure === 1 ? "Year" : "Years"
-                        }`
-                      }
-                      sortable
-                      header="Tenure"
-                    />
-
-                    <Column
-                      body={(rowData: ILoanMarketBankDetails) =>
-                        `${formatCurrencyAmount(Number(Number(rowData.emi).toFixed(2)))}`
-                      }
-                      header="EMI"
-                    />
-
-                    <Column
-                      body={(rowData: ILoanMarketBankDetails) => (
-                        <>
-                          {showDocumentFlow ? (
-                            <div className="btnMain">
-                              <Button
-                                className="btn btn-orange-line w-85"
-                                onClick={() => {
-                                  setShowDocumentFlow(true);
-                                  setUploadModal(true);
-                                  setBankInfo({
-                                    bankID: rowData.bankID,
-                                    loanTenureID: rowData.tenure,
-                                    rateOfInterest: rowData.roI_Min,
-                                  });
+                      {!!marketplaceMessage && !!lenderSections.length && (
+                        <div className="row g-3">
+                          {lenderSections.map((section) => (
+                            <div
+                              className="col-12 col-md-6 col-xl-4"
+                              key={section.title}
+                            >
+                              <div
+                                className="h-100"
+                                style={{
+                                  border: "1px solid #ece5dc",
+                                  borderRadius: "20px",
+                                  padding: "20px",
+                                  backgroundColor: "#ffffff",
+                                  boxShadow:
+                                    "0 12px 30px rgba(15, 23, 42, 0.05)",
                                 }}
-                                label="Log in"
-                              />
+                              >
+                                <h5
+                                  className="mb-3"
+                                  style={{
+                                    color: "#1f2937",
+                                    fontWeight: 700,
+                                    fontSize: "18px",
+                                    minHeight: "44px",
+                                  }}
+                                >
+                                  {section.title}
+                                </h5>
+
+                                <div className="d-flex flex-column gap-2">
+                                  {section.points.map((point, index) => (
+                                    <div
+                                      key={`${section.title}-${point}-${index}`}
+                                      className="d-flex align-items-start gap-2"
+                                      style={{
+                                        borderRadius: "14px",
+                                        padding: "10px 12px",
+                                        backgroundColor: "#fff7f0",
+                                      }}
+                                    >
+                                      <span
+                                        style={{
+                                          width: "8px",
+                                          height: "8px",
+                                          minWidth: "8px",
+                                          borderRadius: "50%",
+                                          backgroundColor: "#d97706",
+                                          marginTop: "8px",
+                                        }}
+                                      />
+                                      <span
+                                        style={{
+                                          color: "#4b5563",
+                                          lineHeight: 1.6,
+                                        }}
+                                      >
+                                        {point}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
-                          ) : (
-                            <div className="btnMain">
-                              <Button
-                                className="btn btn-orange-line w-130"
-                                onClick={() => {
-                                  setLoanModal(true);
-                                  setBankInfo({
-                                    bankID: rowData.bankID,
-                                    loanTenureID: rowData.tenure,
-                                    rateOfInterest: rowData.roI_Min,
-                                  });
-                                }}
-                                label="Apply Loan"
-                              />
-                            </div>
-                          )}
-                        </>
+                          ))}
+                        </div>
                       )}
-                    />
-                  </DataTable>
+                    </div>
+                  )}
+
+                  {showMarketplaceTable && (
+                    <DataTable
+                      removableSort
+                      className="tableMain"
+                      value={loanMarketPlaceData}
+                      emptyMessage="No lender matched this application right now"
+                    >
+                      <Column
+                        body={(rowData: ILoanMarketBankDetails) => (
+                          <div className="CheckEligibiltyTable d-flex align-items-center">
+                            <div className="checkEligMain">
+                              <h3>{rowData.bankName}</h3>
+                            </div>
+                          </div>
+                        )}
+                        header="Bank Name"
+                      />
+
+                      <Column
+                        field="loanAmount"
+                        body={(rowData: ILoanMarketBankDetails) =>
+                          formatCurrencyAmount(rowData.loanAmount)
+                        }
+                        sortable
+                        header="Loan Amount"
+                      />
+
+                      <Column
+                        field="roI_Min"
+                        body={(rowData: ILoanMarketBankDetails) =>
+                          `${rowData.roI_Min} %`
+                        }
+                        sortable
+                        header="ROI (Min)"
+                      />
+
+                      <Column
+                        field="roI_Max"
+                        body={(rowData: ILoanMarketBankDetails) =>
+                          `${rowData.roI_Max} %`
+                        }
+                        sortable
+                        header="ROI (Max)"
+                      />
+
+                      <Column
+                        field="tenure"
+                        body={(rowData: ILoanMarketBankDetails) =>
+                          `${rowData.tenure} ${
+                            rowData.tenure === 1 ? "Year" : "Years"
+                          }`
+                        }
+                        sortable
+                        header="Tenure"
+                      />
+
+                      <Column
+                        body={(rowData: ILoanMarketBankDetails) =>
+                          `${formatCurrencyAmount(Number(Number(rowData.emi).toFixed(2)))}`
+                        }
+                        header="EMI"
+                      />
+
+                      <Column
+                        body={(rowData: ILoanMarketBankDetails) => (
+                          <>
+                            {showDocumentFlow ? (
+                              <div className="btnMain">
+                                <Button
+                                  className="btn btn-orange-line w-85"
+                                  onClick={() => {
+                                    setShowDocumentFlow(true);
+                                    setUploadModal(true);
+                                    setBankInfo({
+                                      bankID: rowData.bankID,
+                                      loanTenureID: rowData.tenure,
+                                      rateOfInterest: rowData.roI_Min,
+                                    });
+                                  }}
+                                  label="Log in"
+                                />
+                              </div>
+                            ) : (
+                              <div className="btnMain">
+                                <Button
+                                  className="btn btn-orange-line w-130"
+                                  onClick={() => {
+                                    setLoanModal(true);
+                                    setBankInfo({
+                                      bankID: rowData.bankID,
+                                      loanTenureID: rowData.tenure,
+                                      rateOfInterest: rowData.roI_Min,
+                                    });
+                                  }}
+                                  label="Apply Loan"
+                                />
+                              </div>
+                            )}
+                          </>
+                        )}
+                      />
+                    </DataTable>
+                  )}
                 </div>
               </div>
             </div>

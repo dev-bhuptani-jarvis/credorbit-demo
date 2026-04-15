@@ -796,10 +796,30 @@ const ClientDetail = () => {
   };
 
   const handleDateOfRegistration = (date: Date | null) => {
-    setFormValues((prev) => ({
-      ...prev,
-      dateOfRegistration: date ? moment(date).format("YYYY-MM-DD") : "",
-    }));
+    if (date) {
+      const now = new Date();
+
+      const updatedDate = new Date(date);
+
+      updatedDate.setHours(
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        0,
+      );
+
+      const formattedDate = moment(updatedDate).format("YYYY-MM-DD[T]HH:mm:ss");
+
+      setFormValues((prev) => ({
+        ...prev,
+        dateOfRegistration: formattedDate,
+      }));
+    } else {
+      setFormValues((prev) => ({
+        ...prev,
+        dateOfRegistration: "",
+      }));
+    }
 
     setFormErrors((prev) => ({
       ...prev,
@@ -1042,6 +1062,9 @@ const ClientDetail = () => {
                                     className="w-100"
                                     maxDate={new Date()}
                                     showButtonBar
+                                    showSeconds // 👈 ADD THIS
+                                    stepMinute={1} // 👈 ensures proper time selection
+                                    hourFormat="24"
                                   />
 
                                   {formErrors.dateOfRegistration && (
@@ -1243,6 +1266,9 @@ const ClientDetail = () => {
                                     className="w-100"
                                     maxDate={new Date()}
                                     showButtonBar
+                                    showSeconds // 👈 ADD THIS
+                                    stepMinute={1} // 👈 ensures proper time selection
+                                    hourFormat="24"
                                   />
 
                                   {formErrors.dateOfRegistration && (

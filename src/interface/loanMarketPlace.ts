@@ -5,7 +5,7 @@ export interface ILoanMarketPlacePayload {
 }
 
 export interface ILoanMarketResponse extends APIResponseEntity {
-  data: ILoanMarketResponseData;
+  data: ILoanMarketResponseData | null;
 }
 
 export interface ILoanMarketResponseData {

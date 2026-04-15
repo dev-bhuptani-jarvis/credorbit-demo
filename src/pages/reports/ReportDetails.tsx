@@ -170,15 +170,15 @@ const ReportDetails = () => {
                         <p className="text-break">{clientDetail?.clientName}</p>
                       </div>
 
-                      {clientDetail?.mobileNumber ? (
+                      {clientDetail?.mobileNumber &&
                         <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                           <b>Mobile Number</b>
                           <p className="text-break">
                             {formatMobileNumber(clientDetail?.mobileNumber)}
                           </p>
                         </div>
-                      ) : null}
-                    
+                      }
+
                       <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                         <b>Email</b>
 
@@ -228,11 +228,10 @@ const ReportDetails = () => {
                 <div className="col-lg-6 col-sm-12 col-12 mt-4">
                   <Button
                     label="Download All Reports"
-                    className={`btn ${
-                      clientDetail?.clientReports.length === 0
+                    className={`btn ${clientDetail?.clientReports.length === 0
                         ? "btn-orange-disabled"
                         : "btn-orange"
-                    } me-2`}
+                      } me-2`}
                     onClick={handleDownloadAllReports}
                     disabled={clientDetail?.clientReports.length === 0}
                   />

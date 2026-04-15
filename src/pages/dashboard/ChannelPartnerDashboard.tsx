@@ -500,7 +500,11 @@ const ChannelPartnerDashboard = () => {
       return;
     }
 
-    if (currentStatus && selectedStatus.code === currentStatus.code) {
+    if (
+      currentStatus &&
+      selectedStatus.code === currentStatus.code &&
+      !isDisbursedUpdateFlow()
+    ) {
       setStatusError(
         "Selected status is already applied to this loan application",
       );
@@ -918,6 +922,10 @@ const ChannelPartnerDashboard = () => {
     );
   };
 
+  const isDisbursedUpdateFlow = (): boolean => {
+    return shouldShowDisbursedFields() && !shouldShowDisbursedField();
+  };
+
   const shouldShowSanctionFields = (): boolean => {
     const selectedLoan = adminInfo?.loanApplications?.find(
       (loan: ILoanApplicationData) =>
@@ -1039,10 +1047,30 @@ const ChannelPartnerDashboard = () => {
   };
 
   const handleDateOfRegistration = (date: Date | null) => {
-    setFormValues((prev) => ({
-      ...prev,
-      dateOfRegistration: date ? moment(date).format("YYYY-MM-DD") : "",
-    }));
+    if (date) {
+      const now = new Date();
+
+      const updatedDate = new Date(date);
+
+      updatedDate.setHours(
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        0,
+      );
+
+      const formattedDate = moment(updatedDate).format("YYYY-MM-DD[T]HH:mm:ss");
+
+      setFormValues((prev) => ({
+        ...prev,
+        dateOfRegistration: formattedDate,
+      }));
+    } else {
+      setFormValues((prev) => ({
+        ...prev,
+        dateOfRegistration: "",
+      }));
+    }
 
     setFormErrors((prevErrors) => ({
       ...prevErrors,
@@ -1083,6 +1111,11 @@ const ChannelPartnerDashboard = () => {
 
   useEffect(() => {
     setSearchText("");
+    setFilterReq((prev) => ({
+      ...prev,
+      searchText: "",
+      pageNumber: 0,
+    }));
   }, [status]);
 
   useEffect(() => {
@@ -1549,6 +1582,9 @@ const ChannelPartnerDashboard = () => {
                               className="w-100"
                               maxDate={new Date()}
                               showButtonBar
+                              hourFormat="24"
+                              showSeconds // 👈 ADD THIS
+                              stepMinute={1} // 👈 ensures proper time selection
                             />
 
                             {formErrors.dateOfRegistration && (
@@ -1745,6 +1781,9 @@ const ChannelPartnerDashboard = () => {
                               className="w-100"
                               maxDate={new Date()}
                               showButtonBar
+                              showSeconds // 👈 ADD THIS
+                              stepMinute={1} // 👈 ensures proper time selection
+                              hourFormat="24"
                             />
 
                             {formErrors.dateOfRegistration && (
