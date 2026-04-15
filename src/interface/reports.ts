@@ -109,6 +109,7 @@ export interface IITRReportData {
 export interface IITRDetail {
   id: string;
   fileName: string;
+  filePath?: string | null;
   retrievedDate: string;
   pdfFilePath: string;
   excelFilePath: string;
@@ -161,13 +162,13 @@ export interface IChannelPartnerClientReportDetailResponse
 }
 
 export interface IChannelPartnerClientReportDetailData {
-  channelPartner: string;
-  clientCode: string;
+  channelPartner: string | null;
+  clientCode: string | null;
   clientID: string;
-  clientName: string;
-  email: string;
-  mobileNumber: string;
-  panNumber: string;
+  clientName: string | null;
+  email: string | null;
+  mobileNumber: string | null;
+  panNumber: string | null;
   clientReports: IClientDetailList[];
 }
 

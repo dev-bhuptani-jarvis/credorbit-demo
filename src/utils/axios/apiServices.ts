@@ -180,6 +180,21 @@ import {
   verifyDemoReferralCode,
 } from "../demo/demoAuth";
 import {
+  getDemoClientDashboard,
+  getDemoImpersonateUser,
+} from "../demo/demoClient";
+import { getDemoUserProfileByContext } from "../demo/demoProfile";
+import { getDemoCpReportDetailByClientId } from "../demo/demoReports";
+import {
+  getDemoBankingAnalyticsDetails,
+  getDemoDocumentDetails,
+  getDemoDocumentStatus,
+  getDemoGstDetails,
+  getDemoItrDetails,
+  getDemoSecureUnsecureDocumentList,
+  getDemoSubfolderDetails,
+} from "../demo/demoReports";
+import {
   addDemoUserWithoutOtp,
   addDemoLoanApplication,
   convertDemoPartnersToCoApplicants,
@@ -349,7 +364,22 @@ export const fetchDetailsByPan = async (
 };
 
 export const fetchUserProfile = async (): Promise<IUserProfileResponse> => {
-  return await getDemoUserProfile();
+  const currentUserData = getDecryptedSessionStorage(
+    StorageKeyEnum.CRED_ORBIT_USER_DATA
+  );
+  const impersonateUserData = getDecryptedSessionStorage(
+    StorageKeyEnum.CRED_ORBIT_IMPERSONATE_USER_DATA
+  );
+  const isImpersonate =
+    currentUserData !== impersonateUserData &&
+    Boolean(currentUserData) &&
+    Boolean(impersonateUserData);
+
+  return await getDemoUserProfileByContext(
+    currentUserData,
+    impersonateUserData,
+    isImpersonate
+  );
 };
 
 export const updateUserProfile = async (
@@ -417,7 +447,7 @@ export const getSourcingPartnerDetailAPI = async (
 
 export const getClientDashboardAPI =
   async (): Promise<IClientDashboardResponse> => {
-    return await axios.get(`${API_URL}/Client/getClientDashboard`);
+    return await getDemoClientDashboard();
   };
 
 export const getRoleMasterAPI = async (
@@ -526,7 +556,7 @@ export const getCreditAnalyticsVerifyOtpAPI = async (
 export const fetchImpersonateUser = async (
   body: IGeneratePublicTokenRequest
 ): Promise<IVerifyEmailOTPResponse> => {
-  return await axios.post(`${API_URL}/Auth/impersonateUser`, body);
+  return await getDemoImpersonateUser();
 };
 
 export const getInstitutionList =
@@ -710,16 +740,16 @@ export const getGstReportVerifyOtpAPI = async (
 };
 
 export const getGstDetailsAPI = async (): Promise<IGSTReportResponse> => {
-  return await axios.get(`${API_URL}/UserDetails/getGstDetails`);
+  return await getDemoGstDetails();
 };
 
 export const getITRDetailsAPI = async (): Promise<IITRReportResponse> => {
-  return await axios.get(`${API_URL}/UserDetails/getITRDetails`);
+  return await getDemoItrDetails();
 };
 
 export const getBankingAnalyticsDetailsAPI =
   async (): Promise<IBankingAnalyticsReportResponse> => {
-    return await axios.get(`${API_URL}/UserDetails/getBankingAnalyticsDetails`);
+    return await getDemoBankingAnalyticsDetails();
   };
 
 export const getUserNotificationListAPI =
@@ -742,6 +772,12 @@ export const getCpReportClientListAPI = async (
 export const getCpReportDetailsAPI = async (
   params: IClientDetailListParams
 ): Promise<IChannelPartnerClientReportDetailResponse> => {
+  const demoResponse = await getDemoCpReportDetailByClientId(params.clientID);
+
+  if (demoResponse) {
+    return demoResponse;
+  }
+
   return await getDemoCpReportDetail();
 };
 
@@ -749,18 +785,32 @@ export const fetchDocumentStatusAPI = async (body: {
   loanType: number;
   loanApplicationID: string | null;
 }): Promise<IDocumentListResponse> => {
-  return await axios.get(`${API_URL}/ContentManagement/fetchDocumentStatus`, {
-    params: body,
-  });
+  return await getDemoDocumentStatus();
 };
 
 export const getDocumentDetailsAPI = async (params: {
   folderName: string;
   loanApplicationID: string | null;
 }): Promise<IDocumentListDetailResponse> => {
-  return await axios.get(`${API_URL}/ContentManagement/getDocumentDetails`, {
-    params,
-  });
+  const demoResponse = await getDemoDocumentDetails(params.folderName);
+
+  if (demoResponse) {
+    return demoResponse;
+  }
+
+  return {
+    status: true,
+    statusCode: 200,
+    message: "",
+    data: {
+      documentType: params.folderName,
+      folderPath: null,
+      fileModels: [],
+      missingDocuments: [],
+      subFolders: [],
+      isFileModels: false,
+    },
+  };
 };
 
 export const getSubFolderDetailsAPI = async (params: {
@@ -768,9 +818,28 @@ export const getSubFolderDetailsAPI = async (params: {
   subFolderName: string;
   loanApplicationID: string | null;
 }): Promise<IDocumentListDetailResponse> => {
-  return await axios.get(`${API_URL}/ContentManagement/getSubfolderDetails`, {
-    params,
-  });
+  const demoResponse = await getDemoSubfolderDetails(
+    params.folderName,
+    params.subFolderName
+  );
+
+  if (demoResponse) {
+    return demoResponse;
+  }
+
+  return {
+    status: true,
+    statusCode: 200,
+    message: "",
+    data: {
+      documentType: params.subFolderName,
+      folderPath: null,
+      fileModels: [],
+      missingDocuments: [],
+      subFolders: [],
+      isFileModels: false,
+    },
+  };
 };
 
 export const fileAutomatedRequestForItrAPI = async (
@@ -913,7 +982,7 @@ export const fetchSubscriptionUsageAPI = async (): Promise<ISubscriptionUsageRes
 };
 
 export const getSecureUnsecureDocumentListAPI = async (): Promise<IGetSecureUnsecureDocumentListResponse> => {
-  return await axios.get(`${API_URL}/ContentManagement/getSecureUnsecureDocumentList`);
+  return await getDemoSecureUnsecureDocumentList();
 };
 
 export const moveDocumentAPI = async (body: IMoveDocumentBody): Promise<APIResponseEntity> => {

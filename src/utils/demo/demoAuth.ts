@@ -10,11 +10,19 @@ import { CLIENT_ROLE } from "../constants/constant";
 import { OtpRequestType } from "../constants/enum";
 import { decryptVAPTData, encryptVAPTData } from "../functions/encryptDecrypt";
 
-const DEMO_AUTH_OTP = "1234";
-
 const DEMO_DELAY_MS = 300;
 
 const emptyPermissions: Permission[] = [];
+
+const decryptDemoValue = (value?: string): string => {
+  if (!value) return "";
+
+  try {
+    return decryptVAPTData(value).trim();
+  } catch {
+    return "";
+  }
+};
 
 const demoChannelPartnerPermissions: Permission[] = [
   {
@@ -261,25 +269,16 @@ const demoChannelPartnerPermissions: Permission[] = [
 
 const demoLoginAssociatedUsers = [
   {
-    userType: 3,
-    cpID: "08dd2596-99f9-43e6-8b7b-d62ab50b29a2",
+    userType: CLIENT_ROLE.SUPER_ADMIN,
+    cpID: null,
     spID: null,
-    cpName: "MEGHAL SHAH NEW & ASSOCIATES",
+    cpName: null,
     spName: null,
-    userName: "MEGHAL SHAH NEW & ASSOCIATES",
-    userID: "08dd25b0-d9a3-4d54-8b53-04adf5ca7137",
+    userName: "Credorbit Technologies Private Limited",
+    userID: "f4204821-5d9b-484c-87b7-83e61167840d",
   },
   {
-    userType: 3,
-    cpID: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
-    spID: null,
-    cpName: "Jarvis Credo CP",
-    spName: null,
-    userName: "DEV SANJAYKUMAR BHUPTANI",
-    userID: "08dd5d47-8d58-4536-816e-69beba1e38f8",
-  },
-  {
-    userType: 2,
+    userType: CLIENT_ROLE.CHANNEL_PARTNER,
     cpID: null,
     spID: null,
     cpName: null,
@@ -287,7 +286,167 @@ const demoLoginAssociatedUsers = [
     userName: "Jarvis Credo CP",
     userID: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
   },
+  {
+    userType: CLIENT_ROLE.SOURCING_PARTNER,
+    cpID: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
+    spID: null,
+    cpName: "Jarvis Credo CP",
+    spName: null,
+    userName: "Darshak's SP",
+    userID: "19f2869e-95b7-4faf-81f3-998ede783b61",
+  },
 ];
+
+const demoAdminPermissions: Permission[] = [
+  { rightID: 1, parentID: 0, rightName: "Dashboard", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Dashboard", displayOrder: 1 } as Permission,
+  { rightID: 2, parentID: 0, rightName: "Profile", create: true, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Profile", displayOrder: 2 } as Permission,
+  { rightID: 3, parentID: 23, rightName: "RoleMaster", create: true, delete: null as unknown as boolean, view: true, list: true, displayName: "Role Master", displayOrder: 5 } as Permission,
+  { rightID: 4, parentID: 14, rightName: "ClientMaster", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Client Master", displayOrder: 7 } as Permission,
+  { rightID: 5, parentID: 14, rightName: "ChannelPartner", create: true, delete: null as unknown as boolean, view: true, list: true, displayName: "Channel Partner", displayOrder: 8 } as Permission,
+  { rightID: 6, parentID: 14, rightName: "SourcingPartner", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Sourcing Partner", displayOrder: 9 } as Permission,
+  { rightID: 7, parentID: 0, rightName: "Reports", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Reports", displayOrder: 10 } as Permission,
+  { rightID: 8, parentID: 15, rightName: "ContractChannelPartner", create: true, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Channel Partner Contract ", displayOrder: 14 } as Permission,
+  { rightID: 9, parentID: 15, rightName: "ContractSourcingPartner", create: true, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Sourcing Partner Contract ", displayOrder: 15 } as Permission,
+  { rightID: 10, parentID: 15, rightName: "ContractClient", create: true, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Client Contract ", displayOrder: 16 } as Permission,
+  { rightID: 11, parentID: 0, rightName: "Policy", create: true, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Policy", displayOrder: 17 } as Permission,
+  { rightID: 12, parentID: 0, rightName: "Support", create: true, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Support", displayOrder: 18 } as Permission,
+  { rightID: 13, parentID: 0, rightName: "PayOuts", create: false, delete: null as unknown as boolean, view: null as unknown as boolean, list: false, displayName: "Payouts", displayOrder: 20 } as Permission,
+  { rightID: 14, parentID: 0, rightName: "UserMaster", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Master", displayOrder: 6 } as Permission,
+  { rightID: 15, parentID: 0, rightName: "Contracts", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Contracts", displayOrder: 13 } as Permission,
+  { rightID: 16, parentID: 0, rightName: "TermsAndConditions", create: true, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Terms & Conditions", displayOrder: 19 } as Permission,
+  { rightID: 17, parentID: 0, rightName: "Subscription", create: true, delete: null as unknown as boolean, view: true, list: true, displayName: "Subscription", displayOrder: 23 } as Permission,
+  { rightID: 18, parentID: 23, rightName: "ManageUsers", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Manage Users", displayOrder: 4 } as Permission,
+  { rightID: 19, parentID: 7, rightName: "ChannelPartnerReport", create: null as unknown as boolean, delete: null as unknown as boolean, view: true, list: true, displayName: "Channel Partner Report", displayOrder: 11 } as Permission,
+  { rightID: 20, parentID: 7, rightName: "GeographicalReport", create: null as unknown as boolean, delete: null as unknown as boolean, view: true, list: true, displayName: "Geographical Report", displayOrder: 12 } as Permission,
+  { rightID: 21, parentID: 13, rightName: "ChannelPartnerPayout", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "My Payout", displayOrder: 21 } as Permission,
+  { rightID: 22, parentID: 13, rightName: "SourcingPartnerPayout", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "SP Payout", displayOrder: 22 } as Permission,
+  { rightID: 23, parentID: 0, rightName: "UserManagement", create: true, delete: null as unknown as boolean, view: true, list: true, displayName: "User Management", displayOrder: 3 } as Permission,
+];
+
+const demoSourcingPartnerPermissions: Permission[] = [
+  { rightID: 12, parentID: 0, rightName: "Support", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Support", displayOrder: 18 } as Permission,
+  { rightID: 13, parentID: 0, rightName: "PayOuts", create: true, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Payouts", displayOrder: 20 } as Permission,
+  { rightID: 14, parentID: 0, rightName: "UserMaster", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Master", displayOrder: 6 } as Permission,
+  { rightID: 15, parentID: 0, rightName: "Contracts", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Contracts", displayOrder: 13 } as Permission,
+  { rightID: 16, parentID: 0, rightName: "TermsAndConditions", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Terms & Conditions", displayOrder: 19 } as Permission,
+  { rightID: 17, parentID: 0, rightName: "Subscription", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Subscription", displayOrder: 23 } as Permission,
+  { rightID: 18, parentID: 23, rightName: "ManageUsers", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Manage Users", displayOrder: 4 } as Permission,
+  { rightID: 19, parentID: 7, rightName: "ChannelPartnerReport", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Channel Partner Report", displayOrder: 11 } as Permission,
+  { rightID: 20, parentID: 7, rightName: "GeographicalReport", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Geographical Report", displayOrder: 12 } as Permission,
+  { rightID: 21, parentID: 13, rightName: "ChannelPartnerPayout", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "My Payout", displayOrder: 21 } as Permission,
+  { rightID: 22, parentID: 13, rightName: "SourcingPartnerPayout", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "SP Payout", displayOrder: 22 } as Permission,
+  { rightID: 1, parentID: 0, rightName: "Dashboard", create: null as unknown as boolean, delete: null as unknown as boolean, view: true, list: true, displayName: "Dashboard", displayOrder: 1 } as Permission,
+  { rightID: 2, parentID: 0, rightName: "Profile", create: true, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Profile", displayOrder: 2 } as Permission,
+  { rightID: 3, parentID: 23, rightName: "RoleMaster", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Role Master", displayOrder: 5 } as Permission,
+  { rightID: 4, parentID: 14, rightName: "ClientMaster", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Client Master", displayOrder: 7 } as Permission,
+  { rightID: 5, parentID: 14, rightName: "ChannelPartner", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Channel Partner", displayOrder: 8 } as Permission,
+  { rightID: 6, parentID: 14, rightName: "SourcingPartner", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Sourcing Partner", displayOrder: 9 } as Permission,
+  { rightID: 7, parentID: 0, rightName: "Reports", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Reports", displayOrder: 10 } as Permission,
+  { rightID: 8, parentID: 15, rightName: "ContractChannelPartner", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Channel Partner Contract ", displayOrder: 14 } as Permission,
+  { rightID: 9, parentID: 15, rightName: "ContractSourcingPartner", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Sourcing Partner Contract ", displayOrder: 15 } as Permission,
+  { rightID: 10, parentID: 15, rightName: "ContractClient", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "Client Contract ", displayOrder: 16 } as Permission,
+  { rightID: 11, parentID: 0, rightName: "Policy", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: true, displayName: "Policy", displayOrder: 17 } as Permission,
+  { rightID: 23, parentID: 0, rightName: "UserManagement", create: false, delete: null as unknown as boolean, view: false, list: false, displayName: "User Management", displayOrder: 3 } as Permission,
+];
+
+const demoLoginResponses = {
+  admin: {
+    statusCode: 200,
+    status: true,
+    message: "Successfully signed in!",
+    data: {
+      userID: "f4204821-5d9b-484c-87b7-83e61167840d",
+      userName: "Credorbit Technologies Private Limited",
+      showPanDetailPopUp: false,
+      emailID: "hgV3Kjk4oifc2LWlj9bHFihc5wiugsecOwYSOvwmm10=",
+      mobileNumber: "5D9rxg7pqM2x2MaJHs70MA==",
+      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImM5YUN2VFo2TThQWXVNZWROOU9DQThEZExsQ1lOUEhqTXBXbFZqZlJmVW1VNVpUVWV3VTRBbWRLN2M2am1yN3MiLCJuYmYiOjE3NzYxNDM4MDUsImV4cCI6MTc3NjIzMDIwNSwiaWF0IjoxNzc2MTQzODA1fQ.KIbOidrkl1-NdBnBNCWPGc6KMANLt2iXPgb29hS4pvw",
+      userType: 1,
+      panTypeID: 1,
+      roleID: 1,
+      panNumber: "LX/ScGwqfjd5z6ITxli2Tg==",
+      gstNumber: "bMr/yes6Ss9amRPkUPPH/g==",
+      roleName: "Admin",
+      profilePicture: "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/f4204821-5d9b-484c-87b7-83e61167840d.png?sv=2025-05-05&se=2026-04-14T05%3A41%3A22Z&sr=b&sp=r&sig=hGREuSFpeLJLX7f%2FjtsrYYB4vCl8uvSL3ei1kaFFLmk%3D",
+      contractEnforcementDate: null as unknown as string,
+      isDefaultCpClient: false,
+      isContractSigned: false,
+      permissions: demoAdminPermissions,
+    },
+  },
+  channelPartner: {
+    statusCode: 200,
+    status: true,
+    message: "Successfully signed in!",
+    data: {
+      userID: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
+      userName: "Jarvis Credo CP",
+      showPanDetailPopUp: false,
+      emailID: "PjCsDPUr/SMcy0TJrJ1Wb5Ggye2vwjyj41h4oJMW5LQ=",
+      mobileNumber: "DR/IXQnqfRCnSsOyS0i9gA==",
+      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlBXUzJKTkJEU2dRMDErK3BXY2tLVHZ4a0ZZaHZSQU1XeVByTzRHT1cxWmRoVUFRMyswa2s5aWFJVVRVbmhpRDQiLCJuYmYiOjE3NzYxNDE3NzYsImV4cCI6MTc3NjIyODE3NiwiaWF0IjoxNzc2MTQxNzc2fQ.L4eRsEupN58R6jP_vMF3lUyUpwSNoniDuxoy5Wby7BY",
+      userType: 2,
+      panTypeID: 9,
+      roleID: 2,
+      panNumber: "uBrXSZkYxtxeJ12EzmYaLA==",
+      gstNumber: "galvf4LyZEjBmoENB1GWrA==",
+      roleName: "Channel Partner",
+      profilePicture: "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9.jpg?sv=2025-05-05&se=2026-04-14T05%3A42%3A54Z&sr=b&sp=r&sig=so0tNnxHo%2BI7g6OhYCXyZ6sITEpd%2F6o%2FGcmV1iUtrI0%3D",
+      contractEnforcementDate: "2025-10-09T00:00:00",
+      isDefaultCpClient: false,
+      isContractSigned: true,
+      permissions: demoChannelPartnerPermissions,
+    },
+  },
+  sourcingPartner: {
+    statusCode: 200,
+    status: true,
+    message: "Successfully signed in!",
+    data: {
+      userID: "19f2869e-95b7-4faf-81f3-998ede783b61",
+      userName: "Darshak's SP",
+      showPanDetailPopUp: false,
+      emailID: "c7qsnirnKR8HV2QEhD1LgIDxNYkmDwJfieH+CgeLmMA=",
+      mobileNumber: "omkLM1XLNKJoEaMlLFlxLQ==",
+      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlUycDBPNERDTjhveFQ2dGJXTTIzOThidEtmemV0eTlqV3FnRHV3ZWx3SUQzNDJSUTlHNVNFY0J1aVhjNTVaclQiLCJuYmYiOjE3NzYxNDE4MDMsImV4cCI6MTc3NjIyODIwMywiaWF0IjoxNzc2MTQxODAzfQ.daEB5sN8Yn0Eo9-Ea4xH-pMw1vDNRCe3JV4__JOaDik",
+      userType: 3,
+      panTypeID: 1,
+      roleID: 3,
+      panNumber: "XddZrz34byR+vCoIfeTKpw==",
+      gstNumber: "galvf4LyZEjBmoENB1GWrA==",
+      roleName: "Sourcing Partner",
+      profilePicture: "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/19f2869e-95b7-4faf-81f3-998ede783b61.jpg?sv=2025-05-05&se=2026-04-14T05%3A43%3A22Z&sr=b&sp=r&sig=TFjx9sx7TgA0rcqLPp43fl3hcrSMU7OPIXzybtd6th0%3D",
+      contractEnforcementDate: "2025-09-24T00:00:00",
+      isDefaultCpClient: false,
+      isContractSigned: true,
+      permissions: demoSourcingPartnerPermissions,
+    },
+  },
+};
+
+const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) => {
+  const email = decryptDemoValue(encryptedEmail).toLowerCase();
+  const mobile = decryptDemoValue(encryptedMobile);
+
+  if (email === "info@credorbit.com" && mobile === "1111111111") {
+    return {
+      associatedUsers: [demoLoginAssociatedUsers[0]],
+      response: demoLoginResponses.admin,
+    };
+  }
+
+  if (email === "credsp1@yopmail.com" && mobile === "3333333333") {
+    return {
+      associatedUsers: [demoLoginAssociatedUsers[2]],
+      response: demoLoginResponses.sourcingPartner,
+    };
+  }
+
+  return {
+    associatedUsers: [demoLoginAssociatedUsers[1]],
+    response: demoLoginResponses.channelPartner,
+  };
+};
 
 const wait = (ms: number) =>
   new Promise((resolve) => {
@@ -336,8 +495,6 @@ const buildDemoUserName = (encryptedEmail?: string, encryptedPan?: string) => {
   return panNumber || "Demo User";
 };
 
-export const getDemoAuthOtp = () => DEMO_AUTH_OTP;
-
 export const generateDemoPublicToken =
   async (): Promise<IGeneratePublicTokenResponse> => {
     await wait(DEMO_DELAY_MS);
@@ -355,16 +512,16 @@ export const sendDemoOTP = async (bodyRequestObject: any): Promise<ISendOTPRespo
 
   const associatedUsers =
     bodyRequestObject?.otpType === OtpRequestType.LOGIN
-      ? demoLoginAssociatedUsers
+      ? getDemoLoginPreset(
+        bodyRequestObject?.emailID,
+        bodyRequestObject?.mobileNumber,
+      ).associatedUsers
       : [];
 
   return {
     statusCode: 200,
     status: true,
-    message:
-      bodyRequestObject?.otpType === OtpRequestType.LOGIN
-        ? "Successfully sent OTP to your Mobile Number!"
-        : `Demo OTP sent successfully. Use ${DEMO_AUTH_OTP} to continue.`,
+    message: "OTP sent successfully.",
     data: {
       associatedUsers,
     },
@@ -381,16 +538,22 @@ export const verifyDemoOTP = async (
 ): Promise<IVerifyEmailOTPResponse> => {
   await wait(DEMO_DELAY_MS);
 
-  if (String(bodyRequestObject?.otp ?? "") !== DEMO_AUTH_OTP) {
+  const enteredOtp = String(bodyRequestObject?.otp ?? "");
+
+  if (!/^\d{4}$/.test(enteredOtp)) {
     return {
       statusCode: 400,
       status: false,
-      message: `Invalid demo OTP. Please enter ${DEMO_AUTH_OTP}.`,
+      message: "Please enter any valid 4-digit OTP to continue.",
       data: {} as IVerifyEmailOTPResponse["data"],
     };
   }
 
-  const selectedLoginUser = demoLoginAssociatedUsers.find(
+  const loginPreset = getDemoLoginPreset(
+    bodyRequestObject.emailID,
+    bodyRequestObject.mobileNumber,
+  );
+  const selectedLoginUser = loginPreset.associatedUsers.find(
     (user) => user.userID === bodyRequestObject.userID,
   );
   const resolvedUserType =
@@ -405,62 +568,7 @@ export const verifyDemoOTP = async (
       : encryptVAPTData("ABCDE1234F"));
 
   if (!bodyRequestObject.userType) {
-    if (resolvedUserType === CLIENT_ROLE.CHANNEL_PARTNER) {
-      return {
-        statusCode: 200,
-        status: true,
-        message: "Successfully signed in!",
-        data: {
-          userID: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
-          userName: "Jarvis Credo CP",
-          showPanDetailPopUp: false,
-          emailID: "PjCsDPUr/SMcy0TJrJ1Wb5Ggye2vwjyj41h4oJMW5LQ=",
-          mobileNumber: "DR/IXQnqfRCnSsOyS0i9gA==",
-          token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlBXUzJKTkJEU2dRMDErK3BXY2tLVHZ4a0ZZaHZSQU1XeVByTzRHT1cxWmRoVUFRMyswa2s5aWFJVVRVbmhpRDQiLCJuYmYiOjE3NzYwNjg2NzAsImV4cCI6MTc3NjE1NTA3MCwiaWF0IjoxNzc2MDY4NjcwfQ.awRI0EGQHWtvWhgqvhcINt_37Rc96z9WFlZXJDioLyI",
-          userType: 2,
-          panTypeID: 9,
-          roleID: 2,
-          panNumber: "uBrXSZkYxtxeJ12EzmYaLA==",
-          gstNumber: "galvf4LyZEjBmoENB1GWrA==",
-          roleName: "Channel Partner",
-          profilePicture:
-            "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9.jpg?sv=2025-05-05&se=2026-04-13T09%3A14%3A45Z&sr=b&sp=r&sig=tk8%2BOcs7detOcrs4y0Gv81cfVlxmDFMAX%2F%2Bo0X5yjhg%3D",
-          contractEnforcementDate: "2025-10-09T00:00:00",
-          isDefaultCpClient: false,
-          isContractSigned: true,
-          permissions: demoChannelPartnerPermissions,
-        },
-      };
-    }
-
-    if (resolvedUserType === CLIENT_ROLE.SOURCING_PARTNER) {
-      return {
-        statusCode: 200,
-        status: true,
-        message: "Successfully signed in!",
-        data: {
-          userID: selectedLoginUser?.userID || "08dd25b0-d9a3-4d54-8b53-04adf5ca7137",
-          userName:
-            selectedLoginUser?.userName || "MEGHAL SHAH NEW & ASSOCIATES",
-          showPanDetailPopUp: false,
-          emailID: bodyRequestObject.emailID,
-          mobileNumber: bodyRequestObject.mobileNumber,
-          token: "demo-sourcing-partner-token",
-          userType: 3,
-          panTypeID: 9,
-          roleID: 3,
-          panNumber: encryptVAPTData("ABCDE1234F"),
-          gstNumber: null,
-          roleName: "Sourcing Partner",
-          profilePicture: "",
-          contractEnforcementDate: "2025-10-09T00:00:00",
-          isDefaultCpClient: false,
-          isContractSigned: true,
-          permissions: demoChannelPartnerPermissions,
-        },
-      };
-    }
+    return loginPreset.response;
   }
 
   return {

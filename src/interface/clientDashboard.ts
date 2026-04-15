@@ -16,8 +16,8 @@ export interface IClientDashboardData {
   gstReportDate: string | null,
   rocReportDate: string | null,
   cfoReportDate: string | null,
-  creditScoreRefetchedDays: number;
-  incomeTaxRefetchedDays: number;
+  creditScoreRefetchedDays?: number;
+  incomeTaxRefetchedDays?: number;
   loanApplicationList: ILoanApplicationData[];
   gstNumber: string | null;
   totalLoanApplicationsCountByStatus: ITotalCountByStatus[];

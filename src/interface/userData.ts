@@ -58,7 +58,18 @@ interface CoApplicantData {
   id: string;
   aadhaarNumber: string;
   name: string;
+  firstName?: string | null;
+  middleName?: string | null;
+  lastName?: string | null;
   pan: string;
+  address?: string | null;
+  state?: string | null;
+  city?: string | null;
+  pinCode?: string | null;
+  mobile?: string | null;
+  dateOfBirth?: string | null;
+  gender?: string | null;
+  creditScore?: number | null;
 }
 
 interface PartnerData {

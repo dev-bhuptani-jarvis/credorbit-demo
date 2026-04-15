@@ -170,13 +170,15 @@ const ReportDetails = () => {
                         <p className="text-break">{clientDetail?.clientName}</p>
                       </div>
 
-                      <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                        <b>Mobile Number</b>
-                        <p className="text-break">
-                          {formatMobileNumber(clientDetail?.mobileNumber)}
-                        </p>
-                      </div>
-
+                      {clientDetail?.mobileNumber ? (
+                        <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                          <b>Mobile Number</b>
+                          <p className="text-break">
+                            {formatMobileNumber(clientDetail?.mobileNumber)}
+                          </p>
+                        </div>
+                      ) : null}
+                    
                       <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                         <b>Email</b>
 
