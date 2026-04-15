@@ -30,6 +30,7 @@ export interface IRolePermission {
   id: number | null;
   rightID: number;
   rightName: string;
+  displayName?: string;
   displayOrder: number;
   create: boolean | null;
   view: boolean | null;

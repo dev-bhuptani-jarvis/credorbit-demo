@@ -11,7 +11,6 @@ import {
   RouteParams,
 } from "../../utils/constants/constant";
 import {
-  downloadAllReportsAPI,
   getCpReportDetailsAPI,
 } from "../../utils/axios/apiServices";
 import { handleFileDownload, toastError } from "../../utils/functions/shared";
@@ -104,44 +103,6 @@ const ReportDetails = () => {
     );
   };
 
-  const handleDownloadAllReports = async (): Promise<void> => {
-    if (!clientDetail?.clientID) return;
-
-    const reportTypes =
-      clientDetail?.clientReports
-        .map((report) => report.reportType)
-        .filter((type) => type !== undefined) || [];
-
-    if (clientDetail?.clientReports.length === 0) {
-      toastError("No valid report types found");
-      return;
-    }
-
-    setLoading(true);
-
-    const response: ArrayBuffer = await downloadAllReportsAPI(
-      reportTypes,
-      clientDetail?.clientID,
-    );
-
-    const blob = new Blob([response], { type: "application/zip" });
-
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.download = `Reports-${clientDetail.clientName}.zip`;
-
-    document.body.appendChild(a);
-    a.click();
-
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-
-    setLoading(false);
-  };
-
   useEffect(() => {
     fetchChannelPartnerReportApi();
   }, [id]);
@@ -226,15 +187,6 @@ const ReportDetails = () => {
                 </div>
 
                 <div className="col-lg-6 col-sm-12 col-12 mt-4">
-                  <Button
-                    label="Download All Reports"
-                    className={`btn ${clientDetail?.clientReports.length === 0
-                        ? "btn-orange-disabled"
-                        : "btn-orange"
-                      } me-2`}
-                    onClick={handleDownloadAllReports}
-                    disabled={clientDetail?.clientReports.length === 0}
-                  />
                   <BackButton />
                 </div>
               </div>

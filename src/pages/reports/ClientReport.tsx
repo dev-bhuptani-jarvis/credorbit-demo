@@ -12,7 +12,6 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import {
-  downloadAllReportsAPI,
   getCpReportDetailsAPI,
 } from "../../utils/axios/apiServices";
 import TableTitle from "../../components/TableTitle";
@@ -79,37 +78,6 @@ const ClientReport = () => {
     setLoading(false);
   };
 
-  const handleDownloadAllReports = async (): Promise<void> => {
-    const reportTypes = reportsData
-      .map((report) => report.reportType)
-      .filter((type) => type !== undefined);
-
-    if (reportTypes.length === 0) {
-      toastError("Please select the report to download");
-      return;
-    }
-
-    const response: ArrayBuffer = await downloadAllReportsAPI(
-      reportTypes,
-      userID,
-    );
-
-    const blob = new Blob([response], { type: "application/zip" });
-
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.download = `Reports-${userName}.zip`;
-
-    document.body.appendChild(a);
-    a.click();
-
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-  };
-
   useEffect(() => {
     fetchClientReports();
   }, []);
@@ -124,13 +92,13 @@ const ClientReport = () => {
             <TableTitle title="Reports" />
 
             <div className="BtnRightHldr flex-md-wrap">
-              {reportsData.length > 0 && (
+              {/* {reportsData.length > 0 && (
                 <Button
                   label="Download All Reports"
                   className="btn btn-orange"
                   onClick={handleDownloadAllReports}
                 />
-              )}
+              )} */}
             </div>
           </div>
         </div>

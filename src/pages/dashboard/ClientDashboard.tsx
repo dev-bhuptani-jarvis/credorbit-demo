@@ -7,7 +7,6 @@ import {
   IPartnerScore,
 } from "../../interface/clientDashboard";
 import {
-  downloadAllReportsAPI,
   getAllLoanApplicationsAPI,
   getClientDashboardAPI,
   getCreditAnalyticsSendOtpAPI,
@@ -637,57 +636,6 @@ const ClientDashboard = () => {
     setLoading(false);
   };
 
-  const handleDownloadAllReport = async (): Promise<void> => {
-    const selectedReportData =
-      clientInfo?.reports?.filter(
-        (report: IClientDetailList) => selectedReports[report.reportType],
-      ) ?? [];
-
-    const reportTypes = selectedReportData
-      ?.map((report) => report.reportType)
-      .filter((type) => type !== undefined);
-
-    if (reportTypes.length === 0) {
-      toastError("Please select the report to download");
-      return;
-    }
-
-    if (reportTypes.length === 1) {
-      const singleReport = selectedReportData[0];
-      const filePath = singleReport.filePath.replace(/\\/g, "/");
-
-      const a = document.createElement("a");
-      a.href = filePath;
-      a.download = `${singleReport.name}.xlsx`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } else {
-      const response: ArrayBuffer = await downloadAllReportsAPI(
-        reportTypes,
-        userID,
-      );
-
-      const blob = new Blob([response], { type: "application/zip" });
-
-      const url = window.URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-
-      a.href = url;
-      a.download = `Reports-${userName}.zip`;
-
-      document.body.appendChild(a);
-      a.click();
-
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    }
-
-    setSelectedReports({});
-    setShowDownloadReportModal(false);
-  };
-
   const footerContent = (
     <div className="modal-footer gap-3">
       <Button
@@ -702,7 +650,7 @@ const ClientDashboard = () => {
         Cancel
       </Button>
 
-      <Button
+      {/* <Button
         className={`btn ${
           loading ? "btn-orange-disabled" : "btn-orange"
         } w-100`}
@@ -710,7 +658,7 @@ const ClientDashboard = () => {
         onClick={handleDownloadAllReport}
       >
         {loading ? "Generating Report..." : "Download Report"}
-      </Button>
+      </Button> */}
     </div>
   );
 

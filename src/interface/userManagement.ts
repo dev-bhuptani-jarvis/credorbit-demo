@@ -74,7 +74,7 @@ interface IGetAddEditRoleUserData {
 
 export interface IGetUserRightsForUserManagementResponse
   extends APIResponseEntity {
-  data: IUserRightData;
+  data: IUserRightData | null;
 }
 
 export interface IUserRightData {

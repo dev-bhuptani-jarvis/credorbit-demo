@@ -376,14 +376,6 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
     if (!checkResponse) return;
 
     if (checkResponse && checkResponse.statusCode === 200) {
-      const data = checkResponse.data as IIsProceedForGeneratingReport;
-
-      if (data.isInProgress) {
-        toastErrorWithExtraTime(checkResponse.message);
-        setLoading(false);
-        return;
-      }
-
       setLoading(false);
 
       const groupedDocuments = finalBanksDocument.reduce(
@@ -460,13 +452,7 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
       if (!data.isProceedForCamReport && !IsNullOrEmptyArray(data.reports)) {
         setCAMReportPopUp(true);
         setCamReportDetails(data.reports);
-      } else if (
-        !data.isProceedForCamReport &&
-        IsNullOrEmptyArray(data.reports)
-      ) {
-        setCamReportDetails([]);
-        toastErrorWithExtraTime(response?.message);
-      } else if (data.isProceedForCamReport) {
+      } else {
         setCamReportDetails([]);
 
         showGlobalReportModal(response?.message, "Banking Report Update");
@@ -478,9 +464,6 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
             loanApp: state?.loanApp,
           },
         });
-      } else {
-        setCamReportDetails([]);
-        toastErrorWithExtraTime(response?.message);
       }
     } else {
       toastErrorWithExtraTime(response?.message);
@@ -582,12 +565,12 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
         (doc: IUploadedBankDocumentDetails) => {
           return doc.id === reUploadDocumentID
             ? {
-                ...updatedDocument,
-                bankName: "",
-                valid: errorMessages.length === 0,
-                message:
-                  errorMessages.length > 0 ? errorMessages.join(", ") : null,
-              }
+              ...updatedDocument,
+              bankName: "",
+              valid: errorMessages.length === 0,
+              message:
+                errorMessages.length > 0 ? errorMessages.join(", ") : null,
+            }
             : doc;
         },
       );
@@ -868,14 +851,6 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
     if (!checkResponse) return;
 
     if (checkResponse && checkResponse.statusCode === 200) {
-      const data = checkResponse.data as IIsProceedForGeneratingReport;
-
-      if (data.isInProgress) {
-        toastErrorWithExtraTime(checkResponse.message);
-        setLoading(false);
-        return;
-      }
-
       setLoading(false);
 
       if (bankingLastReportDate < 30) {
@@ -904,9 +879,8 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
       />
 
       <Button
-        className={`btn ${
-          loading || !passwordValue ? "btn-orange-disabled" : "btn-orange"
-        }  w-100 ms-2 text-center`}
+        className={`btn ${loading || !passwordValue ? "btn-orange-disabled" : "btn-orange"
+          }  w-100 ms-2 text-center`}
         label="Submit"
         disabled={loading || !passwordValue}
         onClick={handlePasswordChange}
@@ -938,11 +912,10 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
       </Button>
 
       <Button
-        className={`btn ${
-          loading || validAllDocument
+        className={`btn ${loading || validAllDocument
             ? "btn btn-orange-disabled cursor-not-allowed"
             : "btn-orange"
-        } w-100 text-center`}
+          } w-100 text-center`}
         onClick={() =>
           validateBankStatementFilesFunction(uploadedBanksDocument)
         }
@@ -1089,9 +1062,8 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
             {state !== "dashboard" && (
               <Button
-                className={`btn ${
-                  !showPrevDocs ? "btn-orange-disabled" : "btn-orange"
-                } ms-2 text-center`}
+                className={`btn ${!showPrevDocs ? "btn-orange-disabled" : "btn-orange"
+                  } ms-2 text-center`}
                 onClick={handleCheckEligibility}
                 disabled={!showPrevDocs}
                 label="Check Eligibility"
@@ -1215,9 +1187,8 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
               )}
 
               <Button
-                className={`btn ${
-                  loading ? "btn-orange-disabled" : "btn-orange"
-                } ms-2 text-center`}
+                className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+                  } ms-2 text-center`}
                 disabled={loading}
                 label="Generate Report"
                 onClick={handleUpload}
@@ -1225,9 +1196,8 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
               {state !== "dashboard" && (
                 <Button
-                  className={`btn ${
-                    !checkEligibilityBtn ? "btn-orange-disabled" : "btn-orange"
-                  } ms-2 text-center`}
+                  className={`btn ${!checkEligibilityBtn ? "btn-orange-disabled" : "btn-orange"
+                    } ms-2 text-center`}
                   onClick={handleCheckEligibility}
                   disabled={!checkEligibilityBtn}
                   label="Check Eligibility"
@@ -1240,7 +1210,7 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
       <Dialog
         visible={reportLoading}
-        onHide={() => {}}
+        onHide={() => { }}
         draggable={false}
         resizable={false}
         modal

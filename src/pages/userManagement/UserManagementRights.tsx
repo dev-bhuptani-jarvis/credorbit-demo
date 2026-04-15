@@ -52,7 +52,7 @@ const UserManagementRights = () => {
 
     if (!response) return;
 
-    if (response && response.statusCode === 200) {
+    if (response && response.statusCode === 200 && response.data) {
       const updatedPermissions = {
         ...response.data,
         userEmail: response.data.userEmail ? decryptVAPTData(response.data.userEmail) : "",

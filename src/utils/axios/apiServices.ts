@@ -186,13 +186,45 @@ import {
 import { getDemoUserProfileByContext } from "../demo/demoProfile";
 import { getDemoCpReportDetailByClientId } from "../demo/demoReports";
 import {
+  getDemoAddPanForCP,
+  getDemoAdminChannelPartnerReport,
+  getDemoAdminDashboard,
+  getDemoAdminGeographicalReport,
+  getDemoChannelPartnerDetail,
+  getDemoApplyForLoan,
   getDemoBankingAnalyticsDetails,
+  getDemoChannelPartnerListing,
+  getDemoCreateSpPaymentRequest,
+  getDemoDeleteRole,
+  getDemoDeleteUploadRemainingDocuments,
   getDemoDocumentDetails,
   getDemoDocumentStatus,
+  getDemoGenerateAadharOtp,
+  getDemoFetchUserTabwise,
+  getDemoFetchAllPayments,
   getDemoGstDetails,
   getDemoItrDetails,
+  getDemoInstitutionList,
+  getDemoLoanMarketplace,
+  getDemoProceedForCamReport,
+  getDemoProceedForCreditReport,
   getDemoSecureUnsecureDocumentList,
+  getDemoSendOtpForCreditReport,
   getDemoSubfolderDetails,
+  getDemoSubmitApplicationToBank,
+  getDemoSubmitApplyForLoan,
+  getDemoSubmitUserRightsForUserManagement,
+  getDemoUploadedBankDocuments,
+  getDemoUploadAllDocuments,
+  getDemoUploadBankStatementFiles,
+  getDemoUploadLoanDocuments,
+  getDemoUpdatePayout,
+  getDemoUserRightsForUserManagement,
+  getDemoValidateBankStatementFiles,
+  getDemoValidateGstReportGeneration,
+  getDemoVerifyOtpAndGenerateReport,
+  getDemoAddCreditForUser,
+  getDemoMoveDocument,
 } from "../demo/demoReports";
 import {
   addDemoUserWithoutOtp,
@@ -352,9 +384,7 @@ export const verifyEmailOTPAPI = async (
 export const getChannelPartnerListing = async (
   data: IChannelPartnerListParams
 ): Promise<IChannelPartnerResponse> => {
-  return await axios.get(`${API_URL}/ChannelPartner/getAllChannelpartners`, {
-    params: data,
-  });
+  return await getDemoChannelPartnerListing();
 };
 
 export const fetchDetailsByPan = async (
@@ -397,7 +427,7 @@ export const deleteUser = async (
 export const getChannelPartnerDetail = async (
   params: IChannelPartnerParams
 ): Promise<IChannelPartnerDetailResponse> => {
-  return await axios.get(`${API_URL}/ChannelPartner/viewCpDetails`, { params });
+  return await getDemoChannelPartnerDetail();
 };
 
 export const logoutAPI = async (): Promise<ILogoutResponse> => {
@@ -471,7 +501,7 @@ export const updateRoleDetailAPI = async (
 export const deleteRoleApi = async (
   params: IRoleParams
 ): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/RolesAndRights/deleteRole`, params);
+  return await getDemoDeleteRole();
 };
 
 export const getChannelPartnerDashboardAPI =
@@ -495,7 +525,7 @@ export const updatePayOutsDetailsAPI = async (body: {
   userID: string;
   percent: number;
 }): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/PayOut/updatePayOut`, body);
+  return await getDemoUpdatePayout();
 };
 
 export const getContractListAPI = async (
@@ -535,22 +565,13 @@ export const updateSupportDataAPI = async (
 export const getCreditAnalyticsSendOtpAPI = async (
   partnerID: string
 ): Promise<IExternalReportResponse> => {
-  return await axios.post(
-    `${API_URL}/CreditAnalytics/sendOtpForCreditReport`,
-    {},
-    {
-      params: { partnerID },
-    }
-  );
+  return await getDemoSendOtpForCreditReport();
 };
 
 export const getCreditAnalyticsVerifyOtpAPI = async (
   body: IFetchCreditScoreBody
 ): Promise<ICreditAnalyticsResponse> => {
-  return await axios.post(
-    `${API_URL}/CreditAnalytics/verifyOtpAndGenerateReport`,
-    body
-  );
+  return await getDemoVerifyOtpAndGenerateReport();
 };
 
 export const fetchImpersonateUser = async (
@@ -561,21 +582,13 @@ export const fetchImpersonateUser = async (
 
 export const getInstitutionList =
   async (): Promise<IInstitutionListResponse> => {
-    return await axios.get(`${API_URL}/Reports/getInstitutionList`);
+    return await getDemoInstitutionList();
   };
 
 export const getBankDetailsAPI = async (
   body: FormData
 ): Promise<IUploadBankDocumentResponse> => {
-  return await axios.post(
-    `${API_URL}/ContentManagement/uploadLoanDocuments`,
-    body,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  return await getDemoUploadLoanDocuments();
 };
 
 export const fetchCpSpListAPI = async (
@@ -587,13 +600,13 @@ export const fetchCpSpListAPI = async (
 export const addPanForCPAPI = async (
   body: OnlyPanNumber
 ): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/Auth/addPanForCP`, body);
+  return await getDemoAddPanForCP();
 };
 
 export const generateAadharOTP = async (
   body: OnlyAadharNumber
 ): Promise<IAadharCardResponse> => {
-  return await axios.post(`${API_URL}/UserDetails/generateAadharOTP`, body);
+  return await getDemoGenerateAadharOtp();
 };
 
 export const updateAadharAPI = async (
@@ -614,7 +627,7 @@ export const addLoanApplicationAPI = async (
 
 export const getAdminDashboardAPI =
   async (): Promise<IAdminDashboardResponse> => {
-    return await axios.get(`${API_URL}/LoanApplication/getAdminDashboard`);
+    return await getDemoAdminDashboard();
   };
 
 export const getUserListingAPI = async (
@@ -632,7 +645,7 @@ export const submitAddEditRoleUserDataAPI = async (
 export const createSpPaymentRequestAPI = async (
   body: ICreatePayOutsRequestParams
 ): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/PayOut/createSpPaymentRequest`, body);
+  return await getDemoCreateSpPaymentRequest();
 };
 
 export const generateCpPayoutInvoiceAPI = async (
@@ -668,37 +681,25 @@ export const getAddEditRoleUserDataAPI = async (params: {
 export const getUserRightsForUserManagementAPI = async (params: {
   userID: string;
 }): Promise<IGetUserRightsForUserManagementResponse> => {
-  return await axios.get(
-    `${API_URL}/UserMaster/getUserRightsForUserManagement`,
-    {
-      params,
-    }
-  );
+  return await getDemoUserRightsForUserManagement();
 };
 
 export const submitUserRightsForUserManagementAPI = async (
   body: IUpdateUserRightBodyData
 ): Promise<IGetUserRightsForUserManagementResponse> => {
-  return await axios.post(
-    `${API_URL}/UserMaster/submitUserRightsForUserManagement`,
-    body
-  );
+  return await getDemoSubmitUserRightsForUserManagement();
 };
 
 export const getAdminChannelPartnerReportAPI = async (
   params: IReportParams
 ): Promise<IReportResponse> => {
-  return await axios.get(`${API_URL}/Reports/getAdminChannelPartnerReport`, {
-    params,
-  });
+  return await getDemoAdminChannelPartnerReport();
 };
 
 export const getAdminGeographicalReportAPI = async (
   params: IReportParams
 ): Promise<IGeographicalReportResponse> => {
-  return await axios.get(`${API_URL}/Reports/getAdminGeographicalReport`, {
-    params,
-  });
+  return await getDemoAdminGeographicalReport();
 };
 
 export const updateLoanApplicationStatusAPI = async (
@@ -710,18 +711,13 @@ export const updateLoanApplicationStatusAPI = async (
 export const getApplyForLoanAPI = async (
   params: IGetApplyForLoanParams
 ): Promise<IGetApplyForLoanResponse> => {
-  return await axios.get(`${API_URL}/LoanApplication/getApplyForLoan`, {
-    params,
-  });
+  return await getDemoApplyForLoan();
 };
 
 export const submitApplyForLoanAPI = async (
   body: ISubmitCoApplicant
 ): Promise<APIResponseEntity> => {
-  return await axios.post(
-    `${API_URL}/LoanApplication/submitApplyForLoan`,
-    body
-  );
+  return await getDemoSubmitApplyForLoan();
 };
 
 export const getGstReportGenerateOtpAPI = async (
@@ -854,33 +850,19 @@ export const fileAutomatedRequestForItrAPI = async (
 export const resendOtpForCreditReportAPI = async (
   body: IResendOTPCreditScoreBody
 ): Promise<any> => {
-  return await axios.post(
-    `${API_URL}/CreditAnalytics/resendOtpForCreditReport`,
-    body
-  );
+  return await getDemoSendOtpForCreditReport();
 };
 
 export const uploadBankStatementFilesAPI = async (
   body: UploadRequestBody
 ): Promise<APIResponseEntity> => {
-  return await axios.post(
-    `${API_URL}/ContentManagement/uploadBankStatementFiles`,
-    body
-  );
+  return await getDemoUploadBankStatementFiles();
 };
 
 export const uploadAllDocumentsAPI = async (
   body: FormData
 ): Promise<APIResponseEntity> => {
-  return await axios.post(
-    `${API_URL}/ContentManagement/uploadAllDocuments`,
-    body,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  return await getDemoUploadAllDocuments();
 };
 
 export const deleteReuploadLoanDocumentAPI = async (
@@ -900,55 +882,23 @@ export const deleteReuploadLoanDocumentAPI = async (
 export const deleteUploadRemainingDocumentsAPI = async (
   body: FormData
 ): Promise<APIResponseEntity> => {
-  return await axios.post(
-    `${API_URL}/ContentManagement/deleteUploadRemainingDocuments`,
-    body,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
-};
-
-export const downloadAllReportsAPI = async (
-  reportTypes: number[],
-  userId: string
-): Promise<any> => {
-  const queryString =
-    reportTypes.map((type) => `reportTypes=${type}`).join("&") +
-    `&userId=${userId}`;
-
-  return await axios.get(
-    `${API_URL}/Reports/downloadAllReports?${queryString}`,
-    {
-      responseType: "arraybuffer",
-    }
-  );
+  return await getDemoDeleteUploadRemainingDocuments();
 };
 
 export const fetchUploadedBankDocumentsAPI = async (): Promise<any> => {
-  return await axios.get(
-    `${API_URL}/ContentManagement/fetchUploadedBankDocuments`
-  );
+  return await getDemoUploadedBankDocuments();
 };
 
 export const fetchLoanMarketPlaceListingAPI = async (
   params: ILoanMarketPlacePayload
 ): Promise<ILoanMarketResponse> => {
-  return await axios.post(
-    `${API_URL}/LoanApplication/loadLoanMarketPlace`,
-    params
-  );
+  return await getDemoLoanMarketplace();
 };
 
 export const submitApplicationToBankAPI = async (
   params: IGetApplyForLoanParams
 ): Promise<ISubmitLoanApplicationToBankResponse> => {
-  return await axios.post(
-    `${API_URL}/LoanApplication/submitApplicationToBank`,
-    params
-  );
+  return await getDemoSubmitApplicationToBank();
 };
 
 export const updateGstDetailsAPI = async (
@@ -960,7 +910,7 @@ export const updateGstDetailsAPI = async (
 export const validateBankStatementFilesAPI = async (
   body: any
 ): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/ContentManagement/validateBankStatementFiles`, body);
+  return await getDemoValidateBankStatementFiles();
 };
 
 export const createLinkAPI = async (
@@ -986,7 +936,7 @@ export const getSecureUnsecureDocumentListAPI = async (): Promise<IGetSecureUnse
 };
 
 export const moveDocumentAPI = async (body: IMoveDocumentBody): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/ContentManagement/moveDocument`, body);
+  return await getDemoMoveDocument();
 };
 
 export const generateSpPayoutInvoiceAPI = async (body: IGenerateSpPayoutInvoiceParams): Promise<IGenerateSpPayoutInvoiceResponse> => {
@@ -998,11 +948,11 @@ export const generateSubscriptionInvoiceAPI = async (body: IGenerateSubscription
 };
 
 export const fetchAllPaymentsAPI = async (params: IPaginateReqEntityForSubscription): Promise<IFetchAllPaymentsResponse> => {
-  return await axios.get(`${API_URL}/Payment/fetchAllPayments`, { params });
+  return await getDemoFetchAllPayments();
 };
 
 export const validateGstReportGenerationAPI = async (body: IGSTValidateReportBody): Promise<IValidateGSTReportResponse> => {
-  return await axios.post(`${API_URL}/UserDetails/validateGstReportGeneration`, body);
+  return await getDemoValidateGstReportGeneration();
 };
 
 export const generateGstReportAPI = async (body: IGSTValidateReportBody): Promise<APIResponseEntity> => {
@@ -1038,19 +988,11 @@ export const getDataByPincodeAPI = async (params: { pincode: number }): Promise<
 }
 
 export const getPaymentFetchUserTabWiseAPI = async (params: IPaginateReqEntityForFetchUserTabWise): Promise<IFetchTabWiseUserListingResponse> => {
-  return await axios.get(
-    `${API_URL}/Payment/fetchUserTabwise`,
-    {
-      params,
-    }
-  );
+  return await getDemoFetchUserTabwise(params.type);
 };
 
 export const addCreditsAPI = async (body: IAddCreditsBody): Promise<APIResponseEntity> => {
-  return await axios.post(
-    `${API_URL}/Payment/addCreditForUser`,
-    body
-  );
+  return await getDemoAddCreditForUser();
 };
 
 export const getUserListForAdminContractListAPI = async (params: IContractListParams): Promise<IUserListForAdminContractListResponse> => {
@@ -1082,7 +1024,7 @@ export const verifyReferralCodeAPI = async (referralCode: string): Promise<IReff
 };
 
 export const fetchSubmitApplicationToBankDetailsAPI = async (body: { loanApplicationID: string, bankID: number }): Promise<ISubmitLoanApplicationToBankResponse> => {
-  return await axios.post(`${API_URL}/LoanApplication/submitApplicationToBank`, body);
+  return await getDemoSubmitApplicationToBank();
 }
 
 export const fetchReferralCodeAPI = async (): Promise<IRefferalCodeResponse> => {
@@ -1092,14 +1034,7 @@ export const fetchReferralCodeAPI = async (): Promise<IRefferalCodeResponse> => 
 export const IsProceedForCamReport = async (
   reportType?: number
 ): Promise<IIsProceedForCamReportResponse> => {
-  return await axios.get(
-    `${API_URL}/ContentManagement/isProceedForCamReport`,
-    {
-      params: {
-        ReportType: reportType,
-      },
-    }
-  );
+  return await getDemoProceedForCamReport();
 };
 
 export const fetchStatesAPI = async (): Promise<IFetchStateResponse> => {
@@ -1115,5 +1050,5 @@ export const updateLoanApplicationAmountAPI = async (body: { loanAppID: string, 
 }
 
 export const proceedForCreditReportAPI = async (): Promise<IIsProceedForCreditReportResponse> => {
-  return await axios.post(`${API_URL}/CreditAnalytics/proceedForCreditReport`);
+  return await getDemoProceedForCreditReport();
 };
