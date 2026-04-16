@@ -243,6 +243,10 @@ export const getDemoUserProfileByContext = async (
     if (email === "credsp1@yopmail.com") {
       return sourcingPartnerProfileResponse;
     }
+
+    if (email === "client@yopmail.com") {
+      return impersonatedClientProfileResponse;
+    }
   } catch {
     return channelPartnerProfileResponse;
   }

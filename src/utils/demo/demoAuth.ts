@@ -349,6 +349,32 @@ const demoSourcingPartnerPermissions: Permission[] = [
   { rightID: 23, parentID: 0, rightName: "UserManagement", create: false, delete: null as unknown as boolean, view: false, list: false, displayName: "User Management", displayOrder: 3 } as Permission,
 ];
 
+const demoClientPermissions: Permission[] = [
+  { rightID: 1, parentID: 0, rightName: "Dashboard", create: null, delete: null, view: null, list: true, displayName: "Dashboard", displayOrder: 1 },
+  { rightID: 2, parentID: 0, rightName: "Profile", create: true, delete: null, view: null, list: true, displayName: "Profile", displayOrder: 2 },
+  { rightID: 3, parentID: 23, rightName: "RoleMaster", create: null, delete: null, view: null, list: null, displayName: "Role Master", displayOrder: 5 },
+  { rightID: 4, parentID: 14, rightName: "ClientMaster", create: null, delete: null, view: null, list: null, displayName: "Client Master", displayOrder: 7 },
+  { rightID: 5, parentID: 14, rightName: "ChannelPartner", create: null, delete: null, view: null, list: null, displayName: "Channel Partner", displayOrder: 8 },
+  { rightID: 6, parentID: 14, rightName: "SourcingPartner", create: null, delete: null, view: null, list: null, displayName: "Sourcing Partner", displayOrder: 9 },
+  { rightID: 7, parentID: 0, rightName: "Reports", create: null, delete: null, view: true, list: true, displayName: "Reports", displayOrder: 10 },
+  { rightID: 8, parentID: 15, rightName: "ContractChannelPartner", create: null, delete: null, view: null, list: null, displayName: "Channel Partner Contract ", displayOrder: 14 },
+  { rightID: 9, parentID: 15, rightName: "ContractSourcingPartner", create: null, delete: null, view: null, list: null, displayName: "Sourcing Partner Contract ", displayOrder: 15 },
+  { rightID: 10, parentID: 15, rightName: "ContractClient", create: null, delete: null, view: null, list: true, displayName: "Client Contract ", displayOrder: 16 },
+  { rightID: 11, parentID: 0, rightName: "Policy", create: null, delete: null, view: null, list: false, displayName: "Policy", displayOrder: 17 },
+  { rightID: 12, parentID: 0, rightName: "Support", create: null, delete: null, view: null, list: true, displayName: "Support", displayOrder: 18 },
+  { rightID: 13, parentID: 0, rightName: "PayOuts", create: null, delete: null, view: null, list: null, displayName: "Payouts", displayOrder: 20 },
+  { rightID: 14, parentID: 0, rightName: "UserMaster", create: null, delete: null, view: null, list: null, displayName: "Master", displayOrder: 6 },
+  { rightID: 15, parentID: 0, rightName: "Contracts", create: null, delete: null, view: null, list: true, displayName: "Contracts", displayOrder: 13 },
+  { rightID: 16, parentID: 0, rightName: "TermsAndConditions", create: null, delete: null, view: null, list: null, displayName: "Terms & Conditions", displayOrder: 19 },
+  { rightID: 17, parentID: 0, rightName: "Subscription", create: null, delete: null, view: null, list: true, displayName: "Subscription", displayOrder: 23 },
+  { rightID: 18, parentID: 23, rightName: "ManageUsers", create: null, delete: null, view: null, list: null, displayName: "Manage Users", displayOrder: 4 },
+  { rightID: 19, parentID: 7, rightName: "ChannelPartnerReport", create: null, delete: null, view: null, list: null, displayName: "Channel Partner Report", displayOrder: 11 },
+  { rightID: 20, parentID: 7, rightName: "GeographicalReport", create: null, delete: null, view: null, list: null, displayName: "Geographical Report", displayOrder: 12 },
+  { rightID: 21, parentID: 13, rightName: "ChannelPartnerPayout", create: null, delete: null, view: null, list: null, displayName: "My Payout", displayOrder: 21 },
+  { rightID: 22, parentID: 13, rightName: "SourcingPartnerPayout", create: null, delete: null, view: null, list: null, displayName: "SP Payout", displayOrder: 22 },
+  { rightID: 23, parentID: 0, rightName: "UserManagement", create: false, delete: null, view: false, list: false, displayName: "User Management", displayOrder: 3 },
+];
+
 const demoLoginResponses = {
   admin: {
     statusCode: 200,
@@ -422,6 +448,31 @@ const demoLoginResponses = {
       permissions: demoSourcingPartnerPermissions,
     },
   },
+  client: {
+    statusCode: 200,
+    status: true,
+    message: "Successfully signed in!",
+    data: {
+      userID: "08de0598-4bee-48ca-8a7c-005b36583e79",
+      userName: "NEXUS NUTRI SCIENCE LIMITED",
+      showPanDetailPopUp: false,
+      emailID: "QGbhj6TQHkSdcMwrOQjuXnJm9WgL5JmzhNFbOyF3+QA=",
+      mobileNumber: "7UnlDe9E9Dd9xrAPlVCSAQ==",
+      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Ik51c0JFTWZlWkdNOVZsSjZJb21kYjU1UG5DQ3VwcHBwdmlmWk52QWFoSXkveVlIRzVKbGhXU1llWTM1bTZaU3kiLCJuYmYiOjE3NzYxNjA2OTMsImV4cCI6MTc3NjI0NzA5MywiaWF0IjoxNzc2MTYwNjkzfQ.Qph5BLfmqYB-heZ5IleZXexFlvvr-JeWX-AAYa0-eZQ",
+      userType: 4,
+      panTypeID: 2,
+      roleID: 4,
+      panNumber: "cgsUTjP4e1TKDstAGzjwUw==",
+      gstNumber: "djtPZLt2l6mxlm5kPD32xw==",
+      roleName: "Client",
+      profilePicture:
+        "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/08de0598-4bee-48ca-8a7c-005b36583e79.jpg?sv=2025-05-05&se=2026-04-14T10%3A58%3A12Z&sr=b&sp=r&sig=uR6O2zTl1tCA4yRUQsuJrpM2H%2F%2Fqm0lPCv2KiKLicXY%3D",
+      contractEnforcementDate: "2025-10-09T00:00:00",
+      isDefaultCpClient: false,
+      isContractSigned: true,
+      permissions: demoClientPermissions,
+    },
+  },
 };
 
 const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) => {
@@ -439,6 +490,13 @@ const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) =
     return {
       associatedUsers: [demoLoginAssociatedUsers[2]],
       response: demoLoginResponses.sourcingPartner,
+    };
+  }
+
+  if (email === "client@yopmail.com" && mobile === "4444444444") {
+    return {
+      associatedUsers: [demoLoginAssociatedUsers[2]],
+      response: demoLoginResponses.client,
     };
   }
 

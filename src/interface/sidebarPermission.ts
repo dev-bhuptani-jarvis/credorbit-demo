@@ -1,11 +1,11 @@
 export interface Permission {
-  create: boolean;
-  list: boolean;
+  create: boolean | null;
+  list: boolean | null;
   delete?: boolean | null;
   parentID: number;
   rightID: number;
   rightName: string;
-  view: boolean;
+  view: boolean | null;
   displayName: string;
   displayOrder: number;
 }
