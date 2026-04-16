@@ -64,6 +64,7 @@ import {
   setEncryptedSessionStorage,
 } from "../../utils/functions/sessionStorage";
 import {
+  LoanStatusType,
   OTPType,
   ReportType,
   StorageKeyEnum,
@@ -75,8 +76,7 @@ import { environment } from "../../utils/constants/environments";
 import { Checkbox } from "primereact/checkbox";
 import { Tooltip } from "primereact/tooltip";
 import {
-  IClientDetailList,
-  IExternalReportResponse,
+  IExternalReportResponse
 } from "../../interface/reports";
 import { ILogoutResponse } from "../../interface/logout";
 import { incrementResendCount } from "../../store/reducer/resendCountSlice";
@@ -516,7 +516,7 @@ const ClientDashboard = () => {
           <img src="/assets/images/eye.svg" alt="eye-icon" loading="lazy" />
         </Button>
 
-        {!rowData.isCamReportGenerated && (
+        {!rowData.isCamReportGenerated && ![LoanStatusType.DISBURSED, LoanStatusType.SANCTIONED].includes(rowData?.status?.statusID as LoanStatusType) && (
           <>
             <Tooltip target={`#${editTooltipId}`} position="top" />
 
@@ -887,7 +887,7 @@ const ClientDashboard = () => {
         draggable={false}
         resizable={false}
         className="modalWrapper"
-        onHide={() => {}}
+        onHide={() => { }}
         blockScroll
       >
         <div className="text-center">
@@ -956,13 +956,12 @@ const ClientDashboard = () => {
                         </p>
                       )}
                       <Button
-                        className={`btn ${
-                          clientInfo?.creditScore !== null
-                            ? !validUser()
-                              ? "btn-orange-disabled"
-                              : "btn-orange"
+                        className={`btn ${clientInfo?.creditScore !== null
+                          ? !validUser()
+                            ? "btn-orange-disabled"
                             : "btn-orange"
-                        }`}
+                          : "btn-orange"
+                          }`}
                         disabled={
                           clientInfo?.creditScore !== null
                             ? !validUser()
@@ -1376,7 +1375,7 @@ const ClientDashboard = () => {
                   ) : (
                     <>
                       {!clientInfo?.partners ||
-                      clientInfo?.partners?.length === 0 ? (
+                        clientInfo?.partners?.length === 0 ? (
                         <>
                           <p>
                             Generate an OTP to securely fetch your latest credit
@@ -1390,9 +1389,8 @@ const ClientDashboard = () => {
                               disabled={loading}
                             />
                             <Button
-                              className={`btn ${
-                                loading ? "btn-orange-disabled" : "btn-orange"
-                              } text-center`}
+                              className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+                                } text-center`}
                               onClick={() => handleGetCreditScore()}
                               disabled={loading}
                               label={loading ? "Processing..." : "Get OTP"}

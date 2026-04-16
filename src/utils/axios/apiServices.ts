@@ -184,7 +184,7 @@ import {
   getDemoImpersonateUser,
 } from "../demo/demoClient";
 import { getDemoUserProfileByContext } from "../demo/demoProfile";
-import { getDemoCpReportDetailByClientId } from "../demo/demoReports";
+import { getDemoCpReportDetailByClientId, updateAadhar, updateGstDetails } from "../demo/demoReports";
 import {
   getDemoAddPanForCP,
   getDemoAdminChannelPartnerReport,
@@ -261,9 +261,7 @@ import {
   getDemoSubscriptionPlans,
   getDemoSubscriptionUsage,
   getDemoTrackReferrals,
-  getDemoUserManagementList,
-  getDemoUserProfile,
-  getDemoUserNotifications,
+  getDemoUserManagementList, getDemoUserNotifications,
   getDemoWalletHistory,
   logoutDemoUser,
   submitDemoAddEditRoleUserData,
@@ -274,7 +272,7 @@ import {
   uploadDemoSanctionLetter,
   updateDemoUserProfile,
   deleteDemoUserProfile,
-  getVerifyReferralCode,
+  getVerifyReferralCode
 } from "../demo/demoPortal";
 import {
   getDemoContent as getDemoCmsContent,
@@ -612,7 +610,7 @@ export const generateAadharOTP = async (
 export const updateAadharAPI = async (
   body: IUpdateAadhaarBody
 ): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/UserMaster/updateAadhaar`, body);
+  return await updateAadhar();
 };
 
 export const getLoanTypeListAPI = async (): Promise<ILoanTypeListResponse> => {
@@ -904,7 +902,7 @@ export const submitApplicationToBankAPI = async (
 export const updateGstDetailsAPI = async (
   body: IGSTListInfo
 ): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/UserDetails/updateGstDetails`, body);
+  return await updateGstDetails();
 };
 
 export const validateBankStatementFilesAPI = async (

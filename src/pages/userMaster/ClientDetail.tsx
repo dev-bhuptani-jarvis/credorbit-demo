@@ -251,7 +251,7 @@ const ClientDetail = () => {
           <img src="/assets/images/eye.svg" alt="eye-icon" />
         </Button>
 
-        {!rowData.isCamReportGenerated && (
+        {!rowData.isCamReportGenerated && ![LoanStatusType.DISBURSED, LoanStatusType.SANCTIONED].includes(rowData?.status?.statusID as LoanStatusType) && (
           <>
             <Tooltip target={`#${editTooltipId}`} position="top" />
 
@@ -435,9 +435,8 @@ const ClientDetail = () => {
       </Button>
 
       <Button
-        className={`btn ${
-          loading ? "btn-orange-disabled" : "btn-orange"
-        } w-100`}
+        className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+          } w-100`}
         onClick={handleChangeStatus}
         disabled={loading}
       >
@@ -861,9 +860,8 @@ const ClientDetail = () => {
           <div className="row">
             <div className="col-12">
               <TableTitle
-                title={`Client Information - ${
-                  clientDetail?.clientName ? clientDetail?.clientName : ""
-                }`}
+                title={`Client Information - ${clientDetail?.clientName ? clientDetail?.clientName : ""
+                  }`}
               />
 
               <div className="row">
@@ -958,8 +956,8 @@ const ClientDetail = () => {
                           body={(rowData: ILoanApplicationData) =>
                             rowData.sanctionedLoanAmount
                               ? formatCurrencyAmount(
-                                  rowData.sanctionedLoanAmount,
-                                )
+                                rowData.sanctionedLoanAmount,
+                              )
                               : "-"
                           }
                           header="Sanctioned"
@@ -969,8 +967,8 @@ const ClientDetail = () => {
                           body={(rowData: ILoanApplicationData) =>
                             rowData.disbursedLoanAmount
                               ? formatCurrencyAmount(
-                                  rowData.disbursedLoanAmount,
-                                )
+                                rowData.disbursedLoanAmount,
+                              )
                               : "-"
                           }
                           header="Disbursed"
@@ -1048,8 +1046,8 @@ const ClientDetail = () => {
                                     value={
                                       formValues?.dateOfRegistration
                                         ? new Date(
-                                            formValues?.dateOfRegistration,
-                                          )
+                                          formValues?.dateOfRegistration,
+                                        )
                                         : null
                                     }
                                     onChange={(e) =>
@@ -1168,9 +1166,9 @@ const ClientDetail = () => {
                                           <small className="text-muted">
                                             {formValues?.uploadedLetter?.size
                                               ? `${(
-                                                  formValues.uploadedLetter
-                                                    .size / 1024
-                                                ).toFixed(2)} KB`
+                                                formValues.uploadedLetter
+                                                  .size / 1024
+                                              ).toFixed(2)} KB`
                                               : "PDF Document"}
                                           </small>
                                         </div>
@@ -1252,8 +1250,8 @@ const ClientDetail = () => {
                                     value={
                                       formValues?.dateOfRegistration
                                         ? new Date(
-                                            formValues?.dateOfRegistration,
-                                          )
+                                          formValues?.dateOfRegistration,
+                                        )
                                         : null
                                     }
                                     onChange={(e) =>
@@ -1368,21 +1366,20 @@ const ClientDetail = () => {
                                           (item: any, index: number) => (
                                             <div
                                               key={index}
-                                              className={`custom-table-row ${
-                                                index !==
+                                              className={`custom-table-row ${index !==
                                                 disbursementHistoryDetails.length -
-                                                  1
-                                                  ? "border-bottom"
-                                                  : ""
-                                              }`}
+                                                1
+                                                ? "border-bottom"
+                                                : ""
+                                                }`}
                                             >
                                               <div className="table-row">
                                                 <div className="table-col">
                                                   {item.loanDisbursedDate
                                                     ? formatDate(
-                                                        item.loanDisbursedDate,
-                                                        "DD MMM, YYYY",
-                                                      )
+                                                      item.loanDisbursedDate,
+                                                      "DD MMM, YYYY",
+                                                    )
                                                     : "-"}
                                                 </div>
 

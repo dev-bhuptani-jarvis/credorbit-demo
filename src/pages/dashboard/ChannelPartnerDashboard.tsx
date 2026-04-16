@@ -577,9 +577,8 @@ const ChannelPartnerDashboard = () => {
       </Button>
 
       <Button
-        className={`btn ${
-          loading ? "btn-orange-disabled" : "btn-orange"
-        } w-100`}
+        className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+          } w-100`}
         onClick={handleChangeStatus}
         disabled={loading}
       >
@@ -697,7 +696,7 @@ const ChannelPartnerDashboard = () => {
           <img src="/assets/images/eye.svg" alt="eye-icon" loading="lazy" />
         </Button>
 
-        {!rowData.isCamReportGenerated && (
+        {!rowData.isCamReportGenerated && ![LoanStatusType.DISBURSED, LoanStatusType.SANCTIONED].includes(rowData?.status?.statusID as LoanStatusType) && (
           <>
             <Tooltip target={`#${editTooltipId}`} position="top" />
 
@@ -1177,28 +1176,28 @@ const ChannelPartnerDashboard = () => {
 
                   {(clientMasterRight.create ||
                     sourcingPartnerRight.create) && (
-                    <div className="form-group">
-                      <Button
-                        className="btn btn-orange"
-                        icon="bi bi-plus-circle me-2"
-                        iconPos="left"
-                        onClick={() => {
-                          if (
-                            !(userType === CLIENT_ROLE.USER_MANAGEMENT) &&
-                            !isContractSigned &&
-                            !hasSkippedContractAgreement &&
-                            shouldShowContractModal(contractEnforcementDate)
-                          ) {
-                            setShowContractAgreement(true);
-                          } else {
-                            setPanDetailPopUp(true);
-                          }
-                        }}
-                      >
-                        Add Client
-                      </Button>
-                    </div>
-                  )}
+                      <div className="form-group">
+                        <Button
+                          className="btn btn-orange"
+                          icon="bi bi-plus-circle me-2"
+                          iconPos="left"
+                          onClick={() => {
+                            if (
+                              !(userType === CLIENT_ROLE.USER_MANAGEMENT) &&
+                              !isContractSigned &&
+                              !hasSkippedContractAgreement &&
+                              shouldShowContractModal(contractEnforcementDate)
+                            ) {
+                              setShowContractAgreement(true);
+                            } else {
+                              setPanDetailPopUp(true);
+                            }
+                          }}
+                        >
+                          Add Client
+                        </Button>
+                      </div>
+                    )}
                 </div>
               </div>
             </div>
@@ -1236,10 +1235,10 @@ const ChannelPartnerDashboard = () => {
                             <p className="txt-20">
                               Amount: ₹
                               {applicationStatus.amount !== 0 &&
-                              applicationStatus.formattedAmount
+                                applicationStatus.formattedAmount
                                 ? formatDecimalValue(
-                                    applicationStatus.formattedAmount,
-                                  )
+                                  applicationStatus.formattedAmount,
+                                )
                                 : "00"}
                             </p>
                           </div>
@@ -1375,15 +1374,15 @@ const ChannelPartnerDashboard = () => {
 
                   {(shouldShowDisbursedFields() ||
                     shouldShowSanctionedFields()) && (
-                    <Column
-                      body={(rowData: ILoanApplicationData) =>
-                        rowData.sanctionedLoanAmount
-                          ? formatCurrencyAmount(rowData.sanctionedLoanAmount)
-                          : "-"
-                      }
-                      header="Sanctioned"
-                    />
-                  )}
+                      <Column
+                        body={(rowData: ILoanApplicationData) =>
+                          rowData.sanctionedLoanAmount
+                            ? formatCurrencyAmount(rowData.sanctionedLoanAmount)
+                            : "-"
+                        }
+                        header="Sanctioned"
+                      />
+                    )}
 
                   {shouldShowDisbursedFields() && (
                     <Column
@@ -1501,11 +1500,10 @@ const ChannelPartnerDashboard = () => {
         </div>
 
         <Dialog
-          header={`${loanApplicationPopUpDetails?.clientName}${
-            loanApplicationPopUpDetails?.loanType
-              ? ` - ${loanApplicationPopUpDetails.loanType}`
-              : ""
-          }`}
+          header={`${loanApplicationPopUpDetails?.clientName}${loanApplicationPopUpDetails?.loanType
+            ? ` - ${loanApplicationPopUpDetails.loanType}`
+            : ""
+            }`}
           visible={changeStatus}
           onHide={handleReset}
           modal
@@ -1685,9 +1683,9 @@ const ChannelPartnerDashboard = () => {
                                     <small className="text-muted">
                                       {formValues?.uploadedLetter?.size
                                         ? `${(
-                                            formValues.uploadedLetter.size /
-                                            1024
-                                          ).toFixed(2)} KB`
+                                          formValues.uploadedLetter.size /
+                                          1024
+                                        ).toFixed(2)} KB`
                                         : "PDF Document"}
                                     </small>
                                   </div>
@@ -1759,160 +1757,159 @@ const ChannelPartnerDashboard = () => {
 
                       {(shouldShowDisbursedFields() ||
                         shouldShowDisbursedField()) && (
-                        <>
-                          {/* Disbursed Date */}
-                          <div className="mt-3">
-                            <label className="form-label small">
-                              Disbursed Date<sup>*</sup>
-                            </label>
+                          <>
+                            {/* Disbursed Date */}
+                            <div className="mt-3">
+                              <label className="form-label small">
+                                Disbursed Date<sup>*</sup>
+                              </label>
 
-                            <Calendar
-                              name="dateOfRegistration"
-                              value={
-                                formValues?.dateOfRegistration
-                                  ? new Date(formValues?.dateOfRegistration)
-                                  : null
-                              }
-                              onChange={(e) =>
-                                handleDateOfRegistration(e.value as Date | null)
-                              }
-                              placeholder="Select Date"
-                              dateFormat="dd/mm/yy"
-                              className="w-100"
-                              maxDate={new Date()}
-                              showButtonBar
-                              showSeconds // 👈 ADD THIS
-                              stepMinute={1} // 👈 ensures proper time selection
-                              hourFormat="24"
-                            />
+                              <Calendar
+                                name="dateOfRegistration"
+                                value={
+                                  formValues?.dateOfRegistration
+                                    ? new Date(formValues?.dateOfRegistration)
+                                    : null
+                                }
+                                onChange={(e) =>
+                                  handleDateOfRegistration(e.value as Date | null)
+                                }
+                                placeholder="Select Date"
+                                dateFormat="dd/mm/yy"
+                                className="w-100"
+                                maxDate={new Date()}
+                                showButtonBar
+                                showSeconds // 👈 ADD THIS
+                                stepMinute={1} // 👈 ensures proper time selection
+                                hourFormat="24"
+                              />
 
-                            {formErrors.dateOfRegistration && (
-                              <small className="text-danger">
-                                {formErrors.dateOfRegistration}
-                              </small>
-                            )}
-                          </div>
+                              {formErrors.dateOfRegistration && (
+                                <small className="text-danger">
+                                  {formErrors.dateOfRegistration}
+                                </small>
+                              )}
+                            </div>
 
-                          {/* Disbursed Amount */}
-                          <div className="form-group mt-3">
-                            <label className="form-label small">
-                              Disbursed Amount<sup>*</sup>
-                            </label>
+                            {/* Disbursed Amount */}
+                            <div className="form-group mt-3">
+                              <label className="form-label small">
+                                Disbursed Amount<sup>*</sup>
+                              </label>
 
-                            <div className="form-group search">
-                              <i className="bi bi-currency-rupee" />
-                              <InputText
-                                name="amount"
-                                value={formValues?.amount || ""}
-                                maxLength={15}
+                              <div className="form-group search">
+                                <i className="bi bi-currency-rupee" />
+                                <InputText
+                                  name="amount"
+                                  value={formValues?.amount || ""}
+                                  maxLength={15}
+                                  onChange={(e) =>
+                                    handleChange(
+                                      e.target.name,
+                                      e.target.value.toUpperCase().trim(),
+                                    )
+                                  }
+                                  onKeyPress={(e) =>
+                                    restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
+                                  }
+                                  placeholder="Enter Amount"
+                                  className="form-control"
+                                />
+                              </div>
+
+                              {formErrors.amount && (
+                                <small className="text-danger">
+                                  {formErrors.amount}
+                                </small>
+                              )}
+                            </div>
+
+                            {/* Comments */}
+                            <div className="mt-3">
+                              <label className="form-label small">
+                                Comments<sup>*</sup>
+                              </label>
+
+                              <textarea
+                                name="comments"
+                                className="form-control"
+                                rows={3}
+                                placeholder="Enter comments"
+                                value={formValues.comments || ""}
+                                maxLength={150}
                                 onChange={(e) =>
                                   handleChange(
                                     e.target.name,
-                                    e.target.value.toUpperCase().trim(),
+                                    e.target.value.trimStart(),
                                   )
                                 }
-                                onKeyPress={(e) =>
-                                  restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
-                                }
-                                placeholder="Enter Amount"
-                                className="form-control"
                               />
+
+                              {formErrors.comments && (
+                                <small className="text-danger">
+                                  {formErrors.comments}
+                                </small>
+                              )}
                             </div>
 
-                            {formErrors.amount && (
-                              <small className="text-danger">
-                                {formErrors.amount}
-                              </small>
-                            )}
-                          </div>
+                            {/* Disbursement History */}
+                            {disbursementHistoryDetails?.length > 0 && (
+                              <div className="mt-4">
+                                <h6 className="mb-3">Disbursement History</h6>
 
-                          {/* Comments */}
-                          <div className="mt-3">
-                            <label className="form-label small">
-                              Comments<sup>*</sup>
-                            </label>
-
-                            <textarea
-                              name="comments"
-                              className="form-control"
-                              rows={3}
-                              placeholder="Enter comments"
-                              value={formValues.comments || ""}
-                              maxLength={150}
-                              onChange={(e) =>
-                                handleChange(
-                                  e.target.name,
-                                  e.target.value.trimStart(),
-                                )
-                              }
-                            />
-
-                            {formErrors.comments && (
-                              <small className="text-danger">
-                                {formErrors.comments}
-                              </small>
-                            )}
-                          </div>
-
-                          {/* Disbursement History */}
-                          {disbursementHistoryDetails?.length > 0 && (
-                            <div className="mt-4">
-                              <h6 className="mb-3">Disbursement History</h6>
-
-                              <div className="table-responsive-wrapper">
-                                <div className="custom-table">
-                                  {/* Header */}
-                                  <div className="custom-table-header">
-                                    <div className="table-row">
-                                      <div className="table-col">Date</div>
-                                      <div className="table-col">Amount</div>
-                                      <div className="table-col">Comments</div>
+                                <div className="table-responsive-wrapper">
+                                  <div className="custom-table">
+                                    {/* Header */}
+                                    <div className="custom-table-header">
+                                      <div className="table-row">
+                                        <div className="table-col">Date</div>
+                                        <div className="table-col">Amount</div>
+                                        <div className="table-col">Comments</div>
+                                      </div>
                                     </div>
-                                  </div>
 
-                                  {/* Body */}
-                                  {disbursementHistoryDetails.map(
-                                    (item: any, index: number) => (
-                                      <div
-                                        key={index}
-                                        className={`custom-table-row ${
-                                          index !==
-                                          disbursementHistoryDetails.length - 1
+                                    {/* Body */}
+                                    {disbursementHistoryDetails.map(
+                                      (item: any, index: number) => (
+                                        <div
+                                          key={index}
+                                          className={`custom-table-row ${index !==
+                                            disbursementHistoryDetails.length - 1
                                             ? "border-bottom"
                                             : ""
-                                        }`}
-                                      >
-                                        <div className="table-row">
-                                          <div className="table-col">
-                                            {item.loanDisbursedDate
-                                              ? formatDate(
+                                            }`}
+                                        >
+                                          <div className="table-row">
+                                            <div className="table-col">
+                                              {item.loanDisbursedDate
+                                                ? formatDate(
                                                   item.loanDisbursedDate,
                                                   "DD MMM, YYYY",
                                                 )
-                                              : "-"}
-                                          </div>
+                                                : "-"}
+                                            </div>
 
-                                          <div className="table-col">
-                                            ₹{" "}
-                                            {Number(
-                                              item.disbursedAmount || 0,
-                                            ).toLocaleString("en-IN")}
-                                          </div>
+                                            <div className="table-col">
+                                              ₹{" "}
+                                              {Number(
+                                                item.disbursedAmount || 0,
+                                              ).toLocaleString("en-IN")}
+                                            </div>
 
-                                          <div className="table-col">
-                                            {item.loanDisbursementComment ||
-                                              "-"}
+                                            <div className="table-col">
+                                              {item.loanDisbursementComment ||
+                                                "-"}
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                    ),
-                                  )}
+                                      ),
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          )}
-                        </>
-                      )}
+                            )}
+                          </>
+                        )}
                     </div>
                   </div>
                 </div>

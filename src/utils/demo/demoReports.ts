@@ -4745,6 +4745,13 @@ const addPanForCpResponse = {
   data: false,
 } as APIResponseEntity;
 
+const updateAadharResponse = {
+  status: true,
+  statusCode: 200,
+  message: "Aadhaar updated successfully!",
+  data: false,
+} as APIResponseEntity;
+
 const generateAadharOtpResponse = {
   status: true,
   statusCode: 200,
@@ -4862,6 +4869,13 @@ const deleteUploadRemainingDocumentsResponse = {
   ],
 } as APIResponseEntity;
 
+const updateGstDetailsResponse = {
+  status: true,
+  statusCode: 200,
+  message: "GST Added Successfully",
+  data: "true",
+} as APIResponseEntity;
+
 const moveDocumentResponse = {
   status: true,
   statusCode: 200,
@@ -4887,6 +4901,11 @@ export const getDemoDeleteRole = async (): Promise<APIResponseEntity> => {
 export const getDemoAddPanForCP = async (): Promise<APIResponseEntity> => {
   await wait(DEMO_DELAY_MS);
   return addPanForCpResponse;
+};
+
+export const updateAadhar = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return updateAadharResponse;
 };
 
 export const getDemoGenerateAadharOtp = async (): Promise<IAadharCardResponse> => {
@@ -4917,6 +4936,11 @@ export const getDemoUploadAllDocuments = async (): Promise<APIResponseEntity> =>
 export const getDemoDeleteUploadRemainingDocuments = async (): Promise<APIResponseEntity> => {
   await wait(DEMO_DELAY_MS);
   return deleteUploadRemainingDocumentsResponse;
+};
+
+export const updateGstDetails = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return updateGstDetailsResponse;
 };
 
 export const getDemoMoveDocument = async (): Promise<APIResponseEntity> => {
