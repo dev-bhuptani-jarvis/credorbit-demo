@@ -4855,6 +4855,13 @@ const uploadAllDocumentsResponse = {
   ],
 } as unknown as APIResponseEntity;
 
+const deleteReuploadLoanDocumentResponse = {
+  status: true,
+  statusCode: 200,
+  message: "File deleted successfully!",
+  data: null,
+} as unknown as APIResponseEntity;
+
 const deleteUploadRemainingDocumentsResponse = {
   status: true,
   statusCode: 200,
@@ -4880,6 +4887,104 @@ const moveDocumentResponse = {
   status: true,
   statusCode: 200,
   message: "Document moved successfully!",
+  data: null,
+} as APIResponseEntity;
+
+const generateSubscriptionInvoiceResponse = {
+  status: true,
+  statusCode: 200,
+  message: "Invoice generated successfully!",
+  data: "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJarvis Credo CP_20260416_064054.pdf?sv=2025-05-05&se=2026-04-16T07%3A40%3A54Z&sr=b&sp=r&sig=bU1KGxIG%2BqAplFc2tH53FeptDm8EIdpBg8uB6WS%2BoYQ%3D",
+} as unknown as APIResponseEntity;
+
+const updateLoanApplicationAmountResponse = {
+  status: true,
+  statusCode: 200,
+  message: "Loan Application Updated Successfully",
+  data: 1,
+} as APIResponseEntity;
+
+const fileAutomatedRequestForItrUsingLinkResponse = {
+  status: true,
+  statusCode: 200,
+  message:
+    "A link to enter ITR username and password is succsessfully sent to provided Email ID!",
+  data: {
+    responseCode: "SRS016",
+    referenceID: "a667e161-b747-4b69-b9e2-39c26b12a894",
+    reservationId: "32958c28-0647-454a-9037-0e792f6ee89a",
+  },
+} as unknown as APIResponseEntity;
+
+const gstReportGenerateOtpUsingLinkResponse = {
+  status: true,
+  statusCode: 200,
+  message:
+    "OTP generation Link for requested GSTIN is successfully sent to the requested email ID.",
+  data: {
+    responseCode: "SRS016",
+    gstIn: "8lebhIcUZS24q+boxaByLQ==",
+    reservationID: "63a4baf3-70ac-4f67-aa00-3009c38f7fe3",
+    referenceID: "90da13be-481b-40ac-b000-7063b663326a",
+  },
+} as unknown as APIResponseEntity;
+
+const gstReportViaPasswordUsingLinkResponse = {
+  status: true,
+  statusCode: 200,
+  message:
+    "OTP generation Link for requested GSTIN is successfully sent to the requested email ID.",
+  data: {
+    responseCode: "SRS016",
+    gstIn: null,
+    reservationID: "05ea7f78-073b-49c5-ab64-56c5a5a57bf8",
+    referenceID: "d5d69301-a4ca-40e1-b6e2-3922c6d67782",
+  },
+} as unknown as APIResponseEntity;
+
+const gstReportGenerateOtpResponse = {
+  status: true,
+  statusCode: 200,
+  message: "OTP for GST verification has been sent successfully.",
+  data: {
+    responseCode: "SRO037",
+    gstIn: "LrDZ99I/RC7UGJElYhBrLQ==",
+    reservationID: null,
+  },
+} as unknown as APIResponseEntity;
+
+const gstReportVerifyOtpResponse = {
+  status: true,
+  statusCode: 200,
+  message: "OTP verified successfully",
+  data: null,
+} as unknown as APIResponseEntity;
+
+const fileAutomatedRequestForItrResponse = {
+  status: true,
+  statusCode: 200,
+  message: "Report downloaded successfully!",
+  data: null,
+} as unknown as APIResponseEntity;
+
+const generateGstReportResponse = {
+  status: true,
+  statusCode: 200,
+  message: "Report downloaded successfully!",
+  data: null,
+} as APIResponseEntity;
+
+const generateItrReportResponse = {
+  status: true,
+  statusCode: 200,
+  message: "Report downloaded successfully!",
+  data: null,
+} as APIResponseEntity;
+
+const getGstReportForLinkApproachResponse = {
+  status: true,
+  statusCode: 200,
+  message: "GST Report downloaded successfully!",
   data: null,
 } as APIResponseEntity;
 
@@ -4933,6 +5038,11 @@ export const getDemoUploadAllDocuments = async (): Promise<APIResponseEntity> =>
   return uploadAllDocumentsResponse;
 };
 
+export const getDemoDeleteReuploadLoanDocument = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return deleteReuploadLoanDocumentResponse;
+};
+
 export const getDemoDeleteUploadRemainingDocuments = async (): Promise<APIResponseEntity> => {
   await wait(DEMO_DELAY_MS);
   return deleteUploadRemainingDocumentsResponse;
@@ -4946,4 +5056,59 @@ export const updateGstDetails = async (): Promise<APIResponseEntity> => {
 export const getDemoMoveDocument = async (): Promise<APIResponseEntity> => {
   await wait(DEMO_DELAY_MS);
   return moveDocumentResponse;
+};
+
+export const getDemoGenerateSubscriptionInvoice = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return generateSubscriptionInvoiceResponse;
+};
+
+export const getDemoUpdateLoanApplicationAmount = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return updateLoanApplicationAmountResponse;
+};
+
+export const getDemoFileAutomatedRequestForItrUsingLink = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return fileAutomatedRequestForItrUsingLinkResponse;
+};
+
+export const getDemoGstReportGenerateOtpUsingLink = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return gstReportGenerateOtpUsingLinkResponse;
+};
+
+export const getDemoGstReportViaPasswordUsingLink = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return gstReportViaPasswordUsingLinkResponse;
+};
+
+export const getDemoGstReportGenerateOtp = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return gstReportGenerateOtpResponse;
+};
+
+export const getDemoGstReportVerifyOtp = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return gstReportVerifyOtpResponse;
+};
+
+export const getDemoFileAutomatedRequestForItr = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return fileAutomatedRequestForItrResponse;
+};
+
+export const getDemoGenerateGstReport = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return generateGstReportResponse;
+};
+
+export const getDemoGenerateItrReport = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return generateItrReportResponse;
+};
+
+export const getGstReportForLinkApproach = async (): Promise<APIResponseEntity> => {
+  await wait(DEMO_DELAY_MS);
+  return getGstReportForLinkApproachResponse;
 };

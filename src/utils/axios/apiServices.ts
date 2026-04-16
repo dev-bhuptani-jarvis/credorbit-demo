@@ -184,7 +184,7 @@ import {
   getDemoImpersonateUser,
 } from "../demo/demoClient";
 import { getDemoUserProfileByContext } from "../demo/demoProfile";
-import { getDemoCpReportDetailByClientId, updateAadhar, updateGstDetails } from "../demo/demoReports";
+import { getDemoCpReportDetailByClientId, getGstReportForLinkApproach, updateAadhar, updateGstDetails } from "../demo/demoReports";
 import {
   getDemoAddPanForCP,
   getDemoAdminChannelPartnerReport,
@@ -195,14 +195,24 @@ import {
   getDemoBankingAnalyticsDetails,
   getDemoChannelPartnerListing,
   getDemoCreateSpPaymentRequest,
+  getDemoDeleteReuploadLoanDocument,
   getDemoDeleteRole,
   getDemoDeleteUploadRemainingDocuments,
   getDemoDocumentDetails,
   getDemoDocumentStatus,
+  getDemoFileAutomatedRequestForItr,
+  getDemoFileAutomatedRequestForItrUsingLink,
   getDemoGenerateAadharOtp,
+  getDemoGenerateGstReport,
+  getDemoGenerateItrReport,
+  getDemoGstReportGenerateOtp,
+  getDemoGstReportGenerateOtpUsingLink,
+  getDemoGstReportVerifyOtp,
+  getDemoGstReportViaPasswordUsingLink,
   getDemoFetchUserTabwise,
   getDemoFetchAllPayments,
   getDemoGstDetails,
+  getDemoGenerateSubscriptionInvoice,
   getDemoItrDetails,
   getDemoInstitutionList,
   getDemoLoanMarketplace,
@@ -218,6 +228,7 @@ import {
   getDemoUploadAllDocuments,
   getDemoUploadBankStatementFiles,
   getDemoUploadLoanDocuments,
+  getDemoUpdateLoanApplicationAmount,
   getDemoUpdatePayout,
   getDemoUserRightsForUserManagement,
   getDemoValidateBankStatementFiles,
@@ -721,16 +732,13 @@ export const submitApplyForLoanAPI = async (
 export const getGstReportGenerateOtpAPI = async (
   body: IGSTGenerateOTPBody
 ): Promise<IGSTGenerateOTPResponse> => {
-  return await axios.post(
-    `${API_URL}/UserDetails/getGstReportGenerateOtp`,
-    body
-  );
+  return await getDemoGstReportGenerateOtp() as IGSTGenerateOTPResponse;
 };
 
 export const getGstReportVerifyOtpAPI = async (
   body: IGSTVerifyOTPBody
 ): Promise<IExternalReportResponse> => {
-  return await axios.post(`${API_URL}/UserDetails/getGstReportVerifyOtp`, body);
+  return await getDemoGstReportVerifyOtp() as IExternalReportResponse;
 };
 
 export const getGstDetailsAPI = async (): Promise<IGSTReportResponse> => {
@@ -839,10 +847,7 @@ export const getSubFolderDetailsAPI = async (params: {
 export const fileAutomatedRequestForItrAPI = async (
   body: IITRReportBody
 ): Promise<IExternalReportResponse> => {
-  return await axios.post(
-    `${API_URL}/UserDetails/fileAutomatedRequestForItr`,
-    body
-  );
+  return await getDemoFileAutomatedRequestForItr() as IExternalReportResponse;
 };
 
 export const resendOtpForCreditReportAPI = async (
@@ -866,15 +871,7 @@ export const uploadAllDocumentsAPI = async (
 export const deleteReuploadLoanDocumentAPI = async (
   body: FormData
 ): Promise<IReUploadedDocumentResponse> => {
-  return await axios.post(
-    `${API_URL}/ContentManagement/deleteReuploadLoanDocument`,
-    body,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  return await getDemoDeleteReuploadLoanDocument() as IReUploadedDocumentResponse;
 };
 
 export const deleteUploadRemainingDocumentsAPI = async (
@@ -942,7 +939,7 @@ export const generateSpPayoutInvoiceAPI = async (body: IGenerateSpPayoutInvoiceP
 };
 
 export const generateSubscriptionInvoiceAPI = async (body: IGenerateSubscriptionInvoiceParams): Promise<IGenerateSubscriptionInvoiceResponse> => {
-  return await axios.post(`${API_URL}/PayOut/generateSubscriptionInvoice`, body);
+  return await getDemoGenerateSubscriptionInvoice() as IGenerateSubscriptionInvoiceResponse;
 };
 
 export const fetchAllPaymentsAPI = async (params: IPaginateReqEntityForSubscription): Promise<IFetchAllPaymentsResponse> => {
@@ -954,27 +951,27 @@ export const validateGstReportGenerationAPI = async (body: IGSTValidateReportBod
 };
 
 export const generateGstReportAPI = async (body: IGSTValidateReportBody): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/UserDetails/generateGstReport`, body);
+  return await getDemoGenerateGstReport();
 };
 
 export const fileAutomatedRequestForItrUsingLinkAPI = async (body: { email: string }): Promise<any> => {
-  return await axios.post(`${API_URL}/UserDetails/fileAutomatedRequestForItrUsingLink`, body);
+  return await getDemoFileAutomatedRequestForItrUsingLink();
 };
 
 export const generateITRReportAPI = async (body: IShareLinkITRReportBody): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/UserDetails/generateITRReport`, body);
+  return await getDemoGenerateItrReport();
 };
 
 export const getGstReportGenerateOtpUsingLinkAPI = async (body: IGenerateGstReportUsingLinkBodyForOTP): Promise<IGenerateGstReportShareLink> => {
-  return await axios.post(`${API_URL}/UserDetails/getGstReportGenerateOtpUsingLink`, body);
+  return await getDemoGstReportGenerateOtpUsingLink() as IGenerateGstReportShareLink;
 };
 
 export const getGstReportViaPasswordUsingLinkAPI = async (body: IGenerateGstReportUsingLinkBodyForPassword): Promise<IGenerateGstReportShareLink> => {
-  return await axios.post(`${API_URL}/UserDetails/getGstReportViaPasswordUsingLink`, body);
+  return await getDemoGstReportViaPasswordUsingLink() as IGenerateGstReportShareLink;
 };
 
 export const getGstReportForLinkApproachAPI = async (body: { referenceID: string }): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/UserDetails/getGstReportForLinkApproach`, body);
+  return await getGstReportForLinkApproach();
 };
 
 export const uploadSanctionLetterForLoanApplicationAPI = async (data: FormData): Promise<IUpdateLoanStatusResponse> => {
@@ -1044,7 +1041,7 @@ export const convertPartnersToCoApplicantsAPI = async (body: { partnersID: strin
 };
 
 export const updateLoanApplicationAmountAPI = async (body: { loanAppID: string, loanAmount: string, loanTypeID: number }): Promise<APIResponseEntity> => {
-  return await axios.post(`${API_URL}/LoanApplication/UpdateLoanApplicationAmount`, body);
+  return await getDemoUpdateLoanApplicationAmount();
 }
 
 export const proceedForCreditReportAPI = async (): Promise<IIsProceedForCreditReportResponse> => {
