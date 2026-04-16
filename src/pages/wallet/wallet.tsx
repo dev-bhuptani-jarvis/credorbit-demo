@@ -27,7 +27,6 @@ import {
     IWalletData,
     IWalletListingResponse,
 } from "../../interface/wallet";
-import { formatCurrencyAmount } from "../../utils/constants/constant";
 
 const Wallet = () => {
     const [getReferralPoints, setGetReferralPoints] = useState<number>(0);
@@ -260,7 +259,7 @@ const Wallet = () => {
                             <div className="d-flex justify-content-between align-items-center">
                                 <h4 className="fw-semibold m-0 text-white">
                                     <span className="text-dark font-large">
-                                        {formatCurrencyAmount(getReferralPoints)}
+                                        {getReferralPoints} <img src="/assets/images/coin.svg" alt="coin-icon" loading="lazy" />
                                     </span>
                                 </h4>
                             </div>
@@ -308,7 +307,7 @@ const Wallet = () => {
                                         header="Sr. No."
                                     />
                                     <Column
-                                        body={(rowData: IWalletData) => formatCurrencyAmount(rowData.points)}
+                                        body={(rowData: IWalletData) => rowData.points}
                                         header="Points"
                                     />
 
