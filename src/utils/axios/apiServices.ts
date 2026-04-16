@@ -1,5 +1,3 @@
-import axios, { AxiosError, AxiosHeaders, AxiosResponse } from "axios";
-import { API_URL } from "../constants/constant";
 import { getDecryptedSessionStorage } from "../functions/sessionStorage";
 import {
   IGeneratePublicTokenRequest,
@@ -109,8 +107,6 @@ import {
   IUpdateSupportData,
 } from "../../interface/supportData";
 import { StorageKeyEnum } from "../constants/enum";
-import store from "../../store";
-import { setLogout } from "../../store/reducer/authSlice";
 import {
   IInstitutionListResponse,
   IReUploadedDocumentResponse,
@@ -125,7 +121,6 @@ import {
   ISubmitCoApplicant,
   ISubmitLoanApplicationToBankResponse,
 } from "../../interface/applyLoan";
-import { toastError } from "../functions/shared";
 import {
   IGetAddEditRoleUserResponse,
   IGetUserRightsForUserManagementResponse,
@@ -294,77 +289,6 @@ import {
   updateDemoContractStatus as updateDemoCmsContractStatus,
   updateDemoSupportData as updateDemoCmsSupportData,
 } from "../demo/demoContent";
-
-function checkInternetConnectivity(): boolean {
-  return navigator.onLine;
-}
-
-axios.interceptors.request.use(
-  (config) => {
-    if (!checkInternetConnectivity()) {
-      toastError("No Internet Connection");
-      return Promise.reject(new Error("No Internet Connection"));
-    }
-
-    const deviceId = document.cookie
-      .split(";")
-      .find((cookie) => cookie.startsWith(" deviceId="))
-      ?.split("=")[1];
-
-    const token = getDecryptedSessionStorage(
-      StorageKeyEnum.CRED_ORBIT_PUBLIC_TOKEN
-    );
-
-    if (!config.headers) {
-      config.headers = {} as AxiosHeaders;
-    }
-
-    if (deviceId) {
-      config.headers["X-Device-Id"] = deviceId;
-    }
-
-    if (token) {
-      config.headers["X-Session-Token"] = token;
-    }
-
-    config.headers["Isimpersonatedclient"] = store
-      .getState()
-      .impersonateUser.isImpersonate.toString();
-
-    config.headers["X-Requested-With"] = "XMLHttpRequest";
-    config.headers["X-Frame-Options"] = "DENY";
-    config.headers["Content-Security-Policy"] = "frame-ancestors 'none'";
-
-    return config;
-  },
-  (error: AxiosError) => {
-    return Promise.reject(error);
-  }
-);
-
-axios.interceptors.response.use(
-  (response: AxiosResponse) => response.data,
-  (error: AxiosError) => {
-    if (error?.response?.status === 401) {
-      store.dispatch(setLogout());
-      return;
-    }
-
-    let message =
-      "A small error has occurred, causing an interruption of service. Please try again";
-
-    if (!checkInternetConnectivity()) {
-      message =
-        "We're having trouble connecting to the network. Please try again later.";
-    } else if (error?.response) {
-      const errorResponse: AxiosResponse = error.response;
-      message = errorResponse?.data?.message || message;
-    }
-
-    toastError(message);
-    return Promise.reject(error);
-  }
-);
 
 export const generatePublicTokenAPI = async (
   payload: IGeneratePublicTokenRequest

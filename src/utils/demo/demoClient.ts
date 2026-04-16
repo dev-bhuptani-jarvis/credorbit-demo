@@ -26,7 +26,7 @@ const demoImpersonateUserResponse = {
     gstNumber: "djtPZLt2l6mxlm5kPD32xw==",
     roleName: "Client",
     profilePicture:
-      "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/08de0598-4bee-48ca-8a7c-005b36583e79.jpg?sv=2025-05-05&se=2026-04-14T10%3A58%3A12Z&sr=b&sp=r&sig=uR6O2zTl1tCA4yRUQsuJrpM2H%2F%2Fqm0lPCv2KiKLicXY%3D",
+      "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
     contractEnforcementDate: "2025-10-09T00:00:00",
     isDefaultCpClient: false,
     isContractSigned: true,
@@ -195,7 +195,7 @@ const demoClientDashboardResponse = {
       contractEnforcementDate: "2025-10-09T00:00:00",
       emailID: "QGbhj6TQHkSdcMwrOQjuXnJm9WgL5JmzhNFbOyF3+QA=",
       isContractSigned: true,
-      profilePicture: "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/08de0598-4bee-48ca-8a7c-005b36583e79.jpg?sv=2025-05-05&se=2026-04-14T10%3A58%3A15Z&sr=b&sp=r&sig=kGnogsGnDrN0xMmQcy24XzbVsom3ffD9YF2gTIF5aBc%3D",
+      profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
       showPanDetailPopUp: false,
       userName: "NEXUS NUTRI SCIENCE LIMITED",
     },

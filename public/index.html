@@ -30,19 +30,6 @@
   <meta name="twitter:image" content="https://i.postimg.cc/vTpXmqtB/credorbit-logo.jpg">
 
   <meta http-equiv="X-Frame-Options" content="DENY">
-  <meta http-equiv="Content-Security-Policy" content="
-  default-src 'self'; 
-  script-src 'self' 'nonce-123456' https://code.jquery.com; 
-  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; 
-  font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; 
-  img-src 'self' data: 
-    https://credprodstorage.blob.core.windows.net https://credstagestorage.blob.core.windows.net https://i.postimg.cc https://credstagestorage.z29.web.core.windows.net; 
-  connect-src 'self' 
-    https://cred-stage-b0bbe7e8h8afekaq.southindia-01.azurewebsites.net/ 
-    https://credprodstorage.blob.core.windows.net https://credstagestorage.blob.core.windows.net https://credstagestorage.z29.web.core.windows.net; 
-  object-src 'none'; 
-  frame-ancestors 'none'; 
-  upgrade-insecure-requests;" />
 
   <link rel="apple-touch-icon" href="/assets/images/credorbit_logo.svg" />
   <link rel="manifest" href="/assets/images/manifest.json" />
@@ -63,40 +50,5 @@
   <div id="root"></div>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </body>
-
-<!-- <script nonce="123456">
-  if (self !== top) {
-    top.location = self.location;
-  }
-
-  document.addEventListener("keydown", function (event) {
-    if (
-      event.keyCode === 123 || // F12
-      (event.ctrlKey && event.shiftKey && event.keyCode === 73) || // Ctrl+Shift+I
-      (event.ctrlKey && event.shiftKey && event.keyCode === 74) || // Ctrl+Shift+J
-      (event.ctrlKey && event.keyCode === 85) // Ctrl+U (View Source)
-    ) {
-      event.preventDefault();
-    }
-  });
-
-  document.addEventListener("contextmenu", function (event) {
-    event.preventDefault();
-  });
-</script> -->
-
-<!-- <script nonce="123456">
-  (function () {
-    let checkDevTools = setInterval(function () {
-      let before = new Date();
-      debugger; // Forces a pause if DevTools is open
-      let after = new Date();
-      if (after - before > 100) { // If there's a delay, DevTools is open
-        document.body.innerHTML = "DevTools detected! Access Denied.";
-        clearInterval(checkDevTools);
-      }
-    }, 1000);
-  })();
-</script> -->
 
 </html>

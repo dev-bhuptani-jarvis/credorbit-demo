@@ -242,7 +242,7 @@ const demoChannelPartnerDashboardResponse: IChannelPartnerDashboardResponse = {
       emailID: "PjCsDPUr/SMcy0TJrJ1Wb5Ggye2vwjyj41h4oJMW5LQ=",
       isContractSigned: true,
       profilePicture:
-        "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9.jpg?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=D7pNJWfWNY%2BFPC8E%2FHnmBMcKXXUx9MCqfiKkvYWYBfE%3D",
+        "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
       showPanDetailPopUp: false,
       userName: "Jarvis Credo CP",
     },
@@ -2386,7 +2386,7 @@ const demoAddUserWithoutOtpResponse = {
     gstNumber: null,
     roleName: "Client",
     profilePicture:
-      "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/DefaultProfilePicture.png?sv=2025-05-05&se=2026-04-13T11%3A43%3A55Z&sr=b&sp=r&sig=aFite%2FybiSPIC3rh6l1PQk9QjYafjKNCk5vBueIIJ3c%3D",
+      "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
     contractEnforcementDate: null,
     isDefaultCpClient: false,
     isContractSigned: true,
@@ -2515,7 +2515,7 @@ const demoUserProfileResponse: IUserProfileResponse = {
     emailID: "PjCsDPUr/SMcy0TJrJ1Wb5Ggye2vwjyj41h4oJMW5LQ=",
     mobileNumber: "DR/IXQnqfRCnSsOyS0i9gA==",
     profilePicture:
-      "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9.jpg?sv=2025-05-05&se=2026-04-14T11%3A33%3A30Z&sr=b&sp=r&sig=JzDkYuwqaYhUxkWJqT4xjWn3jP88h3753SzbjEU%2Bgck%3D",
+      "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
     selectedGstNumber: "galvf4LyZEjBmoENB1GWrA==",
     gstList: [],
     billingDetails: true,
