@@ -42,6 +42,8 @@ import TableTitle from "../../components/TableTitle";
 import ContractAgreementModal from "../../components/ContractAgreementModal";
 import { Tooltip } from "primereact/tooltip";
 import { decryptVAPTData } from "../../utils/functions/encryptDecrypt";
+import { setReportMessage } from "../../store/reducer/reportMessageSlice";
+import { useDispatch } from "react-redux";
 
 const PayoutsDetail = () => {
   const dateFilterPopupRef = useRef<HTMLDivElement>(null);
@@ -102,6 +104,8 @@ const PayoutsDetail = () => {
   const SourcingPartnerPayout = usePermission("SourcingPartnerPayout", [
     "create",
   ])();
+
+  const dispatch = useDispatch();
 
   const updateDateFilters = (
     nextFromDate: Date | null,
@@ -182,81 +186,81 @@ const PayoutsDetail = () => {
       {showDateFilterPopup && (
         <div className="payout-date-filter-overlay">
           <div className="payout-date-filter-card p-4">
-          <h5 className="payout-date-filter-title mb-4">Date Range</h5>
+            <h5 className="payout-date-filter-title mb-4">Date Range</h5>
 
-          <div className="d-flex align-items-end gap-3 flex-wrap">
-            <div style={{ minWidth: "180px", flex: 1 }}>
-              <label
-                htmlFor="disbursementFromDate"
-                className="payout-date-filter-label d-block mb-2"
-              >
-                From
-              </label>
-              <Calendar
-                inputId="disbursementFromDate"
-                value={draftFromDate}
-                placeholder="From Date"
-                readOnlyInput
-                maxDate={draftToDate || new Date()}
-                showButtonBar
-                className="payout-date-filter-calendar"
-                style={{ width: "100%" }}
-                onChange={(e) => {
-                  const selectedFromDate = e.value as Date | null;
-                  const nextToDate =
-                    selectedFromDate &&
-                    draftToDate &&
-                    draftToDate < selectedFromDate
-                      ? null
-                      : draftToDate;
+            <div className="d-flex align-items-end gap-3 flex-wrap">
+              <div style={{ minWidth: "180px", flex: 1 }}>
+                <label
+                  htmlFor="disbursementFromDate"
+                  className="payout-date-filter-label d-block mb-2"
+                >
+                  From
+                </label>
+                <Calendar
+                  inputId="disbursementFromDate"
+                  value={draftFromDate}
+                  placeholder="From Date"
+                  readOnlyInput
+                  maxDate={draftToDate || new Date()}
+                  showButtonBar
+                  className="payout-date-filter-calendar"
+                  style={{ width: "100%" }}
+                  onChange={(e) => {
+                    const selectedFromDate = e.value as Date | null;
+                    const nextToDate =
+                      selectedFromDate &&
+                        draftToDate &&
+                        draftToDate < selectedFromDate
+                        ? null
+                        : draftToDate;
 
-                  setDraftFromDate(selectedFromDate);
-                  setDraftToDate(nextToDate);
-                }}
-              />
+                    setDraftFromDate(selectedFromDate);
+                    setDraftToDate(nextToDate);
+                  }}
+                />
+              </div>
+
+              <div style={{ minWidth: "180px", flex: 1 }}>
+                <label
+                  htmlFor="disbursementToDate"
+                  className="payout-date-filter-label d-block mb-2"
+                >
+                  To
+                </label>
+                <Calendar
+                  inputId="disbursementToDate"
+                  value={draftToDate}
+                  placeholder="To Date"
+                  readOnlyInput
+                  minDate={draftFromDate || undefined}
+                  maxDate={new Date()}
+                  showButtonBar
+                  className="payout-date-filter-calendar"
+                  style={{ width: "100%" }}
+                  disabled={!draftFromDate}
+                  onChange={(e) =>
+                    setDraftToDate(e.value as Date | null)
+                  }
+                />
+              </div>
             </div>
 
-            <div style={{ minWidth: "180px", flex: 1 }}>
-              <label
-                htmlFor="disbursementToDate"
-                className="payout-date-filter-label d-block mb-2"
-              >
-                To
-              </label>
-              <Calendar
-                inputId="disbursementToDate"
-                value={draftToDate}
-                placeholder="To Date"
-                readOnlyInput
-                minDate={draftFromDate || undefined}
-                maxDate={new Date()}
-                showButtonBar
-                className="payout-date-filter-calendar"
-                style={{ width: "100%" }}
-                disabled={!draftFromDate}
-                onChange={(e) =>
-                  setDraftToDate(e.value as Date | null)
-                }
+            <div className="payout-date-filter-actions d-flex justify-content-between align-items-center mt-4 pt-3 gap-2">
+              <Button
+                type="button"
+                label="Clear"
+                className="btn btn-orange-line text-center"
+                onClick={clearDraftDateFilter}
+              />
+
+              <Button
+                type="button"
+                label="Done"
+                className="payout-date-filter-done"
+                onClick={applyDateFilter}
+                disabled={!isDateFilterSelectionValid}
               />
             </div>
-          </div>
-
-          <div className="payout-date-filter-actions d-flex justify-content-between align-items-center mt-4 pt-3">
-            <Button
-              type="button"
-              label="Clear"
-              className="btn btn-orange-line"
-              onClick={clearDraftDateFilter}
-            />
-
-            <Button
-              type="button"
-              label="Done"
-              className="payout-date-filter-done"
-              onClick={applyDateFilter}
-              disabled={!isDateFilterSelectionValid}
-            />
-          </div>
           </div>
         </div>
       )}
@@ -414,7 +418,10 @@ const PayoutsDetail = () => {
       return;
     }
 
-    window.open(invoiceUrl, "_blank");
+    dispatch(setReportMessage({
+      title: "Invoice Downloaded Successfully",
+      message: "Invoice has been downloaded successfully!",
+    }));
   };
 
   const cpActionBody = (rowData: IPayOutsDetailList) => {
@@ -588,7 +595,14 @@ const PayoutsDetail = () => {
                 className="trash-icon p-0 me-2"
                 style={{ width: "25px" }}
                 data-pr-tooltip="Download Payout Invoice"
-                onClick={() => window.open(rowData.invoiceUrl, "_blank")}
+                onClick={() =>
+                  dispatch(
+                    setReportMessage({
+                      title: "Payout downloaded Successfully",
+                      message: "Payout has been downloaded successfully",
+                    }),
+                  )
+                }
               >
                 <img src="/assets/images/download.svg" alt="Payout Invoice" />
               </Button>
@@ -602,7 +616,14 @@ const PayoutsDetail = () => {
                 className="trash-icon p-0 me-2"
                 style={{ width: "25px" }}
                 data-pr-tooltip="Download Payout Invoice"
-                onClick={() => window.open(rowData.invoiceUrl, "_blank")}
+                onClick={() =>
+                  dispatch(
+                    setReportMessage({
+                      title: "Payout downloaded Successfully",
+                      message: "Payout has been downloaded successfully",
+                    }),
+                  )
+                }
               >
                 <img src="/assets/images/download.svg" alt="Payout Invoice" />
               </Button>

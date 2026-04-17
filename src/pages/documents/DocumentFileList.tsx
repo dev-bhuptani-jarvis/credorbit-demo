@@ -30,6 +30,8 @@ import { Accordion, AccordionTab } from "primereact/accordion";
 import { validationMessages } from "../../utils/constants/messages";
 import { environment } from "../../utils/constants/environments";
 import { Tooltip } from "primereact/tooltip";
+import { setReportMessage } from "../../store/reducer/reportMessageSlice";
+import { useDispatch } from "react-redux";
 
 const DocumentFileList = () => {
   const [documentList, setDocumentList] = useState<IFileModel[]>([]);
@@ -61,6 +63,8 @@ const DocumentFileList = () => {
   const { id, subId } = useParams();
 
   const { state } = useLocation();
+
+  const dispatch = useDispatch();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -139,7 +143,12 @@ const DocumentFileList = () => {
   };
 
   const handleViewDocument = (url: string): void => {
-    window.open(url, "_blank");
+    dispatch(
+      setReportMessage({
+        title: "Document View",
+        message: "Document is being opened in a new tab",
+      })
+    );
   };
 
   const fetchMoveFolderList = async (): Promise<void> => {
@@ -457,9 +466,8 @@ const DocumentFileList = () => {
                         key={folder.folderPath}
                         header={
                           <div
-                            className={`folder-header ${
-                              shouldHighlight ? "highlighted-tab" : ""
-                            }`}
+                            className={`folder-header ${shouldHighlight ? "highlighted-tab" : ""
+                              }`}
                           >
                             <div className="folder-header-title">
                               <img
@@ -491,17 +499,15 @@ const DocumentFileList = () => {
                             return (
                               <div
                                 key={path}
-                                className={`subfolder-item ${
-                                  isSelected ? "selected" : ""
-                                }`}
+                                className={`subfolder-item ${isSelected ? "selected" : ""
+                                  }`}
                                 onClick={() => setSelectedMoveFolderPath(path)}
                               >
                                 <img
                                   src="/assets/images/folder.svg"
                                   alt="sub-folder"
-                                  className={`folder-icon ${
-                                    isSelected ? "icon-white" : ""
-                                  }`}
+                                  className={`folder-icon ${isSelected ? "icon-white" : ""
+                                    }`}
                                 />
                                 {sub.subFolderName}
                               </div>

@@ -70,6 +70,8 @@ import { decryptVAPTData } from "../../utils/functions/encryptDecrypt";
 import { useLocation, useNavigate } from "react-router-dom";
 import CreditNotAvailable from "../../components/CreditNotAvailable";
 import { Tooltip } from "primereact/tooltip";
+import { setReportMessage } from "../../store/reducer/reportMessageSlice";
+import { useDispatch } from "react-redux";
 
 const Subscription = () => {
   const [subscriptionHistory, setSubscriptionHistory] =
@@ -200,9 +202,8 @@ const Subscription = () => {
     );
   };
 
-  const handleClosePopup = () => {
-    setShowCreditPopup(false);
-  };
+  const dispatch = useDispatch();
+
   const handleCreditTabChange = (e: { index: number }) => {
     setActiveCreditTab(e.index);
 
@@ -238,8 +239,12 @@ const Subscription = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      toastSuccess(response.message);
-      window.open(response.data, "_blank");
+      dispatch(
+        setReportMessage({
+          title: "Subscription invoice generated successfully",
+          message: "Subscription invoice has been generated successfully",
+        }),
+      );
       fetchSubscriptionHistory();
     } else {
       toastError(response.message);
@@ -267,7 +272,14 @@ const Subscription = () => {
                 className="trash-icon p-0 me-2"
                 style={{ width: "25px" }}
                 data-pr-tooltip="Download Subscription Invoice"
-                onClick={() => window.open(rowData.subscriptionUrl, "_blank")}
+                onClick={() =>
+                  dispatch(
+                    setReportMessage({
+                      title: "Subscription Invoice",
+                      message: "Subscription invoice is being downloaded",
+                    }),
+                  )
+                }
               >
                 <img
                   src="/assets/images/download.svg"
@@ -1234,9 +1246,9 @@ const Subscription = () => {
                     createRazorPayLink();
                   }
                 }}
-                // onPaste={(e) => e.preventDefault()}
-                // onCopy={(e) => e.preventDefault()}
-                // onCut={(e) => e.preventDefault()}
+              // onPaste={(e) => e.preventDefault()}
+              // onCopy={(e) => e.preventDefault()}
+              // onCut={(e) => e.preventDefault()}
               />
             </div>
             {isFormSubmitted && formErrors.customAmount && (
@@ -1393,9 +1405,9 @@ const Subscription = () => {
                     restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
                   }
                   maxLength={8}
-                  // onPaste={(e) => e.preventDefault()}
-                  // onCopy={(e) => e.preventDefault()}
-                  // onCut={(e) => e.preventDefault()}
+                // onPaste={(e) => e.preventDefault()}
+                // onCopy={(e) => e.preventDefault()}
+                // onCut={(e) => e.preventDefault()}
                 />
               </div>
 

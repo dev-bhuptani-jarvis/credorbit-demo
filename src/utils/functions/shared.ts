@@ -200,7 +200,12 @@ export const handleDownloadDocument = async (
 
 export const handleViewDocument = (filePath: string): void => {
   if (filePath) {
-    window.open(filePath, "_blank");
+    store.dispatch(
+      setReportMessage({
+        title: "Document View",
+        message: "Document is being opened in a new tab",
+      })
+    );
   } else {
     toastError(validationMessages.filePathMissing);
   }
@@ -210,7 +215,12 @@ export const handleFileDownload = async (
   filePath: string,
   fileName: string
 ): Promise<void> => {
-  window.open(filePath, "_blank", "noopener,noreferrer");
+  store.dispatch(
+    setReportMessage({
+      title: "Download Successful",
+      message: "File has been downloaded successfully!",
+    })
+  );
 };
 
 export const handleDownloadCSVData = async (

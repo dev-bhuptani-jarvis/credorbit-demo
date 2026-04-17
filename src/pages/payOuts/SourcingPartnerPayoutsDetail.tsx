@@ -41,6 +41,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { Tooltip } from "primereact/tooltip";
 import { decryptVAPTData } from "../../utils/functions/encryptDecrypt";
+import { setReportMessage } from "../../store/reducer/reportMessageSlice";
+import { useDispatch } from "react-redux";
 
 const SourcingPartnerPayoutsDetail = () => {
   const dateFilterPopupRef = useRef<HTMLDivElement>(null);
@@ -90,6 +92,8 @@ const SourcingPartnerPayoutsDetail = () => {
   const { id } = useParams<RouteParams>();
 
   const { create } = usePermission("SourcingPartnerPayout", ["create"])();
+
+  const dispatch = useDispatch();
 
   const { isContractSigned, contractEnforcementDate, userType } = useSelector(
     (state: RootState) => state.user.user,
@@ -188,81 +192,81 @@ const SourcingPartnerPayoutsDetail = () => {
       {showDateFilterPopup && (
         <div className="payout-date-filter-overlay">
           <div className="payout-date-filter-card p-4">
-          <h5 className="payout-date-filter-title mb-4">Date Range</h5>
+            <h5 className="payout-date-filter-title mb-4">Date Range</h5>
 
-          <div className="d-flex align-items-end gap-3 flex-wrap">
-            <div style={{ minWidth: "180px", flex: 1 }}>
-              <label
-                htmlFor="disbursementFromDate"
-                className="payout-date-filter-label d-block mb-2"
-              >
-                From
-              </label>
-              <Calendar
-                inputId="disbursementFromDate"
-                value={draftFromDate}
-                placeholder="From Date"
-                readOnlyInput
-                maxDate={draftToDate || new Date()}
-                showButtonBar
-                className="payout-date-filter-calendar"
-                style={{ width: "100%" }}
-                onChange={(e) => {
-                  const selectedFromDate = e.value as Date | null;
-                  const nextToDate =
-                    selectedFromDate &&
-                    draftToDate &&
-                    draftToDate < selectedFromDate
-                      ? null
-                      : draftToDate;
+            <div className="d-flex align-items-end gap-3 flex-wrap">
+              <div style={{ minWidth: "180px", flex: 1 }}>
+                <label
+                  htmlFor="disbursementFromDate"
+                  className="payout-date-filter-label d-block mb-2"
+                >
+                  From
+                </label>
+                <Calendar
+                  inputId="disbursementFromDate"
+                  value={draftFromDate}
+                  placeholder="From Date"
+                  readOnlyInput
+                  maxDate={draftToDate || new Date()}
+                  showButtonBar
+                  className="payout-date-filter-calendar"
+                  style={{ width: "100%" }}
+                  onChange={(e) => {
+                    const selectedFromDate = e.value as Date | null;
+                    const nextToDate =
+                      selectedFromDate &&
+                        draftToDate &&
+                        draftToDate < selectedFromDate
+                        ? null
+                        : draftToDate;
 
-                  setDraftFromDate(selectedFromDate);
-                  setDraftToDate(nextToDate);
-                }}
-              />
+                    setDraftFromDate(selectedFromDate);
+                    setDraftToDate(nextToDate);
+                  }}
+                />
+              </div>
+
+              <div style={{ minWidth: "180px", flex: 1 }}>
+                <label
+                  htmlFor="disbursementToDate"
+                  className="payout-date-filter-label d-block mb-2"
+                >
+                  To
+                </label>
+                <Calendar
+                  inputId="disbursementToDate"
+                  value={draftToDate}
+                  placeholder="To Date"
+                  readOnlyInput
+                  minDate={draftFromDate || undefined}
+                  maxDate={new Date()}
+                  showButtonBar
+                  className="payout-date-filter-calendar"
+                  style={{ width: "100%" }}
+                  disabled={!draftFromDate}
+                  onChange={(e) =>
+                    setDraftToDate(e.value as Date | null)
+                  }
+                />
+              </div>
             </div>
 
-            <div style={{ minWidth: "180px", flex: 1 }}>
-              <label
-                htmlFor="disbursementToDate"
-                className="payout-date-filter-label d-block mb-2"
-              >
-                To
-              </label>
-              <Calendar
-                inputId="disbursementToDate"
-                value={draftToDate}
-                placeholder="To Date"
-                readOnlyInput
-                minDate={draftFromDate || undefined}
-                maxDate={new Date()}
-                showButtonBar
-                className="payout-date-filter-calendar"
-                style={{ width: "100%" }}
-                disabled={!draftFromDate}
-                onChange={(e) =>
-                  setDraftToDate(e.value as Date | null)
-                }
+            <div className="payout-date-filter-actions d-flex justify-content-between align-items-center mt-4 pt-3 gap-2">
+              <Button
+                type="button"
+                label="Clear"
+                className="btn btn-orange-line text-center"
+                onClick={clearDraftDateFilter}
+              />
+
+              <Button
+                type="button"
+                label="Done"
+                className="payout-date-filter-done"
+                onClick={applyDateFilter}
+                disabled={!isDateFilterSelectionValid}
               />
             </div>
-          </div>
-
-          <div className="payout-date-filter-actions d-flex justify-content-between align-items-center mt-4 pt-3">
-            <Button
-              type="button"
-              label="Clear"
-              className="btn btn-orange-line"
-              onClick={clearDraftDateFilter}
-            />
-
-            <Button
-              type="button"
-              label="Done"
-              className="payout-date-filter-done"
-              onClick={applyDateFilter}
-              disabled={!isDateFilterSelectionValid}
-            />
-          </div>
           </div>
         </div>
       )}
@@ -341,7 +345,8 @@ const SourcingPartnerPayoutsDetail = () => {
       };
 
       setSourcingPartnerPayOutsData(decryptedData);
-      setTotalRecords(response.data.totalCount);    } else {
+      setTotalRecords(response.data.totalCount);
+    } else {
       toastError(response.message);
     }
 
@@ -411,7 +416,10 @@ const SourcingPartnerPayoutsDetail = () => {
       return;
     }
 
-    window.open(invoiceUrl, "_blank");
+    dispatch(setReportMessage({
+      title: "Invoice Downloaded Successfully",
+      message: "Invoice has been downloaded successfully!",
+    }));
   };
 
   const actionBody = (rowData: IPayOutsDetailList) => {

@@ -40,6 +40,8 @@ import { RootState } from "../store";
 import { EMAIL_PATTERN, GST_NUMBER_PATTERN } from "../utils/constants/pattern";
 import { encryptVAPTData } from "../utils/functions/encryptDecrypt";
 import { Dropdown } from "primereact/dropdown";
+import { setReportMessage } from "../store/reducer/reportMessageSlice";
+import { useDispatch } from "react-redux";
 
 interface CustomModalProps {
   status: (typeof PAYMENT_REQUEST_STATUS)[keyof typeof PAYMENT_REQUEST_STATUS];
@@ -99,6 +101,8 @@ const CustomModal = ({
   const { userID, userType } = useSelector(
     (state: RootState) => state.user.user,
   );
+
+  const dispatch = useDispatch();
 
   const [formValues, setFormValues] = useState<IFormValue>({
     remarks: "",
@@ -254,8 +258,10 @@ const CustomModal = ({
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      toastSuccess(response.message);
-      window.open(response.data, "_blank");
+      dispatch(setReportMessage({
+        title: "Invoice Generated",
+        message: "Invoice has been downloaded successfully!",
+      }));
       fetchPayOutsDetailApi();
     } else {
       toastError(response.message);
@@ -426,8 +432,10 @@ const CustomModal = ({
         if (!response) return;
 
         if (response && response.statusCode === 200) {
-          toastSuccess(response.message);
-          window.open(response.data, "_blank");
+          dispatch(setReportMessage({
+            title: "Payout Status",
+            message: "Payout has been approved successfully!",
+          }));
           fetchPayOutsDetailApi();
         } else {
           toastError(response.message);
@@ -476,11 +484,10 @@ const CustomModal = ({
 
       {status === PAYMENT_REQUEST_STATUS.REJECTED && (
         <Button
-          className={`btn ${
-            IsStringNullEmptyOrUndefined(reason)
-              ? "btn-orange-disabled"
-              : "btn-orange"
-          } w-100`}
+          className={`btn ${IsStringNullEmptyOrUndefined(reason)
+            ? "btn-orange-disabled"
+            : "btn-orange"
+            } w-100`}
           disabled={IsStringNullEmptyOrUndefined(reason)}
           onClick={handleChangeStatus}
         >
@@ -701,9 +708,9 @@ const CustomModal = ({
                   placeholder="Enter the SAC Code"
                   maxLength={50}
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
-                  // onCopy={(e) => e.preventDefault()}
-                  // onPaste={(e) => e.preventDefault()}
-                  // onCut={(e) => e.preventDefault()}
+                // onCopy={(e) => e.preventDefault()}
+                // onPaste={(e) => e.preventDefault()}
+                // onCut={(e) => e.preventDefault()}
                 />
 
                 {isFormSubmitted && (
@@ -723,9 +730,9 @@ const CustomModal = ({
                   placeholder="Enter the Invoice Number"
                   maxLength={50}
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
-                  // onCopy={(e) => e.preventDefault()}
-                  // onPaste={(e) => e.preventDefault()}
-                  // onCut={(e) => e.preventDefault()}
+                // onCopy={(e) => e.preventDefault()}
+                // onPaste={(e) => e.preventDefault()}
+                // onCut={(e) => e.preventDefault()}
                 />
               </div>
             </>
@@ -770,9 +777,9 @@ const CustomModal = ({
                     onChange={(e) =>
                       handleChange(e.target.name, e.target.value)
                     }
-                    // onCopy={(e) => e.preventDefault()}
-                    // onPaste={(e) => e.preventDefault()}
-                    // onCut={(e) => e.preventDefault()}
+                  // onCopy={(e) => e.preventDefault()}
+                  // onPaste={(e) => e.preventDefault()}
+                  // onCut={(e) => e.preventDefault()}
                   />
 
                   {isFormSubmitted && (
@@ -794,9 +801,9 @@ const CustomModal = ({
                     onChange={(e) =>
                       handleChange(e.target.name, e.target.value)
                     }
-                    // onCopy={(e) => e.preventDefault()}
-                    // onPaste={(e) => e.preventDefault()}
-                    // onCut={(e) => e.preventDefault()}
+                  // onCopy={(e) => e.preventDefault()}
+                  // onPaste={(e) => e.preventDefault()}
+                  // onCut={(e) => e.preventDefault()}
                   />
                 </div>
 
@@ -814,9 +821,9 @@ const CustomModal = ({
                     onChange={(e) =>
                       handleChange(e.target.name, e.target.value)
                     }
-                    // onCopy={(e) => e.preventDefault()}
-                    // onPaste={(e) => e.preventDefault()}
-                    // onCut={(e) => e.preventDefault()}
+                  // onCopy={(e) => e.preventDefault()}
+                  // onPaste={(e) => e.preventDefault()}
+                  // onCut={(e) => e.preventDefault()}
                   />
 
                   {isFormSubmitted && (
@@ -838,9 +845,9 @@ const CustomModal = ({
                     onChange={(e) =>
                       handleChange(e.target.name, e.target.value)
                     }
-                    // onCopy={(e) => e.preventDefault()}
-                    // onPaste={(e) => e.preventDefault()}
-                    // onCut={(e) => e.preventDefault()}
+                  // onCopy={(e) => e.preventDefault()}
+                  // onPaste={(e) => e.preventDefault()}
+                  // onCut={(e) => e.preventDefault()}
                   />
 
                   {isFormSubmitted && (
@@ -862,9 +869,9 @@ const CustomModal = ({
                     onChange={(e) =>
                       handleChange(e.target.name, e.target.value)
                     }
-                    // onCopy={(e) => e.preventDefault()}
-                    // onPaste={(e) => e.preventDefault()}
-                    // onCut={(e) => e.preventDefault()}
+                  // onCopy={(e) => e.preventDefault()}
+                  // onPaste={(e) => e.preventDefault()}
+                  // onCut={(e) => e.preventDefault()}
                   />
 
                   {isFormSubmitted && (
@@ -889,9 +896,9 @@ const CustomModal = ({
                     onChange={(e) =>
                       handleChange(e.target.name, e.target.value)
                     }
-                    // onCopy={(e) => e.preventDefault()}
-                    // onPaste={(e) => e.preventDefault()}
-                    // onCut={(e) => e.preventDefault()}
+                  // onCopy={(e) => e.preventDefault()}
+                  // onPaste={(e) => e.preventDefault()}
+                  // onCut={(e) => e.preventDefault()}
                   />
 
                   {isFormSubmitted && (
@@ -950,9 +957,9 @@ const CustomModal = ({
                   rows={5}
                   cols={30}
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
-                  // onCopy={(e) => e.preventDefault()}
-                  // onPaste={(e) => e.preventDefault()}
-                  // onCut={(e) => e.preventDefault()}
+                // onCopy={(e) => e.preventDefault()}
+                // onPaste={(e) => e.preventDefault()}
+                // onCut={(e) => e.preventDefault()}
                 />
               </div>
             </div>
@@ -1020,9 +1027,9 @@ const CustomModal = ({
                   rows={5}
                   cols={30}
                   maxLength={250}
-                  // onCopy={(e) => e.preventDefault()}
-                  // onPaste={(e) => e.preventDefault()}
-                  // onCut={(e) => e.preventDefault()}
+                // onCopy={(e) => e.preventDefault()}
+                // onPaste={(e) => e.preventDefault()}
+                // onCut={(e) => e.preventDefault()}
                 />
 
                 {isFormSubmitted && (

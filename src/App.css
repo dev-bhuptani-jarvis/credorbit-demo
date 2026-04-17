@@ -328,6 +328,15 @@
   background-color: transparent;
 }
 
+.action-icon {
+  border: none;
+  background-color: transparent;
+}
+
+.action-icon img {
+  width: 30px;
+}
+
 .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
   background: #ff632c;
   color: #fff;
@@ -1189,6 +1198,128 @@ span.p-dropdown-label.p-inputtext {
 /* Disable user scroll when tour is active */
 .introjs-overlay {
   background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.payout-date-filter-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.payout-date-filter-overlay {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 420px;
+  max-width: min(420px, 95vw);
+  border-radius: 16px;
+  border: 1px solid #ffd9cc;
+  box-shadow: 0 14px 32px rgba(250, 89, 44, 0.16);
+  overflow: hidden;
+  z-index: 20;
+  background: linear-gradient(180deg, #fffdf9 0%, #ffffff 100%);
+}
+
+.payout-date-filter-card {
+  background: linear-gradient(180deg, #fffdf9 0%, #ffffff 100%);
+}
+
+@media (max-width: 576px) {
+  .payout-date-filter-overlay {
+    right: auto;
+    left: 0;
+    width: min(420px, 90vw);
+  }
+}
+
+.payout-date-filter-title {
+  margin: 0;
+  color: #22304a;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.payout-date-filter-label {
+  color: #5f6f81;
+  font-weight: 600;
+}
+
+.payout-date-filter-trigger.p-button {
+  border: 1px solid #ff632c;
+  color: #ff632c;
+  background: #fff7f3;
+  border-radius: 12px;
+  font-weight: 700;
+  box-shadow: none;
+  gap: 10px;
+}
+
+.payout-date-filter-trigger.p-button:hover {
+  background: #ffefe8 !important;
+  border-color: #fa592c !important;
+  color: #fa592c !important;
+}
+
+.payout-date-filter-trigger.p-button:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 99, 44, 0.18);
+}
+
+.payout-date-filter-calendar .p-inputtext {
+  border: 1px solid #ffd9cc;
+  border-radius: 12px;
+  background: #fff;
+  color: #22304a;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.payout-date-filter-calendar .p-inputtext:enabled:hover {
+  border-color: #ffb49a;
+}
+
+.payout-date-filter-calendar .p-inputtext:enabled:focus {
+  border-color: #ff632c;
+  box-shadow: 0 0 0 0.18rem rgba(255, 99, 44, 0.14);
+}
+
+.payout-date-filter-calendar.p-disabled,
+.payout-date-filter-calendar .p-inputtext:disabled {
+  opacity: 1;
+  background: #fdf1ec;
+  color: #b98a79;
+}
+
+.payout-date-filter-actions {
+  border-top: 1px solid #ffe4d9;
+}
+
+.payout-date-filter-clear.p-button {
+  color: #ff632c;
+  font-weight: 700;
+}
+
+.payout-date-filter-clear.p-button:hover {
+  background: #fff3ee !important;
+  color: #fa592c !important;
+}
+
+.payout-date-filter-done.p-button {
+  background: #ff632c;
+  border: 1px solid #ff632c;
+  color: #fff;
+  border-radius: 12px;
+  font-weight: 700;
+  box-shadow: 0 8px 16px rgba(255, 99, 44, 0.2);
+}
+
+.payout-date-filter-done.p-button:hover {
+  background: #fa592c !important;
+  border-color: #fa592c !important;
+}
+
+.payout-date-filter-done.p-button:disabled {
+  background: #ffd7c8 !important;
+  border-color: #ffd7c8 !important;
+  color: #fff !important;
 }
 
 /* Hide exit button */
