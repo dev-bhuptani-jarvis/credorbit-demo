@@ -258,10 +258,8 @@ const CustomModal = ({
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      dispatch(setReportMessage({
-        title: "Invoice Generated",
-        message: "Invoice has been downloaded successfully!",
-      }));
+      toastSuccess(response.message);
+      window.open("/assets/images/gstReport.pdf", "_blank");
       fetchPayOutsDetailApi();
     } else {
       toastError(response.message);
@@ -432,10 +430,8 @@ const CustomModal = ({
         if (!response) return;
 
         if (response && response.statusCode === 200) {
-          dispatch(setReportMessage({
-            title: "Payout Status",
-            message: "Payout has been approved successfully!",
-          }));
+          toastSuccess(response.message);
+          window.open("/assets/images/gstReport.pdf", "_blank");
           fetchPayOutsDetailApi();
         } else {
           toastError(response.message);

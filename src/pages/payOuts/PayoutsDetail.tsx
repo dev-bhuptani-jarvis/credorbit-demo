@@ -418,10 +418,7 @@ const PayoutsDetail = () => {
       return;
     }
 
-    dispatch(setReportMessage({
-      title: "Invoice Downloaded Successfully",
-      message: "Invoice has been downloaded successfully!",
-    }));
+    window.open("/assets/images/gstReport.pdf", "_blank");
   };
 
   const cpActionBody = (rowData: IPayOutsDetailList) => {
@@ -596,12 +593,7 @@ const PayoutsDetail = () => {
                 style={{ width: "25px" }}
                 data-pr-tooltip="Download Payout Invoice"
                 onClick={() =>
-                  dispatch(
-                    setReportMessage({
-                      title: "Payout downloaded Successfully",
-                      message: "Payout has been downloaded successfully",
-                    }),
-                  )
+                  window.open("/assets/images/gstReport.pdf", "_blank")
                 }
               >
                 <img src="/assets/images/download.svg" alt="Payout Invoice" />
@@ -617,19 +609,15 @@ const PayoutsDetail = () => {
                 style={{ width: "25px" }}
                 data-pr-tooltip="Download Payout Invoice"
                 onClick={() =>
-                  dispatch(
-                    setReportMessage({
-                      title: "Payout downloaded Successfully",
-                      message: "Payout has been downloaded successfully",
-                    }),
-                  )
+                  window.open("/assets/images/gstReport.pdf", "_blank")
                 }
               >
                 <img src="/assets/images/download.svg" alt="Payout Invoice" />
               </Button>
             )}
           </>
-        )}
+        )
+        }
       </>
     );
   };

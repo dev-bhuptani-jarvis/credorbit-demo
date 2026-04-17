@@ -416,10 +416,7 @@ const SourcingPartnerPayoutsDetail = () => {
       return;
     }
 
-    dispatch(setReportMessage({
-      title: "Invoice Downloaded Successfully",
-      message: "Invoice has been downloaded successfully!",
-    }));
+    window.open("/assets/images/gstReport.pdf", "_blank");
   };
 
   const actionBody = (rowData: IPayOutsDetailList) => {

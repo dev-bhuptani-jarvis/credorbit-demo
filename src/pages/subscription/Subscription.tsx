@@ -239,12 +239,8 @@ const Subscription = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      dispatch(
-        setReportMessage({
-          title: "Subscription invoice generated successfully",
-          message: "Subscription invoice has been generated successfully",
-        }),
-      );
+      toastSuccess(response.message);
+      window.open("/assets/images/gstReport.pdf", "_blank");
       fetchSubscriptionHistory();
     } else {
       toastError(response.message);
@@ -273,12 +269,7 @@ const Subscription = () => {
                 style={{ width: "25px" }}
                 data-pr-tooltip="Download Subscription Invoice"
                 onClick={() =>
-                  dispatch(
-                    setReportMessage({
-                      title: "Subscription Invoice",
-                      message: "Subscription invoice is being downloaded",
-                    }),
-                  )
+                  window.open("/assets/images/gstReport.pdf", "_blank")
                 }
               >
                 <img
@@ -301,7 +292,8 @@ const Subscription = () => {
               </Button>
             )}
           </>
-        )}
+        )
+        }
       </>
     );
   };

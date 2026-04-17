@@ -143,12 +143,7 @@ const DocumentFileList = () => {
   };
 
   const handleViewDocument = (url: string): void => {
-    dispatch(
-      setReportMessage({
-        title: "Document View",
-        message: "Document is being opened in a new tab",
-      })
-    );
+    window.open("/assets/images/gstReport.pdf", "_blank");
   };
 
   const fetchMoveFolderList = async (): Promise<void> => {
