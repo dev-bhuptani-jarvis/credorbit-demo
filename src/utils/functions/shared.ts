@@ -210,33 +210,7 @@ export const handleFileDownload = async (
   filePath: string,
   fileName: string
 ): Promise<void> => {
-  if (!filePath) {
-    toastError(validationMessages.filePathMissing);
-    return;
-  }
-
-  const response = await fetch(filePath);
-  const arrayBuffer = await response.arrayBuffer();
-
-  const pdfBlob = new Blob([arrayBuffer], {
-    type: "application/pdf",
-  });
-
-  const excelBlob = new Blob([arrayBuffer], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
-
-  const url = window.URL.createObjectURL(filePath.includes('.xlsx') ? excelBlob : pdfBlob);
-  const correctedFileName = filePath.includes('.xlsx') ? `${fileName}.xlsx` : `${fileName}.pdf`;
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = correctedFileName;
-
-  document.body.appendChild(a);
-  a.click();
-
-  window.URL.revokeObjectURL(url);
-  document.body.removeChild(a);
+  window.open(filePath, "_blank", "noopener,noreferrer");
 };
 
 export const handleDownloadCSVData = async (

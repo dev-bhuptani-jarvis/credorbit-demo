@@ -38,7 +38,7 @@ const adminProfileResponse = {
     zipCode: "Q8guqlvx61CH1gzuXk9bfQ==",
     aadhaar: "pY1R+9dga/ja2YTReusQpA==",
     udhyamAadhaar: "pY1R+9dga/ja2YTReusQpA==",
-    cpCompanyLogo: "https://credstagestorage.blob.core.windows.net/credorbit-dev/CPCompanyLogo/f4204821-5d9b-484c-87b7-83e61167840d.png?sv=2025-05-05&se=2026-04-15T10%3A01%3A50Z&sr=b&sp=r&sig=20l7shUwt2QOLlpRCtcNi80Kt2J8gXB6jLLO7CzJ%2FS0%3D",
+    cpCompanyLogo: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
     userConsents: [],
   },
 } as IUserProfileResponse;
@@ -110,7 +110,7 @@ const channelPartnerProfileResponse = {
     zipCode: "rqTjq8a3SfIm3At4hB+wwQ==",
     aadhaar: "pY1R+9dga/ja2YTReusQpA==",
     udhyamAadhaar: "RCVHnNRpk28cp5TFP4PN3A==",
-    cpCompanyLogo: "https://credstagestorage.blob.core.windows.net/credorbit-dev/CPCompanyLogo/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9.jpg?sv=2025-05-05&se=2026-04-15T11%3A27%3A39Z&sr=b&sp=r&sig=XBElAQK%2FP%2FtDexTMAcCwOkXSe2UWsoZj7fMItHLwqPc%3D",
+    cpCompanyLogo: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
     userConsents: [
       { userConsentID: 1, consentName: "Email", isConsented: true },
       { userConsentID: 3, consentName: "SMS", isConsented: true },
@@ -150,7 +150,7 @@ const sourcingPartnerProfileResponse = {
     zipCode: "c5mPbPbv/02klbqbATMJnQ==",
     aadhaar: "MgX5JucT6OUNw9uAarO5FQ==",
     udhyamAadhaar: null,
-    cpCompanyLogo: "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/DefaultProfilePicture.png?sv=2025-05-05&se=2026-04-15T11%3A28%3A43Z&sr=b&sp=r&sig=u1iFIJ3%2B7msGnbMwd9K48qCZEb8k46WbUjN0EjMWRb0%3D",
+    cpCompanyLogo: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
     userConsents: [],
   },
 } as IUserProfileResponse;
@@ -204,7 +204,7 @@ const impersonatedClientProfileResponse = {
     zipCode: "ccgK5Hxtvciq/LkeLHblNA==",
     aadhaar: "pY1R+9dga/ja2YTReusQpA==",
     udhyamAadhaar: "pY1R+9dga/ja2YTReusQpA==",
-    cpCompanyLogo: "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/DefaultProfilePicture.png?sv=2025-05-05&se=2026-04-15T11%3A29%3A51Z&sr=b&sp=r&sig=%2FpmRKuYu%2FU79PpX7Yj2YfnkOZsXT59KyI84CIDSGIgA%3D",
+    cpCompanyLogo: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
     userConsents: [
       { userConsentID: 984, consentName: "Email", isConsented: true },
       { userConsentID: 986, consentName: "SMS", isConsented: true },

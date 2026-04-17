@@ -304,7 +304,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJarvis Credo CP_20260401_114920.pdf?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=Mf%2FYHEqlDOlsF1FjJZdbz%2FqHgdY0L27yc4MKd1lnURc%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         paymentLinkID: "202",
@@ -329,7 +329,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJarvis Credo CP_20260401_111419.pdf?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=Dk9A0Wi2U7jmmZNHpv1karXqR3jv94DYmqm%2BkJe127o%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         paymentLinkID: "200",
@@ -342,7 +342,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJarvis Credo CP_20260331_132755.pdf?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=YxV8oWteqZZX8L9SgYlSZC60Rz5F0aDjxbH%2BGvDlVvk%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         paymentLinkID: "199",
@@ -391,7 +391,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJarvis Credo CP_20260320_111156.pdf?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=TLDYIjKTvVjXJNAE%2FF1eicIjdPhRpbCxMw025O8DvEI%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         paymentLinkID: "194",
@@ -404,7 +404,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJarvis Credo CP_20260320_105740.pdf?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=Uyycl8re5RmoZxegHYBWaDroQDkrehhSC8eflzqHtFk%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         paymentLinkID: "193",
@@ -417,7 +417,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJarvis Credo CP_20260319_113223.pdf?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=I3ChyzASijkDDg5gpO3556LVjYhSddLdQtMIb0j6VYI%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         paymentLinkID: "192",
@@ -430,7 +430,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJarvis Credo CP_20260319_112629.pdf?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=PRR%2F%2FBvDRnyDGetYtW5w3RAEoilvLqbcZENaQ%2Flpty0%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         paymentLinkID: "191",
@@ -443,7 +443,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJarvis Credo CP_20260319_112504.pdf?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=Wy2fwLBi02Wzak%2FWacoS6s2c0CjGyiiiM09s3rXDFHY%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         paymentLinkID: "190",
@@ -456,7 +456,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJarvis Credo CP_20260319_104250.pdf?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=jHzxDvGVZtHY2iSJpgRFjttbxirTqRbFoh3%2FZBAyXqU%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         paymentLinkID: "189",
@@ -493,7 +493,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJarvis Credo CP_20260316_082308.pdf?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=0lK1Xs0kaMldSaPB6GWjT5ihQ2ZRp2%2F4swaBhBvy8Jw%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         paymentLinkID: "185",
@@ -506,7 +506,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJarvis Credo CP_20260305_075311.pdf?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=yoghcegOITc5r5oyd%2BiGbUFBRN7OvwfaRba%2B0xJ7mVo%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         paymentLinkID: "184",
@@ -531,7 +531,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/SubscriptionInvoices/f4204821-5d9b-484c-87b7-83e61167840d/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/SubscriptionInvoiceJohn Doc_20260219_070921.pdf?sv=2025-05-05&se=2026-04-13T09%3A25%3A49Z&sr=b&sp=r&sig=7EQiYHgT%2FSm9w63DjoXQfdm47uHpuScLw2MdEKNqqvc%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
     ],
   },
@@ -1159,7 +1159,7 @@ const demoPayOutDetailResponse: IPayOutsDetailResponse = {
         paymentDate: "2026-04-11T14:37:24.43",
         disbursementDate: "2026-04-11T03:23:59",
         invoiceUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/PayoutInvoices/CpToBank//3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/PayoutInvoice_Jarvis Credo CP_20260411_123021.pdf?sv=2025-05-05&se=2026-04-13T13%3A35%3A09Z&sr=b&sp=r&sig=bix03ExIsDQJZfsw6PUs26K3F%2FxvUkLFbVGhgi6Id24%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         applicationId: "08de971d-3de0-4c29-8806-4960fdb15332",
@@ -1184,7 +1184,7 @@ const demoPayOutDetailResponse: IPayOutsDetailResponse = {
         paymentDate: "2026-04-11T14:40:22.348",
         disbursementDate: "2026-04-11T03:22:33",
         invoiceUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/PayoutInvoices/CpToBank//3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/PayoutInvoice_Jarvis Credo CP_20260411_143828.pdf?sv=2025-05-05&se=2026-04-13T13%3A35%3A09Z&sr=b&sp=r&sig=2riPPt66P3OtpW%2F6%2Fayzk3oj0bIngRIQ2N76qj%2BA7Yo%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
@@ -1396,7 +1396,7 @@ const demoSpPayoutDetailResponse: ISourcingPartnerPayOutDetailResponse = {
         paymentDate: "2026-04-10T16:36:33.961",
         disbursementDate: "2026-04-11T03:23:59",
         invoiceUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/PayoutInvoices/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/08dd5d47-8d58-4536-816e-69beba1e38f8/PayoutInvoice_DEV SANJAYKUMAR BHUPTANI_20260410_162324.pdf?sv=2025-05-05&se=2026-04-13T13%3A35%3A39Z&sr=b&sp=r&sig=C6ulTVZy0IaZPz4m886WpXDl37OxzoAKVzLdGylhdyg%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         applicationId: "08de971d-3de0-4c29-8806-4960fdb15332",
@@ -1421,7 +1421,7 @@ const demoSpPayoutDetailResponse: ISourcingPartnerPayOutDetailResponse = {
         paymentDate: "2026-04-11T13:34:24.809",
         disbursementDate: "2026-04-11T03:23:59",
         invoiceUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/PayoutInvoices/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/08dd5d47-8d58-4536-816e-69beba1e38f8/PayoutInvoice_DEV SANJAYKUMAR BHUPTANI_20260410_162437.pdf?sv=2025-05-05&se=2026-04-13T13%3A35%3A39Z&sr=b&sp=r&sig=a21WGY8qlubQ8PIkcq5lucJhqLTI3P3n065s53dJY6A%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
@@ -1446,7 +1446,7 @@ const demoSpPayoutDetailResponse: ISourcingPartnerPayOutDetailResponse = {
         paymentDate: "0001-01-01T05:53:00",
         disbursementDate: "2026-04-11T03:19:39",
         invoiceUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/PayoutInvoices/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/08dd5d47-8d58-4536-816e-69beba1e38f8/PayoutInvoice_DEV SANJAYKUMAR BHUPTANI_20260410_152918.pdf?sv=2025-05-05&se=2026-04-13T13%3A35%3A39Z&sr=b&sp=r&sig=s5j%2F6VnHV4n%2FWSWOYDF9wndQN4wabOkzUnIJx2Qx3Q8%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
@@ -1471,7 +1471,7 @@ const demoSpPayoutDetailResponse: ISourcingPartnerPayOutDetailResponse = {
         paymentDate: "0001-01-01T05:53:00",
         disbursementDate: "2026-04-11T03:19:39",
         invoiceUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/PayoutInvoices/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/08dd5d47-8d58-4536-816e-69beba1e38f8/PayoutInvoice_DEV SANJAYKUMAR BHUPTANI_20260410_153058.pdf?sv=2025-05-05&se=2026-04-13T13%3A35%3A39Z&sr=b&sp=r&sig=6wYvZEl%2FhKnwWaglecrP5xLtijTK1XrIiFaWy8u6PQU%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
@@ -1496,7 +1496,7 @@ const demoSpPayoutDetailResponse: ISourcingPartnerPayOutDetailResponse = {
         paymentDate: "0001-01-01T05:53:00",
         disbursementDate: "2026-04-11T03:19:39",
         invoiceUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/PayoutInvoices/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/08dd5d47-8d58-4536-816e-69beba1e38f8/PayoutInvoice_DEV SANJAYKUMAR BHUPTANI_20260410_153400.pdf?sv=2025-05-05&se=2026-04-13T13%3A35%3A39Z&sr=b&sp=r&sig=jI%2Ff1Wi%2Blc5Q7v42mAHThnAaVs8oow%2B8UPsgidmsbhM%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         applicationId: "08de9716-4267-4945-8b4d-a22ad5d80b49",
@@ -1521,7 +1521,7 @@ const demoSpPayoutDetailResponse: ISourcingPartnerPayOutDetailResponse = {
         paymentDate: "0001-01-01T05:53:00",
         disbursementDate: "2026-04-11T03:19:39",
         invoiceUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/PayoutInvoices/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/08dd5d47-8d58-4536-816e-69beba1e38f8/PayoutInvoice_DEV SANJAYKUMAR BHUPTANI_20260410_153457.pdf?sv=2025-05-05&se=2026-04-13T13%3A35%3A39Z&sr=b&sp=r&sig=fJHR6o%2BcSb0RUr0pj5lFejyoaz8zZDidOKQdqpN01CQ%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         applicationId: "08de478b-13fc-4676-8494-3ce9105d9593",
@@ -1546,7 +1546,7 @@ const demoSpPayoutDetailResponse: ISourcingPartnerPayOutDetailResponse = {
         paymentDate: "0001-01-01T05:53:00",
         disbursementDate: "2026-04-10T05:30:00",
         invoiceUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/PayoutInvoices/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/08dd5d47-8d58-4536-816e-69beba1e38f8/PayoutInvoice_DEV SANJAYKUMAR BHUPTANI_20260410_150629.pdf?sv=2025-05-05&se=2026-04-13T13%3A35%3A39Z&sr=b&sp=r&sig=nf%2Bex4csx9mQPTMuNT6CGYhWqn1uPSreUTZaRBYwCGI%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
       {
         applicationId: "08de478b-13fc-4676-8494-3ce9105d9593",
@@ -1571,7 +1571,7 @@ const demoSpPayoutDetailResponse: ISourcingPartnerPayOutDetailResponse = {
         paymentDate: "0001-01-01T05:53:00",
         disbursementDate: "2026-04-10T05:30:00",
         invoiceUrl:
-          "https://credstagestorage.blob.core.windows.net/credorbit-dev/PayoutInvoices/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/08dd5d47-8d58-4536-816e-69beba1e38f8/PayoutInvoice_DEV SANJAYKUMAR BHUPTANI_20260410_152118.pdf?sv=2025-05-05&se=2026-04-13T13%3A35%3A39Z&sr=b&sp=r&sig=UcllZKkkbIyexYsgKdxjA7B1ohvt4nNqQnfMtZKNKUM%3D",
+          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
       },
     ],
   },
@@ -1625,7 +1625,7 @@ const demoCpPayoutInvoiceResponse: IGenerateCpPayoutInvoiceResponse = {
   status: true,
   statusCode: 200,
   message: "Invoice generated successfully!",
-  data: "https://credstagestorage.blob.core.windows.net/credorbit-dev/PayoutInvoices/CpToBank//3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/PayoutInvoice_Jarvis Credo CP_20260413_124407.pdf?sv=2025-05-05&se=2026-04-13T13%3A44%3A08Z&sr=b&sp=r&sig=H9CgsGBqZ3M31l7rw5dUQ09nTKyEOnOMkQlN32GAsyA%3D",
+  data: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
 };
 
 const demoLoanDetailResponse: ILoanResponse = {
@@ -1649,7 +1649,7 @@ const demoLoanDetailResponse: ILoanResponse = {
     },
     rateOfInterest: 0,
     sanctionLetterUrl:
-      "https://credstagestorage.blob.core.windows.net/credorbit-dev/UploadedDocuments/08dd9150-cf8c-4b4f-8502-acda58611393/Recognized/Loan Documents - Individual/WelcomeLetter/Shiv Reality.pdf?sv=2025-05-05&se=2026-04-13T13%3A54%3A49Z&sr=b&sp=r&sig=1kSbzOoJNoIz68UmAs%2B196Pu7g1puYuC8gsXhSI1Ru0%3D",
+      "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
     coApplicantName1: null as unknown as string,
     coApplicantName2: null as unknown as string,
     referenceName1: null as unknown as string,
@@ -1704,12 +1704,12 @@ const demoClientDetailResponse: IClientResponse = {
     channelPartner: "Jarvis Credo CP",
     panNumber: "cgsUTjP4e1TKDstAGzjwUw==",
     loanApplicationsList: [
-      { loanApplicationID: "08de0a3a-ca1e-4b77-8eee-17d81db7db57", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA251017", bankName: null, loanType: "Loan against property - Residential", loanTypeID: 7, date: "2025-10-13", sanctionedDate: "2025-11-17", disbursedDate: null, loanAmount: 5000000, sanctionedLoanAmount: null, disbursedLoanAmount: null, sanctionLetterUrl: "https://credstagestorage.blob.core.windows.net/credorbit-dev/UploadedDocuments/08de0598-4bee-48ca-8a7c-005b36583e79/Recognized/Loan Documents - Company/WelcomeLetter?sv=2025-05-05&se=2026-04-13T14%3A17%3A35Z&sr=b&sp=r&sig=luNufQcn2HOCQ6iO3%2BOz0UwVk2DHJ1kFzdXujlpGdWA%3D", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
-      { loanApplicationID: "08de8bd3-7517-4b14-895d-86d153b58721", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260315", bankName: "ICICI Home Finance", loanType: "Home Loan", loanTypeID: 1, date: "2026-03-27", sanctionedDate: "2026-03-27", disbursedDate: "2026-03-27", loanAmount: 10000000, sanctionedLoanAmount: 1000000, disbursedLoanAmount: 500, sanctionLetterUrl: "https://credstagestorage.blob.core.windows.net/credorbit-dev/UploadedDocuments/08de0598-4bee-48ca-8a7c-005b36583e79/Recognized/Loan Documents - Company/WelcomeLetter/AUTO_RECEIPT_RD17733755486720034.pdf?sv=2025-05-05&se=2026-04-13T14%3A17%3A35Z&sr=b&sp=r&sig=sWoPo8kBeRMO8ijyq6LKl8Ib%2Fo6MrjQ8p%2FRuZHKrA8Y%3D", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: true, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
-      { loanApplicationID: "08de917d-e933-4fb2-8462-cfb49ea9307b", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260401", bankName: null, loanType: "Home Loan", loanTypeID: 1, date: "2026-04-03", sanctionedDate: "2026-04-06", disbursedDate: "2026-04-06", loanAmount: 500000000, sanctionedLoanAmount: 5000000, disbursedLoanAmount: 600000, sanctionLetterUrl: "https://credstagestorage.blob.core.windows.net/credorbit-dev/UploadedDocuments/08de0598-4bee-48ca-8a7c-005b36583e79/Recognized/Loan Documents - Company/WelcomeLetter/CS_2026_Syllabus.pdf?sv=2025-05-05&se=2026-04-13T14%3A17%3A35Z&sr=b&sp=r&sig=OYLS7tL56twBoeGZZK1lVOMwsvHYMRx2acN3awj%2F4Fc%3D", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
+      { loanApplicationID: "08de0a3a-ca1e-4b77-8eee-17d81db7db57", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA251017", bankName: null, loanType: "Loan against property - Residential", loanTypeID: 7, date: "2025-10-13", sanctionedDate: "2025-11-17", disbursedDate: null, loanAmount: 5000000, sanctionedLoanAmount: null, disbursedLoanAmount: null, sanctionLetterUrl: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
+      { loanApplicationID: "08de8bd3-7517-4b14-895d-86d153b58721", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260315", bankName: "ICICI Home Finance", loanType: "Home Loan", loanTypeID: 1, date: "2026-03-27", sanctionedDate: "2026-03-27", disbursedDate: "2026-03-27", loanAmount: 10000000, sanctionedLoanAmount: 1000000, disbursedLoanAmount: 500, sanctionLetterUrl: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: true, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
+      { loanApplicationID: "08de917d-e933-4fb2-8462-cfb49ea9307b", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260401", bankName: null, loanType: "Home Loan", loanTypeID: 1, date: "2026-04-03", sanctionedDate: "2026-04-06", disbursedDate: "2026-04-06", loanAmount: 500000000, sanctionedLoanAmount: 5000000, disbursedLoanAmount: 600000, sanctionLetterUrl: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
       { loanApplicationID: "08de9555-6d6b-4e8b-8ee2-16084fca1339", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260404", bankName: null, loanType: "CC/OD - Secured", loanTypeID: 10, date: "2026-04-08", sanctionedDate: null, disbursedDate: null, loanAmount: 3000000, sanctionedLoanAmount: null, disbursedLoanAmount: null, sanctionLetterUrl: null, customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Pending", color: "#FF632C", statusID: 1 } },
-      { loanApplicationID: "08de9601-76b5-4691-880a-1116e852fe41", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260412", bankName: null, loanType: "Loan against property - Residential", loanTypeID: 7, date: "2026-04-09", sanctionedDate: "2026-04-09", disbursedDate: "2026-04-10", loanAmount: 5000000, sanctionedLoanAmount: 4000000, disbursedLoanAmount: 650000, sanctionLetterUrl: "https://credstagestorage.blob.core.windows.net/credorbit-dev/UploadedDocuments/08de0598-4bee-48ca-8a7c-005b36583e79/Recognized/Loan Documents - Company/WelcomeLetter/GST Report_NEXUS NUTRI SCIENCE LIMITED_20260406_172013.pdf?sv=2025-05-05&se=2026-04-13T14%3A17%3A35Z&sr=b&sp=r&sig=xC4FweKmL203N5CAakUnFPtz6S8R97oefUNM975X5LE%3D", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
-      { loanApplicationID: "08de9957-529b-4df9-83f6-e3ded4006a52", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260423", bankName: null, loanType: "Home Loan", loanTypeID: 1, date: "2026-04-13", sanctionedDate: "2026-04-13", disbursedDate: "2026-04-13", loanAmount: 5000000, sanctionedLoanAmount: 5000000, disbursedLoanAmount: 100000, sanctionLetterUrl: "https://credstagestorage.blob.core.windows.net/credorbit-dev/UploadedDocuments/08de0598-4bee-48ca-8a7c-005b36583e79/Recognized/Loan Documents - Company/WelcomeLetter/Rajukaka Train ticket 28032026.pdf?sv=2025-05-05&se=2026-04-13T14%3A17%3A35Z&sr=b&sp=r&sig=cfKLhIp%2BL7Tq87gxH6n9Y8N2FcT52oyB%2FXwCvr4FoV8%3D", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
+      { loanApplicationID: "08de9601-76b5-4691-880a-1116e852fe41", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260412", bankName: null, loanType: "Loan against property - Residential", loanTypeID: 7, date: "2026-04-09", sanctionedDate: "2026-04-09", disbursedDate: "2026-04-10", loanAmount: 5000000, sanctionedLoanAmount: 4000000, disbursedLoanAmount: 650000, sanctionLetterUrl: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
+      { loanApplicationID: "08de9957-529b-4df9-83f6-e3ded4006a52", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260423", bankName: null, loanType: "Home Loan", loanTypeID: 1, date: "2026-04-13", sanctionedDate: "2026-04-13", disbursedDate: "2026-04-13", loanAmount: 5000000, sanctionedLoanAmount: 5000000, disbursedLoanAmount: 100000, sanctionLetterUrl: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
     ],
   },
 };
@@ -1744,11 +1744,11 @@ const demoCpReportDetailResponse: IChannelPartnerClientReportDetailResponse = {
     channelPartner: "Jarvis Credo CP",
     panNumber: "cgsUTjP4e1TKDstAGzjwUw==",
     clientReports: [
-      { name: "GST Report", filePath: "https://credstagestorage.blob.core.windows.net/credorbit-dev/Documents/GstReports/08de0598-4bee-48ca-8a7c-005b36583e79/CoApplicantsAndPartners//GST Report_NEXUS NUTRI SCIENCE LIMITED_20260226_105117.pdf?sv=2025-05-05&se=2026-04-13T14%3A19%3A18Z&sr=b&sp=r&sig=Uza27ybhOaJ0qEzjPajGC9fuyIQtdA6XMFOL%2FAqMkBg%3D", reportType: 5 },
-      { name: "ITR Report", filePath: "https://credstagestorage.blob.core.windows.net/credorbit-dev/Documents/ItrReports/08de0598-4bee-48ca-8a7c-005b36583e79/CoApplicantsAndPartners//ITR Report_NEXUS NUTRI SCIENCE LIMITED_20251031_171022.pdf?sv=2025-05-05&se=2026-04-13T14%3A19%3A18Z&sr=b&sp=r&sig=m%2FKhEPg8LJJOms1fdXDd6ooLvO4Mq8tqHrAKG2M8m2U%3D", reportType: 4 },
-      { name: "Banking Report", filePath: "https://credstagestorage.blob.core.windows.net/credorbit-dev/Documents/BankingReports/08de0598-4bee-48ca-8a7c-005b36583e79/CoApplicantsAndPartners//Banking Report_NEXUS NUTRI SCIENCE LIMITED_20260320_195556.pdf?sv=2025-05-05&se=2026-04-13T14%3A19%3A18Z&sr=b&sp=r&sig=usfs1ODDaEqD5YLIZrUHT6OxDskIMNpSunY9rX8X05I%3D", reportType: 3 },
-      { name: "Credit Analytics Report", filePath: "https://credstagestorage.blob.core.windows.net/credorbit-dev/Documents/CreditBureauReports/08de0598-4bee-48ca-8a7c-005b36583e79/Credit Analytics Report_NEXUS NUTRI SCIENCE LIMITED_20260401_181917.pdf?sv=2025-05-05&se=2026-04-13T14%3A19%3A18Z&sr=b&sp=r&sig=k%2FwdhdlnHf5y5Rn1pXyH1omoDWv4PArAHtn92LCXF%2Bg%3D", reportType: 1 },
-      { name: "CAM Report_HL_08de8bd3-7517-4b14-895d-86d153b58721_03/27/2026 09:18:27_NEXUS NUTRI SCIENCE LIMITED", filePath: "https://credstagestorage.blob.core.windows.net/credorbit-dev/Documents/CAMReports/08de0598-4bee-48ca-8a7c-005b36583e79/CAM_Report_08de0598-4bee-48ca-8a7c-005b36583e79_08de8bd3-7517-4b14-895d-86d153b58721_20260327_144824.xlsx?sv=2025-05-05&se=2026-04-13T14%3A19%3A18Z&sr=b&sp=r&sig=Ep0iWd9Ym6MXirqBfAS02I4neAE8RLg0YjZLmoKcO9s%3D", reportType: 8 },
+      { name: "GST Report", filePath: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", reportType: 5 },
+      { name: "ITR Report", filePath: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", reportType: 4 },
+      { name: "Banking Report", filePath: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", reportType: 3 },
+      { name: "Credit Analytics Report", filePath: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", reportType: 1 },
+      { name: "CAM Report_HL_08de8bd3-7517-4b14-895d-86d153b58721_03/27/2026 09:18:27_NEXUS NUTRI SCIENCE LIMITED", filePath: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", reportType: 8 },
     ],
   },
 };
@@ -1763,7 +1763,7 @@ const demoSpPayoutInvoiceResponse = {
   status: true,
   statusCode: 200,
   message: "Invoice generated successfully!",
-  data: "https://credstagestorage.blob.core.windows.net/credorbit-dev/PayoutInvoices/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9/08dd5d47-8d58-4536-816e-69beba1e38f8/PayoutInvoice_DEV SANJAYKUMAR BHUPTANI_20260413_132250.pdf?sv=2025-05-05&se=2026-04-13T14%3A22%3A50Z&sr=b&sp=r&sig=ymT9AP7ehLUS3NTh55QMPakswLjudKB60Mmhq4wlJPw%3D",
+  data: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
 };
 
 const demoClientMasterResponse: IClientMasterResponse = {
@@ -2562,7 +2562,7 @@ const demoUserProfileResponse: IUserProfileResponse = {
       { userConsentID: 5, consentName: "WhatsApp", isConsented: true },
     ],
     cpCompanyLogo:
-      "https://credstagestorage.blob.core.windows.net/credorbit-dev/CPCompanyLogo/3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9.jpg?sv=2025-05-05&se=2026-04-14T11%3A33%3A30Z&sr=b&sp=r&sig=RLY3wrbU81wb9FPiwIdES8GY1%2BdW5bat8rlECvXLNTE%3D",
+      "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
   },
 };
 

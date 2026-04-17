@@ -21,8 +21,6 @@ import {
   IClientDetailListParams,
 } from "../../interface/reports";
 import TableTitle from "../../components/TableTitle";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
 import moment from "moment";
 import { decryptVAPTData } from "../../utils/functions/encryptDecrypt";
 import { Tooltip } from "primereact/tooltip";
@@ -36,8 +34,6 @@ const ReportDetails = () => {
   const { view } = usePermission("Reports", ["view"])();
 
   const { id } = useParams<RouteParams>();
-
-  const { userName } = useSelector((state: RootState) => state.user.user);
 
   const fetchChannelPartnerReportApi = async (): Promise<void> => {
     setLoading(true);
