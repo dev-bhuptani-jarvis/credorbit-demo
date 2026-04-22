@@ -227,9 +227,11 @@ export const getDemoUserProfileByContext = async (
 
   try {
     const currentUser = currentUserData ? JSON.parse(currentUserData) : null;
+    console.log('currentUser', currentUser)
     const impersonateUser = impersonateUserData
       ? JSON.parse(impersonateUserData)
       : null;
+    console.log('impersonateUser', impersonateUser)
     const email = (
       currentUser?.emailID ||
       impersonateUser?.emailID ||
@@ -244,7 +246,7 @@ export const getDemoUserProfileByContext = async (
       return sourcingPartnerProfileResponse;
     }
 
-    if (email === "client@yopmail.com") {
+    if (email === "nexustest@yopmail.com") {
       return impersonatedClientProfileResponse;
     }
   } catch {

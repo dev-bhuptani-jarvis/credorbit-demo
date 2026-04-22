@@ -479,7 +479,11 @@ const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) =
   const email = decryptDemoValue(encryptedEmail).toLowerCase();
   const mobile = decryptDemoValue(encryptedMobile);
 
+  console.log('email', email)
+  console.log('mobile', mobile)
+
   if (email === "info@credorbit.com" && mobile === "1111111111") {
+    console.log('admin');
     return {
       associatedUsers: [demoLoginAssociatedUsers[0]],
       response: demoLoginResponses.admin,
@@ -487,6 +491,7 @@ const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) =
   }
 
   if (email === "credsp1@yopmail.com" && mobile === "3333333333") {
+    console.log('sourcing partner');
     return {
       associatedUsers: [demoLoginAssociatedUsers[2]],
       response: demoLoginResponses.sourcingPartner,
@@ -494,12 +499,14 @@ const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) =
   }
 
   if (email === "client@yopmail.com" && mobile === "4444444444") {
+    console.log('client');
     return {
       associatedUsers: [demoLoginAssociatedUsers[2]],
       response: demoLoginResponses.client,
     };
   }
 
+  console.log('channel partner');
   return {
     associatedUsers: [demoLoginAssociatedUsers[1]],
     response: demoLoginResponses.channelPartner,
