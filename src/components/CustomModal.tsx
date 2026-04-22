@@ -40,8 +40,6 @@ import { RootState } from "../store";
 import { EMAIL_PATTERN, GST_NUMBER_PATTERN } from "../utils/constants/pattern";
 import { encryptVAPTData } from "../utils/functions/encryptDecrypt";
 import { Dropdown } from "primereact/dropdown";
-import { setReportMessage } from "../store/reducer/reportMessageSlice";
-import { useDispatch } from "react-redux";
 
 interface CustomModalProps {
   status: (typeof PAYMENT_REQUEST_STATUS)[keyof typeof PAYMENT_REQUEST_STATUS];
@@ -101,8 +99,6 @@ const CustomModal = ({
   const { userID, userType } = useSelector(
     (state: RootState) => state.user.user,
   );
-
-  const dispatch = useDispatch();
 
   const [formValues, setFormValues] = useState<IFormValue>({
     remarks: "",
@@ -259,7 +255,11 @@ const CustomModal = ({
 
     if (response && response.statusCode === 200) {
       toastSuccess(response.message);
-      window.open("/assets/images/gstReport.pdf", "_blank");
+      if (userType === CLIENT_ROLE.CHANNEL_PARTNER || userType === CLIENT_ROLE.USER_MANAGEMENT) {
+        window.open("/assets/images/cpPayout.pdf", "_blank")
+      } else {
+        window.open("/assets/images/spPayout.pdf", "_blank")
+      }
       fetchPayOutsDetailApi();
     } else {
       toastError(response.message);

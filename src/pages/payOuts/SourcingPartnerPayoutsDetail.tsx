@@ -416,7 +416,7 @@ const SourcingPartnerPayoutsDetail = () => {
       return;
     }
 
-    window.open("/assets/images/gstReport.pdf", "_blank");
+    window.open("/assets/images/spPayout.pdf", "_blank");
   };
 
   const actionBody = (rowData: IPayOutsDetailList) => {

@@ -418,7 +418,11 @@ const PayoutsDetail = () => {
       return;
     }
 
-    window.open("/assets/images/gstReport.pdf", "_blank");
+    if (userType === CLIENT_ROLE.CHANNEL_PARTNER || userType === CLIENT_ROLE.USER_MANAGEMENT) {
+      window.open("/assets/images/cpPayout.pdf", "_blank")
+    } else {
+      window.open("/assets/images/spPayout.pdf", "_blank")
+    }
   };
 
   const cpActionBody = (rowData: IPayOutsDetailList) => {
@@ -592,9 +596,13 @@ const PayoutsDetail = () => {
                 className="trash-icon p-0 me-2"
                 style={{ width: "25px" }}
                 data-pr-tooltip="Download Payout Invoice"
-                onClick={() =>
-                  window.open("/assets/images/gstReport.pdf", "_blank")
-                }
+                onClick={() => {
+                  if (userType === CLIENT_ROLE.CHANNEL_PARTNER || userType === CLIENT_ROLE.USER_MANAGEMENT) {
+                    window.open("/assets/images/cpPayout.pdf", "_blank")
+                  } else {
+                    window.open("/assets/images/spPayout.pdf", "_blank")
+                  }
+                }}
               >
                 <img src="/assets/images/download.svg" alt="Payout Invoice" />
               </Button>
@@ -608,9 +616,13 @@ const PayoutsDetail = () => {
                 className="trash-icon p-0 me-2"
                 style={{ width: "25px" }}
                 data-pr-tooltip="Download Payout Invoice"
-                onClick={() =>
-                  window.open("/assets/images/gstReport.pdf", "_blank")
-                }
+                onClick={() => {
+                  if (userType === CLIENT_ROLE.CHANNEL_PARTNER || userType === CLIENT_ROLE.USER_MANAGEMENT) {
+                    window.open("/assets/images/cpPayout.pdf", "_blank")
+                  } else {
+                    window.open("/assets/images/spPayout.pdf", "_blank")
+                  }
+                }}
               >
                 <img src="/assets/images/download.svg" alt="Payout Invoice" />
               </Button>
