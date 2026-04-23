@@ -258,42 +258,6 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
     reservedCredits: 396,
     subscriptionHistory: [
       {
-        paymentLinkID: "206",
-        planName: "Power Pack Plan",
-        amount: 5898.82,
-        gstAmount: 899.82,
-        amountWithoutGst: 4999,
-        creditPoints: 6000,
-        dateTime: "2026-04-01T19:26:36.49692",
-        paymentStatus: "Failed",
-        colorCode: "#dc3545",
-        subscriptionUrl: null as unknown as string,
-      },
-      {
-        paymentLinkID: "205",
-        planName: "Max Saver Plan",
-        amount: 11798.82,
-        gstAmount: 1799.82,
-        amountWithoutGst: 9999,
-        creditPoints: 12000,
-        dateTime: "2026-04-01T19:15:58.325381",
-        paymentStatus: "Created",
-        colorCode: "#17a2b8",
-        subscriptionUrl: null as unknown as string,
-      },
-      {
-        paymentLinkID: "204",
-        planName: "Value Plus Plan",
-        amount: 2358.82,
-        gstAmount: 359.82,
-        amountWithoutGst: 1999,
-        creditPoints: 2200,
-        dateTime: "2026-04-01T17:34:55.972106",
-        paymentStatus: "Created",
-        colorCode: "#17a2b8",
-        subscriptionUrl: null as unknown as string,
-      },
-      {
         paymentLinkID: "203",
         planName: "Value Plus Plan",
         amount: 2358.82,
@@ -304,7 +268,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "/assets/images/Subscription_Invoice.pdf",
       },
       {
         paymentLinkID: "202",
@@ -329,7 +293,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "/assets/images/Subscription_Invoice.pdf",
       },
       {
         paymentLinkID: "200",
@@ -342,7 +306,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "/assets/images/Subscription_Invoice.pdf",
       },
       {
         paymentLinkID: "199",
@@ -391,7 +355,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "/assets/images/Subscription_Invoice.pdf",
       },
       {
         paymentLinkID: "194",
@@ -404,7 +368,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "/assets/images/Subscription_Invoice.pdf",
       },
       {
         paymentLinkID: "193",
@@ -417,7 +381,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "/assets/images/Subscription_Invoice.pdf",
       },
       {
         paymentLinkID: "192",
@@ -430,7 +394,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "/assets/images/Subscription_Invoice.pdf",
       },
       {
         paymentLinkID: "191",
@@ -443,7 +407,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "/assets/images/Subscription_Invoice.pdf",
       },
       {
         paymentLinkID: "190",
@@ -456,7 +420,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "/assets/images/Subscription_Invoice.pdf",
       },
       {
         paymentLinkID: "189",
@@ -493,7 +457,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "/assets/images/Subscription_Invoice.pdf",
       },
       {
         paymentLinkID: "185",
@@ -506,7 +470,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "/assets/images/Subscription_Invoice.pdf",
       },
       {
         paymentLinkID: "184",
@@ -531,7 +495,7 @@ const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
         paymentStatus: "Paid",
         colorCode: "#28a745",
         subscriptionUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "/assets/images/Subscription_Invoice.pdf",
       },
     ],
   },
@@ -1633,6 +1597,7 @@ const demoLoanDetailResponse: ILoanResponse = {
   statusCode: 200,
   message: "Details of Loan Application fetched successfully!",
   data: {
+    loanApplicationCode: "COLA260305",
     loanApplicationID: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
     bankName: null,
     loanType: "Home Loan",
@@ -1649,7 +1614,7 @@ const demoLoanDetailResponse: ILoanResponse = {
     },
     rateOfInterest: 0,
     sanctionLetterUrl:
-      "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+      "/assets/images/sanction-letter.pdf",
     coApplicantName1: null as unknown as string,
     coApplicantName2: null as unknown as string,
     referenceName1: null as unknown as string,
@@ -1704,12 +1669,12 @@ const demoClientDetailResponse: IClientResponse = {
     channelPartner: "Jarvis Credo CP",
     panNumber: "cgsUTjP4e1TKDstAGzjwUw==",
     loanApplicationsList: [
-      { loanApplicationID: "08de0a3a-ca1e-4b77-8eee-17d81db7db57", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA251017", bankName: null, loanType: "Loan against property - Residential", loanTypeID: 7, date: "2025-10-13", sanctionedDate: "2025-11-17", disbursedDate: null, loanAmount: 5000000, sanctionedLoanAmount: null, disbursedLoanAmount: null, sanctionLetterUrl: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
-      { loanApplicationID: "08de8bd3-7517-4b14-895d-86d153b58721", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260315", bankName: "ICICI Home Finance", loanType: "Home Loan", loanTypeID: 1, date: "2026-03-27", sanctionedDate: "2026-03-27", disbursedDate: "2026-03-27", loanAmount: 10000000, sanctionedLoanAmount: 1000000, disbursedLoanAmount: 500, sanctionLetterUrl: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: true, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
-      { loanApplicationID: "08de917d-e933-4fb2-8462-cfb49ea9307b", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260401", bankName: null, loanType: "Home Loan", loanTypeID: 1, date: "2026-04-03", sanctionedDate: "2026-04-06", disbursedDate: "2026-04-06", loanAmount: 500000000, sanctionedLoanAmount: 5000000, disbursedLoanAmount: 600000, sanctionLetterUrl: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
+      { loanApplicationID: "08de0a3a-ca1e-4b77-8eee-17d81db7db57", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA251017", bankName: null, loanType: "Loan against property - Residential", loanTypeID: 7, date: "2025-10-13", sanctionedDate: "2025-11-17", disbursedDate: null, loanAmount: 5000000, sanctionedLoanAmount: null, disbursedLoanAmount: null, sanctionLetterUrl: "/assets/images/sanction-letter.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
+      { loanApplicationID: "08de8bd3-7517-4b14-895d-86d153b58721", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260315", bankName: "ICICI Home Finance", loanType: "Home Loan", loanTypeID: 1, date: "2026-03-27", sanctionedDate: "2026-03-27", disbursedDate: "2026-03-27", loanAmount: 10000000, sanctionedLoanAmount: 1000000, disbursedLoanAmount: 500, sanctionLetterUrl: "/assets/images/sanction-letter.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: true, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
+      { loanApplicationID: "08de917d-e933-4fb2-8462-cfb49ea9307b", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260401", bankName: null, loanType: "Home Loan", loanTypeID: 1, date: "2026-04-03", sanctionedDate: "2026-04-06", disbursedDate: "2026-04-06", loanAmount: 500000000, sanctionedLoanAmount: 5000000, disbursedLoanAmount: 600000, sanctionLetterUrl: "/assets/images/sanction-letter.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
       { loanApplicationID: "08de9555-6d6b-4e8b-8ee2-16084fca1339", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260404", bankName: null, loanType: "CC/OD - Secured", loanTypeID: 10, date: "2026-04-08", sanctionedDate: null, disbursedDate: null, loanAmount: 3000000, sanctionedLoanAmount: null, disbursedLoanAmount: null, sanctionLetterUrl: null, customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Pending", color: "#FF632C", statusID: 1 } },
-      { loanApplicationID: "08de9601-76b5-4691-880a-1116e852fe41", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260412", bankName: null, loanType: "Loan against property - Residential", loanTypeID: 7, date: "2026-04-09", sanctionedDate: "2026-04-09", disbursedDate: "2026-04-10", loanAmount: 5000000, sanctionedLoanAmount: 4000000, disbursedLoanAmount: 650000, sanctionLetterUrl: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
-      { loanApplicationID: "08de9957-529b-4df9-83f6-e3ded4006a52", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260423", bankName: null, loanType: "Home Loan", loanTypeID: 1, date: "2026-04-13", sanctionedDate: "2026-04-13", disbursedDate: "2026-04-13", loanAmount: 5000000, sanctionedLoanAmount: 5000000, disbursedLoanAmount: 100000, sanctionLetterUrl: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
+      { loanApplicationID: "08de9601-76b5-4691-880a-1116e852fe41", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260412", bankName: null, loanType: "Loan against property - Residential", loanTypeID: 7, date: "2026-04-09", sanctionedDate: "2026-04-09", disbursedDate: "2026-04-10", loanAmount: 5000000, sanctionedLoanAmount: 4000000, disbursedLoanAmount: 650000, sanctionLetterUrl: "/assets/images/sanction-letter.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
+      { loanApplicationID: "08de9957-529b-4df9-83f6-e3ded4006a52", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260423", bankName: null, loanType: "Home Loan", loanTypeID: 1, date: "2026-04-13", sanctionedDate: "2026-04-13", disbursedDate: "2026-04-13", loanAmount: 5000000, sanctionedLoanAmount: 5000000, disbursedLoanAmount: 100000, sanctionLetterUrl: "/assets/images/sanction-letter.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
     ],
   },
 };
@@ -1744,11 +1709,11 @@ const demoCpReportDetailResponse: IChannelPartnerClientReportDetailResponse = {
     channelPartner: "Jarvis Credo CP",
     panNumber: "cgsUTjP4e1TKDstAGzjwUw==",
     clientReports: [
-      { name: "GST Report", filePath: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", reportType: 5 },
-      { name: "ITR Report", filePath: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", reportType: 4 },
-      { name: "Banking Report", filePath: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", reportType: 3 },
-      { name: "Credit Analytics Report", filePath: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", reportType: 1 },
-      { name: "CAM Report_HL_08de8bd3-7517-4b14-895d-86d153b58721_03/27/2026 09:18:27_NEXUS NUTRI SCIENCE LIMITED", filePath: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf", reportType: 8 },
+      { name: "GST Report", filePath: "/assets/images/GST Report.pdf", reportType: 5 },
+      { name: "ITR Report", filePath: "/assets/images/ITR Report.pdf", reportType: 4 },
+      { name: "Banking Report", filePath: "/assets/images/Banking Report.pdf", reportType: 3 },
+      { name: "Credit Analytics Report", filePath: "/assets/images/Credit Analytics Report.pdf", reportType: 1 },
+      { name: "CAM Report_HL_NEXUS NUTRI SCIENCE LIMITED", filePath: "/assets/images/CAM_Report_Sample_HL.pdf", reportType: 8 },
     ],
   },
 };
@@ -2562,7 +2527,7 @@ const demoUserProfileResponse: IUserProfileResponse = {
       { userConsentID: 5, consentName: "WhatsApp", isConsented: true },
     ],
     cpCompanyLogo:
-      "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+      "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
   },
 };
 

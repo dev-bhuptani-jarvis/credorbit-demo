@@ -71,6 +71,7 @@ import {
 } from "../../utils/functions/encryptDecrypt";
 import { Tooltip } from "primereact/tooltip";
 import { setProfileUpdated } from "../../store/reducer/profileSlice";
+import { Image } from "primereact/image";
 
 const Profile = () => {
   const [userFormData, setUserFormData] = useState<IUserInfo>();
@@ -127,7 +128,7 @@ const Profile = () => {
 
   const [aadharCardPopUp, setAadharCardPopUp] = useState<boolean>(false);
 
-  const [otpValues, setOtpValues] = useState<number | undefined>(undefined);
+  const [otpValues, setOtpValues] = useState<string | undefined>(undefined);
 
   const [clientID, setClientID] = useState<string>("");
 
@@ -678,11 +679,11 @@ const Profile = () => {
     setSelectedPartnerDraft((prev) =>
       prev
         ? {
-            ...prev,
-            pinCode: value,
-            city: value.length === 6 ? prev.city : "",
-            state: value.length === 6 ? prev.state : "",
-          }
+          ...prev,
+          pinCode: value,
+          city: value.length === 6 ? prev.city : "",
+          state: value.length === 6 ? prev.state : "",
+        }
         : prev,
     );
 
@@ -703,10 +704,10 @@ const Profile = () => {
       setSelectedPartnerDraft((prev) =>
         prev
           ? {
-              ...prev,
-              city: response.data.circle,
-              state: response.data.state,
-            }
+            ...prev,
+            city: response.data.circle,
+            state: response.data.state,
+          }
           : prev,
       );
     } else {
@@ -738,8 +739,8 @@ const Profile = () => {
           const currentValue = partner[key];
           encryptedPartner[key] =
             currentValue !== null &&
-            currentValue !== undefined &&
-            currentValue !== ""
+              currentValue !== undefined &&
+              currentValue !== ""
               ? encryptVAPTData(String(currentValue))
               : currentValue;
         }
@@ -1015,7 +1016,7 @@ const Profile = () => {
 
     const body: IUpdateAadhaarBody = {
       clientID,
-      otp: String(otpValues),
+      otp: otpValues,
       coapplicantOrPartnerID: userID,
       aadhaarNumber: encryptVAPTData(aadhaarCardNumber.replace(/\D/g, "")),
       userType,
@@ -1058,12 +1059,10 @@ const Profile = () => {
   );
 
   const handleOtpChange = (value: string | number | null | undefined): void => {
-    if (typeof value === "number") {
-      setOtpValues(value);
-    } else if (typeof value === "string") {
-      setOtpValues(Number(value));
+    if (value !== null && value !== undefined) {
+      setOtpValues(String(value));
     } else {
-      setOtpValues(undefined);
+      setOtpValues("");
     }
   };
 
@@ -1167,19 +1166,19 @@ const Profile = () => {
 
       bankAccountNumber:
         userData.userType === CLIENT_ROLE.SOURCING_PARTNER &&
-        IsStringNullEmptyOrUndefined(userFormData?.bankAccountNumber ?? "")
+          IsStringNullEmptyOrUndefined(userFormData?.bankAccountNumber ?? "")
           ? validationMessages.bankAccountNumberRequired
           : "",
 
       ifscCode:
         userData.userType === CLIENT_ROLE.SOURCING_PARTNER &&
-        IsStringNullEmptyOrUndefined(userFormData?.ifscCode ?? "")
+          IsStringNullEmptyOrUndefined(userFormData?.ifscCode ?? "")
           ? validationMessages.ifscCodeRequired
           : "",
 
       bankName:
         userData.userType === CLIENT_ROLE.SOURCING_PARTNER &&
-        IsStringNullEmptyOrUndefined(userFormData?.bankName ?? "")
+          IsStringNullEmptyOrUndefined(userFormData?.bankName ?? "")
           ? validationMessages.bankNameRequired
           : "",
 
@@ -1201,7 +1200,7 @@ const Profile = () => {
 
       aadhaar:
         !userFormData?.isCompany &&
-        IsStringNullEmptyOrUndefined(userFormData?.aadhaar ?? "")
+          IsStringNullEmptyOrUndefined(userFormData?.aadhaar ?? "")
           ? validationMessages.aadhaarRequired
           : "",
 
@@ -1342,9 +1341,13 @@ const Profile = () => {
               <div className="profileHeroIdentity">
                 <div className="profilePhoto profileHeroAvatar">
                   {userFormData?.profilePicture ? (
-                    <img
+                    <Image
                       src={userFormData?.profilePicture}
+                      zoomSrc={userFormData?.profilePicture}
                       alt="Profile"
+                      width="60"
+                      height="60"
+                      preview
                       className="profile-photo-img"
                     />
                   ) : (
@@ -1454,22 +1457,22 @@ const Profile = () => {
 
                           {userData.userType ===
                             CLIENT_ROLE.CHANNEL_PARTNER && (
-                            <>
-                              <span
-                                id="registrationLink"
-                                className="text-orange cursor-pointer fw-medium small"
-                                onClick={handleRegistrationLinkCopy}
-                              >
-                                Registration Link
-                              </span>
+                              <>
+                                <span
+                                  id="registrationLink"
+                                  className="text-orange cursor-pointer fw-medium small"
+                                  onClick={handleRegistrationLinkCopy}
+                                >
+                                  Registration Link
+                                </span>
 
-                              <Tooltip
-                                target="#registrationLink"
-                                content="Click here to copy the registration link which you can share with your borrower"
-                                position="top"
-                              />
-                            </>
-                          )}
+                                <Tooltip
+                                  target="#registrationLink"
+                                  content="Click here to copy the registration link which you can share with your borrower"
+                                  position="top"
+                                />
+                              </>
+                            )}
                         </div>
 
                         <InputText
@@ -1478,9 +1481,9 @@ const Profile = () => {
                           name="customerID"
                           value={userFormData?.customerID!}
                           disabled
-                          // onPaste={(e) => e.preventDefault()}
-                          // onCopy={(e) => e.preventDefault()}
-                          // onCut={(e) => e.preventDefault()}
+                        // onPaste={(e) => e.preventDefault()}
+                        // onCopy={(e) => e.preventDefault()}
+                        // onCut={(e) => e.preventDefault()}
                         />
                       </div>
                     </div>
@@ -1598,7 +1601,7 @@ const Profile = () => {
                         name="mobileNumber"
                         value={
                           userData.userType === CLIENT_ROLE.USER_MANAGEMENT ||
-                          !isEditable
+                            !isEditable
                             ? formatMobileNumber(userFormData?.mobileNumber)
                             : userFormData?.mobileNumber
                         }
@@ -1780,86 +1783,86 @@ const Profile = () => {
                   {(userFormData?.isCompany ||
                     (userFormData?.gstList &&
                       userFormData?.gstList?.length > 0)) && (
-                    <>
-                      <div className="col-12">
-                        <div className="profileSectionHeader">GST Info</div>
-                      </div>
-
-                      {/* GST NO. */}
-                      {userFormData?.gstList.length > 1 ? (
-                        <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                          <div className="form-group mb-4">
-                            <label
-                              className="form-label small"
-                              htmlFor="gstSelect"
-                            >
-                              GST No.
-                            </label>
-
-                            <Dropdown
-                              id="gstSelect"
-                              variant={isEditable ? "outlined" : "filled"}
-                              value={selectedGSTNumber}
-                              options={userFormData?.gstList.sort((a, b) =>
-                                a.gstNumber.localeCompare(b.gstNumber),
-                              )}
-                              placeholder="Please Select GST Number"
-                              onChange={(e) => setSelectedGSTNumber(e.value)}
-                              optionLabel="gstNumber"
-                              optionValue="gstNumber"
-                              disabled={!isEditable}
-                            />
-                          </div>
+                      <>
+                        <div className="col-12">
+                          <div className="profileSectionHeader">GST Info</div>
                         </div>
-                      ) : (
-                        <ProfileTextField
-                          label="GST No."
-                          name={selectedGSTNumber}
-                          value={selectedGSTNumber}
-                          placeholder="Please Select GST Number"
-                        />
-                      )}
 
-                      {/* Date of GST Registration */}
-                      <DateTextField
-                        label="Date of GST Registration"
-                        name={`dateOfGstRegistration-${selectedGSTDetail?.dateOfGstRegistration}`}
-                        value={
-                          selectedGSTDetail?.dateOfGstRegistration
-                            ? new Date(
+                        {/* GST NO. */}
+                        {userFormData?.gstList.length > 1 ? (
+                          <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                            <div className="form-group mb-4">
+                              <label
+                                className="form-label small"
+                                htmlFor="gstSelect"
+                              >
+                                GST No.
+                              </label>
+
+                              <Dropdown
+                                id="gstSelect"
+                                variant={isEditable ? "outlined" : "filled"}
+                                value={selectedGSTNumber}
+                                options={userFormData?.gstList.sort((a, b) =>
+                                  a.gstNumber.localeCompare(b.gstNumber),
+                                )}
+                                placeholder="Please Select GST Number"
+                                onChange={(e) => setSelectedGSTNumber(e.value)}
+                                optionLabel="gstNumber"
+                                optionValue="gstNumber"
+                                disabled={!isEditable}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <ProfileTextField
+                            label="GST No."
+                            name={selectedGSTNumber}
+                            value={selectedGSTNumber}
+                            placeholder="Please Select GST Number"
+                          />
+                        )}
+
+                        {/* Date of GST Registration */}
+                        <DateTextField
+                          label="Date of GST Registration"
+                          name={`dateOfGstRegistration-${selectedGSTDetail?.dateOfGstRegistration}`}
+                          value={
+                            selectedGSTDetail?.dateOfGstRegistration
+                              ? new Date(
                                 selectedGSTDetail?.dateOfGstRegistration,
                               ).toISOString()
-                            : ""
-                        }
-                        placeholder="Select GST number to view registration date"
-                      />
+                              : ""
+                          }
+                          placeholder="Select GST number to view registration date"
+                        />
 
-                      {/* GST Address */}
-                      <ProfileTextField
-                        label="GST Address"
-                        name={`gstAddress-${selectedGSTDetail?.gstAddress}`}
-                        value={selectedGSTDetail?.gstAddress!}
-                        placeholder="Select GST number to view address"
-                      />
+                        {/* GST Address */}
+                        <ProfileTextField
+                          label="GST Address"
+                          name={`gstAddress-${selectedGSTDetail?.gstAddress}`}
+                          value={selectedGSTDetail?.gstAddress!}
+                          placeholder="Select GST number to view address"
+                        />
 
-                      {/* Trade Name */}
-                      <ProfileTextField
-                        label="Trade Name"
-                        name={`tradeName-${selectedGSTDetail?.tradeName}`}
-                        value={selectedGSTDetail?.tradeName!}
-                        placeholder="Select GST number to view trade name"
-                      />
+                        {/* Trade Name */}
+                        <ProfileTextField
+                          label="Trade Name"
+                          name={`tradeName-${selectedGSTDetail?.tradeName}`}
+                          value={selectedGSTDetail?.tradeName!}
+                          placeholder="Select GST number to view trade name"
+                        />
 
-                      {/* CIN/LLP */}
-                      <ProfileTextField
-                        label="CIN/LLP"
-                        name={`cinOrLlp-${selectedGSTDetail?.cinOrLlp}`}
-                        value={selectedGSTDetail?.cinOrLlp!}
-                        placeholder="Select GST number to view CIN/LLP"
-                        tooltip={true}
-                      />
-                    </>
-                  )}
+                        {/* CIN/LLP */}
+                        <ProfileTextField
+                          label="CIN/LLP"
+                          name={`cinOrLlp-${selectedGSTDetail?.cinOrLlp}`}
+                          value={selectedGSTDetail?.cinOrLlp!}
+                          placeholder="Select GST number to view CIN/LLP"
+                          tooltip={true}
+                        />
+                      </>
+                    )}
 
                   <div className="col-lg-4 col-md-6 col-sm-12 col-12">
                     <div className="form-group mb-4">
@@ -1878,9 +1881,9 @@ const Profile = () => {
                         onChange={handleChange}
                         disabled={!isEditable}
                         maxLength={25}
-                        // onPaste={(e) => e.preventDefault()}
-                        // onCopy={(e) => e.preventDefault()}
-                        // onCut={(e) => e.preventDefault()}
+                      // onPaste={(e) => e.preventDefault()}
+                      // onCopy={(e) => e.preventDefault()}
+                      // onCut={(e) => e.preventDefault()}
                       />
                     </div>
                   </div>
@@ -1980,133 +1983,133 @@ const Profile = () => {
 
           {(userData.userType === CLIENT_ROLE.CHANNEL_PARTNER ||
             userData.userType === CLIENT_ROLE.SOURCING_PARTNER) && (
-            <div className="col-lg-12 mb-2">
-              <div className="titleMainWrapper">
-                <h2 className="txt-24">Bank Details</h2>
-              </div>
+              <div className="col-lg-12 mb-2">
+                <div className="titleMainWrapper">
+                  <h2 className="txt-24">Bank Details</h2>
+                </div>
 
-              <div className="col-12 mt-3">
-                <div className="row">
-                  {/* Bank Name */}
-                  <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                    <div className="form-group mb-4">
-                      <label className="form-label small" htmlFor="bankName">
-                        Bank Name
-                        {isEditable &&
-                          userData.userType ===
+                <div className="col-12 mt-3">
+                  <div className="row">
+                    {/* Bank Name */}
+                    <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                      <div className="form-group mb-4">
+                        <label className="form-label small" htmlFor="bankName">
+                          Bank Name
+                          {isEditable &&
+                            userData.userType ===
                             CLIENT_ROLE.SOURCING_PARTNER && <sup>*</sup>}
-                      </label>
+                        </label>
 
-                      <InputText
-                        className="form-control"
-                        placeholder="Enter your Bank Name"
-                        name="bankName"
-                        id="bankName"
-                        onChange={handleChange}
-                        value={userFormData?.bankName}
-                        disabled={!isEditable}
-                        maxLength={50}
-                        // onPaste={(e) => e.preventDefault()}
-                        // onCopy={(e) => e.preventDefault()}
-                        // onCut={(e) => e.preventDefault()}
-                        onKeyPress={(e) => {
-                          const regex = /^[a-zA-Z\s]*$/;
-                          if (!regex.test(e.key)) {
-                            e.preventDefault();
-                          }
+                        <InputText
+                          className="form-control"
+                          placeholder="Enter your Bank Name"
+                          name="bankName"
+                          id="bankName"
+                          onChange={handleChange}
+                          value={userFormData?.bankName}
+                          disabled={!isEditable}
+                          maxLength={50}
+                          // onPaste={(e) => e.preventDefault()}
+                          // onCopy={(e) => e.preventDefault()}
+                          // onCut={(e) => e.preventDefault()}
+                          onKeyPress={(e) => {
+                            const regex = /^[a-zA-Z\s]*$/;
+                            if (!regex.test(e.key)) {
+                              e.preventDefault();
+                            }
 
-                          if (
-                            e.currentTarget.selectionStart === 0 &&
-                            e.key === " "
-                          ) {
-                            e.preventDefault();
-                          }
-                        }}
-                      />
+                            if (
+                              e.currentTarget.selectionStart === 0 &&
+                              e.key === " "
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
+                        />
 
-                      {isFormSubmitted && isEditable && (
-                        <span className="error">{formErrors.bankName}</span>
-                      )}
+                        {isFormSubmitted && isEditable && (
+                          <span className="error">{formErrors.bankName}</span>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Bank Account Number */}
-                  <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                    <div className="form-group mb-4">
-                      <label
-                        className="form-label small"
-                        htmlFor="bankAccountNumber"
-                      >
-                        Bank Account No.
-                        {isEditable &&
-                          userData.userType ===
+                    {/* Bank Account Number */}
+                    <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                      <div className="form-group mb-4">
+                        <label
+                          className="form-label small"
+                          htmlFor="bankAccountNumber"
+                        >
+                          Bank Account No.
+                          {isEditable &&
+                            userData.userType ===
                             CLIENT_ROLE.SOURCING_PARTNER && <sup>*</sup>}
-                      </label>
+                        </label>
 
-                      <InputText
-                        className="form-control"
-                        id="bankAccountNumber"
-                        name="bankAccountNumber"
-                        onChange={handleChange}
-                        onKeyPress={(e) =>
-                          restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
-                        }
-                        maxLength={18}
-                        placeholder="Enter your Bank Account No."
-                        value={userFormData?.bankAccountNumber}
-                        disabled={!isEditable}
-                        // onPaste={(e) => e.preventDefault()}
-                        // onCopy={(e) => e.preventDefault()}
-                        // onCut={(e) => e.preventDefault()}
-                      />
-
-                      {isFormSubmitted && isEditable && (
-                        <span className="error">
-                          {formErrors.bankAccountNumber}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* IFSC Code */}
-                  <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                    <div className="form-group mb-4">
-                      <label className="form-label small" htmlFor="ifscCode">
-                        IFSC Code
-                        {isEditable &&
-                          userData.userType ===
-                            CLIENT_ROLE.SOURCING_PARTNER && <sup>*</sup>}
-                      </label>
-
-                      <InputText
-                        id="ifscCode"
-                        className="form-control"
-                        placeholder="Enter IFSC Code"
-                        name="ifscCode"
-                        value={userFormData?.ifscCode}
-                        onChange={handleChange}
-                        maxLength={11}
-                        disabled={!isEditable}
-                        // onPaste={(e) => e.preventDefault()}
-                        // onCopy={(e) => e.preventDefault()}
-                        // onCut={(e) => e.preventDefault()}
-                        onKeyPress={(e) => {
-                          const regex = /^[a-zA-Z0-9]*$/;
-                          if (!regex.test(e.key)) {
-                            e.preventDefault();
+                        <InputText
+                          className="form-control"
+                          id="bankAccountNumber"
+                          name="bankAccountNumber"
+                          onChange={handleChange}
+                          onKeyPress={(e) =>
+                            restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
                           }
-                        }}
-                      />
+                          maxLength={18}
+                          placeholder="Enter your Bank Account No."
+                          value={userFormData?.bankAccountNumber}
+                          disabled={!isEditable}
+                        // onPaste={(e) => e.preventDefault()}
+                        // onCopy={(e) => e.preventDefault()}
+                        // onCut={(e) => e.preventDefault()}
+                        />
 
-                      {isFormSubmitted && isEditable && (
-                        <span className="error">{formErrors.ifscCode}</span>
-                      )}
+                        {isFormSubmitted && isEditable && (
+                          <span className="error">
+                            {formErrors.bankAccountNumber}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* IFSC Code */}
+                    <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                      <div className="form-group mb-4">
+                        <label className="form-label small" htmlFor="ifscCode">
+                          IFSC Code
+                          {isEditable &&
+                            userData.userType ===
+                            CLIENT_ROLE.SOURCING_PARTNER && <sup>*</sup>}
+                        </label>
+
+                        <InputText
+                          id="ifscCode"
+                          className="form-control"
+                          placeholder="Enter IFSC Code"
+                          name="ifscCode"
+                          value={userFormData?.ifscCode}
+                          onChange={handleChange}
+                          maxLength={11}
+                          disabled={!isEditable}
+                          // onPaste={(e) => e.preventDefault()}
+                          // onCopy={(e) => e.preventDefault()}
+                          // onCut={(e) => e.preventDefault()}
+                          onKeyPress={(e) => {
+                            const regex = /^[a-zA-Z0-9]*$/;
+                            if (!regex.test(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                        />
+
+                        {isFormSubmitted && isEditable && (
+                          <span className="error">{formErrors.ifscCode}</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
 
         {!IsNullOrEmptyArray(userFormData?.userConsents || []) && (
@@ -2147,147 +2150,147 @@ const Profile = () => {
 
         {(userData.userType === CLIENT_ROLE.CUSTOMER ||
           userData.userType === CLIENT_ROLE.CHANNEL_PARTNER) && (
-          <div className="col-lg-12 mb-4">
-            <div className="titleMainWrapper">
-              <h2 className="txt-24">Partners / Directors</h2>
+            <div className="col-lg-12 mb-4">
+              <div className="titleMainWrapper">
+                <h2 className="txt-24">Partners / Directors</h2>
 
-              {create && isEditable && (
-                <div className="btnGroup">
-                  <Button
-                    className="btn btn-orange fw-bold"
-                    onClick={() => handleChangeTargetUser(CLIENT_ROLE.PARTNER)}
-                    label="Add Partners"
-                    iconPos="left"
-                    icon="bi bi-plus-circle me-2"
-                  />
-                </div>
-              )}
-            </div>
+                {create && isEditable && (
+                  <div className="btnGroup">
+                    <Button
+                      className="btn btn-orange fw-bold"
+                      onClick={() => handleChangeTargetUser(CLIENT_ROLE.PARTNER)}
+                      label="Add Partners"
+                      iconPos="left"
+                      icon="bi bi-plus-circle me-2"
+                    />
+                  </div>
+                )}
+              </div>
 
-            <div className="col-12 mt-3 profilePersonGrid">
-              {!IsNullOrEmptyArray(userFormData?.partners || []) &&
-                userFormData?.partners.map((partner, index) => {
-                  const isEditing = editingAadhaar === partner.id;
+              <div className="col-12 mt-3 profilePersonGrid">
+                {!IsNullOrEmptyArray(userFormData?.partners || []) &&
+                  userFormData?.partners.map((partner, index) => {
+                    const isEditing = editingAadhaar === partner.id;
 
-                  return (
-                    <div key={partner.id} className="profilePersonCard">
-                      <div className="profilePersonCardTop">
-                        <div className="profilePersonInfo">
-                          <h3>{partner.name}</h3>
-                          <p>{partner.pan}</p>
-                        </div>
+                    return (
+                      <div key={partner.id} className="profilePersonCard">
+                        <div className="profilePersonCardTop">
+                          <div className="profilePersonInfo">
+                            <h3>{partner.name}</h3>
+                            <p>{partner.pan}</p>
+                          </div>
 
-                        <div className="profilePersonActions">
-                          <button
-                            type="button"
-                            className="profileIconButton"
-                            onClick={() => handleOpenPartnerDetails(index)}
-                            aria-label="View Partner Details"
-                          >
-                            <i className="bi bi-eye" />
-                          </button>
+                          <div className="profilePersonActions">
+                            <button
+                              type="button"
+                              className="profileIconButton"
+                              onClick={() => handleOpenPartnerDetails(index)}
+                              aria-label="View Partner Details"
+                            >
+                              <i className="bi bi-eye" />
+                            </button>
 
-                          {isEditable && (
-                            <>
-                              {partner.aadhaarNumber === null && !isEditing && (
+                            {isEditable && (
+                              <>
+                                {partner.aadhaarNumber === null && !isEditing && (
+                                  <button
+                                    type="button"
+                                    className="profileIconButton"
+                                    onClick={() => setEditingAadhaar(partner.id)}
+                                    aria-label="Update Aadhaar"
+                                  >
+                                    <i className="bi bi-pencil-square" />
+                                  </button>
+                                )}
+
                                 <button
                                   type="button"
-                                  className="profileIconButton"
-                                  onClick={() => setEditingAadhaar(partner.id)}
-                                  aria-label="Update Aadhaar"
-                                >
-                                  <i className="bi bi-pencil-square" />
-                                </button>
-                              )}
-
-                              <button
-                                type="button"
-                                className="profileIconButton profileIconButtonDanger"
-                                onClick={() =>
-                                  handleDelete(
-                                    partner.id,
-                                    CLIENT_ROLE.CHANNEL_PARTNER,
-                                    "Partner/Director",
-                                  )
-                                }
-                                aria-label="Delete Partner"
-                              >
-                                <i className="bi bi-trash3" />
-                              </button>
-
-                              {userData.userType === CLIENT_ROLE.CUSTOMER && (
-                                <button
-                                  type="button"
-                                  className="profileIconButton"
+                                  className="profileIconButton profileIconButtonDanger"
                                   onClick={() =>
-                                    handleAddToCoApplicants(partner.id)
+                                    handleDelete(
+                                      partner.id,
+                                      CLIENT_ROLE.CHANNEL_PARTNER,
+                                      "Partner/Director",
+                                    )
                                   }
-                                  aria-label="Add to Co-Applicants"
+                                  aria-label="Delete Partner"
                                 >
-                                  <i className="bi bi-person-plus" />
+                                  <i className="bi bi-trash3" />
                                 </button>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </div>
 
-                      {isEditing && (
-                        <div className="profilePersonEditor">
-                          <InputText
-                            className="form-control"
-                            placeholder="Enter Partner Aadhaar Number"
-                            name={`partnerAadhar-${index}`}
-                            value={partner.aadhaarNumber || ""}
-                            maxLength={12}
-                            onChange={(e) => {
-                              const updatedPartners = [
-                                ...userFormData.partners,
-                              ];
-                              updatedPartners[index].aadhaarNumber =
-                                e.target.value;
-                              setUserFormData({
-                                ...userFormData,
-                                partners: updatedPartners,
-                              });
-                              setAadhaarCardNumber(e.target.value);
-                            }}
-                            onKeyPress={(e) =>
-                              restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
-                            }
-                          />
-
-                          <div className="profilePersonEditorActions">
-                            <Button
-                              label="Cancel"
-                              className="btn btn-orange-line"
-                              onClick={handleReset}
-                            />
-                            <Button
-                              label="Add"
-                              icon="bi bi-plus-circle me-2"
-                              className="btn btn-orange fw-bold"
-                              onClick={() => {
-                                handleGetAadharCardOTP(
-                                  userFormData.partners[index],
-                                  index,
-                                  CLIENT_ROLE.PARTNER,
-                                );
-                              }}
-                            />
+                                {userData.userType === CLIENT_ROLE.CUSTOMER && (
+                                  <button
+                                    type="button"
+                                    className="profileIconButton"
+                                    onClick={() =>
+                                      handleAddToCoApplicants(partner.id)
+                                    }
+                                    aria-label="Add to Co-Applicants"
+                                  >
+                                    <i className="bi bi-person-plus" />
+                                  </button>
+                                )}
+                              </>
+                            )}
                           </div>
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
 
-              {IsNullOrEmptyArray(userFormData?.partners || []) && (
-                <p className="small">No Partners Found</p>
-              )}
+                        {isEditing && (
+                          <div className="profilePersonEditor">
+                            <InputText
+                              className="form-control"
+                              placeholder="Enter Partner Aadhaar Number"
+                              name={`partnerAadhar-${index}`}
+                              value={partner.aadhaarNumber || ""}
+                              maxLength={12}
+                              onChange={(e) => {
+                                const updatedPartners = [
+                                  ...userFormData.partners,
+                                ];
+                                updatedPartners[index].aadhaarNumber =
+                                  e.target.value;
+                                setUserFormData({
+                                  ...userFormData,
+                                  partners: updatedPartners,
+                                });
+                                setAadhaarCardNumber(e.target.value);
+                              }}
+                              onKeyPress={(e) =>
+                                restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
+                              }
+                            />
+
+                            <div className="profilePersonEditorActions">
+                              <Button
+                                label="Cancel"
+                                className="btn btn-orange-line"
+                                onClick={handleReset}
+                              />
+                              <Button
+                                label="Add"
+                                icon="bi bi-plus-circle me-2"
+                                className="btn btn-orange fw-bold"
+                                onClick={() => {
+                                  handleGetAadharCardOTP(
+                                    userFormData.partners[index],
+                                    index,
+                                    CLIENT_ROLE.PARTNER,
+                                  );
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                {IsNullOrEmptyArray(userFormData?.partners || []) && (
+                  <p className="small">No Partners Found</p>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {userData.userType === CLIENT_ROLE.CUSTOMER && (
           <div className="col-lg-12 mb-4">

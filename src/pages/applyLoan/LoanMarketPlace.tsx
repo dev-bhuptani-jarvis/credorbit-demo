@@ -21,6 +21,8 @@ import { Column } from "primereact/column";
 import { IBankInfo } from "../../interface/applyLoan";
 import { ILoanDetailData, ILoanResponse } from "../../interface/loanDetail";
 import moment from "moment";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 
 interface IMarketplaceMessageSection {
   title: string;
@@ -58,6 +60,8 @@ const LoanMarketPlace = () => {
   const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true);
 
   const [loanDetail, setLoanDetail] = useState<ILoanDetailData>();
+
+  const { user } = useSelector((state: RootState) => state.user);
 
   const fetchLoanMarketPlace = async (): Promise<void> => {
     setLoading(true);
@@ -130,6 +134,14 @@ const LoanMarketPlace = () => {
   }, [showDocumentFlow]);
 
   const loanSummaryItems = [
+    {
+      label: "Application Code",
+      value: loanDetail?.loanApplicationCode ?? "-",
+    },
+    {
+      label: "Client Name",
+      value: user?.userName ?? "-",
+    },
     {
       label: "Loan Type",
       value: loanDetail?.loanType ?? "-",
@@ -494,8 +506,7 @@ const LoanMarketPlace = () => {
                       <Column
                         field="tenure"
                         body={(rowData: ILoanMarketBankDetails) =>
-                          `${rowData.tenure} ${
-                            rowData.tenure === 1 ? "Year" : "Years"
+                          `${rowData.tenure} ${rowData.tenure === 1 ? "Year" : "Years"
                           }`
                         }
                         sortable

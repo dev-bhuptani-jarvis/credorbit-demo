@@ -240,7 +240,7 @@ const Subscription = () => {
 
     if (response && response.statusCode === 200) {
       toastSuccess(response.message);
-      window.open("/assets/images/gstReport.pdf", "_blank");
+      window.open("/assets/images/Subscription_Invoice.pdf", "_blank");
       fetchSubscriptionHistory();
     } else {
       toastError(response.message);
@@ -269,7 +269,7 @@ const Subscription = () => {
                 style={{ width: "25px" }}
                 data-pr-tooltip="Download Subscription Invoice"
                 onClick={() =>
-                  window.open("/assets/images/gstReport.pdf", "_blank")
+                  window.open(rowData.subscriptionUrl, "_blank")
                 }
               >
                 <img

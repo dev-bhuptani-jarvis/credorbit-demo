@@ -436,6 +436,13 @@
   border-radius: 50%;
 }
 
+.profile-photo-img img {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
 .profileHeroAvatar .edit-icon {
   position: absolute;
   right: 2px;
@@ -922,9 +929,12 @@ span.p-dropdown-label.p-inputtext {
   stroke-dasharray: 187;
   stroke-dashoffset: 0;
   transform-origin: center;
-  -webkit-animation: dash 1.4s ease-in-out infinite,
+  -webkit-animation:
+    dash 1.4s ease-in-out infinite,
     colors 5.6s ease-in-out infinite;
-  animation: dash 1.4s ease-in-out infinite, colors 5.6s ease-in-out infinite;
+  animation:
+    dash 1.4s ease-in-out infinite,
+    colors 5.6s ease-in-out infinite;
 }
 
 @-webkit-keyframes colors {
@@ -1038,7 +1048,12 @@ span.p-dropdown-label.p-inputtext {
   color: #3d3d3d66 !important;
 }
 
-.sideMenuWrapper .leftNavHldr .leftNavMain .accordion-item h2 a.linkMain.active {
+.sideMenuWrapper
+  .leftNavHldr
+  .leftNavMain
+  .accordion-item
+  h2
+  a.linkMain.active {
   box-shadow: none;
   background: #fff;
   color: #ff632c;
@@ -1049,16 +1064,33 @@ span.p-dropdown-label.p-inputtext {
   color: #ff632c !important; */
 }
 
-.sideMenuWrapper .leftNavHldr .leftNavMain .accordion-item h2 .accordion-button:not(.collapsed):focus {
+.sideMenuWrapper
+  .leftNavHldr
+  .leftNavMain
+  .accordion-item
+  h2
+  .accordion-button:not(.collapsed):focus {
   color: #3d3d3d;
 }
 
-.sideMenuWrapper .leftNavHldr .leftNavMain .accordion-item h2 .accordion-button:not(.collapsed):hover {
+.sideMenuWrapper
+  .leftNavHldr
+  .leftNavMain
+  .accordion-item
+  h2
+  .accordion-button:not(.collapsed):hover {
   background: #fff;
   color: #3d3d3d;
 }
 
-.sideMenuWrapper .leftNavHldr .leftNavMain .accordion-item .accordion-body ul li a.linkMain.active {
+.sideMenuWrapper
+  .leftNavHldr
+  .leftNavMain
+  .accordion-item
+  .accordion-body
+  ul
+  li
+  a.linkMain.active {
   box-shadow: none;
   color: #ff632c;
   border-radius: 1em;
@@ -1589,7 +1621,8 @@ span.p-dropdown-label.p-inputtext {
 }
 
 .linkMain.active .sidebar-icon {
-  filter: brightness(0) saturate(100%) invert(47%) sepia(100%) saturate(1000%) hue-rotate(-11deg) brightness(103%) contrast(105%);
+  filter: brightness(0) saturate(100%) invert(47%) sepia(100%) saturate(1000%)
+    hue-rotate(-11deg) brightness(103%) contrast(105%);
 }
 
 .linkMain {
@@ -1605,7 +1638,8 @@ span.p-dropdown-label.p-inputtext {
 }
 
 .linkMain:hover .sidebar-icon {
-  filter: brightness(0) saturate(100%) invert(47%) sepia(100%) saturate(1000%) hue-rotate(-11deg) brightness(103%) contrast(105%);
+  filter: brightness(0) saturate(100%) invert(47%) sepia(100%) saturate(1000%)
+    hue-rotate(-11deg) brightness(103%) contrast(105%);
 }
 
 .text-white {
@@ -1616,7 +1650,9 @@ span.p-dropdown-label.p-inputtext {
   border: 1px solid #ff632c;
   background-color: #ff632c;
   border-radius: 12px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .custom-card:hover {
@@ -1854,7 +1890,7 @@ span.p-dropdown-label.p-inputtext {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-.slick-slide>div {
+.slick-slide > div {
   display: flex !important;
   justify-content: center;
 }
@@ -1940,7 +1976,6 @@ span.p-dropdown-label.p-inputtext {
   overflow-y: auto;
   padding: 14px 20px 0 0;
 }
-
 
 .plan-card:last-child:nth-child(odd) {
   grid-column: span 2;
@@ -2040,7 +2075,6 @@ span.p-dropdown-label.p-inputtext {
   color: #f97316;
 }
 
-
 .discount-pill {
   background: linear-gradient(135deg, #dcfce7, #bbf7d0);
   color: #166534;
@@ -2059,8 +2093,6 @@ span.p-dropdown-label.p-inputtext {
 .plan-card:hover .discount-pill {
   box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
 }
-
-
 
 /* Plan title */
 .plan-card h6,
@@ -2116,7 +2148,9 @@ span.p-dropdown-label.p-inputtext {
 
 /* Discount pill pop */
 .discount-pill {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .plan-card:hover .discount-pill {
@@ -2126,7 +2160,9 @@ span.p-dropdown-label.p-inputtext {
 
 /* Final price emphasis */
 .final-price {
-  transition: transform 0.25s ease, color 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease;
 }
 
 .plan-card:hover .final-price {
@@ -2227,8 +2263,11 @@ span.p-dropdown-label.p-inputtext {
   border-radius: 20px;
   background: linear-gradient(180deg, #ffffff 0%, #fffaf5 100%);
   cursor: pointer;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease,
-    transform 0.25s ease, background 0.25s ease;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease,
+    background 0.25s ease;
 }
 
 .subscription-plan-dialog .plan-card:hover {
@@ -2548,7 +2587,6 @@ span.p-dropdown-label.p-inputtext {
   border-radius: 69px;
 }
 
-
 .p-multiselect-panel .p-multiselect-select-all {
   padding: 10px !important;
 }
@@ -2578,7 +2616,7 @@ span.p-dropdown-label.p-inputtext {
 }
 
 /* 🔹 Remove unwanted left spacing */
-.prime-ms-panel .p-multiselect-item>span {
+.prime-ms-panel .p-multiselect-item > span {
   margin-left: 0 !important;
 }
 
@@ -2971,7 +3009,6 @@ span.p-dropdown-label.p-inputtext {
     grid-template-columns: 1fr;
   }
 } */
-
 
 .emailChooserDialog .p-dialog-header {
   text-align: center;

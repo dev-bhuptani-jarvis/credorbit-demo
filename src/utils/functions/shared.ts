@@ -200,7 +200,7 @@ export const handleDownloadDocument = async (
 
 export const handleViewDocument = (filePath: string): void => {
   if (filePath) {
-    window.open("/assets/images/gstReport.pdf", "_blank");
+    window.open(filePath, "_blank");
   } else {
     toastError(validationMessages.filePathMissing);
   }
@@ -210,7 +210,7 @@ export const handleFileDownload = async (
   filePath: string,
   fileName: string
 ): Promise<void> => {
-  window.open("/assets/images/gstReport.pdf", "_blank");
+  window.open(filePath, "_blank");
 };
 
 export const handleDownloadCSVData = async (

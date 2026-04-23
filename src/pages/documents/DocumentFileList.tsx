@@ -30,8 +30,6 @@ import { Accordion, AccordionTab } from "primereact/accordion";
 import { validationMessages } from "../../utils/constants/messages";
 import { environment } from "../../utils/constants/environments";
 import { Tooltip } from "primereact/tooltip";
-import { setReportMessage } from "../../store/reducer/reportMessageSlice";
-import { useDispatch } from "react-redux";
 
 const DocumentFileList = () => {
   const [documentList, setDocumentList] = useState<IFileModel[]>([]);
@@ -63,8 +61,6 @@ const DocumentFileList = () => {
   const { id, subId } = useParams();
 
   const { state } = useLocation();
-
-  const dispatch = useDispatch();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -143,7 +139,7 @@ const DocumentFileList = () => {
   };
 
   const handleViewDocument = (url: string): void => {
-    window.open("/assets/images/gstReport.pdf", "_blank");
+    window.open(url, "_blank");
   };
 
   const fetchMoveFolderList = async (): Promise<void> => {

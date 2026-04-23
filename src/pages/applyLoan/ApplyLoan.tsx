@@ -136,14 +136,12 @@ const ApplyLoan = () => {
       if (num === 0) return "";
       if (num < 20) return belowTwenty[num];
       if (num < 100) {
-        return `${tens[Math.floor(num / 10)]}${
-          num % 10 ? ` ${belowTwenty[num % 10]}` : ""
-        }`;
+        return `${tens[Math.floor(num / 10)]}${num % 10 ? ` ${belowTwenty[num % 10]}` : ""
+          }`;
       }
 
-      return `${belowTwenty[Math.floor(num / 100)]} Hundred${
-        num % 100 ? ` ${convertBelowThousand(num % 100)}` : ""
-      }`;
+      return `${belowTwenty[Math.floor(num / 100)]} Hundred${num % 100 ? ` ${convertBelowThousand(num % 100)}` : ""
+        }`;
     };
 
     let remainingValue = Math.floor(value);
@@ -398,9 +396,8 @@ const ApplyLoan = () => {
     ?.replace(/[^a-z0-9]/gi, "")
     .toLowerCase();
 
-  const loanTypeLookupKey = `${normalizedLoanTypeName ?? ""}${
-    normalizedLoanDisplayName ?? ""
-  }`;
+  const loanTypeLookupKey = `${normalizedLoanTypeName ?? ""}${normalizedLoanDisplayName ?? ""
+    }`;
 
   const isHomeLoanSelected = loanTypeLookupKey.includes("homeloan");
 
@@ -565,7 +562,7 @@ const ApplyLoan = () => {
         property.propertyType === propertyType
           ? { ...property, [field]: value }
           : property,
-        ),
+      ),
     }));
 
     if (field === "pincode" || field === "approxMarketValue") {
@@ -728,66 +725,66 @@ const ApplyLoan = () => {
               : validationMessages.selectLoanType
             : fieldName === "borrowerType"
               ? IsStringNullEmptyOrUndefined(
-                  (value as { displayName?: string })?.displayName ?? "",
-                )
+                (value as { displayName?: string })?.displayName ?? "",
+              )
                 ? validationMessages.selectBorrowerType
                 : ""
               : fieldName === "unit"
                 ? IsStringNullEmptyOrUndefined(
-                    (value as { displayName?: string })?.displayName ?? "",
-                  )
+                  (value as { displayName?: string })?.displayName ?? "",
+                )
                   ? validationMessages.selectUnit
                   : ""
                 : fieldName === "profession"
                   ? IsStringNullEmptyOrUndefined(
-                      (value as { displayName?: string })?.displayName ?? "",
-                    )
+                    (value as { displayName?: string })?.displayName ?? "",
+                  )
                     ? validationMessages.selectProfession
                     : ""
                   : fieldName === "industry"
                     ? IsStringNullEmptyOrUndefined(
-                        (value as { displayName?: string })?.displayName ?? "",
-                      )
+                      (value as { displayName?: string })?.displayName ?? "",
+                    )
                       ? validationMessages.selectIndustry
                       : ""
                     : fieldName === "businessVintage"
                       ? IsStringNullEmptyOrUndefined(
-                          (value as { displayName?: string })?.displayName ??
-                            "",
-                        )
+                        (value as { displayName?: string })?.displayName ??
+                        "",
+                      )
                         ? validationMessages.businessVintage
                         : ""
                       : fieldName === "yearsOfITRFiled"
                         ? IsStringNullEmptyOrUndefined(
-                            (value as { displayName?: string })?.displayName ??
-                              "",
-                          )
+                          (value as { displayName?: string })?.displayName ??
+                          "",
+                        )
                           ? validationMessages.yearsOfITRFiled
                           : ""
                         : fieldName === "typeOfOrganizationWhereEmployeeWorking"
                           ? IsStringNullEmptyOrUndefined(
-                              (value as { displayName?: string })
-                                ?.displayName ?? "",
-                            )
+                            (value as { displayName?: string })
+                              ?.displayName ?? "",
+                          )
                             ? validationMessages.typeOfOrganizationWhereEmployeeWorking
                             : ""
                           : fieldName === "durationOfWorkingAtOrganization"
                             ? IsStringNullEmptyOrUndefined(
-                                (value as { displayName?: string })
-                                  ?.displayName ?? "",
-                              )
+                              (value as { displayName?: string })
+                                ?.displayName ?? "",
+                            )
                               ? validationMessages.durationOfWorkingAtOrganization
                               : ""
                             : fieldName === "salarySlipAvailableMonths"
                               ? IsStringNullEmptyOrUndefined(
-                                  (value as { displayName?: string })
-                                    ?.displayName ?? "",
-                                )
+                                (value as { displayName?: string })
+                                  ?.displayName ?? "",
+                              )
                                 ? validationMessages.salarySlipAvailableMonths
                                 : ""
                               : fieldName === "bankName"
                                 ? formValues.borrowerType.id ===
-                                    MasterEnum.SALARIED &&
+                                  MasterEnum.SALARIED &&
                                   IsStringNullEmptyOrUndefined(
                                     (value as string) ?? "",
                                   )
@@ -936,7 +933,7 @@ const ApplyLoan = () => {
         ...getInitialFormErrors(formValues.isSecuredLoanApp),
         loanAmount:
           IsStringNullEmptyOrUndefined(formValues.loanAmount) ||
-          Number(formValues.loanAmount.replace(/,/g, "")) < MIN_LOAN_AMOUNT
+            Number(formValues.loanAmount.replace(/,/g, "")) < MIN_LOAN_AMOUNT
             ? `Minimum loan amount is ${DEFAULT_LOAN_AMOUNT}`
             : "",
       };
@@ -976,7 +973,7 @@ const ApplyLoan = () => {
 
     updatedFormErrors.loanAmount =
       IsStringNullEmptyOrUndefined(formValues.loanAmount) ||
-      Number(formValues.loanAmount.replace(/,/g, "")) < MIN_LOAN_AMOUNT
+        Number(formValues.loanAmount.replace(/,/g, "")) < MIN_LOAN_AMOUNT
         ? `Minimum loan amount is ${DEFAULT_LOAN_AMOUNT}`
         : "";
 
@@ -1080,7 +1077,7 @@ const ApplyLoan = () => {
 
       updatedFormErrors.averageGrossMonthlySalary =
         !formValues.isSecuredLoanApp &&
-        IsStringNullEmptyOrUndefined(formValues.averageGrossMonthlySalary)
+          IsStringNullEmptyOrUndefined(formValues.averageGrossMonthlySalary)
           ? validationMessages.averageGrossMonthlySalary
           : "";
 
@@ -1118,7 +1115,7 @@ const ApplyLoan = () => {
 
         updatedPropertyErrors[property.propertyType].approxMarketValue =
           IsStringNullEmptyOrUndefined(approxMarketValue) ||
-          Number(approxMarketValue) <= 0
+            Number(approxMarketValue) <= 0
             ? validationMessages.selectApproxMarketValue
             : "";
       });
@@ -1266,7 +1263,7 @@ const ApplyLoan = () => {
       ...getUpdateFormErrors(),
       loanAmount:
         IsStringNullEmptyOrUndefined(updatedLoanAmount) ||
-        Number(updatedLoanAmount) < MIN_LOAN_AMOUNT
+          Number(updatedLoanAmount) < MIN_LOAN_AMOUNT
           ? `Minimum loan amount is ${DEFAULT_LOAN_AMOUNT}`
           : "",
     };
@@ -1360,13 +1357,13 @@ const ApplyLoan = () => {
   const filterOptions = () => {
     const filterCriteria: number[] = formValues.isSecuredLoanApp
       ? [
-          LoanApplicationStatusType.UNSECURED_LOAN,
-          LoanApplicationStatusType.BOTH,
-        ]
+        LoanApplicationStatusType.UNSECURED_LOAN,
+        LoanApplicationStatusType.BOTH,
+      ]
       : [
-          LoanApplicationStatusType.SECURED_LOAN,
-          LoanApplicationStatusType.BOTH,
-        ];
+        LoanApplicationStatusType.SECURED_LOAN,
+        LoanApplicationStatusType.BOTH,
+      ];
 
     const filteredList: ILoanTypeData[] = loanTypeList.filter((opt) =>
       filterCriteria.includes(opt.isSecuredLoan),
@@ -1409,7 +1406,6 @@ const ApplyLoan = () => {
     }
 
     if (
-      isLapLoanSelected ||
       isUnsecuredBusinessLoanSelected ||
       isCcOdSecuredLoanSelected
     ) {
@@ -1730,9 +1726,9 @@ const ApplyLoan = () => {
                           restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
                         }
                         maxLength={15}
-                        // onPaste={(e) => e.preventDefault()}
-                        // onCopy={(e) => e.preventDefault()}
-                        // onCut={(e) => e.preventDefault()}
+                      // onPaste={(e) => e.preventDefault()}
+                      // onCopy={(e) => e.preventDefault()}
+                      // onCut={(e) => e.preventDefault()}
                       />
                     </div>
 
@@ -1750,97 +1746,97 @@ const ApplyLoan = () => {
 
                 {formValues.borrowerType.id ===
                   MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL && (
-                  <div className="col-lg-4 col-12">
-                    <div className="form-group w-100">
-                      <label
-                        className="form-label small font-15"
-                        htmlFor="unit"
-                      >
-                        Nature of Business Activity <sup>*</sup>
-                      </label>
+                    <div className="col-lg-4 col-12">
+                      <div className="form-group w-100">
+                        <label
+                          className="form-label small font-15"
+                          htmlFor="unit"
+                        >
+                          Nature of Business Activity <sup>*</sup>
+                        </label>
 
-                      <Dropdown
-                        value={formValues.unit}
-                        placeholder="Select nature of business activity"
-                        onChange={(e) => handleInputChange("unit", e.value)}
-                        options={unitList.sort((a, b) =>
-                          a.displayName.localeCompare(b.displayName),
+                        <Dropdown
+                          value={formValues.unit}
+                          placeholder="Select nature of business activity"
+                          onChange={(e) => handleInputChange("unit", e.value)}
+                          options={unitList.sort((a, b) =>
+                            a.displayName.localeCompare(b.displayName),
+                          )}
+                          optionLabel="displayName"
+                          disabled={isEditMode}
+                        />
+
+                        {isFormSubmitted && (
+                          <span className="error">{formErrors.unit}</span>
                         )}
-                        optionLabel="displayName"
-                        disabled={isEditMode}
-                      />
-
-                      {isFormSubmitted && (
-                        <span className="error">{formErrors.unit}</span>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {formValues.borrowerType.id ===
                   MasterEnum.SELF_EMPLOYED_PROFESSIONAL && (
-                  <div className="col-lg-4 col-12">
-                    <div className="form-group w-100">
-                      <label
-                        className="form-label small font-15"
-                        htmlFor="profession"
-                      >
-                        Profession <sup>*</sup>
-                      </label>
+                    <div className="col-lg-4 col-12">
+                      <div className="form-group w-100">
+                        <label
+                          className="form-label small font-15"
+                          htmlFor="profession"
+                        >
+                          Profession <sup>*</sup>
+                        </label>
 
-                      <Dropdown
-                        value={formValues.profession}
-                        placeholder="Select Profession"
-                        onChange={(e) =>
-                          handleInputChange("profession", e.value)
-                        }
-                        options={professionList.sort((a, b) =>
-                          a.displayName.localeCompare(b.displayName),
+                        <Dropdown
+                          value={formValues.profession}
+                          placeholder="Select Profession"
+                          onChange={(e) =>
+                            handleInputChange("profession", e.value)
+                          }
+                          options={professionList.sort((a, b) =>
+                            a.displayName.localeCompare(b.displayName),
+                          )}
+                          optionLabel="displayName"
+                          disabled={isEditMode}
+                        />
+
+                        {isFormSubmitted && (
+                          <span className="error">{formErrors.profession}</span>
                         )}
-                        optionLabel="displayName"
-                        disabled={isEditMode}
-                      />
-
-                      {isFormSubmitted && (
-                        <span className="error">{formErrors.profession}</span>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {(formValues.borrowerType.id ===
                   MasterEnum.SELF_EMPLOYED_PROFESSIONAL ||
                   formValues.borrowerType.id ===
-                    MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL) && (
-                  <div className="col-lg-4 col-12">
-                    <div className="form-group w-100">
-                      <label
-                        className="form-label small font-15"
-                        htmlFor="industry"
-                      >
-                        Industry <sup>*</sup>
-                      </label>
+                  MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL) && (
+                    <div className="col-lg-4 col-12">
+                      <div className="form-group w-100">
+                        <label
+                          className="form-label small font-15"
+                          htmlFor="industry"
+                        >
+                          Industry <sup>*</sup>
+                        </label>
 
-                      <Dropdown
-                        value={formValues.industry}
-                        placeholder="Select Industry"
-                        onChange={(e) => handleInputChange("industry", e.value)}
-                        options={industryList.sort((a, b) =>
-                          a.displayName.localeCompare(b.displayName),
+                        <Dropdown
+                          value={formValues.industry}
+                          placeholder="Select Industry"
+                          onChange={(e) => handleInputChange("industry", e.value)}
+                          options={industryList.sort((a, b) =>
+                            a.displayName.localeCompare(b.displayName),
+                          )}
+                          optionLabel="displayName"
+                          filter
+                          filterBy="displayName"
+                          filterPlaceholder="Search Industry"
+                          disabled={isEditMode}
+                        />
+
+                        {isFormSubmitted && (
+                          <span className="error">{formErrors.industry}</span>
                         )}
-                        optionLabel="displayName"
-                        filter
-                        filterBy="displayName"
-                        filterPlaceholder="Search Industry"
-                        disabled={isEditMode}
-                      />
-
-                      {isFormSubmitted && (
-                        <span className="error">{formErrors.industry}</span>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {formValues.borrowerType.id === MasterEnum.SALARIED && (
                   <div className="col-lg-4 col-12">
@@ -1878,12 +1874,12 @@ const ApplyLoan = () => {
                       {getAmountInWords(
                         formValues.averageGrossMonthlySalary,
                       ) && (
-                        <small className="d-block mt-2 text-muted">
-                          {getAmountInWords(
-                            formValues.averageGrossMonthlySalary,
-                          )}
-                        </small>
-                      )}
+                          <small className="d-block mt-2 text-muted">
+                            {getAmountInWords(
+                              formValues.averageGrossMonthlySalary,
+                            )}
+                          </small>
+                        )}
                     </div>
                   </div>
                 )}
@@ -1891,34 +1887,34 @@ const ApplyLoan = () => {
                 {(formValues.borrowerType.id ===
                   MasterEnum.SELF_EMPLOYED_PROFESSIONAL ||
                   formValues.borrowerType.id ===
-                    MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL) && (
-                  <div className="col-lg-4 col-12">
-                    <div className="form-group w-100">
-                      <label
-                        className="form-label small font-15"
-                        htmlFor="industry"
-                      >
-                        Business Vintage <sup>*</sup>
-                      </label>
+                  MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL) && (
+                    <div className="col-lg-4 col-12">
+                      <div className="form-group w-100">
+                        <label
+                          className="form-label small font-15"
+                          htmlFor="industry"
+                        >
+                          Business Vintage <sup>*</sup>
+                        </label>
 
-                      <Dropdown
-                        value={formValues.businessVintage}
-                        placeholder="Select Business Vintage"
-                        onChange={(e) =>
-                          handleInputChange("businessVintage", e.value)
-                        }
-                        options={businessVintageList}
-                        optionLabel="displayName"
-                        disabled={isEditMode}
-                      />
-                      {isFormSubmitted && (
-                        <span className="error">
-                          {formErrors.businessVintage}
-                        </span>
-                      )}
+                        <Dropdown
+                          value={formValues.businessVintage}
+                          placeholder="Select Business Vintage"
+                          onChange={(e) =>
+                            handleInputChange("businessVintage", e.value)
+                          }
+                          options={businessVintageList}
+                          optionLabel="displayName"
+                          disabled={isEditMode}
+                        />
+                        {isFormSubmitted && (
+                          <span className="error">
+                            {formErrors.businessVintage}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 <div className="col-lg-4 col-12">
                   <div className="form-group w-100">
@@ -2025,9 +2021,9 @@ const ApplyLoan = () => {
                             }
                             maxLength={50}
                             disabled={isEditMode}
-                            // onPaste={(e) => e.preventDefault()}
-                            // onCopy={(e) => e.preventDefault()}
-                            // onCut={(e) => e.preventDefault()}
+                          // onPaste={(e) => e.preventDefault()}
+                          // onCopy={(e) => e.preventDefault()}
+                          // onCut={(e) => e.preventDefault()}
                           />
                         </div>
 
@@ -2139,12 +2135,12 @@ const ApplyLoan = () => {
                                   {getAmountInWords(
                                     formValues.directorPartnerRemuneration,
                                   ) && (
-                                    <small className="d-block mt-2 text-muted">
-                                      {getAmountInWords(
-                                        formValues.directorPartnerRemuneration,
-                                      )}
-                                    </small>
-                                  )}
+                                      <small className="d-block mt-2 text-muted">
+                                        {getAmountInWords(
+                                          formValues.directorPartnerRemuneration,
+                                        )}
+                                      </small>
+                                    )}
                                 </div>
                               </div>
 
@@ -2180,12 +2176,12 @@ const ApplyLoan = () => {
                                   {getAmountInWords(
                                     formValues.interestIncome,
                                   ) && (
-                                    <small className="d-block mt-2 text-muted">
-                                      {getAmountInWords(
-                                        formValues.interestIncome,
-                                      )}
-                                    </small>
-                                  )}
+                                      <small className="d-block mt-2 text-muted">
+                                        {getAmountInWords(
+                                          formValues.interestIncome,
+                                        )}
+                                      </small>
+                                    )}
                                 </div>
                               </div>
 
@@ -2221,12 +2217,12 @@ const ApplyLoan = () => {
                                   {getAmountInWords(
                                     formValues.anyOtherIncome,
                                   ) && (
-                                    <small className="d-block mt-2 text-muted">
-                                      {getAmountInWords(
-                                        formValues.anyOtherIncome,
-                                      )}
-                                    </small>
-                                  )}
+                                      <small className="d-block mt-2 text-muted">
+                                        {getAmountInWords(
+                                          formValues.anyOtherIncome,
+                                        )}
+                                      </small>
+                                    )}
                                 </div>
                               </div>
                             </>
@@ -2283,15 +2279,15 @@ const ApplyLoan = () => {
                             <h6 className="mb-0">Residential Property</h6>
                             {!isEditMode &&
                               restrictedPropertyType !==
-                                PropertyType.RESIDENTIAL && (
-                              <button
-                                type="button"
-                                className="btn btn-link p-0 text-danger"
-                                onClick={() => removeProperty(1)}
-                              >
-                                Remove
-                              </button>
-                            )}
+                              PropertyType.RESIDENTIAL && (
+                                <button
+                                  type="button"
+                                  className="btn btn-link p-0 text-danger"
+                                  onClick={() => removeProperty(1)}
+                                >
+                                  Remove
+                                </button>
+                              )}
                           </div>
 
                           <div className="row g-3">
@@ -2478,12 +2474,12 @@ const ApplyLoan = () => {
                                   {getAmountInWords(
                                     residentialProperty.saleDeedValue,
                                   ) && (
-                                    <small className="d-block mt-2 text-muted">
-                                      {getAmountInWords(
-                                        residentialProperty.saleDeedValue,
-                                      )}
-                                    </small>
-                                  )}
+                                      <small className="d-block mt-2 text-muted">
+                                        {getAmountInWords(
+                                          residentialProperty.saleDeedValue,
+                                        )}
+                                      </small>
+                                    )}
                                 </div>
                               </div>
                             </div>
@@ -2538,12 +2534,12 @@ const ApplyLoan = () => {
                                   {getAmountInWords(
                                     residentialProperty.approxMarketValue,
                                   ) && (
-                                    <small className="d-block mt-2 text-muted">
-                                      {getAmountInWords(
-                                        residentialProperty.approxMarketValue,
-                                      )}
-                                    </small>
-                                  )}
+                                      <small className="d-block mt-2 text-muted">
+                                        {getAmountInWords(
+                                          residentialProperty.approxMarketValue,
+                                        )}
+                                      </small>
+                                    )}
                                 </div>
                               </div>
                             </div>
@@ -2562,17 +2558,17 @@ const ApplyLoan = () => {
                             <h6 className="mb-0">Commercial Property</h6>
                             {!isEditMode &&
                               restrictedPropertyType !==
-                                PropertyType.COMMERCIAL && (
-                              <button
-                                type="button"
-                                className="btn btn-link p-0 text-danger"
-                                onClick={() =>
-                                  removeProperty(PropertyType.COMMERCIAL)
-                                }
-                              >
-                                Remove
-                              </button>
-                            )}
+                              PropertyType.COMMERCIAL && (
+                                <button
+                                  type="button"
+                                  className="btn btn-link p-0 text-danger"
+                                  onClick={() =>
+                                    removeProperty(PropertyType.COMMERCIAL)
+                                  }
+                                >
+                                  Remove
+                                </button>
+                              )}
                           </div>
 
                           <div className="row g-3">
@@ -2758,12 +2754,12 @@ const ApplyLoan = () => {
                                   {getAmountInWords(
                                     commercialProperty.saleDeedValue,
                                   ) && (
-                                    <small className="d-block mt-2 text-muted">
-                                      {getAmountInWords(
-                                        commercialProperty.saleDeedValue,
-                                      )}
-                                    </small>
-                                  )}
+                                      <small className="d-block mt-2 text-muted">
+                                        {getAmountInWords(
+                                          commercialProperty.saleDeedValue,
+                                        )}
+                                      </small>
+                                    )}
                                 </div>
                               </div>
                             </div>
@@ -2817,12 +2813,12 @@ const ApplyLoan = () => {
                                   {getAmountInWords(
                                     commercialProperty.approxMarketValue,
                                   ) && (
-                                    <small className="d-block mt-2 text-muted">
-                                      {getAmountInWords(
-                                        commercialProperty.approxMarketValue,
-                                      )}
-                                    </small>
-                                  )}
+                                      <small className="d-block mt-2 text-muted">
+                                        {getAmountInWords(
+                                          commercialProperty.approxMarketValue,
+                                        )}
+                                      </small>
+                                    )}
                                 </div>
                               </div>
                             </div>
@@ -2841,17 +2837,17 @@ const ApplyLoan = () => {
                             <h6 className="mb-0">Industrial Property</h6>
                             {!isEditMode &&
                               restrictedPropertyType !==
-                                PropertyType.INDUSTRIAL && (
-                              <button
-                                type="button"
-                                className="btn btn-link p-0 text-danger"
-                                onClick={() =>
-                                  removeProperty(PropertyType.INDUSTRIAL)
-                                }
-                              >
-                                Remove
-                              </button>
-                            )}
+                              PropertyType.INDUSTRIAL && (
+                                <button
+                                  type="button"
+                                  className="btn btn-link p-0 text-danger"
+                                  onClick={() =>
+                                    removeProperty(PropertyType.INDUSTRIAL)
+                                  }
+                                >
+                                  Remove
+                                </button>
+                              )}
                           </div>
 
                           <div className="row g-3">
@@ -3030,12 +3026,12 @@ const ApplyLoan = () => {
                                   {getAmountInWords(
                                     industrialProperty.saleDeedValue,
                                   ) && (
-                                    <small className="d-block mt-2 text-muted">
-                                      {getAmountInWords(
-                                        industrialProperty.saleDeedValue,
-                                      )}
-                                    </small>
-                                  )}
+                                      <small className="d-block mt-2 text-muted">
+                                        {getAmountInWords(
+                                          industrialProperty.saleDeedValue,
+                                        )}
+                                      </small>
+                                    )}
                                 </div>
                               </div>
                             </div>
@@ -3088,12 +3084,12 @@ const ApplyLoan = () => {
                                   {getAmountInWords(
                                     industrialProperty.approxMarketValue,
                                   ) && (
-                                    <small className="d-block mt-2 text-muted">
-                                      {getAmountInWords(
-                                        industrialProperty.approxMarketValue,
-                                      )}
-                                    </small>
-                                  )}
+                                      <small className="d-block mt-2 text-muted">
+                                        {getAmountInWords(
+                                          industrialProperty.approxMarketValue,
+                                        )}
+                                      </small>
+                                    )}
                                 </div>
                               </div>
                             </div>
@@ -3112,16 +3108,16 @@ const ApplyLoan = () => {
                             <h6 className="mb-0">Plot/Other Property</h6>
                             {!isEditMode &&
                               restrictedPropertyType !== PropertyType.PLOT && (
-                              <button
-                                type="button"
-                                className="btn btn-link p-0 text-danger"
-                                onClick={() =>
-                                  removeProperty(PropertyType.PLOT)
-                                }
-                              >
-                                Remove
-                              </button>
-                            )}
+                                <button
+                                  type="button"
+                                  className="btn btn-link p-0 text-danger"
+                                  onClick={() =>
+                                    removeProperty(PropertyType.PLOT)
+                                  }
+                                >
+                                  Remove
+                                </button>
+                              )}
                           </div>
 
                           <div className="row g-3">
@@ -3295,12 +3291,12 @@ const ApplyLoan = () => {
                                   {getAmountInWords(
                                     plotProperty.saleDeedValue,
                                   ) && (
-                                    <small className="d-block mt-2 text-muted">
-                                      {getAmountInWords(
-                                        plotProperty.saleDeedValue,
-                                      )}
-                                    </small>
-                                  )}
+                                      <small className="d-block mt-2 text-muted">
+                                        {getAmountInWords(
+                                          plotProperty.saleDeedValue,
+                                        )}
+                                      </small>
+                                    )}
                                 </div>
                               </div>
                             </div>
@@ -3350,12 +3346,12 @@ const ApplyLoan = () => {
                                   {getAmountInWords(
                                     plotProperty.approxMarketValue,
                                   ) && (
-                                    <small className="d-block mt-2 text-muted">
-                                      {getAmountInWords(
-                                        plotProperty.approxMarketValue,
-                                      )}
-                                    </small>
-                                  )}
+                                      <small className="d-block mt-2 text-muted">
+                                        {getAmountInWords(
+                                          plotProperty.approxMarketValue,
+                                        )}
+                                      </small>
+                                    )}
                                 </div>
                               </div>
                             </div>
@@ -3377,9 +3373,8 @@ const ApplyLoan = () => {
                 />
 
                 <Button
-                  className={`btn ${
-                    loading ? "btn-orange-disabled" : "btn-orange"
-                  } ms-2 text-center`}
+                  className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+                    } ms-2 text-center`}
                   disabled={loading}
                   label={
                     loading ? "Loading..." : isEditMode ? "Update" : "Next"

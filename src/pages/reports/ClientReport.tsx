@@ -30,6 +30,8 @@ const ClientReport = () => {
   const actionBody = (clientInfo: IClientDetailList): JSX.Element => {
     const timestamp = moment().format("YYYYMMDD_HHmmss");
     const downloadId = `client-download-${clientInfo.reportType}`;
+    
+    console.log('clientInfo', clientInfo)
 
     return (
       <>

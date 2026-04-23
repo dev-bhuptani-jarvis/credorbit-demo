@@ -431,7 +431,11 @@ const CustomModal = ({
 
         if (response && response.statusCode === 200) {
           toastSuccess(response.message);
-          window.open("/assets/images/gstReport.pdf", "_blank");
+          if (userType === CLIENT_ROLE.CHANNEL_PARTNER || userType === CLIENT_ROLE.USER_MANAGEMENT) {
+            window.open("/assets/images/cpPayout.pdf", "_blank")
+          } else {
+            window.open("/assets/images/spPayout.pdf", "_blank")
+          }
           fetchPayOutsDetailApi();
         } else {
           toastError(response.message);

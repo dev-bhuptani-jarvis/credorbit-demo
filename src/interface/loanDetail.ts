@@ -11,6 +11,7 @@ export interface ILoanResponse extends APIResponseEntity {
 }
 
 export interface ILoanDetailData {
+  loanApplicationCode: string;
   loanApplicationID: string;
   bankName: string | null;
   loanType: string;
@@ -83,7 +84,8 @@ export interface ILoanProfessionOptions {
 
 export interface IUpdateLoanStatus {
   loanApplicationID: string;
-  statusID: number;
+  statusID?: number;
+  loanJourneyStatus?: number;
   sanctionedDate?: string;
   sanctionedAmount?: string;
   sanctionLetterPath?: string;

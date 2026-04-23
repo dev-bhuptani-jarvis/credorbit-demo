@@ -38,7 +38,7 @@ const adminProfileResponse = {
     zipCode: "Q8guqlvx61CH1gzuXk9bfQ==",
     aadhaar: "pY1R+9dga/ja2YTReusQpA==",
     udhyamAadhaar: "pY1R+9dga/ja2YTReusQpA==",
-    cpCompanyLogo: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+    cpCompanyLogo: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
     userConsents: [],
   },
 } as IUserProfileResponse;
@@ -110,7 +110,7 @@ const channelPartnerProfileResponse = {
     zipCode: "rqTjq8a3SfIm3At4hB+wwQ==",
     aadhaar: "pY1R+9dga/ja2YTReusQpA==",
     udhyamAadhaar: "RCVHnNRpk28cp5TFP4PN3A==",
-    cpCompanyLogo: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+    cpCompanyLogo: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
     userConsents: [
       { userConsentID: 1, consentName: "Email", isConsented: true },
       { userConsentID: 3, consentName: "SMS", isConsented: true },
@@ -150,7 +150,7 @@ const sourcingPartnerProfileResponse = {
     zipCode: "c5mPbPbv/02klbqbATMJnQ==",
     aadhaar: "MgX5JucT6OUNw9uAarO5FQ==",
     udhyamAadhaar: null,
-    cpCompanyLogo: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+    cpCompanyLogo: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
     userConsents: [],
   },
 } as IUserProfileResponse;
@@ -204,7 +204,7 @@ const impersonatedClientProfileResponse = {
     zipCode: "ccgK5Hxtvciq/LkeLHblNA==",
     aadhaar: "pY1R+9dga/ja2YTReusQpA==",
     udhyamAadhaar: "pY1R+9dga/ja2YTReusQpA==",
-    cpCompanyLogo: "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+    cpCompanyLogo: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
     userConsents: [
       { userConsentID: 984, consentName: "Email", isConsented: true },
       { userConsentID: 986, consentName: "SMS", isConsented: true },
