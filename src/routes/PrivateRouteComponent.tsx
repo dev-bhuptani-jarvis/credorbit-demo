@@ -6,7 +6,6 @@ import {
 } from "react-router-dom";
 import { privateRoutes } from "./Routes";
 import CookieConsent from "react-cookie-consent";
-import { useSignalR } from "../hooks/useSignalR";
 import { RootState } from "../store";
 import { useSelector } from "react-redux";
 import { Dialog } from "primereact/dialog";
@@ -44,8 +43,6 @@ export const PrivateRouteComponent = () => {
   );
 
   const { wrongUser } = useSelector((state: RootState) => state.wrongUser);
-
-  useSignalR(userData.token, userData.userID);
 
   const navigate = useNavigate();
 

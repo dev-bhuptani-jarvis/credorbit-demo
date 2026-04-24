@@ -8,16 +8,8 @@ import DOMPurify from "dompurify";
 import { validationMessages } from "../constants/messages";
 import { LOAN_EMAIL_TEMPLATES } from "../constants/loanEmailTemplates";
 import { ISubmitApplicationToBankDetailsResponseData } from "../../interface/applyLoan";
-import { ReportTypeSignalR } from "../constants/enum";
-import { getClientDashboardAPI } from "../axios/apiServices";
-import { IClientDashboardData, IClientDashboardResponse } from "../../interface/clientDashboard";
-import { decryptVAPTData } from "./encryptDecrypt";
-import { setCustomerInfo } from "../../store/reducer/customerSlice";
 import store from "../../store";
-import { ReportTypeSignalrResponse } from "../../interface/signalr";
-import { setCount } from "../../store/reducer/countSlice";
 import { setReportMessage } from "../../store/reducer/reportMessageSlice";
-import { setWrongUser } from "../../store/reducer/wrongUserSlice";
 
 export const IsFormValid = (obj: object): boolean => {
   let count = 0;
@@ -415,86 +407,3 @@ export const generateEmailFromTemplate = (
     body: applyReplacements(template.body)
   };
 };
-
-export const fetchCreditAnalyticsDashboard = async (
-  reportType: ReportTypeSignalR, data: ReportTypeSignalrResponse
-): Promise<void> => {
-  switch (reportType) {
-    case ReportTypeSignalR.CreditAnalyticsReport:
-    case ReportTypeSignalR.IncomeTaxReport:
-      {
-        const response: IClientDashboardResponse =
-          await getClientDashboardAPI();
-
-        if (!response) return;
-
-        if (response.statusCode === 200) {
-          const decryptedData = {
-            ...response.data,
-            gstNumber: response.data.gstNumber
-              ? decryptVAPTData(response.data.gstNumber)
-              : null,
-          };
-
-          const creditReportEligibility = getFetchEligibilityStatus(
-            decryptedData.creditReportDate
-          );
-
-          const incomeTaxReportEligibility = getFetchEligibilityStatus(
-            decryptedData.itrReportDate
-          );
-
-          const finalData: IClientDashboardData = {
-            ...decryptedData,
-            creditScoreRefetchedDays:
-              creditReportEligibility?.daysLeft,
-            incomeTaxRefetchedDays:
-              incomeTaxReportEligibility?.daysLeft,
-          };
-
-          store.dispatch(setCustomerInfo(finalData));
-
-          store.dispatch(setCount((prev: number) => prev + 1));
-
-          store.dispatch(setReportMessage({
-            title: "Report Update",
-            message: data?.message,
-          }));
-        } else {
-          toastError(response.message);
-        }
-        break;
-      }
-
-    case ReportTypeSignalR.BankingReportInProgress:
-    case ReportTypeSignalR.BankingReportCompleted:
-    case ReportTypeSignalR.GSTReport:
-    case ReportTypeSignalR.UNKNOW:
-      {
-        if (data?.statusCode === 409) {
-          store.dispatch(setWrongUser(true));
-          store.dispatch(setReportMessage({
-            title: "Report Update",
-            message: data?.message,
-          }));
-          return;
-        }
-
-        store.dispatch(setReportMessage({
-          title: "Report Update",
-          message: data?.message,
-        }));
-        store.dispatch(setCount((prev: number) => prev + 1));
-        break;
-      }
-
-    default:
-      store.dispatch(setReportMessage({
-        title: "Report Update",
-        message: data?.message,
-      }));
-      console.log("No action defined for report type:", reportType);
-      break;
-  }
-};
-

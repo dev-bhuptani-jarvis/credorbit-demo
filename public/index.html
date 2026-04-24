@@ -10,24 +10,8 @@
   <link rel="canonical" href="https://www.credorbit.com/" />
 
   <title>Credorbit – Smart Credit & Financial Services Platform</title>
-  <meta name="description" content="Access credit insights, financial reports, and secure services with Credorbit." data-rh="true">
-
-  <!-- Facebook Meta Tags -->
-  <meta property="og:url" content="https://credstageapp-gzepaygja3azhbad.z02.azurefd.net/">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Credorbit – Smart Credit & Financial Services Platform">
-  <meta property="og:description"
-    content="Access credit insights, financial reports, and secure services with Credorbit.">
-  <meta property="og:image" content="https://i.postimg.cc/vTpXmqtB/credorbit-logo.jpg">
-
-  <!-- Twitter Meta Tags -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta property="twitter:domain" content="app.credorbit.com">
-  <meta property="twitter:url" content="https://credstageapp-gzepaygja3azhbad.z02.azurefd.net/">
-  <meta name="twitter:title" content="Credorbit – Smart Credit & Financial Services Platform">
-  <meta name="twitter:description"
-    content="Access credit insights, financial reports, and secure services with Credorbit.">
-  <meta name="twitter:image" content="https://i.postimg.cc/vTpXmqtB/credorbit-logo.jpg">
+  <meta name="description" content="Access credit insights, financial reports, and secure services with Credorbit."
+    data-rh="true">
 
   <meta http-equiv="X-Frame-Options" content="DENY">
 
@@ -37,12 +21,6 @@
   <link rel="stylesheet" href="/assets/css/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-
-  <noscript>
-    <title>Delete Your Credorbit Account</title>
-    <meta name="description"
-      content="Securely delete your Credorbit account. This action is permanent and will remove all your data within 7 working days. Confirm before proceeding." />
-  </noscript>
 </head>
 
 <body>
@@ -50,5 +28,26 @@
   <div id="root"></div>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </body>
+
+<script nonce="123456">
+  if (self !== top) {
+    top.location = self.location;
+  }
+
+  document.addEventListener("keydown", function (event) {
+    if (
+      event.keyCode === 123 || // F12
+      (event.ctrlKey && event.shiftKey && event.keyCode === 73) || // Ctrl+Shift+I
+      (event.ctrlKey && event.shiftKey && event.keyCode === 74) || // Ctrl+Shift+J
+      (event.ctrlKey && event.keyCode === 85) // Ctrl+U (View Source)
+    ) {
+      event.preventDefault();
+    }
+  });
+
+  document.addEventListener("contextmenu", function (event) {
+    event.preventDefault();
+  });
+</script>
 
 </html>
