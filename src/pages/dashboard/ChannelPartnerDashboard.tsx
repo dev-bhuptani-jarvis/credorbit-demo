@@ -146,12 +146,14 @@ const ChannelPartnerDashboard = () => {
     uploadedLetter?: File | null;
     letterPath?: string;
     comments?: string;
+    query?: string;
   }>({
     dateOfRegistration: "",
     amount: "",
     uploadedLetter: null,
     letterPath: "",
     comments: "",
+    query: "",
   });
 
   const [formErrors, setFormErrors] = useState<{
@@ -182,6 +184,11 @@ const ChannelPartnerDashboard = () => {
       loanDisbursementComment: string;
     }[]
   >([]);
+
+  const [commentsDialogVisible, setCommentsDialogVisible] =
+    useState<boolean>(false);
+
+  const [selectedComments, setSelectedComments] = useState<string>("");
 
   const { search } = useLocation();
 
@@ -494,6 +501,21 @@ const ChannelPartnerDashboard = () => {
     return Object.keys(errors).length === 0;
   };
 
+  const validateQueryRaisedForm = () => {
+    const errors: any = {};
+
+    if (shouldShowQueryRaiseFields() && !formValues.query?.trim()) {
+      errors.comments = validationMessages.queryRequired;
+    }
+
+    setFormErrors((prev) => ({
+      ...prev,
+      ...errors,
+    }));
+
+    return Object.keys(errors).length === 0;
+  };
+
   const handleChangeStatus = async () => {
     if (!selectedStatus) {
       setStatusError("Please select any one status");
@@ -516,6 +538,11 @@ const ChannelPartnerDashboard = () => {
       if (!isValid) return;
     }
 
+    if (shouldShowQueryRaiseFields()) {
+      const isValid = validateQueryRaisedForm();
+      if (!isValid) return;
+    }
+
     if (shouldShowDisbursedFields() || shouldShowDisbursedField()) {
       const isValid = validateDisbursedForm();
       if (!isValid) return;
@@ -529,7 +556,9 @@ const ChannelPartnerDashboard = () => {
     const body: IUpdateLoanStatus = {
       loanApplicationID: selectedLoanApplication,
       statusID: selectedStatus.code,
-      comments: formValues.comments,
+      comments: shouldShowQueryRaiseFields()
+        ? formValues.query?.trim()
+        : formValues.comments,
     };
 
     if (shouldShowSanctionFields()) {
@@ -596,6 +625,27 @@ const ChannelPartnerDashboard = () => {
   };
 
   const statusBody = (rowData: ILoanApplicationData) => {
+    const getLoanStatusClassName = (statusID?: number): string => {
+      switch (statusID) {
+        case LoanStatusType.PENDING:
+          return "status-pending";
+        case LoanStatusType.APPLIED:
+          return "status-applied";
+        case LoanStatusType.QUERY_RAISED:
+          return "status-query-raised";
+        case LoanStatusType.SANCTIONED:
+          return "status-sanctioned";
+        case LoanStatusType.PENDING_AT_CREDIT:
+          return "status-pending-at-credit";
+        case LoanStatusType.DISBURSED:
+          return "status-disbursed";
+        case LoanStatusType.REJECTED:
+          return "status-rejected";
+        default:
+          return "status-pending";
+      }
+    };
+
     const isClickable =
       userType === CLIENT_ROLE.CHANNEL_PARTNER ||
       userType === CLIENT_ROLE.USER_MANAGEMENT;
@@ -696,27 +746,30 @@ const ChannelPartnerDashboard = () => {
           <img src="/assets/images/eye.svg" alt="eye-icon" loading="lazy" />
         </Button>
 
-        {!rowData.isCamReportGenerated && ![LoanStatusType.DISBURSED, LoanStatusType.SANCTIONED].includes(rowData?.status?.statusID as LoanStatusType) && (
-          <>
-            <Tooltip target={`#${editTooltipId}`} position="top" />
+        {!rowData.isCamReportGenerated &&
+          ![LoanStatusType.DISBURSED, LoanStatusType.SANCTIONED].includes(
+            rowData?.status?.statusID as LoanStatusType,
+          ) && (
+            <>
+              <Tooltip target={`#${editTooltipId}`} position="top" />
 
-            <Button
-              id={editTooltipId}
-              className="trash-icon p-0 me-2"
-              data-pr-tooltip="Edit Loan Application"
-              onClick={() =>
-                navigate(
-                  `${RoutePathConstant.private.editLoan}/${rowData.loanApplicationID}`,
-                  {
-                    state: { fullName: rowData.customerName },
-                  },
-                )
-              }
-            >
-              <i className="bi bi-pencil-fill" />
-            </Button>
-          </>
-        )}
+              <Button
+                id={editTooltipId}
+                className="trash-icon p-0 me-2"
+                data-pr-tooltip="Edit Loan Application"
+                onClick={() =>
+                  navigate(
+                    `${RoutePathConstant.private.editLoan}/${rowData.loanApplicationID}`,
+                    {
+                      state: { fullName: rowData.customerName },
+                    },
+                  )
+                }
+              >
+                <i className="bi bi-pencil-fill" />
+              </Button>
+            </>
+          )}
       </>
     );
   };
@@ -877,8 +930,8 @@ const ChannelPartnerDashboard = () => {
   const getStatusOptions = (
     loanApplicationsList: ILoanApplicationData[] | undefined,
     selectedLoanApplication: string,
-    statusList: { name: string }[],
-  ): { name: string }[] => {
+    availableStatusList: { name: string; code: number }[],
+  ): { name: string; code: number }[] => {
     const selectedLoan = loanApplicationsList?.find(
       (loan: ILoanApplicationData) =>
         loan.loanApplicationID === selectedLoanApplication,
@@ -886,17 +939,34 @@ const ChannelPartnerDashboard = () => {
 
     const currentStatus = selectedLoan?.status.label as LoanStatus;
 
-    if (currentStatus === LoanStatus.DISBURSED) {
-      return statusList.filter((s) => s.name === LoanStatus.DISBURSED);
+    if (currentStatus === LoanStatus.PENDING) {
+      return availableStatusList.filter((s) =>
+        [LoanStatus.PENDING, LoanStatus.APPLIED].includes(
+          s.name as LoanStatus,
+        ),
+      );
+    } else if (currentStatus === LoanStatus.DISBURSED) {
+      return availableStatusList.filter((s) => s.name === LoanStatus.DISBURSED);
     } else if (currentStatus === LoanStatus.SANCTIONED) {
-      return statusList.filter((s) =>
+      return availableStatusList.filter((s) =>
         [LoanStatus.SANCTIONED, LoanStatus.DISBURSED].includes(
           s.name as LoanStatus,
         ),
       );
     } else {
-      return statusList.filter((s) => s.name !== LoanStatus.DISBURSED);
+      return availableStatusList.filter(
+        (s) => s.name !== LoanStatus.DISBURSED,
+      );
     }
+  };
+
+  const handleViewComments = (comments?: string | null) => {
+    setSelectedComments(comments || "-");
+    setCommentsDialogVisible(true);
+  };
+
+  const shouldShowQueryRaisedFields = (): boolean => {
+    return LoanStatusType.QUERY_RAISED === Number(status);
   };
 
   const shouldShowDisbursedFields = (): boolean => {
@@ -923,6 +993,20 @@ const ChannelPartnerDashboard = () => {
 
   const isDisbursedUpdateFlow = (): boolean => {
     return shouldShowDisbursedFields() && !shouldShowDisbursedField();
+  };
+
+  const shouldShowQueryRaiseFields = (): boolean => {
+    const selectedLoan = adminInfo?.loanApplications?.find(
+      (loan: ILoanApplicationData) =>
+        loan.loanApplicationID === selectedLoanApplication,
+    );
+
+    const currentStatus = selectedLoan?.status.label as LoanStatus;
+
+    return (
+      LoanStatusType.QUERY_RAISED === selectedStatus?.code &&
+      currentStatus !== LoanStatus.QUERY_RAISED
+    );
   };
 
   const shouldShowSanctionFields = (): boolean => {
@@ -1016,9 +1100,13 @@ const ChannelPartnerDashboard = () => {
       }));
 
       // ✅ validate using rawValue (important!)
-      setFormErrors((prevErrors) => ({
-        ...prevErrors,
-        amount: rawValue ? "" : validationMessages.sanctionedAmountRequired,
+      setFormErrors((prev) => ({
+        ...prev,
+        amount: rawValue
+          ? ""
+          : shouldShowDisbursedFields()
+            ? validationMessages.disbursedAmountRequired
+            : validationMessages.sanctionedAmountRequired,
       }));
 
       return;
@@ -1031,6 +1119,13 @@ const ChannelPartnerDashboard = () => {
     }));
 
     setFormErrors((prevErrors) => {
+      if (fieldName === "query") {
+        return {
+          ...prevErrors,
+          comments: value.trim() ? "" : validationMessages.queryRequired,
+        };
+      }
+
       if (fieldName === "comments") {
         return {
           ...prevErrors,
@@ -1362,7 +1457,7 @@ const ChannelPartnerDashboard = () => {
 
                   <Column
                     body={(rowData) => formatDate(rowData.date, "DD MMM, YYYY")}
-                    header="Date"
+                    header="Applied Date"
                   />
 
                   <Column
@@ -1384,6 +1479,44 @@ const ChannelPartnerDashboard = () => {
                       />
                     )}
 
+                  {shouldShowQueryRaisedFields() && (
+                    <Column
+                      header="Query Raised"
+                      body={(rowData: ILoanApplicationData) => {
+                        if (!rowData.raisedQuery) {
+                          return <span>-</span>;
+                        }
+
+                        return (
+                          <Button
+                            className="resendBtn p-button-link p-0"
+                            label="View Query"
+                            onClick={() => handleViewComments(rowData.raisedQuery)}
+                          />
+                        );
+                      }}
+                    />
+                  )}
+
+                  {(shouldShowDisbursedField() || shouldShowDisbursedFields() || shouldShowSanctionedFields() || shouldShowSanctionFields()) && (
+                    <Column
+                      header="Comments"
+                      body={(rowData: ILoanApplicationData) => {
+                        if (!rowData.comments) {
+                          return <span>-</span>;
+                        }
+
+                        return (
+                          <Button
+                            className="resendBtn p-button-link p-0"
+                            label="View Comments"
+                            onClick={() => handleViewComments(rowData.comments)}
+                          />
+                        );
+                      }}
+                    />
+                  )}
+
                   {shouldShowDisbursedFields() && (
                     <Column
                       header="Disbursed"
@@ -1404,8 +1537,8 @@ const ChannelPartnerDashboard = () => {
 
                             {amount && (
                               <i
-                                className="bi bi-info-circle"
-                                style={{ color: "#2563eb", cursor: "pointer" }}
+                                className="bi bi-info-circle palette-info-icon"
+                                style={{ cursor: "pointer" }}
                                 title="Re-disburse this loan application"
                                 onClick={() => {
                                   setSelectedLoanApplication(
@@ -1542,6 +1675,21 @@ const ChannelPartnerDashboard = () => {
                           onChange={(e) => {
                             setSelectedStatus(e.value);
                             setStatusError("");
+                            setFormValues({
+                              dateOfRegistration: "",
+                              amount: "",
+                              uploadedLetter: null,
+                              letterPath: "",
+                              comments: "",
+                              query: "",
+                            });
+
+                            setFormErrors({
+                              dateOfRegistration: "",
+                              amount: "",
+                              uploadedLetter: "",
+                              comments: "",
+                            });
                           }}
                           options={getStatusOptions(
                             adminInfo?.loanApplications,
@@ -1555,6 +1703,37 @@ const ChannelPartnerDashboard = () => {
 
                       {statusError && (
                         <small className="text-danger">{statusError}</small>
+                      )}
+
+                      {shouldShowQueryRaiseFields() && (
+                        <>
+                          <div className="mt-3">
+                            <label className="form-label small">
+                              Query<sup>*</sup>
+                            </label>
+
+                            <textarea
+                              name="query"
+                              className="form-control"
+                              rows={3}
+                              maxLength={150}
+                              placeholder="Enter query"
+                              value={formValues.query || ""}
+                              onChange={(e) =>
+                                handleChange(
+                                  e.target.name,
+                                  e.target.value.trimStart(),
+                                )
+                              }
+                            />
+
+                            {formErrors.comments && (
+                              <small className="text-danger">
+                                {formErrors.comments}
+                              </small>
+                            )}
+                          </div>
+                        </>
                       )}
 
                       {shouldShowSanctionFields() && (
@@ -1632,35 +1811,13 @@ const ChannelPartnerDashboard = () => {
                             </label>
 
                             <div
-                              className="upload-container p-3 border rounded text-center"
-                              style={{
-                                backgroundColor: "#f8f9fa",
-                                borderStyle: "dashed",
-                                borderWidth: "2px",
-                                borderColor: formErrors.uploadedLetter
-                                  ? "#dc3545"
-                                  : "#dee2e6",
-                                cursor: "pointer",
-                                transition: "all 0.3s ease",
-                              }}
+                              className={`upload-container sanction-upload-box p-3 text-center ${formErrors.uploadedLetter ? "has-error" : ""
+                                }`}
                               onClick={() =>
                                 document
                                   .getElementById("uploadedLetter")
                                   ?.click()
                               }
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor =
-                                  "#e9ecef";
-                                e.currentTarget.style.borderColor = "#ff6b35";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor =
-                                  "#f8f9fa";
-                                e.currentTarget.style.borderColor =
-                                  formErrors.uploadedLetter
-                                    ? "#dc3545"
-                                    : "#dee2e6";
-                              }}
                             >
                               <input
                                 type="file"
@@ -1703,11 +1860,7 @@ const ChannelPartnerDashboard = () => {
                               ) : (
                                 <>
                                   <i
-                                    className="bi bi-cloud-upload"
-                                    style={{
-                                      fontSize: "36px",
-                                      color: "#ff6b35",
-                                    }}
+                                    className="bi bi-cloud-upload sanction-upload-icon"
                                   />
                                   <p className="mb-1 mt-2 fw-semibold">
                                     Click to upload sanction letter
@@ -1917,6 +2070,37 @@ const ChannelPartnerDashboard = () => {
             </div>
           </>
         </Dialog>
+
+        {status &&
+          <Dialog
+            header={status === LoanStatusType.QUERY_RAISED.toString() ? "Raised Query" : "Comments"}
+            visible={commentsDialogVisible}
+            onHide={() => {
+              setCommentsDialogVisible(false);
+              setSelectedComments("");
+            }}
+            modal
+            draggable={false}
+            resizable={false}
+            blockScroll
+            className="modalWrapper responsive-dialog"
+            style={{ width: "550px" }}
+            footer={() => (
+              <Button
+                label="Close"
+                className="btn btn-orange"
+                onClick={() => {
+                  setCommentsDialogVisible(false);
+                  setSelectedComments("");
+                }}
+              />
+            )}
+          >
+            <p className="mb-0 text-break" style={{ whiteSpace: "pre-wrap" }}>
+              {selectedComments}
+            </p>
+          </Dialog>
+        }
       </div>
     </>
   );

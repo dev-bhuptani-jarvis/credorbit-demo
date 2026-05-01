@@ -507,12 +507,6 @@ const demoSubscriptionPlansResponse: ISubscriptionPlanListingResponse = {
   message: "Subscription plans fetched successfully!",
   data: [
     {
-      planID: 1,
-      name: "Kickstart Plan",
-      credits: 500,
-      price: 499,
-    },
-    {
       planID: 2,
       name: "Value Plus Plan",
       credits: 2200,
@@ -5785,6 +5779,7 @@ const demoQueryLoanApplicationsResponse: IGetAllLoanApplicationsResponse = {
         userID: "08dde22e-a5e6-4a56-8ebc-9b68c4c0936b",
         progressPercent: 40,
         isCamReportGenerated: false,
+        raisedQuery: "Query Raised for documents",
         status: {
           label: "Query Raised",
           color: "#F4A917",

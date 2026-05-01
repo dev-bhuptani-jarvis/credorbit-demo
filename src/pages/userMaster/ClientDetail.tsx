@@ -112,12 +112,14 @@ const ClientDetail = () => {
     uploadedLetter?: File | null;
     letterPath?: string;
     comments?: string;
+    query?: string;
   }>({
     dateOfRegistration: "",
     amount: "",
     uploadedLetter: null,
     letterPath: "",
     comments: "",
+    query: "",
   });
 
   const [formErrors, setFormErrors] = useState<{
@@ -139,6 +141,11 @@ const ClientDetail = () => {
       loanDisbursementComment: string;
     }[]
   >([]);
+
+  const [commentsDialogVisible, setCommentsDialogVisible] =
+    useState<boolean>(false);
+
+  const [selectedComments, setSelectedComments] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -251,27 +258,30 @@ const ClientDetail = () => {
           <img src="/assets/images/eye.svg" alt="eye-icon" />
         </Button>
 
-        {!rowData.isCamReportGenerated && ![LoanStatusType.DISBURSED, LoanStatusType.SANCTIONED].includes(rowData?.status?.statusID as LoanStatusType) && (
-          <>
-            <Tooltip target={`#${editTooltipId}`} position="top" />
+        {!rowData.isCamReportGenerated &&
+          ![LoanStatusType.DISBURSED, LoanStatusType.SANCTIONED].includes(
+            rowData?.status?.statusID as LoanStatusType,
+          ) && (
+            <>
+              <Tooltip target={`#${editTooltipId}`} position="top" />
 
-            <Button
-              id={editTooltipId}
-              className="trash-icon p-0 me-2"
-              data-pr-tooltip="Edit Loan Application"
-              onClick={() =>
-                navigate(
-                  `${RoutePathConstant.private.editLoan}/${rowData.loanApplicationID}`,
-                  {
-                    state: { fullName: rowData.customerName },
-                  },
-                )
-              }
-            >
-              <i className="bi bi-pencil-fill" />
-            </Button>
-          </>
-        )}
+              <Button
+                id={editTooltipId}
+                className="trash-icon p-0 me-2"
+                data-pr-tooltip="Edit Loan Application"
+                onClick={() =>
+                  navigate(
+                    `${RoutePathConstant.private.editLoan}/${rowData.loanApplicationID}`,
+                    {
+                      state: { fullName: rowData.customerName },
+                    },
+                  )
+                }
+              >
+                <i className="bi bi-pencil-fill" />
+              </Button>
+            </>
+          )}
 
         {(userType === CLIENT_ROLE.CHANNEL_PARTNER ||
           userType === CLIENT_ROLE.USER_MANAGEMENT) &&
@@ -313,6 +323,27 @@ const ClientDetail = () => {
     setChangeStatus(false);
     setSelectedLoanApplication("");
     setDisbursementHistoryDetails([]);
+  };
+
+  const getLoanStatusClassName = (statusID?: number): string => {
+    switch (statusID) {
+      case LoanStatusType.PENDING:
+        return "status-pending";
+      case LoanStatusType.APPLIED:
+        return "status-applied";
+      case LoanStatusType.QUERY_RAISED:
+        return "status-query-raised";
+      case LoanStatusType.SANCTIONED:
+        return "status-sanctioned";
+      case LoanStatusType.PENDING_AT_CREDIT:
+        return "status-pending-at-credit";
+      case LoanStatusType.DISBURSED:
+        return "status-disbursed";
+      case LoanStatusType.REJECTED:
+        return "status-rejected";
+      default:
+        return "status-pending";
+    }
   };
 
   const statusBody = (rowData: ILoanApplicationData) => {
@@ -361,6 +392,21 @@ const ClientDetail = () => {
     );
   };
 
+  const validateQueryRaisedForm = () => {
+    const errors: any = {};
+
+    if (shouldShowQueryRaiseFields() && !formValues.query?.trim()) {
+      errors.comments = validationMessages.queryRequired;
+    }
+
+    setFormErrors((prev) => ({
+      ...prev,
+      ...errors,
+    }));
+
+    return Object.keys(errors).length === 0;
+  };
+
   const handleChangeStatus = async () => {
     if (!selectedStatus) {
       setStatusError("Please select any one option");
@@ -372,6 +418,12 @@ const ClientDetail = () => {
     // ✅ SANCTION VALIDATION
     if (shouldShowSanctionFields()) {
       const isValid = validateSanctionForm();
+      if (!isValid) return;
+    }
+
+    // ✅ QUERY RAISED VALIDATION
+    if (shouldShowQueryRaiseFields()) {
+      const isValid = validateQueryRaisedForm();
       if (!isValid) return;
     }
 
@@ -387,7 +439,9 @@ const ClientDetail = () => {
     const body: IUpdateLoanStatus = {
       loanApplicationID: selectedLoanApplication,
       statusID: selectedStatus.code,
-      comments: formValues.comments,
+      comments: shouldShowQueryRaiseFields()
+        ? formValues.query?.trim()
+        : formValues.comments,
     };
 
     if (shouldShowSanctionFields()) {
@@ -598,29 +652,56 @@ const ClientDetail = () => {
   const getStatusOptions = (
     clientDetail: IClientData | undefined,
     selectedLoanApplication: string,
-    statusList: { name: string }[],
-  ): { name: string }[] => {
+    availableStatusList: { name: string; code: number }[],
+  ): { name: string; code: number }[] => {
     const selectedLoan = clientDetail?.loanApplicationsList?.find(
       (loan) => loan.loanApplicationID === selectedLoanApplication,
     );
 
     const currentStatus = selectedLoan?.status.label as LoanStatus;
 
-    if (currentStatus === LoanStatus.DISBURSED) {
-      return statusList.filter((s) => s.name === LoanStatus.DISBURSED);
+    if (currentStatus === LoanStatus.PENDING) {
+      return availableStatusList.filter((s) =>
+        [LoanStatus.PENDING, LoanStatus.APPLIED].includes(
+          s.name as LoanStatus,
+        ),
+      );
+    } else if (currentStatus === LoanStatus.DISBURSED) {
+      return availableStatusList.filter((s) => s.name === LoanStatus.DISBURSED);
     } else if (currentStatus === LoanStatus.SANCTIONED) {
-      return statusList.filter((s) =>
+      return availableStatusList.filter((s) =>
         [LoanStatus.SANCTIONED, LoanStatus.DISBURSED].includes(
           s.name as LoanStatus,
         ),
       );
     } else {
-      return statusList.filter((s) => s.name !== LoanStatus.DISBURSED);
+      return availableStatusList.filter(
+        (s) => s.name !== LoanStatus.DISBURSED,
+      );
     }
+  };
+
+  const handleViewComments = (comments?: string | null) => {
+    setSelectedComments(comments || "-");
+    setCommentsDialogVisible(true);
   };
 
   const shouldShowDisbursedFields = (): boolean => {
     return LoanStatusType.DISBURSED === Number(selectedStatus?.code);
+  };
+
+  const shouldShowQueryRaiseFields = (): boolean => {
+    const selectedLoan = clientDetail?.loanApplicationsList?.find(
+      (loan: ILoanApplicationData) =>
+        loan.loanApplicationID === selectedLoanApplication,
+    );
+
+    const currentStatus = selectedLoan?.status.label as LoanStatus;
+
+    return (
+      LoanStatusType.QUERY_RAISED === selectedStatus?.code &&
+      currentStatus !== LoanStatus.QUERY_RAISED
+    );
   };
 
   const shouldShowSanctionFields = (): boolean => {
@@ -725,29 +806,31 @@ const ClientDetail = () => {
       return;
     }
 
-    if (fieldName === "comments") {
-      setFormValues((prev) => ({
-        ...prev,
-        comments: value,
-      }));
-
-      setFormErrors((prev) => ({
-        ...prev,
-        comments: value.trim() ? "" : validationMessages.commentsRequired,
-      }));
-
-      return;
-    }
-
     setFormValues((prev) => ({
       ...prev,
       [fieldName]: value,
     }));
 
-    setFormErrors((prev) => ({
-      ...prev,
-      [fieldName]: "",
-    }));
+    setFormErrors((prevErrors) => {
+      if (fieldName === "query") {
+        return {
+          ...prevErrors,
+          comments: value.trim() ? "" : validationMessages.queryRequired,
+        };
+      }
+
+      if (fieldName === "comments") {
+        return {
+          ...prevErrors,
+          comments: value.trim() ? "" : validationMessages.commentsRequired,
+        };
+      }
+
+      return {
+        ...prevErrors,
+        [fieldName]: "",
+      };
+    });
   };
 
   const validateSanctionForm = (): boolean => {
@@ -939,10 +1022,10 @@ const ClientDetail = () => {
                         />
 
                         <Column
-                          body={(rowData: ILoanApplicationData) =>
+                          body={(rowData) =>
                             formatDate(rowData.date, "DD MMM, YYYY")
                           }
-                          header="Date"
+                          header="Applied Date"
                         />
 
                         <Column
@@ -972,6 +1055,23 @@ const ClientDetail = () => {
                               : "-"
                           }
                           header="Disbursed"
+                        />
+
+                        <Column
+                          header="Comments"
+                          body={(rowData: ILoanApplicationData) => {
+                            if (!rowData.comments) {
+                              return <span>-</span>;
+                            }
+
+                            return (
+                              <Button
+                                className="resendBtn p-button-link p-0"
+                                label="View Comments"
+                                onClick={() => handleViewComments(rowData.comments)}
+                              />
+                            );
+                          }}
                         />
 
                         <Column body={progressAction} header="Progress" />
@@ -1031,6 +1131,37 @@ const ClientDetail = () => {
                               <small className="text-danger">
                                 {statusError}
                               </small>
+                            )}
+
+                            {shouldShowQueryRaiseFields() && (
+                              <>
+                                <div className="mt-3">
+                                  <label className="form-label small">
+                                    Query<sup>*</sup>
+                                  </label>
+
+                                  <textarea
+                                    name="query"
+                                    className="form-control"
+                                    rows={3}
+                                    maxLength={150}
+                                    placeholder="Enter query"
+                                    value={formValues.query || ""}
+                                    onChange={(e) =>
+                                      handleChange(
+                                        e.target.name,
+                                        e.target.value.trimStart(),
+                                      )
+                                    }
+                                  />
+
+                                  {formErrors.comments && (
+                                    <small className="text-danger">
+                                      {formErrors.comments}
+                                    </small>
+                                  )}
+                                </div>
+                              </>
                             )}
 
                             {shouldShowSanctionFields() && (
@@ -1114,36 +1245,15 @@ const ClientDetail = () => {
                                   </label>
 
                                   <div
-                                    className="upload-container p-3 border rounded text-center"
-                                    style={{
-                                      backgroundColor: "#f8f9fa",
-                                      borderStyle: "dashed",
-                                      borderWidth: "2px",
-                                      borderColor: formErrors.uploadedLetter
-                                        ? "#dc3545"
-                                        : "#dee2e6",
-                                      cursor: "pointer",
-                                      transition: "all 0.3s ease",
-                                    }}
+                                    className={`upload-container sanction-upload-box p-3 text-center ${formErrors.uploadedLetter
+                                        ? "has-error"
+                                        : ""
+                                      }`}
                                     onClick={() =>
                                       document
                                         .getElementById("uploadedLetter")
                                         ?.click()
                                     }
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.backgroundColor =
-                                        "#e9ecef";
-                                      e.currentTarget.style.borderColor =
-                                        "#ff6b35";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.backgroundColor =
-                                        "#f8f9fa";
-                                      e.currentTarget.style.borderColor =
-                                        formErrors.uploadedLetter
-                                          ? "#dc3545"
-                                          : "#dee2e6";
-                                    }}
                                   >
                                     <input
                                       type="file"
@@ -1186,11 +1296,7 @@ const ClientDetail = () => {
                                     ) : (
                                       <>
                                         <i
-                                          className="bi bi-cloud-upload"
-                                          style={{
-                                            fontSize: "36px",
-                                            color: "#ff6b35",
-                                          }}
+                                          className="bi bi-cloud-upload sanction-upload-icon"
                                         />
                                         <p className="mb-1 mt-2 fw-semibold">
                                           Click to upload sanction letter
@@ -1443,6 +1549,25 @@ const ClientDetail = () => {
             }}
           />
         )}
+
+      <Dialog
+        header="Comments"
+        visible={commentsDialogVisible}
+        onHide={() => {
+          setCommentsDialogVisible(false);
+          setSelectedComments("");
+        }}
+        modal
+        draggable={false}
+        resizable={false}
+        blockScroll
+        className="modalWrapper responsive-dialog"
+        style={{ width: "550px" }}
+      >
+        <p className="mb-0 text-break" style={{ whiteSpace: "pre-wrap" }}>
+          {selectedComments}
+        </p>
+      </Dialog>
     </div>
   );
 };

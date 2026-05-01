@@ -35,6 +35,8 @@ export interface ILoanApplicationData {
   customerName: string;
   loanType: string | null;
   userID: string;
+  raisedQuery?: string | null;
+  comments?: string | null;
 }
 
 export interface IClientPartnerParams {
