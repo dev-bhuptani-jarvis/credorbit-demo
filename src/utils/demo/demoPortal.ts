@@ -507,12 +507,6 @@ const demoSubscriptionPlansResponse: ISubscriptionPlanListingResponse = {
   message: "Subscription plans fetched successfully!",
   data: [
     {
-      planID: 2,
-      name: "Value Plus Plan",
-      credits: 2200,
-      price: 1999,
-    },
-    {
       planID: 3,
       name: "Power Pack Plan",
       credits: 6000,
