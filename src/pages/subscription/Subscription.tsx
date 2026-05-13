@@ -342,7 +342,7 @@ const Subscription = () => {
     if (!response) return;
 
     if (response.statusCode === 200) {
-      window.location.href = response.data.shortUrl;
+      window.location.href = "https://razorpay.com/payment-link/plink_SokyWAJOOqGcI2/test";
     } else {
       toastError(response.message);
     }
