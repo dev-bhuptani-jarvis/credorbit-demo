@@ -47,6 +47,7 @@ import {
 } from "../../interface/wallet";
 import { encryptVAPTData } from "../functions/encryptDecrypt";
 import { ISourcingPartnerDetailsResponse } from "../../interface/sourcingPartner";
+import { isNullOrUndefined } from "util";
 
 const wait = (ms: number) =>
   new Promise((resolve) => {
@@ -4837,6 +4838,244 @@ export const getDemoLoanApplications = async (params?: {
     "6": demoDisbursedLoanApplicationsResponse,
     "7": demoRejectedLoanApplicationsResponse,
   };
+
+  if ((params?.statusFilter) === undefined) {
+    return {
+      "status": true,
+      "statusCode": 200,
+      "message": "List of all Loan Applications fetched successfully!",
+      "data": {
+        "totalLoanApplications": 8,
+        "loanApplications": [
+          {
+            "loanApplicationID": "08deb58f-899c-4e3a-8157-cbdf43002662",
+            "disbursementId": "00000000-0000-0000-0000-000000000000",
+            "loanApplicationCode": "COLA260508",
+            "bankName": null,
+            "loanType": "CC/OD - Secured",
+            "loanTypeID": 10,
+            "date": "2026-05-19",
+            "sanctionedDate": null,
+            "disbursedDate": null,
+            "loanAmount": 10000678.000000000000000000000,
+            "sanctionedLoanAmount": null,
+            "disbursedLoanAmount": null,
+            "sanctionLetterUrl": null,
+            "raisedQuery": null,
+            "customerName": "RAHUL NEGI",
+            "userID": "08de8f16-381b-4de4-859f-be9de1bde262",
+            "progressPercent": 80,
+            "isCamReportGenerated": true,
+            "status": {
+              "label": "Pending",
+              "color": "#FF632C",
+              "statusID": 1
+            }
+          },
+          {
+            "loanApplicationID": "08deb58f-47c7-4513-8afe-cffd1d9344c9",
+            "disbursementId": "00000000-0000-0000-0000-000000000000",
+            "loanApplicationCode": "COLA260507",
+            "bankName": null,
+            "loanType": "Home Loan",
+            "loanTypeID": 1,
+            "date": "2026-05-19",
+            "sanctionedDate": null,
+            "disbursedDate": null,
+            "loanAmount": 5000000.0000000000000000000000,
+            "sanctionedLoanAmount": null,
+            "disbursedLoanAmount": null,
+            "sanctionLetterUrl": null,
+            "raisedQuery": null,
+            "customerName": "RAHUL NEGI",
+            "userID": "08de8f16-381b-4de4-859f-be9de1bde262",
+            "progressPercent": 80,
+            "isCamReportGenerated": false,
+            "status": {
+              "label": "Pending",
+              "color": "#FF632C",
+              "statusID": 1
+            }
+          },
+          {
+            "loanApplicationID": "08deb58a-d559-49f4-8b83-232c2b58dade",
+            "disbursementId": "00000000-0000-0000-0000-000000000000",
+            "loanApplicationCode": "COLA260506",
+            "bankName": null,
+            "loanType": "CC/OD - Secured",
+            "loanTypeID": 10,
+            "date": "2026-05-19",
+            "sanctionedDate": null,
+            "disbursedDate": null,
+            "loanAmount": 100000.00000000000000000000000,
+            "sanctionedLoanAmount": null,
+            "disbursedLoanAmount": null,
+            "sanctionLetterUrl": null,
+            "raisedQuery": null,
+            "customerName": "RAHUL NEGI",
+            "userID": "08de8f16-381b-4de4-859f-be9de1bde262",
+            "progressPercent": 80,
+            "isCamReportGenerated": false,
+            "status": {
+              "label": "Pending",
+              "color": "#FF632C",
+              "statusID": 1
+            }
+          },
+          {
+            "loanApplicationID": "08deacff-b769-4d14-8f06-21a85cf37816",
+            "disbursementId": "00000000-0000-0000-0000-000000000000",
+            "loanApplicationCode": "COLA260505",
+            "bankName": null,
+            "loanType": "CC/OD - Secured",
+            "loanTypeID": 10,
+            "date": "2026-05-08",
+            "sanctionedDate": null,
+            "disbursedDate": null,
+            "loanAmount": 10000678.000000000000000000000,
+            "sanctionedLoanAmount": null,
+            "disbursedLoanAmount": null,
+            "sanctionLetterUrl": null,
+            "raisedQuery": null,
+            "customerName": "RAHUL NEGI",
+            "userID": "08de8f16-381b-4de4-859f-be9de1bde262",
+            "progressPercent": 80,
+            "isCamReportGenerated": true,
+            "status": {
+              "label": "Pending",
+              "color": "#FF632C",
+              "statusID": 1
+            }
+          },
+          {
+            "loanApplicationID": "08deacf5-bd62-44ac-8c08-cd703c979893",
+            "disbursementId": "00000000-0000-0000-0000-000000000000",
+            "loanApplicationCode": "COLA260502",
+            "bankName": null,
+            "loanType": "Home Loan",
+            "loanTypeID": 1,
+            "date": "2026-05-08",
+            "sanctionedDate": null,
+            "disbursedDate": null,
+            "loanAmount": 10000005.000000000000000000000,
+            "sanctionedLoanAmount": 1000000.0000000000000000000000,
+            "disbursedLoanAmount": 1000000.0000000000000000000000,
+            "sanctionLetterUrl": null,
+            "raisedQuery": null,
+            "customerName": "RAHUL NEGI",
+            "userID": "08de8f16-381b-4de4-859f-be9de1bde262",
+            "progressPercent": 80,
+            "isCamReportGenerated": false,
+            "status": {
+              "label": "Disbursed",
+              "color": "#0BB680",
+              "statusID": 6
+            }
+          },
+          {
+            "loanApplicationID": "08de8f54-7e21-4514-8560-210217417137",
+            "disbursementId": "00000000-0000-0000-0000-000000000000",
+            "loanApplicationCode": "COLA260420",
+            "bankName": "Ujjivan Small Finance Bank",
+            "loanType": "Loan against property - Residential",
+            "loanTypeID": 7,
+            "date": "2026-04-01",
+            "sanctionedDate": null,
+            "disbursedDate": null,
+            "loanAmount": 5000000.0000000000000000000000,
+            "sanctionedLoanAmount": null,
+            "disbursedLoanAmount": null,
+            "sanctionLetterUrl": null,
+            "raisedQuery": null,
+            "customerName": "RAHUL NEGI",
+            "userID": "08de8f16-381b-4de4-859f-be9de1bde262",
+            "progressPercent": 80,
+            "isCamReportGenerated": true,
+            "status": {
+              "label": "Applied",
+              "color": "#3DA0E7",
+              "statusID": 2
+            }
+          },
+          {
+            "loanApplicationID": "08de8f1e-d50d-4178-892f-3170f0484a19",
+            "disbursementId": "00000000-0000-0000-0000-000000000000",
+            "loanApplicationCode": "COLA260318",
+            "bankName": null,
+            "loanType": "Loan against property - Residential",
+            "loanTypeID": 7,
+            "date": "2026-03-31",
+            "sanctionedDate": null,
+            "disbursedDate": null,
+            "loanAmount": 5000000.0000000000000000000000,
+            "sanctionedLoanAmount": 150000.00000000000000000000000,
+            "disbursedLoanAmount": null,
+            "sanctionLetterUrl": null,
+            "raisedQuery": null,
+            "customerName": "RAHUL NEGI",
+            "userID": "08de8f16-381b-4de4-859f-be9de1bde262",
+            "progressPercent": 80,
+            "isCamReportGenerated": false,
+            "status": {
+              "label": "Sanctioned",
+              "color": "#947CFB",
+              "statusID": 4
+            }
+          },
+          {
+            "loanApplicationID": "08de8f1b-4267-4cd8-8154-e20e2d3c5582",
+            "disbursementId": "00000000-0000-0000-0000-000000000000",
+            "loanApplicationCode": "COLA260317",
+            "bankName": null,
+            "loanType": "Home Loan",
+            "loanTypeID": 1,
+            "date": "2026-03-31",
+            "sanctionedDate": null,
+            "disbursedDate": null,
+            "loanAmount": 5000000.0000000000000000000000,
+            "sanctionedLoanAmount": null,
+            "disbursedLoanAmount": null,
+            "sanctionLetterUrl": null,
+            "raisedQuery": null,
+            "customerName": "RAHUL NEGI",
+            "userID": "08de8f16-381b-4de4-859f-be9de1bde262",
+            "progressPercent": 80,
+            "isCamReportGenerated": false,
+            "status": {
+              "label": "Query Raised",
+              "color": "#F4A917",
+              "statusID": 3
+            }
+          },
+          {
+            "loanApplicationID": "08de8f1b-4267-4cd8-8154-e20e2d3c5582",
+            "disbursementId": "00000000-0000-0000-0000-000000000000",
+            "loanApplicationCode": "COLA260317",
+            "bankName": null,
+            "loanType": "Home Loan",
+            "loanTypeID": 1,
+            "date": "2026-03-31",
+            "sanctionedDate": null,
+            "disbursedDate": null,
+            "loanAmount": 5000000.0000000000000000000000,
+            "sanctionedLoanAmount": null,
+            "disbursedLoanAmount": null,
+            "sanctionLetterUrl": null,
+            "raisedQuery": null,
+            "customerName": "RAHUL NEGI",
+            "userID": "08de8f16-381b-4de4-859f-be9de1bde262",
+            "progressPercent": 80,
+            "isCamReportGenerated": false,
+            "status": {
+              "label": "Query Raised",
+              "color": "#F4A917",
+              "statusID": 3
+            }
+          }
+        ],
+      }
+    }
+  }
 
   const baseResponse = params?.statusFilter
     ? responseByStatus[params.statusFilter]

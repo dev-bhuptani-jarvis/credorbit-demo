@@ -383,21 +383,21 @@ const impersonatedClientProfileResponse = {
     name:
       "DEMO INDUSTRIES PRIVATE LIMITED",
 
-    panNumber: "DEMOP1234D",
+    panNumber: "ABLPK3592Q",
 
-    emailID: "client.demo@example.com",
+    emailID: "client@yopmail.com",
 
-    mobileNumber: "9000000001",
+    mobileNumber: "4444444444",
 
     profilePicture:
       "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
 
     selectedGstNumber:
-      "27DEMOP1234D1Z5",
+      "27ABLPK3592Q1Z5",
 
     gstList: [
       {
-        gstNumber: "27DEMOP1234D1Z5",
+        gstNumber: "27ABLPK3592Q1Z5",
         tradeName: "Orbitex Industries",
         gstAddress:
           "Ahmedabad, Gujarat",
@@ -410,7 +410,7 @@ const impersonatedClientProfileResponse = {
       } as any,
 
       {
-        gstNumber: "24DEMOP1234D1Z2",
+        gstNumber: "24ABLPK3592Q1Z2",
         tradeName:
           "Orbitex Trading Division",
         gstAddress:
@@ -424,7 +424,7 @@ const impersonatedClientProfileResponse = {
       } as any,
 
       {
-        gstNumber: "29DEMOP1234D1Z8",
+        gstNumber: "29ABLPK3592Q1Z8",
         tradeName:
           "Orbitex South Operations",
         gstAddress:
@@ -565,7 +565,7 @@ const impersonatedClientProfileResponse = {
           "XXXX-XXXX-1023",
 
         address:
-          "Satellite Road, Ahmedabad",
+          "Demo Road, Ahmedabad",
 
         state: "Gujarat",
 
@@ -598,7 +598,7 @@ const impersonatedClientProfileResponse = {
           "XXXX-XXXX-4567",
 
         address:
-          "Prahlad Nagar, Ahmedabad",
+          "Demo Area, Ahmedabad",
 
         state: "Gujarat",
 
@@ -615,71 +615,6 @@ const impersonatedClientProfileResponse = {
         creditScore: null,
       },
 
-      {
-        id:
-          "08de8f1c-b63f-48ef-834a-27d9ac63fc5a",
-
-        name: "DEMO PARTNER ONE",
-
-        firstName: "VIKRAM",
-        middleName: "",
-        lastName: "DESAI",
-
-        pan: "PARTN4321P",
-
-        aadhaarNumber:
-          "XXXX-XXXX-2045",
-
-        address:
-          "SG Highway, Ahmedabad",
-
-        state: "Gujarat",
-
-        city: "Ahmedabad",
-
-        pinCode: "380054",
-
-        mobile: "9000000003",
-
-        dateOfBirth: "1991-02-15",
-
-        gender: "M",
-
-        creditScore: null,
-      },
-
-      {
-        id:
-          "08de8f46-aa27-475a-8aed-955af25bcc6f",
-
-        name: "KABIR SINGH",
-
-        firstName: "KABIR",
-        middleName: "",
-        lastName: "SINGH",
-
-        pan: "CLEAN2345R",
-
-        aadhaarNumber:
-          "XXXX-XXXX-7788",
-
-        address:
-          "Vastrapur, Ahmedabad",
-
-        state: "Gujarat",
-
-        city: "Ahmedabad",
-
-        pinCode: "380052",
-
-        mobile: "9000000004",
-
-        dateOfBirth: "1989-07-10",
-
-        gender: "M",
-
-        creditScore: null,
-      },
     ],
 
     commission: 2,
@@ -756,6 +691,8 @@ export const getDemoUserProfileByContext = async (
 
   try {
     const currentUser = currentUserData ? JSON.parse(currentUserData) : null;
+
+    console.log('currentUser', currentUser)
     const impersonateUser = impersonateUserData
       ? JSON.parse(impersonateUserData)
       : null;
@@ -764,18 +701,48 @@ export const getDemoUserProfileByContext = async (
       impersonateUser?.emailID ||
       ""
     ).toLowerCase();
+    const userId = currentUser?.userID || impersonateUser?.userID || currentUser?.id || impersonateUser?.id;
+    const userType = currentUser?.userType ?? impersonateUser?.userType;
+    const roleName = (currentUser?.roleName || impersonateUser?.roleName || "").toLowerCase();
 
-    if (email === "info@credorbit.com") {
+    console.log('email', email)
+
+    if (
+      userType === 1 ||
+      roleName === "admin" ||
+      userId === "demo-admin-id-001" ||
+      email === "info@credorbit.com"
+    ) {
       return adminProfileResponse;
     }
 
-    if (email === "credsp1@yopmail.com") {
+    if (
+      userType === 3 ||
+      roleName === "sourcing partner" ||
+      userId === "demo-sp-id-001" ||
+      email === "credsp1@yopmail.com"
+    ) {
       return sourcingPartnerProfileResponse;
     }
 
-    if (email === "nexustest@yopmail.com") {
+    if (
+      userType === 4 ||
+      roleName === "client" ||
+      userId === "08de0598-4bee-48ca-8a7c-005b36583e79" ||
+      email === "client@yopmail.com" ||
+      email === "nexustest@yopmail.com"
+    ) {
       return impersonatedClientProfileResponse;
     }
+
+    if (
+      userType === 2 ||
+      roleName === "channel partner" ||
+      userId === "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9"
+    ) {
+      return channelPartnerProfileResponse;
+    }
+
   } catch {
     return channelPartnerProfileResponse;
   }

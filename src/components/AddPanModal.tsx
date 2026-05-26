@@ -164,8 +164,8 @@ const AddPanModal = ({
     if (response && response.statusCode === 200) {
       const formattedData = response?.data?.map((item) => ({
         id: item.id,
-        name: `${item.name} (${item.email ? decryptVAPTData(item.email) : ""})`,
-        email: item.email ? decryptVAPTData(item.email) : "",
+        name: `${item.name} (${item.email || ""})`,
+        email: item.email || "",
       }));
 
       setPartnerList(formattedData);

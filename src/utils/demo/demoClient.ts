@@ -24,7 +24,7 @@ const demoImpersonateUserResponse = {
 
     showPanDetailPopUp: false,
 
-    emailID: "client.demo@example.com",
+    emailID: "nexustest@yopmail.com",
 
     mobileNumber: "9000000001",
 

@@ -230,6 +230,8 @@ const ClientDashboard = () => {
     const response: IGetAllLoanApplicationsResponse =
       await getAllLoanApplicationsAPI(value);
 
+    console.log('response', response)
+
     if (!response) return;
 
     if (response && response.statusCode === 200) {

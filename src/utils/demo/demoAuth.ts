@@ -295,6 +295,15 @@ const demoLoginAssociatedUsers = [
     userName: "Demo Source SP",
     userID: "19f2869e-95b7-4faf-81f3-998ede783b61",
   },
+  {
+    userType: CLIENT_ROLE.CUSTOMER,
+    cpID: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
+    spID: null,
+    cpName: "Demo Nexus CP",
+    spName: null,
+    userName: "DEMO INDUSTRIES PRIVATE LIMITED",
+    userID: "08de0598-4bee-48ca-8a7c-005b36583e79",
+  },
 ];
 
 const demoAdminPermissions: Permission[] = [
@@ -526,7 +535,7 @@ const demoLoginResponses = {
 
       showPanDetailPopUp: false,
 
-      emailID: "client.demo@example.com",
+      emailID: "nexustest@yopmail.com",
 
       mobileNumber: "9000000001",
 
@@ -586,7 +595,7 @@ const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) =
   if (email === "client@yopmail.com" && mobile === "4444444444") {
     console.log('client');
     return {
-      associatedUsers: [demoLoginAssociatedUsers[2]],
+      associatedUsers: [demoLoginAssociatedUsers[3]],
       response: demoLoginResponses.client,
     };
   }

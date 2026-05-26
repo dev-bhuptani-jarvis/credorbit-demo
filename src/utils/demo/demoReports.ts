@@ -2176,7 +2176,7 @@ const submitApplicationToBankResponse = {
         "9000000001",
 
       email:
-        "client.demo@example.com",
+        "nexustest@yopmail.com",
 
       code: "COCU251003",
 
