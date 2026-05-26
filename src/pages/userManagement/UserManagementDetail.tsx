@@ -69,10 +69,10 @@ const UserManagementDetail = () => {
     return state === "create"
       ? "Create"
       : state === "view"
-      ? "View"
-      : state === "edit"
-      ? "Edit"
-      : "";
+        ? "View"
+        : state === "edit"
+          ? "Edit"
+          : "";
   };
 
   const fetchUserDetailApi = async (): Promise<void> => {
@@ -91,10 +91,8 @@ const UserManagementDetail = () => {
       const formatedUserData: IUserDetailData = {
         firstName: response.data.fullName.split(" ")[0] || "",
         lastName: response.data.fullName.split(" ")[1] || "",
-        email: response.data.email ? decryptVAPTData(response.data.email) : "",
-        mobileNumber: response.data.mobileNumber
-          ? decryptVAPTData(response.data.mobileNumber)
-          : "",
+        email: response.data.email,
+        mobileNumber: response.data.mobileNumber,
         designation: response.data.designation,
         rolesList: response.data.rolesList.map((role) => role.roleName) || [],
         selectedRoleName: response.data.selectedRoleName,
@@ -140,8 +138,8 @@ const UserManagementDetail = () => {
     errors.email = IsStringNullEmptyOrUndefined(userData.email)
       ? validationMessages.emailRequired
       : !isEmailValid
-      ? validationMessages.emailInvalid
-      : "";
+        ? validationMessages.emailInvalid
+        : "";
 
     const isMobileValid =
       INDIAN_MOBILE_NUMBER_PATTERN.test(userData.mobileNumber.trim()) &&
@@ -149,8 +147,8 @@ const UserManagementDetail = () => {
     errors.mobileNumber = IsStringNullEmptyOrUndefined(userData.mobileNumber)
       ? validationMessages.mobileNumberRequired
       : !isMobileValid
-      ? validationMessages.mobileNumberInvalid
-      : "";
+        ? validationMessages.mobileNumberInvalid
+        : "";
 
     errors.designation = IsStringNullEmptyOrUndefined(userData.designation)
       ? validationMessages.designationRequired
@@ -243,8 +241,8 @@ const UserManagementDetail = () => {
           [fieldName]: IsStringNullEmptyOrUndefined(value)
             ? validationMessages.emailRequired
             : !isValid
-            ? validationMessages.emailInvalid
-            : "",
+              ? validationMessages.emailInvalid
+              : "",
         });
 
         setUserData({ ...userData, [fieldName]: value });
@@ -260,8 +258,8 @@ const UserManagementDetail = () => {
           [fieldName]: IsStringNullEmptyOrUndefined(value)
             ? validationMessages.mobileNumberRequired
             : !isValid
-            ? validationMessages.mobileNumberInvalid
-            : "",
+              ? validationMessages.mobileNumberInvalid
+              : "",
         });
 
         setUserData({ ...userData, [fieldName]: value });
@@ -271,10 +269,10 @@ const UserManagementDetail = () => {
       case "designation":
         const formattedDesignationValue = value
           ? value
-              .toLowerCase()
-              .split(" ")
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(" ")
+            .toLowerCase()
+            .split(" ")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ")
           : "";
 
         setFormErrors({
@@ -339,9 +337,9 @@ const UserManagementDetail = () => {
                     handleChange(e.target.name, e.target.value.trim())
                   }
                   disabled={currentState === "view"}
-                  // onPaste={(e) => e.preventDefault()}
-                  // onCopy={(e) => e.preventDefault()}
-                  // onCut={(e) => e.preventDefault()}
+                // onPaste={(e) => e.preventDefault()}
+                // onCopy={(e) => e.preventDefault()}
+                // onCut={(e) => e.preventDefault()}
                 />
 
                 {isFormSubmitted && (
@@ -365,9 +363,9 @@ const UserManagementDetail = () => {
                     handleChange(e.target.name, e.target.value.trim())
                   }
                   disabled={currentState === "view"}
-                  // onPaste={(e) => e.preventDefault()}
-                  // onCopy={(e) => e.preventDefault()}
-                  // onCut={(e) => e.preventDefault()}
+                // onPaste={(e) => e.preventDefault()}
+                // onCopy={(e) => e.preventDefault()}
+                // onCut={(e) => e.preventDefault()}
                 />
 
                 {isFormSubmitted && (
@@ -394,9 +392,9 @@ const UserManagementDetail = () => {
                     )
                   }
                   disabled={currentState === "view" || currentState === "edit"}
-                  // onPaste={(e) => e.preventDefault()}
-                  // onCopy={(e) => e.preventDefault()}
-                  // onCut={(e) => e.preventDefault()}
+                // onPaste={(e) => e.preventDefault()}
+                // onCopy={(e) => e.preventDefault()}
+                // onCut={(e) => e.preventDefault()}
                 />
 
                 {isFormSubmitted && (
@@ -451,9 +449,9 @@ const UserManagementDetail = () => {
                     handleChange(e.target.name, e.target.value.trimStart())
                   }
                   disabled={currentState === "view"}
-                  // onPaste={(e) => e.preventDefault()}
-                  // onCopy={(e) => e.preventDefault()}
-                  // onCut={(e) => e.preventDefault()}
+                // onPaste={(e) => e.preventDefault()}
+                // onCopy={(e) => e.preventDefault()}
+                // onCut={(e) => e.preventDefault()}
                 />
 
                 {isFormSubmitted && (
@@ -512,9 +510,8 @@ const UserManagementDetail = () => {
           <div className="col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
             {currentState !== "view" && (
               <Button
-                className={`btn ${
-                  loading ? "btn-orange-disabled" : "btn-orange"
-                } me-3`}
+                className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+                  } me-3`}
                 onClick={handleSave}
                 disabled={loading}
                 label={currentState === "create" ? "Create" : "Save"}

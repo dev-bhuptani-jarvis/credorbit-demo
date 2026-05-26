@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { toasterPosition } from "../constants/constant";
 import DOMPurify from "dompurify";
 import { validationMessages } from "../constants/messages";
-import { LOAN_EMAIL_TEMPLATES } from "../constants/loanEmailTemplates";
+import { DEFAULT_LOAN_EMAIL_TEMPLATE } from "../constants/loanEmailTemplates";
 import { ISubmitApplicationToBankDetailsResponseData } from "../../interface/applyLoan";
 import store from "../../store";
 import { setReportMessage } from "../../store/reducer/reportMessageSlice";
@@ -373,14 +373,11 @@ export const getFetchEligibilityStatus = (
 export const generateEmailFromTemplate = (
   data: ISubmitApplicationToBankDetailsResponseData
 ) => {
-  const template = LOAN_EMAIL_TEMPLATES[data.loanDetails.loanType];
-
-  if (!template) {
-    toastError("Email template not found for loan type");
-  }
+  const template = DEFAULT_LOAN_EMAIL_TEMPLATE;
 
   const formatAmount = (amount: number) =>
     amount?.toLocaleString("en-IN");
+
 
   const replacements: Record<string, string> = {
     ApplicantName: data.applicantInfo.fullName,
@@ -394,7 +391,8 @@ export const generateEmailFromTemplate = (
     "Client Name": data.applicantInfo.fullName,
     "Loan Type": data.loanDetails.loanType,
     "Bank / NBFC": data.loanDetails.name,
-    Date: formatDate(new Date(), "DD MMM, YYYY")
+    Date: formatDate(new Date(), "DD MMM, YYYY"),
+    "Brand Display Name": "Credorbit",
   };
 
   const applyReplacements = (text: string) =>

@@ -10,22 +10,19 @@ import { useNavigate } from "react-router-dom";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
-import { InputText } from "primereact/inputtext";
-import { PaginateReqEntity } from "../../interface/pagination";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import PrimePaginator from "../../components/PrimePaginator";
 import { PaginatorPageChangeEvent } from "primereact/paginator";
 import Loader from "../../components/Loader";
-import useDebouncedEffect from "../../hooks/useDebounce";
 import {
-  debounceTimeInMilliseconds,
-  formatCurrencyAmount,
+  formatCurrencyAmount
 } from "../../utils/constants/constant";
 import { IsNullOrEmptyArray } from "../../utils/functions/nullCheck";
 import { Button } from "primereact/button";
 import TableTitle from "../../components/TableTitle";
 import { Tooltip } from "primereact/tooltip";
+import { PaginateReqEntity } from "../../interface/pagination";
 
 const PayOuts = () => {
   const [payOutsData, setPayOutsData] = useState<IPayOuts[]>([]);
@@ -35,8 +32,6 @@ const PayOuts = () => {
     pageNumber: 0,
     searchText: "",
   });
-
-  const [searchText, setSearchText] = useState<string>("");
 
   const [totalRecords, setTotalRecords] = useState<number>(0);
 
@@ -73,20 +68,6 @@ const PayOuts = () => {
     setLoading(false);
   };
 
-  const renderPartnerInput = () => {
-    return (
-      <InputText
-        className="form-control w-75"
-        placeholder="Search Name"
-        value={searchText?.trimStart()}
-        onChange={(e) => setSearchText(e.target.value)}
-        // onPaste={(e) => e.preventDefault()}
-        // onCopy={(e) => e.preventDefault()}
-        // onCut={(e) => e.preventDefault()}
-      />
-    );
-  };
-
   const actionBodyTemplate = (rowData: IPayOuts) => {
     const viewId = `payout-view-${rowData.payoutID}`;
 
@@ -115,20 +96,6 @@ const PayOuts = () => {
       pageNumber: event.page,
     });
   };
-
-  useDebouncedEffect(
-    () => {
-      if (searchText.trim().length >= 3 || searchText.trim().length === 0) {
-        setFilterReq((prev) => ({
-          ...prev,
-          searchText: searchText.trim(),
-          pageNumber: 0,
-        }));
-      }
-    },
-    debounceTimeInMilliseconds,
-    [searchText],
-  );
 
   useEffect(() => {
     fetchPayOutsListingApi();

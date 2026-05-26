@@ -299,13 +299,11 @@ const PayoutsDetail = () => {
     if (response.statusCode === 200) {
       const decryptedData = {
         ...response.data,
-        email: response.data.email ? decryptVAPTData(response.data.email) : "",
+        email: response.data.email || "",
         mobileNumber: response.data.mobileNumber
-          ? decryptVAPTData(response.data.mobileNumber)
-          : "",
+          || "",
         panNumber: response.data.panNumber
-          ? decryptVAPTData(response.data.panNumber)
-          : "",
+          || "",
       };
 
       setPayOutsData(decryptedData);

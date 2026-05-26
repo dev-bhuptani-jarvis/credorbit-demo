@@ -72,15 +72,7 @@ const Report = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      const decryptedData = {
-        ...response.data,
-        clientsList: response.data.clientsList.map((item) => ({
-          ...item,
-          mobile: item.mobile ? decryptVAPTData(item.mobile) : "",
-        })),
-      };
-
-      setReportsData(decryptedData.clientsList);
+      setReportsData(response.data.clientsList);
       setTotalRecords(response.data.totalCount);
     } else {
       toastError(response.message);

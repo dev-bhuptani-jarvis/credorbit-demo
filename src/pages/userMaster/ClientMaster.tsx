@@ -122,16 +122,9 @@ const ClientMaster = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      const decryptedData = response.data.customersList.map((client) => ({
-        ...client,
-        phoneNumber: client.phoneNumber
-          ? decryptVAPTData(client.phoneNumber)
-          : "",
-      }));
-
       setTotalRecords(response.data.totalCount);
       setCategoryList(response.data.categoryList);
-      setClientMaster(decryptedData);
+      setClientMaster(response.data.customersList);
     } else {
       toastError(response.message);
     }

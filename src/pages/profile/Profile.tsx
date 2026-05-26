@@ -164,94 +164,11 @@ const Profile = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      const decryptedData = {
-        ...response.data,
-        emailID: response.data.emailID
-          ? decryptVAPTData(response.data.emailID)
-          : "",
-        mobileNumber: response.data.mobileNumber
-          ? decryptVAPTData(response.data.mobileNumber)
-          : "",
-        address: response.data.address
-          ? decryptVAPTData(response.data.address)
-          : "",
-        city: response.data.city ? decryptVAPTData(response.data.city) : "",
-        state: response.data.state ? decryptVAPTData(response.data.state) : "",
-        selectedGstNumber: response.data.selectedGstNumber
-          ? decryptVAPTData(response.data.selectedGstNumber)
-          : "",
-        udhyamAadhaar: response.data.udhyamAadhaar
-          ? decryptVAPTData(response.data.udhyamAadhaar)
-          : "",
-        zipCode: response.data.zipCode
-          ? decryptVAPTData(response.data.zipCode)
-          : "",
-        dateOfBirth: response.data.dateOfBirth
-          ? decryptVAPTData(response.data.dateOfBirth)
-          : "",
-        panNumber: response.data.panNumber
-          ? decryptVAPTData(response.data.panNumber)
-          : "",
-        aadhaar: response.data.aadhaar
-          ? decryptVAPTData(response.data.aadhaar).replace(/-/g, "")
-          : "",
-        ifscCode: response.data.ifscCode
-          ? decryptVAPTData(response.data.ifscCode)
-          : "",
-        bankAccountNumber: response.data.bankAccountNumber
-          ? decryptVAPTData(response.data.bankAccountNumber)
-          : "",
-        partners:
-          response.data.partners?.map((partner) => ({
-            ...partner,
-            pan: partner.pan ? decryptVAPTData(partner.pan) : "",
-            aadhaarNumber: partner.aadhaarNumber
-              ? decryptVAPTData(partner.aadhaarNumber)?.replace(/-/g, "")
-              : "",
-            address: partner.address ? decryptVAPTData(partner.address) : "",
-            city: partner.city ? decryptVAPTData(partner.city) : "",
-            state: partner.state ? decryptVAPTData(partner.state) : "",
-            pinCode: partner.pinCode ? decryptVAPTData(partner.pinCode) : "",
-            dateOfBirth: partner.dateOfBirth
-              ? decryptVAPTData(partner.dateOfBirth)
-              : "",
-            mobile: partner.mobile ? decryptVAPTData(partner.mobile) : "",
-            gender: partner.gender ? partner.gender : "",
-          })) || [],
-        coApplicants:
-          response.data.coApplicants?.map((coApplicant) => ({
-            ...coApplicant,
-            pan: coApplicant.pan ? decryptVAPTData(coApplicant.pan) : "",
-            aadhaarNumber: coApplicant.aadhaarNumber
-              ? decryptVAPTData(coApplicant.aadhaarNumber)?.replace(/-/g, "")
-              : "",
-          })) || [],
-        gstList:
-          response.data.gstList?.map((gst) => ({
-            ...gst,
-            gstNumber: gst.gstNumber
-              ? decryptVAPTData(gst.gstNumber)
-              : gst.gstNumber,
-            tradeName: gst.tradeName
-              ? decryptVAPTData(gst.tradeName)
-              : gst.tradeName,
-            gstAddress: gst.gstAddress
-              ? decryptVAPTData(gst.gstAddress)
-              : gst.gstAddress,
-            cinOrLlp: gst.cinOrLlp
-              ? decryptVAPTData(gst.cinOrLlp)
-              : gst.cinOrLlp,
-            dateOfGstRegistration: gst.dateOfGstRegistration
-              ? decryptVAPTData(gst.dateOfGstRegistration)
-              : gst.dateOfGstRegistration,
-          })) || [],
-      };
-
-      setSelectedGSTNumber(decryptedData.selectedGstNumber!);
+      setSelectedGSTNumber(response.data.selectedGstNumber!);
 
       const updatedUser = {
         ...userData,
-        profilePicture: decryptedData.profilePicture!,
+        profilePicture: response.data.profilePicture!,
       };
 
       dispatch(updateShowPanDetailPopUp(updatedUser));
@@ -281,7 +198,7 @@ const Profile = () => {
         };
       };
 
-      setUserFormData(maskUserData(decryptedData));
+      setUserFormData(maskUserData(response.data));
     }
 
     setLoading(false);
@@ -1557,24 +1474,22 @@ const Profile = () => {
                     </div>
                   )}
 
-                  <DateTextField
-                    label={
-                      userFormData?.isCompany
-                        ? "Date of Incorporation"
-                        : "Date of Birth"
-                    }
-                    name="dateOfBirth"
-                    value={
-                      userFormData?.dateOfBirth
-                        ? new Date(userFormData?.dateOfBirth).toISOString()
-                        : ""
-                    }
-                    placeholder={
-                      userFormData?.isCompany
-                        ? "Date of Incorporation"
-                        : "Date of Birth"
-                    }
-                  />
+                  {userFormData?.dateOfBirth &&
+                    <DateTextField
+                      label={
+                        userFormData?.isCompany
+                          ? "Date of Incorporation"
+                          : "Date of Birth"
+                      }
+                      name="dateOfBirth"
+                      value={userFormData?.dateOfBirth}
+                      placeholder={
+                        userFormData?.isCompany
+                          ? "Date of Incorporation"
+                          : "Date of Birth"
+                      }
+                    />
+                  }
 
                   <ProfileTextField
                     label="Email ID"
@@ -1888,83 +1803,71 @@ const Profile = () => {
                     </div>
                   </div>
 
-                  {/* Billing Details */}
-                  <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                    <div className="form-group mb-4">
-                      <label className="form-label small">
-                        Billing Details (Want to keep as GST data?){" "}
-                      </label>
-
-                      <div className="d-flex">
-                        <div className="form-check form-check-inline">
-                          <RadioButton
-                            name="billingDetails"
-                            inputId="inlineRadio1"
-                            value="yes"
-                            checked={userFormData?.billingDetails === true}
-                            onChange={handleRadioButtonChange}
-                            disabled={!isEditable}
-                          />
-
-                          <label
-                            className="form-check-label"
-                            htmlFor="inlineRadio1"
-                          >
-                            Yes
-                          </label>
-                        </div>
-
-                        <div className="form-check form-check-inline">
-                          <RadioButton
-                            name="billingDetails"
-                            inputId="inlineRadio2"
-                            value="no"
-                            checked={userFormData?.billingDetails === false}
-                            onChange={handleRadioButtonChange}
-                            disabled={!isEditable}
-                          />
-
-                          <label
-                            className="form-check-label"
-                            htmlFor="inlineRadio2"
-                          >
-                            No
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Company Logo */}
                   {userData.userType === CLIENT_ROLE.CHANNEL_PARTNER && (
                     <div className="col-lg-4 col-md-6 col-sm-12 col-12 mb-4">
                       <label className="form-label">Company Logo</label>
 
-                      <div className="d-flex align-items-center justify-content-lg-start">
+                      <div className="companyLogoField">
                         {userFormData?.cpCompanyLogo ? (
-                          <a
-                            href={userFormData.cpCompanyLogo}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="view-logo-link cursor-pointer"
-                          >
-                            View Company Logo
-                          </a>
+                          <div className="profilePhoto profileHeroAvatar companyLogoAvatar">
+                            <Image
+                              src={userFormData.cpCompanyLogo}
+                              zoomSrc={userFormData.cpCompanyLogo}
+                              alt="Company Logo"
+                              width="60"
+                              height="60"
+                              preview
+                              className="profile-photo-img"
+                            />
+
+                            {create && (
+                              <label
+                                htmlFor="cpCompanyLogo"
+                                className="edit-icon"
+                                aria-label="Edit Company Logo"
+                              >
+                                <i className="bi bi-pencil-square" />
+                              </label>
+                            )}
+                          </div>
                         ) : (
-                          <span className="text-muted small">
-                            No logo uploaded
-                          </span>
+                          <div className="profilePhoto profileHeroAvatar companyLogoAvatar">
+                            <div className="profileHeroFallback companyLogoFallback">
+                              {userFormData?.name?.charAt(0) || "C"}
+                            </div>
+
+                            {create && (
+                              <label
+                                htmlFor="cpCompanyLogo"
+                                className="edit-icon"
+                                aria-label="Upload Company Logo"
+                              >
+                                <i className="bi bi-pencil-square" />
+                              </label>
+                            )}
+                          </div>
                         )}
 
-                        {create && (
-                          <label
-                            htmlFor="cpCompanyLogo"
-                            className="edit-icon ms-2 font-18 cursor-pointer"
-                            aria-label="Edit Company Logo"
-                          >
-                            <i className="bi bi-pencil-square" />
-                          </label>
-                        )}
+                        <div className="companyLogoFieldMeta">
+                          <span className="companyLogoFieldTitle">
+                            {userFormData?.cpCompanyLogo
+                              ? "Company logo uploaded"
+                              : "Upload company logo"}
+                          </span>
+
+                          <span className="companyLogoFieldHint">
+                            {userFormData?.cpCompanyLogo
+                              ? "Click the image to preview the full logo."
+                              : "Add a company logo to complete the profile."}
+                          </span>
+
+                          {!create && !userFormData?.cpCompanyLogo && (
+                            <span className="text-muted small">
+                              No logo uploaded
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <InputText

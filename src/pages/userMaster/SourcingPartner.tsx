@@ -96,17 +96,8 @@ const SourcingPartner = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      const decryptedData = response.data.sourcingPartersList.map(
-        (partner) => ({
-          ...partner,
-          mobileNumber: partner.mobileNumber
-            ? decryptVAPTData(partner.mobileNumber)
-            : "",
-        }),
-      );
-
       setTotalRecords(response.data.totalCount);
-      setSourcingPartner(decryptedData);
+      setSourcingPartner(response.data.sourcingPartersList);
     } else {
       toastError(response.message);
     }

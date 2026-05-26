@@ -1120,19 +1120,6 @@ const ClientDashboard = () => {
               <div className="col-12">
                 <div className="titleLinkMain mt-3 mb-3 justify-content-between">
                   <TableTitle title="Loan Application List" />
-
-                  <Button
-                    className="btn btn-orange"
-                    onClick={() =>
-                      navigate(
-                        `${RoutePathConstant.private.clientDashboard}?status=0`,
-                      )
-                    }
-                  >
-                    <div className="d-flex gap-3">
-                      View All <i className="bi bi-arrow-right" />
-                    </div>
-                  </Button>
                 </div>
 
                 <div className="table-responsive">

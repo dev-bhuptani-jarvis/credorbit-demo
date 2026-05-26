@@ -51,18 +51,7 @@ const ReportDetails = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      const decryptedData = {
-        ...response.data,
-        mobileNumber: response.data.mobileNumber
-          ? decryptVAPTData(response.data.mobileNumber)
-          : "",
-        email: response.data.email ? decryptVAPTData(response.data.email) : "",
-        panNumber: response.data.panNumber
-          ? decryptVAPTData(response.data.panNumber)
-          : "",
-      };
-
-      setClientDetail(decryptedData);
+      setClientDetail(response.data);
     } else {
       toastError(response.message);
     }

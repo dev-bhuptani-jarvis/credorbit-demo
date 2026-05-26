@@ -283,16 +283,16 @@ const demoLoginAssociatedUsers = [
     spID: null,
     cpName: null,
     spName: null,
-    userName: "Jarvis Credo CP",
+    userName: "Demo Nexus CP",
     userID: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
   },
   {
     userType: CLIENT_ROLE.SOURCING_PARTNER,
     cpID: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
     spID: null,
-    cpName: "Jarvis Credo CP",
+    cpName: "Demo Nexus CP",
     spName: null,
-    userName: "Darshak's SP",
+    userName: "Demo Source SP",
     userID: "19f2869e-95b7-4faf-81f3-998ede783b61",
   },
 ];
@@ -378,26 +378,57 @@ const demoClientPermissions: Permission[] = [
 const demoLoginResponses = {
   admin: {
     statusCode: 200,
+
     status: true,
-    message: "Successfully signed in!",
+
+    message:
+      "Successfully signed in!",
+
     data: {
-      userID: "f4204821-5d9b-484c-87b7-83e61167840d",
-      userName: "Credorbit Technologies Private Limited",
+      userID:
+        "demo-admin-id-001",
+
+      userName:
+        "ABC TECHNOLOGIES PRIVATE LIMITED",
+
       showPanDetailPopUp: false,
-      emailID: "hgV3Kjk4oifc2LWlj9bHFihc5wiugsecOwYSOvwmm10=",
-      mobileNumber: "5D9rxg7pqM2x2MaJHs70MA==",
-      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImM5YUN2VFo2TThQWXVNZWROOU9DQThEZExsQ1lOUEhqTXBXbFZqZlJmVW1VNVpUVWV3VTRBbWRLN2M2am1yN3MiLCJuYmYiOjE3NzYxNDM4MDUsImV4cCI6MTc3NjIzMDIwNSwiaWF0IjoxNzc2MTQzODA1fQ.KIbOidrkl1-NdBnBNCWPGc6KMANLt2iXPgb29hS4pvw",
+
+      emailID:
+        "encrypted-demo-email",
+
+      mobileNumber:
+        "encrypted-demo-mobile",
+
+      token:
+        "demo-jwt-token",
+
       userType: 1,
+
       panTypeID: 1,
+
       roleID: 1,
-      panNumber: "LX/ScGwqfjd5z6ITxli2Tg==",
-      gstNumber: "bMr/yes6Ss9amRPkUPPH/g==",
-      roleName: "Admin",
-      profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
-      contractEnforcementDate: null as unknown as string,
+
+      panNumber:
+        "encrypted-demo-pan",
+
+      gstNumber:
+        "encrypted-demo-gst",
+
+      roleName:
+        "Admin",
+
+      profilePicture:
+        "https://i.postimg.cc/Njq5CnTY/demo-logo.jpg",
+
+      contractEnforcementDate:
+        null as unknown as string,
+
       isDefaultCpClient: false,
+
       isContractSigned: false,
-      permissions: demoAdminPermissions,
+
+      permissions:
+        demoAdminPermissions,
     },
   },
   channelPartner: {
@@ -406,7 +437,7 @@ const demoLoginResponses = {
     message: "Successfully signed in!",
     data: {
       userID: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
-      userName: "Jarvis Credo CP",
+      userName: "Demo Nexus CP",
       showPanDetailPopUp: false,
       emailID: "PjCsDPUr/SMcy0TJrJ1Wb5Ggye2vwjyj41h4oJMW5LQ=",
       mobileNumber: "DR/IXQnqfRCnSsOyS0i9gA==",
@@ -426,50 +457,104 @@ const demoLoginResponses = {
   },
   sourcingPartner: {
     statusCode: 200,
+
     status: true,
-    message: "Successfully signed in!",
+
+    message:
+      "Successfully signed in!",
+
     data: {
-      userID: "19f2869e-95b7-4faf-81f3-998ede783b61",
-      userName: "Darshak's SP",
+      userID:
+        "demo-sp-id-001",
+
+      userName:
+        "ABC Source SP",
+
       showPanDetailPopUp: false,
-      emailID: "c7qsnirnKR8HV2QEhD1LgIDxNYkmDwJfieH+CgeLmMA=",
-      mobileNumber: "omkLM1XLNKJoEaMlLFlxLQ==",
-      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlUycDBPNERDTjhveFQ2dGJXTTIzOThidEtmemV0eTlqV3FnRHV3ZWx3SUQzNDJSUTlHNVNFY0J1aVhjNTVaclQiLCJuYmYiOjE3NzYxNDE4MDMsImV4cCI6MTc3NjIyODIwMywiaWF0IjoxNzc2MTQxODAzfQ.daEB5sN8Yn0Eo9-Ea4xH-pMw1vDNRCe3JV4__JOaDik",
+
+      emailID:
+        "encrypted-demo-email",
+
+      mobileNumber:
+        "encrypted-demo-mobile",
+
+      token:
+        "demo-jwt-token",
+
       userType: 3,
+
       panTypeID: 1,
+
       roleID: 3,
-      panNumber: "XddZrz34byR+vCoIfeTKpw==",
-      gstNumber: "galvf4LyZEjBmoENB1GWrA==",
-      roleName: "Sourcing Partner",
-      profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
-      contractEnforcementDate: "2025-09-24T00:00:00",
+
+      panNumber:
+        "encrypted-demo-pan",
+
+      gstNumber:
+        "encrypted-demo-gst",
+
+      roleName:
+        "Sourcing Partner",
+
+      profilePicture:
+        "https://i.postimg.cc/Njq5CnTY/demo-logo.jpg",
+
+      contractEnforcementDate:
+        "2025-09-24T00:00:00",
+
       isDefaultCpClient: false,
+
       isContractSigned: true,
-      permissions: demoSourcingPartnerPermissions,
+
+      permissions:
+        demoSourcingPartnerPermissions,
     },
   },
   client: {
     statusCode: 200,
+
     status: true,
+
     message: "Successfully signed in!",
+
     data: {
-      userID: "08de0598-4bee-48ca-8a7c-005b36583e79",
-      userName: "NEXUS NUTRI SCIENCE LIMITED",
+      userID:
+        "08de0598-4bee-48ca-8a7c-005b36583e79",
+
+      userName:
+        "DEMO INDUSTRIES PRIVATE LIMITED",
+
       showPanDetailPopUp: false,
-      emailID: "QGbhj6TQHkSdcMwrOQjuXnJm9WgL5JmzhNFbOyF3+QA=",
-      mobileNumber: "7UnlDe9E9Dd9xrAPlVCSAQ==",
-      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Ik51c0JFTWZlWkdNOVZsSjZJb21kYjU1UG5DQ3VwcHBwdmlmWk52QWFoSXkveVlIRzVKbGhXU1llWTM1bTZaU3kiLCJuYmYiOjE3NzYxNjA2OTMsImV4cCI6MTc3NjI0NzA5MywiaWF0IjoxNzc2MTYwNjkzfQ.Qph5BLfmqYB-heZ5IleZXexFlvvr-JeWX-AAYa0-eZQ",
+
+      emailID: "client.demo@example.com",
+
+      mobileNumber: "9000000001",
+
+      token:
+        "demo-jwt-token-placeholder",
+
       userType: 4,
+
       panTypeID: 2,
+
       roleID: 4,
-      panNumber: "cgsUTjP4e1TKDstAGzjwUw==",
-      gstNumber: "djtPZLt2l6mxlm5kPD32xw==",
+
+      panNumber: "DEMOP1234D",
+
+      gstNumber: "27DEMOP1234D1Z5",
+
       roleName: "Client",
+
       profilePicture:
-        "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/08de0598-4bee-48ca-8a7c-005b36583e79.jpg?sv=2025-05-05&se=2026-04-14T10%3A58%3A12Z&sr=b&sp=r&sig=uR6O2zTl1tCA4yRUQsuJrpM2H%2F%2Fqm0lPCv2KiKLicXY%3D",
-      contractEnforcementDate: "2025-10-09T00:00:00",
+        "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+
+      contractEnforcementDate:
+        "2025-10-09T00:00:00",
+
       isDefaultCpClient: false,
+
       isContractSigned: true,
+
       permissions: demoClientPermissions,
     },
   },
@@ -630,7 +715,7 @@ export const verifyDemoOTP = async (
     bodyRequestObject.panNumber ||
     (resolvedUserType === CLIENT_ROLE.CHANNEL_PARTNER
       ? "uBrXSZkYxtxeJ12EzmYaLA=="
-      : encryptVAPTData("ABCDE1234F"));
+      : encryptVAPTData("DEMOP1234D"));
 
   if (!bodyRequestObject.userType) {
     return loginPreset.response;

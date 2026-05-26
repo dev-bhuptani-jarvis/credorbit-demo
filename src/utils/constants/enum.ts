@@ -171,3 +171,13 @@ export enum PropertyType {
   INDUSTRIAL = 3,
   PLOT = 4
 }
+
+export enum AdminDateFilterType {
+  TODAY = 1,
+  LAST_WEEK = 2,
+  LAST_30_DAYS = 3,
+  THIS_QUARTER = 4,
+  LAST_1_YEAR = 5,
+  CUSTOM_DATE_RANGE = 6,
+  ALL = 7,
+}

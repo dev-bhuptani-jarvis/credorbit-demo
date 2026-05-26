@@ -102,170 +102,337 @@ const demoContracts: DemoContractRecord[] = [
   },
 ];
 
-const demoContractLists: Record<number, IContractListItemData[]> = {
+const demoContractLists: Record<
+  number,
+  IContractListItemData[]
+> = {
   [CLIENT_ROLE.CHANNEL_PARTNER]: [
     {
-      id: "08ddfa71-aa4f-4cd8-81ad-7b98657ada42" as unknown as number,
-      name: "DEV SANJAYKUMAR BHUPTANI",
-      userCode: "COSP250301",
-      mobileNumber: encryptVAPTData("9824909300"),
+      id:
+        "demo-contract-id-001" as unknown as number,
+
+      name:
+        "MNO USER",
+
+      userCode:
+        "DEMO-SP-001",
+
+      mobileNumber:
+        encryptVAPTData("9000000010"),
+
       contractSigned: null,
+
       isActive: true,
     },
+
     {
-      id: "08ddfa71-aa4f-4d61-84fa-4788d9a67aff" as unknown as number,
-      name: "Darshak's SP",
-      userCode: "COSP241026",
-      mobileNumber: encryptVAPTData("9876543210"),
-      contractSigned: "2025-09-26T13:10:05",
+      id:
+        "demo-contract-id-002" as unknown as number,
+
+      name:
+        "ABC SOURCE SP",
+
+      userCode:
+        "DEMO-SP-002",
+
+      mobileNumber:
+        encryptVAPTData("9000000011"),
+
+      contractSigned:
+        "2025-09-26T13:10:05",
+
       isActive: true,
     },
+
     {
-      id: "08ddfa71-aa4f-4cb9-8ddb-affdfb924908" as unknown as number,
-      name: "MEGHAL SHAH NEW & ASSOCIATES",
-      userCode: "COSP24126",
-      mobileNumber: encryptVAPTData("9123456789"),
+      id:
+        "demo-contract-id-003" as unknown as number,
+
+      name:
+        "XYZ BUSINESS SOLUTIONS LLP",
+
+      userCode:
+        "DEMO-SP-003",
+
+      mobileNumber:
+        encryptVAPTData("9000000012"),
+
       contractSigned: null,
+
       isActive: false,
     },
+
     {
-      id: "08ddfa71-aa4f-4cd2-86da-0853213984f1" as unknown as number,
-      name: "NISHI HITESH WADHWANI",
-      userCode: "COSP250101",
-      mobileNumber: encryptVAPTData("9988776655"),
+      id:
+        "demo-contract-id-004" as unknown as number,
+
+      name:
+        "OPQ USER",
+
+      userCode:
+        "DEMO-SP-004",
+
+      mobileNumber:
+        encryptVAPTData("9000000013"),
+
       contractSigned: null,
+
       isActive: false,
     },
   ],
+
   [CLIENT_ROLE.SOURCING_PARTNER]: [
     {
-      "id": "08ddfa71-aa4f-4cd8-81ad-7b98657ada42" as unknown as number,
-      "name": "DEV SANJAYKUMAR BHUPTANI",
-      "userCode": "COSP250301",
-      "mobileNumber": "DR/IXQnqfRCnSsOyS0i9gA==",
-      "contractSigned": null,
-      "isActive": true
+      id:
+        "demo-contract-id-001" as unknown as number,
+
+      name:
+        "MNO USER",
+
+      userCode:
+        "DEMO-SP-001",
+
+      mobileNumber:
+        "9000000001",
+
+      contractSigned: null,
+
+      isActive: true,
     },
+
     {
-      "id": "08ddfa71-aa4f-4d61-84fa-4788d9a67aff" as unknown as number,
-      "name": "Darshak's SP",
-      "userCode": "COSP241026",
-      "mobileNumber": "omkLM1XLNKJoEaMlLFlxLQ==",
-      "contractSigned": "2025-09-26T13:10:05",
-      "isActive": true
+      id:
+        "demo-contract-id-002" as unknown as number,
+
+      name:
+        "ABC SOURCE SP",
+
+      userCode:
+        "DEMO-SP-002",
+
+      mobileNumber:
+        "9000000002",
+
+      contractSigned:
+        "2025-09-26T13:10:05",
+
+      isActive: true,
     },
+
     {
-      "id": "08ddfa71-aa4f-4cb9-8ddb-affdfb924908" as unknown as number,
-      "name": "MEGHAL SHAH NEW & ASSOCIATES",
-      "userCode": "COSP24126",
-      "mobileNumber": "8eXHU5yYPP2pwgQAWu7nWg==",
-      "contractSigned": null,
-      "isActive": false
+      id:
+        "demo-contract-id-003" as unknown as number,
+
+      name:
+        "XYZ BUSINESS SOLUTIONS LLP",
+
+      userCode:
+        "DEMO-SP-003",
+
+      mobileNumber:
+        "9000000003",
+
+      contractSigned: null,
+
+      isActive: false,
     },
+
     {
-      "id": "08ddfa71-aa4f-4cc0-8393-b2037dc7d711" as unknown as number,
-      "name": "MEGHAL SHAH NEW & ASSOCIATES",
-      "userCode": "COSP24127",
-      "mobileNumber": "DR/IXQnqfRCnSsOyS0i9gA==",
-      "contractSigned": null,
-      "isActive": false
+      id:
+        "demo-contract-id-004" as unknown as number,
+
+      name:
+        "ABC INDUSTRIES PRIVATE LIMITED",
+
+      userCode:
+        "DEMO-SP-004",
+
+      mobileNumber:
+        "9000000004",
+
+      contractSigned: null,
+
+      isActive: false,
     },
+
     {
-      "id": "08ddfa71-aa4f-4cd2-86da-0853213984f1" as unknown as number,
-      "name": "NISHI HITESH WADHWANI",
-      "userCode": "COSP250101",
-      "mobileNumber": "Uu2U7iKDClCAWJoTKo5+cw==",
-      "contractSigned": null,
-      "isActive": false
+      id:
+        "demo-contract-id-005" as unknown as number,
+
+      name:
+        "DEF INDUSTRIES PRIVATE LIMITED",
+
+      userCode:
+        "DEMO-SP-005",
+
+      mobileNumber:
+        "9000000005",
+
+      contractSigned: null,
+
+      isActive: false,
     },
+
     {
-      "id": "08ddfa71-aa4f-4ce3-85c6-fe4e08a5f6e8" as unknown as number,
-      "name": "MIHIR PINAKINBHAI MEHTA",
-      "userCode": "COSP250303",
-      "mobileNumber": "oPkeD9rt4GOdF7t2Bm2o6A==",
-      "contractSigned": null,
-      "isActive": false
+      id:
+        "demo-contract-id-006" as unknown as number,
+
+      name:
+        "RST USER",
+
+      userCode:
+        "DEMO-SP-006",
+
+      mobileNumber:
+        "9000000006",
+
+      contractSigned: null,
+
+      isActive: false,
     },
+
     {
-      "id": "08ddfa71-aa4f-4ce9-8cc7-5848853207a1" as unknown as number,
-      "name": "KIRAN  AGARWAL",
-      "userCode": "COSP250401",
-      "mobileNumber": "zDgQShcjHn4DzQnvVQaDgg==",
-      "contractSigned": null,
-      "isActive": false
+      id:
+        "demo-contract-id-007" as unknown as number,
+
+      name:
+        "UVW USER",
+
+      userCode:
+        "DEMO-SP-007",
+
+      mobileNumber:
+        "9000000007",
+
+      contractSigned: null,
+
+      isActive: false,
     },
+
     {
-      "id": "08ddfa71-aa4f-4cef-833e-0204a8b6142f" as unknown as number,
-      "name": "ANUJ  GULATI",
-      "userCode": "COSP250402",
-      "mobileNumber": "vO5BMExR9EM6qawgtekoVg==",
-      "contractSigned": null,
-      "isActive": false
+      id:
+        "demo-contract-id-008" as unknown as number,
+
+      name:
+        "JKL USER",
+
+      userCode:
+        "DEMO-SP-008",
+
+      mobileNumber:
+        "9000000008",
+
+      contractSigned: null,
+
+      isActive: false,
     },
+
     {
-      "id": "08ddfa71-aa4f-4cf5-82c7-24303bdef43f" as unknown as number,
-      "name": "MAULIK GIRISH SHAREDALAL",
-      "userCode": "COSP250403",
-      "mobileNumber": "m0o7Fky1s3Z4Za5r729c5A==",
-      "contractSigned": null,
-      "isActive": false
+      id:
+        "demo-contract-id-009" as unknown as number,
+
+      name:
+        "PQR USER",
+
+      userCode:
+        "DEMO-SP-009",
+
+      mobileNumber:
+        "9000000009",
+
+      contractSigned: null,
+
+      isActive: false,
     },
+
     {
-      "id": "08ddfa71-aa4f-4d0b-8cdc-c07ec576e168" as unknown as number,
-      "name": "NISHI BHAVSAR",
-      "userCode": "COSP250505",
-      "mobileNumber": "F+kK6kaQDNjFdOcSTsvHbA==",
-      "contractSigned": null,
-      "isActive": false
+      id:
+        "demo-contract-id-010" as unknown as number,
+
+      name:
+        "GLOBAL TECH ENTERPRISES",
+
+      userCode:
+        "DEMO-SP-010",
+
+      mobileNumber:
+        "9000000010",
+
+      contractSigned: null,
+
+      isActive: false,
     },
-    {
-      "id": "08ddfa71-aa4f-4d2e-89c2-6d2acbf34d85" as unknown as number,
-      "name": "SAMEER KUMAR AGRAWAL",
-      "userCode": "COSP250803",
-      "mobileNumber": "nNFug1c0BpJw4UkT7ooUPw==",
-      "contractSigned": null,
-      "isActive": false
-    },
-    {
-      "id": "08ddfa71-aa4f-4d39-8684-95684138debf" as unknown as number,
-      "name": "NIKUNJ MAKRANI",
-      "userCode": "COSP250805",
-      "mobileNumber": "C5Vib1LKCU9NzlqXYsi2Lg==",
-      "contractSigned": null,
-      "isActive": false
-    }
   ],
 };
 
 const demoUserContracts: IUserListForAdminContractListItemData[] = [
   {
     id: "demo-client-1",
-    name: "Aarav Enterprises",
-    userCode: "CUSP250101",
-    mobileNumber: encryptVAPTData("9811111111"),
-    contractSigned: "2025-09-28T10:30:00",
-    channelPartnerName: "DEV SANJAYKUMAR BHUPTANI",
-    sourcingPartnerName: "Darshak's SP",
+
+    name:
+      "ABC INDUSTRIES PRIVATE LIMITED",
+
+    userCode:
+      "DEMO-USER-001",
+
+    mobileNumber:
+      encryptVAPTData("9000000001"),
+
+    contractSigned:
+      "2025-09-28T10:30:00",
+
+    channelPartnerName:
+      "MNO USER",
+
+    sourcingPartnerName:
+      "ABC SOURCE SP",
+
     isActive: true,
   },
+
   {
     id: "demo-client-2",
-    name: "Bright Trade LLP",
-    userCode: "CUSP250102",
-    mobileNumber: encryptVAPTData("9822222222"),
+
+    name:
+      "XYZ BUSINESS SOLUTIONS LLP",
+
+    userCode:
+      "DEMO-USER-002",
+
+    mobileNumber:
+      encryptVAPTData("9000000002"),
+
     contractSigned: null,
-    channelPartnerName: "MEGHAL SHAH NEW & ASSOCIATES",
-    sourcingPartnerName: null,
+
+    channelPartnerName:
+      "DEF INDUSTRIES PRIVATE LIMITED",
+
+    sourcingPartnerName:
+      null,
+
     isActive: true,
   },
+
   {
     id: "demo-client-3",
-    name: "Cityline Retail",
-    userCode: "CUSP250103",
-    mobileNumber: encryptVAPTData("9833333333"),
+
+    name:
+      "GLOBAL TECH ENTERPRISES",
+
+    userCode:
+      "DEMO-USER-003",
+
+    mobileNumber:
+      encryptVAPTData("9000000003"),
+
     contractSigned: null,
-    channelPartnerName: "NISHI HITESH WADHWANI",
-    sourcingPartnerName: null,
+
+    channelPartnerName:
+      "OPQ USER",
+
+    sourcingPartnerName:
+      null,
+
     isActive: false,
   },
 ];

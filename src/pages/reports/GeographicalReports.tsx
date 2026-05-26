@@ -86,12 +86,12 @@ const GeographicalReports = () => {
         ...response.data,
         list: response.data.list.map((item) => ({
           ...item,
-          city: item.city ? decryptVAPTData(item.city) : undefined,
-          state: item.state ? decryptVAPTData(item.state) : undefined,
+          city: item.city,
+          state: item.state,
         })),
         stateList: response.data.stateList.map(
           (item: string | null, index: number) => ({
-            name: item ? decryptVAPTData(item) : "-",
+            name: item ? (item) : "-",
             code: index + 1,
           })
         ),

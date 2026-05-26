@@ -55,7 +55,7 @@ import {
   IClientMasterListingParams,
   IClientMasterResponse,
 } from "../../interface/clientMaster";
-import { IAdminDashboardResponse } from "../../interface/adminDashboard";
+import { IAdminAllDataResponse, IAdminDashboardFilterBody, IAdminDashboardResponse } from "../../interface/adminDashboard";
 import {
   IClientDashboardResponse,
   ICreditAnalyticsResponse,
@@ -179,7 +179,7 @@ import {
   getDemoImpersonateUser,
 } from "../demo/demoClient";
 import { getDemoUserProfileByContext } from "../demo/demoProfile";
-import { getDemoCpReportDetailByClientId, getGstReportForLinkApproach, updateAadhar, updateGstDetails } from "../demo/demoReports";
+import { getAdminAllData, getDemoCpReportDetailByClientId, getGstReportForLinkApproach, updateAadhar, updateGstDetails } from "../demo/demoReports";
 import {
   getDemoAddPanForCP,
   getDemoAdminChannelPartnerReport,
@@ -970,4 +970,10 @@ export const updateLoanApplicationAmountAPI = async (body: { loanAppID: string, 
 
 export const proceedForCreditReportAPI = async (): Promise<IIsProceedForCreditReportResponse> => {
   return await getDemoProceedForCreditReport();
+};
+
+export const getAdminAllDataAPI = async (
+  body: IAdminDashboardFilterBody
+): Promise<IAdminAllDataResponse> => {
+  return await getAdminAllData();
 };

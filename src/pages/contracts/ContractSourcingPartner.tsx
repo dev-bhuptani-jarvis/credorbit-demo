@@ -268,17 +268,7 @@ const ContractSourcingPartner = () => {
     if (!response) return;
 
     if (response?.statusCode === 200) {
-      const decryptedData = {
-        ...response.data,
-        contractList: response.data.contractList.map((item) => ({
-          ...item,
-          mobileNumber: item.mobileNumber
-            ? decryptVAPTData(item.mobileNumber)
-            : "",
-        })),
-      };
-
-      setSourcingPartners(decryptedData.contractList);
+      setSourcingPartners(response.data.contractList);
       setTotalRecords(response?.data?.totalCount);
     } else {
       toastError(response?.message);

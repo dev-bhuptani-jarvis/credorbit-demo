@@ -29,3 +29,37 @@ export interface ITotalNoOfUsers {
   count: number;
   userType: number;
 }
+
+export interface IAdminDashboardFilterBody {
+  filterType: number;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface IAdminAllDataResponse extends APIResponseEntity {
+  data: IAdminAllData;
+}
+
+export interface IAdminAllData {
+  usersInfo: ITotalNoOfUsers[];
+  totalLoanApplications: number;
+  subscriptionDetails: ISubscriptionDetails;
+  reportCounts: IReportCounts[];
+  loanTypeApplicationCounts: ILoanTypeApplicationCount[];
+}
+
+export interface ILoanTypeApplicationCount {
+  loanTypeName: string;
+  count: number;
+}
+
+export interface IReportCounts {
+  name: string;
+  count: number;
+}
+
+export interface ISubscriptionDetails {
+  subscriptionsSold: number;
+  cumulativeAmount: number;
+  creditsProvided: number;
+}

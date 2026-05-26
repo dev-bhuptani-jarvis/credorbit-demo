@@ -97,15 +97,7 @@ const UserManagement = () => {
         };
       });
 
-      const decryptedUserData = updatedUserData.map((user) => {
-        return {
-          ...user,
-          email: user.email ? decryptVAPTData(user.email) : "",
-          mobileNumber: user.mobileNumber ? decryptVAPTData(user.mobileNumber) : "",
-        };
-      });
-
-      setUsersData(decryptedUserData);
+      setUsersData(updatedUserData);
 
       setTotalRecords(response.data.totalCount);
     } else {

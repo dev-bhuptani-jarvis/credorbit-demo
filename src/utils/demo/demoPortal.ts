@@ -57,63 +57,132 @@ const DEMO_DELAY_MS = 250;
 
 const demoPartnerListResponse: IGetPartnerListResponse = {
   status: true,
+
   statusCode: 200,
-  message: "User list fetched successfully!",
+
+  message:
+    "User list fetched successfully!",
+
   data: [
     {
-      id: "08dd2356-f6a3-45bb-8a56-aecec9fa87a7",
-      name: "MEGHAL SHAH NEW & ASSOCIATES",
-      email: "cvsWVbcgxVkP2yZxcvanU6rww530yBr71zQNj8QGI1I=",
+      id:
+        "demo-partner-id-001",
+
+      name:
+        "ABC INDUSTRIES PRIVATE LIMITED",
+
+      email:
+        "encrypted-demo-email-001",
     },
+
     {
-      id: "08dd2358-96ad-42d6-80e9-cec0d8f438f9",
-      name: "MEGHAL SHAH NEW & ASSOCIATES",
-      email: "b48EReynLEC4yBnP3TtEMvHtaW16V6PA1fBYsz43+RA18VThLQVEwXtI59Wi6Yab",
+      id:
+        "demo-partner-id-002",
+
+      name:
+        "XYZ BUSINESS SOLUTIONS LLP",
+
+      email:
+        "encrypted-demo-email-002",
     },
+
     {
-      id: "08dd411c-fe5c-4ee4-8fdb-6c0ede070872",
-      name: "NISHI HITESH WADHWANI",
-      email: "MTGBREZNak04S+oyv27F82oCwtHG6j6urC/baA/wD94=",
+      id:
+        "demo-partner-id-003",
+
+      name:
+        "MNO USER",
+
+      email:
+        "encrypted-demo-email-003",
     },
+
     {
-      id: "08dd5d47-8d58-4536-816e-69beba1e38f8",
-      name: "DEV SANJAYKUMAR BHUPTANI",
-      email: "PjCsDPUr/SMcy0TJrJ1Wb5Ggye2vwjyj41h4oJMW5LQ=",
+      id:
+        "demo-partner-id-004",
+
+      name:
+        "OPQ USER",
+
+      email:
+        "encrypted-demo-email-004",
     },
+
     {
-      id: "08dd6dc0-244d-44e3-840b-c8fc61ba8a91",
-      name: "MIHIR PINAKINBHAI MEHTA",
-      email: "KUGfzGsYtbFhXTPAZN6mpGsfMZwbMp9B0JI3okbar9g=",
+      id:
+        "demo-partner-id-005",
+
+      name:
+        "RST USER",
+
+      email:
+        "encrypted-demo-email-005",
     },
+
     {
-      id: "08dd8234-f76f-4a0a-8b2a-185316862930",
-      name: "KIRAN  AGARWAL",
-      email: "tJYZOr/Im+SUBaZbnJpPL1GGOjBBUnK54s8dbb8+auk=",
+      id:
+        "demo-partner-id-006",
+
+      name:
+        "UVW USER",
+
+      email:
+        "encrypted-demo-email-006",
     },
+
     {
-      id: "08dd8239-f349-49f8-8dd6-dd4bfd149a67",
-      name: "ANUJ  GULATI",
-      email: "2kdlRqGY8nb9TEoH0vTliLKPpMUFmYYOHkKvK4LFJX0=",
+      id:
+        "demo-partner-id-007",
+
+      name:
+        "XYZ USER",
+
+      email:
+        "encrypted-demo-email-007",
     },
+
     {
-      id: "08dd8614-3a11-464a-868f-e8817e5b32bd",
-      name: "MAULIK GIRISH SHAREDALAL",
-      email: "bVPm8Tq1QL6F8+N3Dkr/sC2kuFXTnvMDmbTSImz2UgA=",
+      id:
+        "demo-partner-id-008",
+
+      name:
+        "GLOBAL TECH ENTERPRISES",
+
+      email:
+        "encrypted-demo-email-008",
     },
+
     {
-      id: "08dde075-823a-46eb-864d-9eeb82998f9f",
-      name: "SAMEER KUMAR AGRAWAL",
-      email: "M0SnV18Vvr+sntJLwuxTMFn1O3AYgrsnfEQow5uMkP4=",
+      id:
+        "demo-partner-id-009",
+
+      name:
+        "NEXUS INDUSTRIAL SOLUTIONS LLP",
+
+      email:
+        "encrypted-demo-email-009",
     },
+
     {
-      id: "08dde472-ba92-4d2d-8771-809d3216a7a5",
-      name: "NIKUNJ MAKRANI",
-      email: "EDwRnOHXFcmSXF+/J6lttmA5Hvf5w57BW2WAVoIrUJM=",
+      id:
+        "demo-partner-id-010",
+
+      name:
+        "ABC SOURCE SP",
+
+      email:
+        "encrypted-demo-email-010",
     },
+
     {
-      id: "19f2869e-95b7-4faf-81f3-998ede783b61",
-      name: "Darshak's SP",
-      email: "c7qsnirnKR8HV2QEhD1LgIDxNYkmDwJfieH+CgeLmMA=",
+      id:
+        "demo-partner-id-011",
+
+      name:
+        "DEF SOURCE SP",
+
+      email:
+        "encrypted-demo-email-011",
     },
   ],
 };
@@ -139,7 +208,7 @@ const demoChannelPartnerDashboardResponse: IChannelPartnerDashboardResponse = {
         displayName: "Pending Applications",
         displayOrder: 1,
         amount: 11604515241,
-        noOfApplications: 107,
+        noOfApplications: 5,
         formattedAmount: "1160.45 Cr+",
         statusID: 1,
       },
@@ -179,7 +248,7 @@ const demoChannelPartnerDashboardResponse: IChannelPartnerDashboardResponse = {
         displayName: "Disbursed Applications",
         displayOrder: 6,
         amount: 50735281222,
-        noOfApplications: 79,
+        noOfApplications: 5,
         formattedAmount: "5073.53 Cr+",
         statusID: 6,
       },
@@ -507,6 +576,12 @@ const demoSubscriptionPlansResponse: ISubscriptionPlanListingResponse = {
   message: "Subscription plans fetched successfully!",
   data: [
     {
+      planID: 2,
+      name: "Value Plus Plan",
+      credits: 2200,
+      price: 1999,
+    },
+    {
       planID: 3,
       name: "Power Pack Plan",
       credits: 6000,
@@ -531,276 +606,147 @@ const demoSubscriptionUsageResponse: ISubscriptionUsageResponse = {
   status: true,
   statusCode: 200,
   message: "Subcription history fetched successfully!",
+
   data: {
     subscriptionUsage: [
       {
         id: 467,
+
         credits: 199,
+
         isCreditsAdd: null,
+
         reason:
-          "CAM report downloaded for UserName : MEGHAL SHAH NEW & ASSOCIATES,UserID : 08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        createdAt: "2026-04-09T19:32:41.800319",
+          "CAM report downloaded for UserName : ABC INDUSTRIES PRIVATE LIMITED, UserID : demo-user-id-001",
+
+        createdAt:
+          "2026-04-09T19:32:41.800319",
       },
+
       {
         id: 466,
+
         credits: 199,
+
         isCreditsAdd: null,
+
         reason:
-          "CAM report downloaded for UserName : SHARAD SIDDHESHWAR NALAWAD,UserID : 08dd661a-8096-4128-896f-6895fee1f5f7",
-        createdAt: "2026-04-09T18:38:14.530856",
+          "CAM report downloaded for UserName : MNO USER, UserID : demo-user-id-002",
+
+        createdAt:
+          "2026-04-09T18:38:14.530856",
       },
+
       {
         id: 465,
+
         credits: 199,
+
         isCreditsAdd: null,
+
         reason:
-          "CAM report downloaded for UserName : MEGHAL SHAH NEW & ASSOCIATES,UserID : 08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        createdAt: "2026-04-08T16:39:41.211145",
+          "CAM report downloaded for UserName : XYZ BUSINESS SOLUTIONS LLP, UserID : demo-user-id-003",
+
+        createdAt:
+          "2026-04-08T16:39:41.211145",
       },
+
       {
         id: 464,
-        credits: 199,
+
+        credits: 99,
+
         isCreditsAdd: null,
+
         reason:
-          "CAM report downloaded for UserName : NEXUS NUTRI SCIENCE LIMITED,UserID : 08de0598-4bee-48ca-8a7c-005b36583e79",
-        createdAt: "2026-04-08T16:31:49.413303",
+          "Credit report downloaded for UserName : DEF INDUSTRIES PRIVATE LIMITED, UserID : demo-user-id-004",
+
+        createdAt:
+          "2026-04-08T16:31:49.413303",
       },
+
       {
         id: 463,
-        credits: 199,
+
+        credits: 99,
+
         isCreditsAdd: null,
+
         reason:
-          "CAM report downloaded for UserName : NEXUS NUTRI SCIENCE LIMITED,UserID : 08de0598-4bee-48ca-8a7c-005b36583e79",
-        createdAt: "2026-04-08T16:16:32.587099",
+          "Credit report downloaded for UserName : OPQ USER, UserID : demo-user-id-005",
+
+        createdAt:
+          "2026-04-08T16:16:32.587099",
       },
+
       {
         id: 462,
-        credits: 199,
-        isCreditsAdd: null,
+
+        credits: 500,
+
+        isCreditsAdd: true,
+
         reason:
-          "CAM report downloaded for UserName : NEXUS NUTRI SCIENCE LIMITED,UserID : 08de0598-4bee-48ca-8a7c-005b36583e79",
-        createdAt: "2026-04-08T15:58:06.769581",
+          "Recharge",
+
+        createdAt:
+          "2026-04-01T16:43:48.826443",
       },
+
       {
         id: 461,
-        credits: 199,
-        isCreditsAdd: null,
+
+        credits: 2200,
+
+        isCreditsAdd: true,
+
         reason:
-          "CAM report downloaded for UserName : NEXUS NUTRI SCIENCE LIMITED,UserID : 08de0598-4bee-48ca-8a7c-005b36583e79",
-        createdAt: "2026-04-08T15:32:40.059482",
+          "Recharge",
+
+        createdAt:
+          "2026-04-01T17:19:04.800324",
       },
+
       {
         id: 460,
+
         credits: 199,
-        isCreditsAdd: null,
+
+        isCreditsAdd: false,
+
         reason:
-          "CAM report downloaded for UserName : AVULA SATEESH,UserID : 7c06b68e-48f7-423d-bdd2-d84ca204ac1a",
-        createdAt: "2026-04-06T13:04:13.095855",
+          "Banking report generated successfully UserName : XYZ USER, UserId : demo-user-id-006",
+
+        createdAt:
+          "2026-03-31T17:20:53.332296",
       },
+
       {
         id: 459,
+
         credits: 99,
-        isCreditsAdd: null,
+
+        isCreditsAdd: false,
+
         reason:
-          "Credit report downloaded for UserName : NEXUS NUTRI SCIENCE LIMITED,UserID : 08de0598-4bee-48ca-8a7c-005b36583e79",
-        createdAt: "2026-04-02T20:38:11.850702",
+          "ITR Report download success for UserName : RST USER, UserID : demo-user-id-007",
+
+        createdAt:
+          "2026-03-31T18:23:58.681361",
       },
+
       {
         id: 458,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : NEXUS NUTRI SCIENCE LIMITED,UserID : 08de0598-4bee-48ca-8a7c-005b36583e79",
-        createdAt: "2026-04-01T18:19:18.147168",
-      },
-      {
-        id: 457,
-        credits: 2200,
-        isCreditsAdd: true,
-        reason: "Recharge",
-        createdAt: "2026-04-01T17:19:04.800324",
-      },
-      {
-        id: 456,
-        credits: 500,
-        isCreditsAdd: true,
-        reason: "Recharge",
-        createdAt: "2026-04-01T16:43:48.826443",
-      },
-      {
-        id: 455,
+
         credits: 199,
+
         isCreditsAdd: null,
+
         reason:
-          "CAM report downloaded for UserName : RAHUL NEGI,UserID : 08de8f16-381b-4de4-859f-be9de1bde262",
-        createdAt: "2026-04-01T00:07:40.354678",
-      },
-      {
-        id: 454,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : SHARAD SIDDHESHWAR NALAWAD,UserID : 08dd661a-8096-4128-896f-6895fee1f5f7",
-        createdAt: "2026-03-31T23:18:24.883277",
-      },
-      {
-        id: 453,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : SHARAD SIDDHESHWAR NALAWAD,UserID : 08dd661a-8096-4128-896f-6895fee1f5f7",
-        createdAt: "2026-03-31T23:12:02.197087",
-      },
-      {
-        id: 452,
-        credits: 500,
-        isCreditsAdd: true,
-        reason: "Recharge",
-        createdAt: "2026-03-31T18:57:50.214537",
-      },
-      {
-        id: 451,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : PARAMJIT SINGH,UserID : 08de8f25-d822-48d7-84f0-b22c46f4c15f",
-        createdAt: "2026-03-31T18:34:13.198798",
-      },
-      {
-        id: 450,
-        credits: 99,
-        isCreditsAdd: false,
-        reason:
-          "ITR Report download success for UserName : RAHUL NEGI,UserID: 08de8f16-381b-4de4-859f-be9de1bde262",
-        createdAt: "2026-03-31T18:23:58.681361",
-      },
-      {
-        id: 449,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : RAHUL NEGI,UserID : 08de8f16-381b-4de4-859f-be9de1bde262",
-        createdAt: "2026-03-31T17:33:30.781935",
-      },
-      {
-        id: 448,
-        credits: 199,
-        isCreditsAdd: false,
-        reason:
-          "Banking report generated successfully UserName : RAHUL NEGI, UserId : 08de8f16-381b-4de4-859f-be9de1bde262",
-        createdAt: "2026-03-31T17:20:53.332296",
-      },
-      {
-        id: 447,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : RAHUL NEGI,UserID : 08de8f16-381b-4de4-859f-be9de1bde262",
-        createdAt: "2026-03-31T17:13:36.979664",
-      },
-      {
-        id: 446,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : AVULA SATEESH,UserID : 7c06b68e-48f7-423d-bdd2-d84ca204ac1a",
-        createdAt: "2026-03-31T16:38:26.400376",
-      },
-      {
-        id: 445,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : AVULA SATEESH,UserID : 7c06b68e-48f7-423d-bdd2-d84ca204ac1a",
-        createdAt: "2026-03-31T15:49:26.018816",
-      },
-      {
-        id: 443,
-        credits: 199,
-        isCreditsAdd: null,
-        reason:
-          "CAM report downloaded for UserName : MEGHAL SHAH NEW & ASSOCIATES,UserID : 08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        createdAt: "2026-03-29T19:13:15.106461",
-      },
-      {
-        id: 442,
-        credits: 199,
-        isCreditsAdd: null,
-        reason:
-          "CAM report downloaded for UserName : DEV SANJAYKUMAR BHUPTANI,UserID : 08dd661a-8096-4128-896f-6895fee1f5f7",
-        createdAt: "2026-03-29T19:12:12.531531",
-      },
-      {
-        id: 441,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : DEV SANJAYKUMAR BHUPTANI,UserID : 08dd661a-8096-4128-896f-6895fee1f5f7",
-        createdAt: "2026-03-27T18:10:10.962269",
-      },
-      {
-        id: 440,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : MEGHAL SHAH NEW & ASSOCIATES,UserID : 08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        createdAt: "2026-03-27T15:39:06.162854",
-      },
-      {
-        id: 439,
-        credits: 199,
-        isCreditsAdd: null,
-        reason:
-          "CAM report downloaded for UserName : NEXUS NUTRI SCIENCE LIMITED,UserID : 08de0598-4bee-48ca-8a7c-005b36583e79",
-        createdAt: "2026-03-27T14:48:28.42832",
-      },
-      {
-        id: 438,
-        credits: 199,
-        isCreditsAdd: false,
-        reason:
-          "Banking report generated successfully UserName : DEV SANJAYKUMAR BHUPTANI, UserId : 08dd661a-8096-4128-896f-6895fee1f5f7",
-        createdAt: "2026-03-26T15:46:58.929914",
-      },
-      {
-        id: 437,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : NEXUS NUTRI SCIENCE LIMITED,UserID : 08de0598-4bee-48ca-8a7c-005b36583e79",
-        createdAt: "2026-03-26T12:15:12.289792",
-      },
-      {
-        id: 436,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : NEXUS NUTRI SCIENCE LIMITED,UserID : 08de0598-4bee-48ca-8a7c-005b36583e79",
-        createdAt: "2026-03-26T11:58:23.332029",
-      },
-      {
-        id: 435,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : NEXUS NUTRI SCIENCE LIMITED,UserID : 08de0598-4bee-48ca-8a7c-005b36583e79",
-        createdAt: "2026-03-26T11:38:41.225071",
-      },
-      {
-        id: 434,
-        credits: 199,
-        isCreditsAdd: null,
-        reason:
-          "CAM report downloaded for UserName : DEV SANJAYKUMAR BHUPTANI,UserID : 08dd661a-8096-4128-896f-6895fee1f5f7",
-        createdAt: "2026-03-25T17:00:00.725499",
-      },
-      {
-        id: 433,
-        credits: 99,
-        isCreditsAdd: null,
-        reason:
-          "Credit report downloaded for UserName : DEV SANJAYKUMAR BHUPTANI,UserID : 08dd661a-8096-4128-896f-6895fee1f5f7",
-        createdAt: "2026-03-25T13:13:26.175141",
+          "CAM report downloaded for UserName : GLOBAL TECH ENTERPRISES, UserID : demo-user-id-008",
+
+        createdAt:
+          "2026-03-29T19:13:15.106461",
       },
     ],
   },
@@ -824,24 +770,48 @@ const demoTrackReferralsResponse: IRefferalListingResponse = {
   status: true,
   statusCode: 200,
   message: "Referral list fetched successfully",
+
   data: [
     {
-      referredName: "NICE WAY REAL MARKETING",
-      referralCode: "CP-THQZS4",
-      status: "CONFIRMED",
-      referredDate: "2026-03-05T13:29:13.996003",
+      referredName:
+        "ABC INDUSTRIES PRIVATE LIMITED",
+
+      referralCode:
+        "DEMO-REF-001",
+
+      status:
+        "CONFIRMED",
+
+      referredDate:
+        "2026-03-05T13:29:13.996003",
     },
+
     {
-      referredName: "BHAVYA TIWARI",
-      referralCode: "CP-THQZS4",
-      status: "CONFIRMED",
-      referredDate: "2026-01-12T16:04:27.102967",
+      referredName:
+        "MNO USER",
+
+      referralCode:
+        "DEMO-REF-001",
+
+      status:
+        "CONFIRMED",
+
+      referredDate:
+        "2026-01-12T16:04:27.102967",
     },
+
     {
-      referredName: "Darshak Acharya",
-      referralCode: "CP-THQZS4",
-      status: "CONFIRMED",
-      referredDate: "2026-01-08T18:26:50",
+      referredName:
+        "OPQ USER",
+
+      referralCode:
+        "DEMO-REF-001",
+
+      status:
+        "CONFIRMED",
+
+      referredDate:
+        "2026-01-08T18:26:50",
     },
   ],
 };
@@ -850,55 +820,97 @@ const demoWalletHistoryResponse: IWalletListingResponse = {
   status: true,
   statusCode: 200,
   message: "Wallet history fetched successfully",
+
   data: [
     {
-      date: "2026-03-05T13:30:37.892545",
-      transactionType: "CREDIT",
+      date:
+        "2026-03-05T13:30:37.892545",
+
+      transactionType:
+        "CREDIT",
+
       points: 59,
+
       description:
-        "You earned 59 points because NICE WAY REAL MARKETING recharged their subscription.",
+        "You earned 59 points because ABC INDUSTRIES PRIVATE LIMITED recharged their subscription.",
     },
+
     {
-      date: "2026-01-12T18:16:42.040831",
-      transactionType: "CREDIT",
+      date:
+        "2026-01-12T18:16:42.040831",
+
+      transactionType:
+        "CREDIT",
+
       points: 590,
+
       description:
-        "You earned 590 points because BHAVYA TIWARI recharged their subscription.",
+        "You earned 590 points because MNO USER recharged their subscription.",
     },
+
     {
-      date: "2026-01-12T16:35:33.973763",
-      transactionType: "CREDIT",
+      date:
+        "2026-01-12T16:35:33.973763",
+
+      transactionType:
+        "CREDIT",
+
       points: 1180,
+
       description:
-        "You earned 1180 points because BHAVYA TIWARI recharged their subscription.",
+        "You earned 1180 points because MNO USER recharged their subscription.",
     },
+
     {
-      date: "2026-01-12T16:34:14.582296",
-      transactionType: "CREDIT",
+      date:
+        "2026-01-12T16:34:14.582296",
+
+      transactionType:
+        "CREDIT",
+
       points: 59,
+
       description:
-        "You earned 59 points because BHAVYA TIWARI recharged their subscription.",
+        "You earned 59 points because MNO USER recharged their subscription.",
     },
+
     {
-      date: "2026-01-12T01:02:34.62965",
-      transactionType: "CREDIT",
+      date:
+        "2026-01-12T01:02:34.62965",
+
+      transactionType:
+        "CREDIT",
+
       points: 236,
+
       description:
-        "You earned 236 points because Darshak Acharya recharged their subscription.",
+        "You earned 236 points because OPQ USER recharged their subscription.",
     },
+
     {
-      date: "2026-01-12T00:36:05.906207",
-      transactionType: "CREDIT",
+      date:
+        "2026-01-12T00:36:05.906207",
+
+      transactionType:
+        "CREDIT",
+
       points: 58,
+
       description:
-        "You earned 58 points because Darshak Acharya recharged their subscription.",
+        "You earned 58 points because OPQ USER recharged their subscription.",
     },
+
     {
-      date: "2026-01-08T18:29:04",
-      transactionType: "CREDIT",
+      date:
+        "2026-01-08T18:29:04",
+
+      transactionType:
+        "CREDIT",
+
       points: 500,
+
       description:
-        "You earned 500 points because Darshak Acharya recharged their subscription.",
+        "You earned 500 points because OPQ USER recharged their subscription.",
     },
   ],
 };
@@ -912,99 +924,223 @@ const demoReferralPointsResponse: IRefferalDataResponse = {
 
 const demoPayOutsListResponse: IPayOutsResponse = {
   status: true,
+
   statusCode: 200,
-  message: "Payout List fetched successfully!",
+
+  message:
+    "Payout List fetched successfully!",
+
   data: {
     totalPayOutsCount: 10,
+
     payOuts: [
       {
-        payoutID: "08de9949-4e66-4b03-876e-aa132c82719a",
-        userName: "Jarvis Credo CP",
-        month: "April 2026",
-        amountSanctioned: 8505012,
-        amountDisburse: 8505012,
+        payoutID:
+          "demo-payout-id-001",
+
+        userName:
+          "Demo Prime CP",
+
+        month:
+          "April 2026",
+
+        amountSanctioned:
+          8505012,
+
+        amountDisburse:
+          8505012,
+
         payOutPercent: 2,
+
         gstPercent: 18,
       },
+
       {
-        payoutID: "08de8f17-f957-4763-8c51-27d047b91a24",
-        userName: "Jarvis Credo CP",
-        month: "March 2026",
-        amountSanctioned: 2116200,
-        amountDisburse: 2116200,
+        payoutID:
+          "demo-payout-id-002",
+
+        userName:
+          "Demo Prime CP",
+
+        month:
+          "March 2026",
+
+        amountSanctioned:
+          2116200,
+
+        amountDisburse:
+          2116200,
+
         payOutPercent: 2,
+
         gstPercent: 18,
       },
+
       {
-        payoutID: "08de72c2-6f10-4750-8d5b-a1613ff6410c",
-        userName: "Jarvis Credo CP",
-        month: "February 2026",
-        amountSanctioned: 2807100,
-        amountDisburse: 2807100,
+        payoutID:
+          "demo-payout-id-003",
+
+        userName:
+          "Demo Prime CP",
+
+        month:
+          "February 2026",
+
+        amountSanctioned:
+          2807100,
+
+        amountDisburse:
+          2807100,
+
         payOutPercent: 2,
+
         gstPercent: 18,
       },
+
       {
-        payoutID: "08de5fe3-faad-46d2-8f68-8196e42b7af7",
-        userName: "Jarvis Credo CP",
-        month: "January 2026",
-        amountSanctioned: 335300,
-        amountDisburse: 335300,
+        payoutID:
+          "demo-payout-id-004",
+
+        userName:
+          "Demo Prime CP",
+
+        month:
+          "January 2026",
+
+        amountSanctioned:
+          335300,
+
+        amountDisburse:
+          335300,
+
         payOutPercent: 2,
+
         gstPercent: 18,
       },
+
       {
-        payoutID: "08de4210-14cf-4f0c-8b4e-c21e478e642d",
-        userName: "Jarvis Credo CP",
-        month: "December 2025",
-        amountSanctioned: 15000,
-        amountDisburse: 15000,
+        payoutID:
+          "demo-payout-id-005",
+
+        userName:
+          "Demo Prime CP",
+
+        month:
+          "December 2025",
+
+        amountSanctioned:
+          15000,
+
+        amountDisburse:
+          15000,
+
         payOutPercent: 2,
+
         gstPercent: 18,
       },
+
       {
-        payoutID: "08de281e-2f97-4fb4-893d-46dddab649ff",
-        userName: "Jarvis Credo CP",
-        month: "November 2025",
-        amountSanctioned: 200349914025,
-        amountDisburse: 200349914025,
+        payoutID:
+          "demo-payout-id-006",
+
+        userName:
+          "Demo Prime CP",
+
+        month:
+          "November 2025",
+
+        amountSanctioned:
+          200349914025,
+
+        amountDisburse:
+          200349914025,
+
         payOutPercent: 2,
+
         gstPercent: 18,
       },
+
       {
-        payoutID: "08de1861-f190-43ce-8f96-ab937635521b",
-        userName: "Jarvis Credo CP",
-        month: "October 2025",
-        amountSanctioned: 50337271000,
-        amountDisburse: 50337271000,
+        payoutID:
+          "demo-payout-id-007",
+
+        userName:
+          "Demo Prime CP",
+
+        month:
+          "October 2025",
+
+        amountSanctioned:
+          50337271000,
+
+        amountDisburse:
+          50337271000,
+
         payOutPercent: 2,
+
         gstPercent: 18,
       },
+
       {
-        payoutID: "08de0005-caad-4527-8fa9-c36d8324a2e7",
-        userName: "Jarvis Credo CP",
-        month: "September 2025",
-        amountSanctioned: 784925000,
-        amountDisburse: 784925000,
+        payoutID:
+          "demo-payout-id-008",
+
+        userName:
+          "Demo Prime CP",
+
+        month:
+          "September 2025",
+
+        amountSanctioned:
+          784925000,
+
+        amountDisburse:
+          784925000,
+
         payOutPercent: 2,
+
         gstPercent: 18,
       },
+
       {
-        payoutID: "08dde7a9-b08e-4386-866b-ce7597bd16fd",
-        userName: "Jarvis Credo CP",
-        month: "August 2025",
-        amountSanctioned: 1046915000,
-        amountDisburse: 1046915000,
+        payoutID:
+          "demo-payout-id-009",
+
+        userName:
+          "Demo Prime CP",
+
+        month:
+          "August 2025",
+
+        amountSanctioned:
+          1046915000,
+
+        amountDisburse:
+          1046915000,
+
         payOutPercent: 2,
+
         gstPercent: 18,
       },
+
       {
-        payoutID: "08ddd016-a356-4c6d-87a5-a8c4ae939d58",
-        userName: "Jarvis Credo CP",
-        month: "July 2025",
-        amountSanctioned: 11195000,
-        amountDisburse: 11195000,
+        payoutID:
+          "demo-payout-id-010",
+
+        userName:
+          "Demo Prime CP",
+
+        month:
+          "July 2025",
+
+        amountSanctioned:
+          11195000,
+
+        amountDisburse:
+          11195000,
+
         payOutPercent: 0,
+
         gstPercent: 18,
       },
     ],
@@ -1015,34 +1151,65 @@ const demoSpPayoutsListResponse: ISourcingPartnerPayOutsResponse = {
   status: true,
   statusCode: 200,
   message: "Payout List fetched successfully!",
+
   data: {
     totalPaymentRequestsCount: 3,
+
     paymentRequests: [
       {
-        spID: "08dd8239-f349-49f8-8dd6-dd4bfd149a67",
-        spName: "ANUJ  GULATI",
-        spCode: "COSP250402",
+        spID:
+          "demo-sp-id-001",
+
+        spName:
+          "MNO USER",
+
+        spCode:
+          "DEMO-SP-001",
+
         noOfPendingRequests: 0,
+
         noOfApprovedRequests: 0,
+
         noOfRejectedRequests: 0,
+
         noOfCompletedRequests: 1,
       },
+
       {
-        spID: "19f2869e-95b7-4faf-81f3-998ede783b61",
-        spName: "Darshak's SP",
-        spCode: "COSP241026",
+        spID:
+          "demo-sp-id-002",
+
+        spName:
+          "ABC SOURCE SP",
+
+        spCode:
+          "DEMO-SP-002",
+
         noOfPendingRequests: 2,
+
         noOfApprovedRequests: 9,
+
         noOfRejectedRequests: 1,
+
         noOfCompletedRequests: 22,
       },
+
       {
-        spID: "08dd5d47-8d58-4536-816e-69beba1e38f8",
-        spName: "DEV SANJAYKUMAR BHUPTANI",
-        spCode: "COSP250301",
+        spID:
+          "demo-sp-id-003",
+
+        spName:
+          "XYZ USER",
+
+        spCode:
+          "DEMO-SP-003",
+
         noOfPendingRequests: 3,
+
         noOfApprovedRequests: 5,
+
         noOfRejectedRequests: 0,
+
         noOfCompletedRequests: 4,
       },
     ],
@@ -1053,258 +1220,272 @@ const demoPayOutDetailResponse: IPayOutsDetailResponse = {
   status: true,
   statusCode: 200,
   message: "Payout Details fetched successfully!",
+
   data: {
-    userId: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
-    userName: "Jarvis Credo CP",
-    userCode: "COCP241101",
-    mobileNumber: "DR/IXQnqfRCnSsOyS0i9gA==",
-    email: "PjCsDPUr/SMcy0TJrJ1Wb5Ggye2vwjyj41h4oJMW5LQ=",
-    panNumber: "uBrXSZkYxtxeJ12EzmYaLA==",
+    userId:
+      "demo-user-id-001",
+
+    userName:
+      "Demo Prime CP",
+
+    userCode:
+      "DEMO-CP-001",
+
+    mobileNumber:
+      "9000000001",
+
+    email:
+      "demoprime@email.com",
+
+    panNumber:
+      "DEMOP9876A",
+
     payOutPercent: 2,
+
     loansCompleted: 37,
+
     totalCount: 35,
+
     payoutList: [
       {
-        applicationId: "08de9948-41b9-4506-8507-a6303edd8480",
-        applicationCode: "COLA260422",
-        applicantName: "KARAN RAI",
-        date: "2026-04-13",
-        amountSanctioned: 150000,
-        amountDisburse: 15000,
-        disbursementId: "08de9949-4e42-42f3-8e46-bff3426dab08",
+        applicationId:
+          "demo-application-id-001",
+
+        applicationCode:
+          "DEMO-LA-001",
+
+        applicantName:
+          "MNO USER",
+
+        date:
+          "2026-04-13",
+
+        amountSanctioned:
+          150000,
+
+        amountDisburse:
+          15000,
+
+        disbursementId:
+          "demo-disbursement-id-001",
+
         payoutPercent: 2,
+
         payAmount: 300,
+
         gstAmount: 54,
+
         tdsAmount: 15,
+
         bills: 354,
+
         netPayment: 339,
-        payoutStatus: { label: "Incomplete", color: "#FC902C", statusID: 0 },
+
+        payoutStatus: {
+          label: "Incomplete",
+          color: "#FC902C",
+          statusID: 0,
+        },
+
         requestStatus: 0,
+
         remarks: null,
+
         reason: null,
+
         saccode: null,
+
         userInvoiceNumber: null,
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-13T21:42:07",
-        invoiceUrl: null as unknown as string,
+
+        paymentDate:
+          "0001-01-01T05:53:00",
+
+        disbursementDate:
+          "2026-04-13T21:42:07",
+
+        invoiceUrl:
+          null as unknown as string,
       },
+
       {
-        applicationId: "08de971d-3de0-4c29-8806-4960fdb15332",
-        applicationCode: "COLA260421",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 30000,
-        disbursementId: "08de971d-9345-49f2-8617-406574e12158",
+        applicationId:
+          "demo-application-id-002",
+
+        applicationCode:
+          "DEMO-LA-002",
+
+        applicantName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+
+        date:
+          "2026-04-10",
+
+        amountSanctioned:
+          6000000,
+
+        amountDisburse:
+          30000,
+
+        disbursementId:
+          "demo-disbursement-id-002",
+
         payoutPercent: 2,
+
         payAmount: 600,
+
         gstAmount: 108,
+
         tdsAmount: 30,
+
         bills: 708,
+
         netPayment: 678,
-        payoutStatus: { label: "Completed", color: "#27AE60", statusID: 0 },
+
+        payoutStatus: {
+          label: "Completed",
+          color: "#27AE60",
+          statusID: 0,
+        },
+
         requestStatus: 4,
-        remarks: "jahangir",
+
+        remarks:
+          "Demo remarks",
+
         reason: null,
+
         saccode: null,
+
         userInvoiceNumber: null,
-        paymentDate: "2026-04-11T14:37:24.43",
-        disbursementDate: "2026-04-11T03:23:59",
+
+        paymentDate:
+          "2026-04-11T14:37:24.43",
+
+        disbursementDate:
+          "2026-04-11T03:23:59",
+
         invoiceUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "https://example.com/demo-invoice.pdf",
       },
+
       {
-        applicationId: "08de971d-3de0-4c29-8806-4960fdb15332",
-        applicationCode: "COLA260421",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 15000,
-        disbursementId: "08de971d-5f2c-4b7c-8418-421ccf72f051",
+        applicationId:
+          "demo-application-id-003",
+
+        applicationCode:
+          "DEMO-LA-003",
+
+        applicantName:
+          "XYZ BUSINESS SOLUTIONS LLP",
+
+        date:
+          "2026-04-10",
+
+        amountSanctioned:
+          5000000,
+
+        amountDisburse:
+          80000,
+
+        disbursementId:
+          "demo-disbursement-id-003",
+
         payoutPercent: 2,
-        payAmount: 300,
-        gstAmount: 54,
-        tdsAmount: 15,
-        bills: 354,
-        netPayment: 339,
-        payoutStatus: { label: "Completed", color: "#27AE60", statusID: 0 },
-        requestStatus: 4,
-        remarks: "akbar",
+
+        payAmount: 1600,
+
+        gstAmount: 288,
+
+        tdsAmount: 80,
+
+        bills: 1888,
+
+        netPayment: 1808,
+
+        payoutStatus: {
+          label: "Incomplete",
+          color: "#FC902C",
+          statusID: 0,
+        },
+
+        requestStatus: 0,
+
+        remarks: null,
+
         reason: null,
+
         saccode: null,
+
         userInvoiceNumber: null,
-        paymentDate: "2026-04-11T14:40:22.348",
-        disbursementDate: "2026-04-11T03:22:33",
+
+        paymentDate:
+          "0001-01-01T05:53:00",
+
+        disbursementDate:
+          "2026-04-11T03:10:20",
+
         invoiceUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          null as unknown as string,
       },
+
       {
-        applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
-        applicationCode: "COLA260420",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 12,
-        disbursementId: "08de971c-f774-40f3-82c3-ba51aac61d61",
+        applicationId:
+          "demo-application-id-004",
+
+        applicationCode:
+          "DEMO-LA-004",
+
+        applicantName:
+          "DEF INDUSTRIES PRIVATE LIMITED",
+
+        date:
+          "2026-04-10",
+
+        amountSanctioned:
+          6000000,
+
+        amountDisburse:
+          400000,
+
+        disbursementId:
+          "demo-disbursement-id-004",
+
         payoutPercent: 2,
-        payAmount: 0.24,
-        gstAmount: 0.0432,
-        tdsAmount: 0.012,
-        bills: 0.2832,
-        netPayment: 0.2712,
-        payoutStatus: { label: "Incomplete", color: "#FC902C", statusID: 0 },
-        requestStatus: 0,
-        remarks: null,
-        reason: null,
-        saccode: null,
-        userInvoiceNumber: null,
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-11T03:19:39",
-        invoiceUrl: null as unknown as string,
-      },
-      {
-        applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
-        applicationCode: "COLA260420",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 15000,
-        disbursementId: "08de971c-e0e4-4c54-816d-23ec92519fff",
-        payoutPercent: 2,
-        payAmount: 300,
-        gstAmount: 54,
-        tdsAmount: 15,
-        bills: 354,
-        netPayment: 339,
-        payoutStatus: { label: "Incomplete", color: "#FC902C", statusID: 0 },
-        requestStatus: 0,
-        remarks: null,
-        reason: null,
-        saccode: null,
-        userInvoiceNumber: null,
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-11T03:19:00",
-        invoiceUrl: null as unknown as string,
-      },
-      {
-        applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
-        applicationCode: "COLA260420",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 80000,
-        disbursementId: "08de971b-ad92-455f-8a96-daeff405c62f",
-        payoutPercent: 2,
-        payAmount: 1600,
-        gstAmount: 288,
-        tdsAmount: 80,
-        bills: 1888,
-        netPayment: 1808,
-        payoutStatus: { label: "Incomplete", color: "#FC902C", statusID: 0 },
-        requestStatus: 0,
-        remarks: null,
-        reason: null,
-        saccode: null,
-        userInvoiceNumber: null,
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-11T03:10:20",
-        invoiceUrl: null as unknown as string,
-      },
-      {
-        applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
-        applicationCode: "COLA260420",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 80000,
-        disbursementId: "08de971b-9899-4b13-8615-30ca8564357d",
-        payoutPercent: 2,
-        payAmount: 1600,
-        gstAmount: 288,
-        tdsAmount: 80,
-        bills: 1888,
-        netPayment: 1808,
-        payoutStatus: { label: "Incomplete", color: "#FC902C", statusID: 0 },
-        requestStatus: 0,
-        remarks: null,
-        reason: null,
-        saccode: null,
-        userInvoiceNumber: null,
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-11T03:09:42",
-        invoiceUrl: null as unknown as string,
-      },
-      {
-        applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
-        applicationCode: "COLA260420",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 60000,
-        disbursementId: "08de971b-2fc2-4d28-84a6-82f0e26dbf58",
-        payoutPercent: 2,
-        payAmount: 1200,
-        gstAmount: 216,
-        tdsAmount: 60,
-        bills: 1416,
-        netPayment: 1356,
-        payoutStatus: { label: "Incomplete", color: "#FC902C", statusID: 0 },
-        requestStatus: 0,
-        remarks: null,
-        reason: null,
-        saccode: null,
-        userInvoiceNumber: null,
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-11T03:00:49",
-        invoiceUrl: null as unknown as string,
-      },
-      {
-        applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
-        applicationCode: "COLA260420",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 60000,
-        disbursementId: "08de971b-6402-4028-826a-d98b542dbff0",
-        payoutPercent: 2,
-        payAmount: 1200,
-        gstAmount: 216,
-        tdsAmount: 60,
-        bills: 1416,
-        netPayment: 1356,
-        payoutStatus: { label: "Incomplete", color: "#FC902C", statusID: 0 },
-        requestStatus: 0,
-        remarks: null,
-        reason: null,
-        saccode: null,
-        userInvoiceNumber: null,
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-11T03:00:49",
-        invoiceUrl: null as unknown as string,
-      },
-      {
-        applicationId: "08de96e3-e686-45d3-8a1b-abf63cb49abb",
-        applicationCode: "COLA260418",
-        applicantName: "Nisarg Jani",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 400000,
-        disbursementId: "08de9703-30d0-4b7a-81cf-18d77cfdaba1",
-        payoutPercent: 2,
+
         payAmount: 8000,
+
         gstAmount: 1440,
+
         tdsAmount: 400,
+
         bills: 9440,
+
         netPayment: 9040,
-        payoutStatus: { label: "Incomplete", color: "#FC902C", statusID: 0 },
+
+        payoutStatus: {
+          label: "Incomplete",
+          color: "#FC902C",
+          statusID: 0,
+        },
+
         requestStatus: 0,
+
         remarks: null,
+
         reason: null,
+
         saccode: null,
+
         userInvoiceNumber: null,
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-10T05:30:00",
-        invoiceUrl: null as unknown as string,
+
+        paymentDate:
+          "0001-01-01T05:53:00",
+
+        disbursementDate:
+          "2026-04-10T05:30:00",
+
+        invoiceUrl:
+          null as unknown as string,
       },
     ],
   },
@@ -1314,216 +1495,281 @@ const demoSpPayoutDetailResponse: ISourcingPartnerPayOutDetailResponse = {
   status: true,
   statusCode: 200,
   message: "Payout Details fetched successfully!",
+
   data: {
-    userId: "08dd5d47-8d58-4536-816e-69beba1e38f8",
-    userName: "DEV SANJAYKUMAR BHUPTANI",
-    userCode: "COSP250301",
-    mobileNumber: "DR/IXQnqfRCnSsOyS0i9gA==",
-    email: "PjCsDPUr/SMcy0TJrJ1Wb5Ggye2vwjyj41h4oJMW5LQ=",
-    panNumber: "yMxMPliigDtX5/toz6v+xQ==",
+    userId:
+      "demo-sp-id-001",
+
+    userName:
+      "MNO USER",
+
+    userCode:
+      "DEMO-SP-001",
+
+    mobileNumber:
+      "9000000001",
+
+    email:
+      "demosp@email.com",
+
+    panNumber:
+      "DEMOP9876A",
+
     payOutPercent: 50,
+
     loansCompleted: 7,
+
     totalCount: 8,
+
     payoutList: [
       {
-        applicationId: "08de971d-3de0-4c29-8806-4960fdb15332",
-        applicationCode: "COLA260421",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 15000,
-        disbursementId: "08de971d-5f2c-4b7c-8418-421ccf72f051",
+        applicationId:
+          "demo-application-id-001",
+
+        applicationCode:
+          "DEMO-LA-001",
+
+        applicantName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+
+        date:
+          "2026-04-10",
+
+        amountSanctioned:
+          6000000,
+
+        amountDisburse:
+          15000,
+
+        disbursementId:
+          "demo-disbursement-id-001",
+
         payoutPercent: 50,
+
         payAmount: 150,
+
         gstAmount: 27,
+
         tdsAmount: 7.5,
+
         bills: 177,
+
         netPayment: 169.5,
-        payoutStatus: { label: "Completed", color: "#27AE60", statusID: 0 },
+
+        payoutStatus: {
+          label: "Completed",
+          color: "#27AE60",
+          statusID: 0,
+        },
+
         requestStatus: 4,
-        remarks: "bhbnjmghbvn",
+
+        remarks:
+          "Demo remarks",
+
         reason: null,
-        saccode: "tP3FXoM/ccgimoGggWnwqA==",
-        userInvoiceNumber: "cLItOs0dzGe/Gc3iytOomQ==",
-        paymentDate: "2026-04-10T16:36:33.961",
-        disbursementDate: "2026-04-11T03:23:59",
+
+        saccode:
+          "encrypted-sac-code",
+
+        userInvoiceNumber:
+          "encrypted-invoice-number",
+
+        paymentDate:
+          "2026-04-10T16:36:33.961",
+
+        disbursementDate:
+          "2026-04-11T03:23:59",
+
         invoiceUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "https://example.com/demo-invoice.pdf",
       },
+
       {
-        applicationId: "08de971d-3de0-4c29-8806-4960fdb15332",
-        applicationCode: "COLA260421",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 30000,
-        disbursementId: "08de971d-9345-49f2-8617-406574e12158",
+        applicationId:
+          "demo-application-id-002",
+
+        applicationCode:
+          "DEMO-LA-002",
+
+        applicantName:
+          "XYZ BUSINESS SOLUTIONS LLP",
+
+        date:
+          "2026-04-10",
+
+        amountSanctioned:
+          6000000,
+
+        amountDisburse:
+          30000,
+
+        disbursementId:
+          "demo-disbursement-id-002",
+
         payoutPercent: 50,
+
         payAmount: 300,
+
         gstAmount: 54,
+
         tdsAmount: 15,
+
         bills: 354,
+
         netPayment: 339,
-        payoutStatus: { label: "Completed", color: "#27AE60", statusID: 0 },
+
+        payoutStatus: {
+          label: "Completed",
+          color: "#27AE60",
+          statusID: 0,
+        },
+
         requestStatus: 4,
-        remarks: "Enter the remarks and select date for the transaction.",
+
+        remarks:
+          "Demo payout processed",
+
         reason: null,
-        saccode: "tsku5190Zubf5h0FH0i8xw==",
-        userInvoiceNumber: null,
-        paymentDate: "2026-04-11T13:34:24.809",
-        disbursementDate: "2026-04-11T03:23:59",
+
+        saccode:
+          "encrypted-sac-code",
+
+        userInvoiceNumber:
+          null,
+
+        paymentDate:
+          "2026-04-11T13:34:24.809",
+
+        disbursementDate:
+          "2026-04-11T03:23:59",
+
         invoiceUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "https://example.com/demo-invoice.pdf",
       },
+
       {
-        applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
-        applicationCode: "COLA260420",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 50000,
-        disbursementId: "08de9715-d613-4cdf-8aee-fa0ff2fae4c5",
+        applicationId:
+          "demo-application-id-003",
+
+        applicationCode:
+          "DEMO-LA-003",
+
+        applicantName:
+          "DEF INDUSTRIES PRIVATE LIMITED",
+
+        date:
+          "2026-04-10",
+
+        amountSanctioned:
+          6000000,
+
+        amountDisburse:
+          50000,
+
+        disbursementId:
+          "demo-disbursement-id-003",
+
         payoutPercent: 50,
+
         payAmount: 500,
+
         gstAmount: 90,
+
         tdsAmount: 25,
+
         bills: 590,
+
         netPayment: 565,
-        payoutStatus: { label: "Approved", color: "#008080", statusID: 0 },
+
+        payoutStatus: {
+          label: "Approved",
+          color: "#008080",
+          statusID: 0,
+        },
+
         requestStatus: 2,
+
         remarks: null,
+
         reason: null,
-        saccode: "vh2ZyStafVQ90voERYrm4A==",
-        userInvoiceNumber: null,
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-11T03:19:39",
+
+        saccode:
+          "encrypted-sac-code",
+
+        userInvoiceNumber:
+          null,
+
+        paymentDate:
+          "0001-01-01T05:53:00",
+
+        disbursementDate:
+          "2026-04-11T03:19:39",
+
         invoiceUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "https://example.com/demo-invoice.pdf",
       },
+
       {
-        applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
-        applicationCode: "COLA260420",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 100000,
-        disbursementId: "08de9716-136c-4081-84bd-a94bf1bced66",
+        applicationId:
+          "demo-application-id-004",
+
+        applicationCode:
+          "DEMO-LA-004",
+
+        applicantName:
+          "MNO USER",
+
+        date:
+          "2026-04-10",
+
+        amountSanctioned:
+          6000000,
+
+        amountDisburse:
+          700000,
+
+        disbursementId:
+          "demo-disbursement-id-004",
+
         payoutPercent: 50,
-        payAmount: 1000,
-        gstAmount: 180,
-        tdsAmount: 50,
-        bills: 1180,
-        netPayment: 1130,
-        payoutStatus: { label: "Approved", color: "#008080", statusID: 0 },
-        requestStatus: 2,
-        remarks: null,
-        reason: null,
-        saccode: "zpLQZXrjuyqDcexVvG9boQ==",
-        userInvoiceNumber: null,
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-11T03:19:39",
-        invoiceUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
-      },
-      {
-        applicationId: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
-        applicationCode: "COLA260420",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 700000,
-        disbursementId: "08de9716-3b8d-44fc-82d9-3eced4d188b0",
-        payoutPercent: 50,
+
         payAmount: 7000,
+
         gstAmount: 1260,
+
         tdsAmount: 350,
+
         bills: 8260,
+
         netPayment: 7910,
-        payoutStatus: { label: "Incomplete", color: "#FC902C", statusID: 0 },
+
+        payoutStatus: {
+          label: "Incomplete",
+          color: "#FC902C",
+          statusID: 0,
+        },
+
         requestStatus: 1,
+
         remarks: null,
+
         reason: null,
-        saccode: "vh2ZyStafVQ90voERYrm4A==",
-        userInvoiceNumber: "cLItOs0dzGe/Gc3iytOomQ==",
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-11T03:19:39",
+
+        saccode:
+          "encrypted-sac-code",
+
+        userInvoiceNumber:
+          "encrypted-invoice-number",
+
+        paymentDate:
+          "0001-01-01T05:53:00",
+
+        disbursementDate:
+          "2026-04-11T03:19:39",
+
         invoiceUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
-      },
-      {
-        applicationId: "08de9716-4267-4945-8b4d-a22ad5d80b49",
-        applicationCode: "COLA260420",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2026-04-10",
-        amountSanctioned: 6000000,
-        amountDisburse: 1400000,
-        disbursementId: "08de9716-4267-4945-8b4d-a22ad5d80b49",
-        payoutPercent: 50,
-        payAmount: 14000,
-        gstAmount: 2520,
-        tdsAmount: 700,
-        bills: 16520,
-        netPayment: 15820,
-        payoutStatus: { label: "Incomplete", color: "#FC902C", statusID: 0 },
-        requestStatus: 1,
-        remarks: null,
-        reason: null,
-        saccode: "tP3FXoM/ccgimoGggWnwqA==",
-        userInvoiceNumber: "cLItOs0dzGe/Gc3iytOomQ==",
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-11T03:19:39",
-        invoiceUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
-      },
-      {
-        applicationId: "08de478b-13fc-4676-8494-3ce9105d9593",
-        applicationCode: "COLA251216",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2025-11-30",
-        amountSanctioned: 150000,
-        amountDisburse: 50000,
-        disbursementId: "08de96da-8401-4510-83c9-bdc81fde978c",
-        payoutPercent: 50,
-        payAmount: 500,
-        gstAmount: 90,
-        tdsAmount: 25,
-        bills: 590,
-        netPayment: 565,
-        payoutStatus: { label: "Approved", color: "#008080", statusID: 0 },
-        requestStatus: 2,
-        remarks: null,
-        reason: null,
-        saccode: "vh2ZyStafVQ90voERYrm4A==",
-        userInvoiceNumber: null,
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-10T05:30:00",
-        invoiceUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
-      },
-      {
-        applicationId: "08de478b-13fc-4676-8494-3ce9105d9593",
-        applicationCode: "COLA251216",
-        applicantName: "HIRENKUMAR VITTHALDAS SHAH",
-        date: "2025-11-30",
-        amountSanctioned: 150000,
-        amountDisburse: 100000,
-        disbursementId: "08de9712-f23c-4589-8235-cd30a703f534",
-        payoutPercent: 50,
-        payAmount: 1000,
-        gstAmount: 180,
-        tdsAmount: 50,
-        bills: 1180,
-        netPayment: 1130,
-        payoutStatus: { label: "Incomplete", color: "#FC902C", statusID: 0 },
-        requestStatus: 1,
-        remarks: null,
-        reason: null,
-        saccode: "+3NrgY4hVIV/E1xlJ2M6qg==",
-        userInvoiceNumber: null,
-        paymentDate: "0001-01-01T05:53:00",
-        disbursementDate: "2026-04-10T05:30:00",
-        invoiceUrl:
-          "https://grotesque-red-pmuuyjye9n.edgeone.app/GST%20Report_NEXUS%20NUTRI%20SCIENCE%20LIMITED_20260417_152222.pdf",
+          "https://example.com/demo-invoice.pdf",
       },
     ],
   },
@@ -1649,37 +1895,166 @@ const demoClientDetailResponse: IClientResponse = {
   statusCode: 200,
   message: "Client details fetched successfully!",
   data: {
-    clientID: "08de0598-4bee-48ca-8a7c-005b36583e79",
-    clientName: "NEXUS NUTRI SCIENCE LIMITED",
-    clientCode: "COCU251003",
-    mobileNumber: "7UnlDe9E9Dd9xrAPlVCSAQ==",
-    email: "QGbhj6TQHkSdcMwrOQjuXnJm9WgL5JmzhNFbOyF3+QA=",
-    channelPartner: "Jarvis Credo CP",
-    panNumber: "cgsUTjP4e1TKDstAGzjwUw==",
+    clientID: "demo-client-id-001",
+
+    clientName: "ABC INDUSTRIES PRIVATE LIMITED",
+    clientCode: "DEMO001",
+
+    mobileNumber: "9000000001",
+    email: "abc@gmail.com",
+
+    channelPartner: "Demo Prime CP",
+
+    panNumber: "DEMOP9876A",
+
     loanApplicationsList: [
-      { loanApplicationID: "08de0a3a-ca1e-4b77-8eee-17d81db7db57", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA251017", bankName: null, loanType: "Loan against property - Residential", loanTypeID: 7, date: "2025-10-13", sanctionedDate: "2025-11-17", disbursedDate: null, loanAmount: 5000000, sanctionedLoanAmount: null, disbursedLoanAmount: null, sanctionLetterUrl: "/assets/images/sanction-letter.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
-      { loanApplicationID: "08de8bd3-7517-4b14-895d-86d153b58721", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260315", bankName: "ICICI Home Finance", loanType: "Home Loan", loanTypeID: 1, date: "2026-03-27", sanctionedDate: "2026-03-27", disbursedDate: "2026-03-27", loanAmount: 10000000, sanctionedLoanAmount: 1000000, disbursedLoanAmount: 500, sanctionLetterUrl: "/assets/images/sanction-letter.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: true, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
-      { loanApplicationID: "08de917d-e933-4fb2-8462-cfb49ea9307b", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260401", bankName: null, loanType: "Home Loan", loanTypeID: 1, date: "2026-04-03", sanctionedDate: "2026-04-06", disbursedDate: "2026-04-06", loanAmount: 500000000, sanctionedLoanAmount: 5000000, disbursedLoanAmount: 600000, sanctionLetterUrl: "/assets/images/sanction-letter.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
-      { loanApplicationID: "08de9555-6d6b-4e8b-8ee2-16084fca1339", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260404", bankName: null, loanType: "CC/OD - Secured", loanTypeID: 10, date: "2026-04-08", sanctionedDate: null, disbursedDate: null, loanAmount: 3000000, sanctionedLoanAmount: null, disbursedLoanAmount: null, sanctionLetterUrl: null, customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Pending", color: "#FF632C", statusID: 1 } },
-      { loanApplicationID: "08de9601-76b5-4691-880a-1116e852fe41", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260412", bankName: null, loanType: "Loan against property - Residential", loanTypeID: 7, date: "2026-04-09", sanctionedDate: "2026-04-09", disbursedDate: "2026-04-10", loanAmount: 5000000, sanctionedLoanAmount: 4000000, disbursedLoanAmount: 650000, sanctionLetterUrl: "/assets/images/sanction-letter.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
-      { loanApplicationID: "08de9957-529b-4df9-83f6-e3ded4006a52", disbursementId: "00000000-0000-0000-0000-000000000000", loanApplicationCode: "COLA260423", bankName: null, loanType: "Home Loan", loanTypeID: 1, date: "2026-04-13", sanctionedDate: "2026-04-13", disbursedDate: "2026-04-13", loanAmount: 5000000, sanctionedLoanAmount: 5000000, disbursedLoanAmount: 100000, sanctionLetterUrl: "/assets/images/sanction-letter.pdf", customerName: "NEXUS NUTRI SCIENCE LIMITED", userID: "08de0598-4bee-48ca-8a7c-005b36583e79", progressPercent: 60, isCamReportGenerated: false, status: { label: "Disbursed", color: "#0BB680", statusID: 6 } },
+      {
+        loanApplicationID: "demo-loan-id-001",
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+        loanApplicationCode: "DEMO-LA-001",
+        bankName: null,
+        loanType:
+          "Loan against property - Residential",
+        loanTypeID: 7,
+        date: "2026-01-10",
+        sanctionedDate: "2026-01-15",
+        disbursedDate: null,
+        loanAmount: 5000000,
+        sanctionedLoanAmount: null,
+        disbursedLoanAmount: null,
+        sanctionLetterUrl:
+          "/assets/images/sanction-letter.pdf",
+        customerName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+        userID: "demo-client-id-001",
+        progressPercent: 60,
+        isCamReportGenerated: false,
+        status: {
+          label: "Pending",
+          color: "#FF632C",
+          statusID: 1,
+        },
+      },
+
+      {
+        loanApplicationID: "demo-loan-id-002",
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+        loanApplicationCode: "DEMO-LA-002",
+        bankName: "Demo Bank",
+        loanType: "Home Loan",
+        loanTypeID: 1,
+        date: "2026-02-05",
+        sanctionedDate: "2026-02-08",
+        disbursedDate: "2026-02-10",
+        loanAmount: 10000000,
+        sanctionedLoanAmount: 8000000,
+        disbursedLoanAmount: 5000000,
+        sanctionLetterUrl:
+          "/assets/images/sanction-letter.pdf",
+        customerName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+        userID: "demo-client-id-001",
+        progressPercent: 80,
+        isCamReportGenerated: true,
+        status: {
+          label: "Disbursed",
+          color: "#0BB680",
+          statusID: 6,
+        },
+      },
+
+      {
+        loanApplicationID: "demo-loan-id-003",
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+        loanApplicationCode: "DEMO-LA-003",
+        bankName: null,
+        loanType: "CC/OD - Secured",
+        loanTypeID: 10,
+        date: "2026-03-12",
+        sanctionedDate: null,
+        disbursedDate: null,
+        loanAmount: 3000000,
+        sanctionedLoanAmount: null,
+        disbursedLoanAmount: null,
+        sanctionLetterUrl: null,
+        customerName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+        userID: "demo-client-id-001",
+        progressPercent: 45,
+        isCamReportGenerated: false,
+        status: {
+          label: "Pending",
+          color: "#FF632C",
+          statusID: 1,
+        },
+      },
+
+      {
+        loanApplicationID: "demo-loan-id-004",
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+        loanApplicationCode: "DEMO-LA-004",
+        bankName: "Sample Finance",
+        loanType: "Business Loan",
+        loanTypeID: 4,
+        date: "2026-03-20",
+        sanctionedDate: "2026-03-25",
+        disbursedDate: "2026-03-28",
+        loanAmount: 7500000,
+        sanctionedLoanAmount: 7000000,
+        disbursedLoanAmount: 6500000,
+        sanctionLetterUrl:
+          "/assets/images/sanction-letter.pdf",
+        customerName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+        userID: "demo-client-id-001",
+        progressPercent: 100,
+        isCamReportGenerated: true,
+        status: {
+          label: "Disbursed",
+          color: "#0BB680",
+          statusID: 6,
+        },
+      },
     ],
   },
 };
 
 const demoSourcingPartnerDetailResponse: ISourcingPartnerDetailsResponse = {
   status: true,
+
   statusCode: 200,
-  message: null as unknown as string,
+
+  message:
+    null as unknown as string,
+
   data: {
-    id: "08dde472-ba92-4d2d-8771-809d3216a7a5",
-    name: "NIKUNJ MAKRANI",
-    code: "COSP250805",
-    mobileNumber: "C5Vib1LKCU9NzlqXYsi2Lg==",
-    email: "EDwRnOHXFcmSXF+/J6lttmA5Hvf5w57BW2WAVoIrUJM=",
-    channelPartner: "Jarvis Credo CP",
-    panNumber: "A/l+DKSMXMc+UgvCQfEeSg==",
+    id:
+      "demo-sp-id-001",
+
+    name:
+      "ABC SOURCE SP",
+
+    code:
+      "DEMO-SP-001",
+
+    mobileNumber:
+      "encrypted-demo-mobile",
+
+    email:
+      "encrypted-demo-email",
+
+    channelPartner:
+      "Demo Prime CP",
+
+    panNumber:
+      "encrypted-demo-pan",
+
     payOuts: 50,
+
     loansCompleted: 0,
   },
 };
@@ -1687,21 +2062,78 @@ const demoSourcingPartnerDetailResponse: ISourcingPartnerDetailsResponse = {
 const demoCpReportDetailResponse: IChannelPartnerClientReportDetailResponse = {
   status: true,
   statusCode: 200,
-  message: "Channel partner details fetched successfully!",
+  message:
+    "Channel partner details fetched successfully!",
+
   data: {
-    clientID: "08de0598-4bee-48ca-8a7c-005b36583e79",
-    clientName: "NEXUS NUTRI SCIENCE LIMITED",
-    clientCode: "COCU251003",
-    mobileNumber: "7UnlDe9E9Dd9xrAPlVCSAQ==",
-    email: "QGbhj6TQHkSdcMwrOQjuXnJm9WgL5JmzhNFbOyF3+QA=",
-    channelPartner: "Jarvis Credo CP",
-    panNumber: "cgsUTjP4e1TKDstAGzjwUw==",
+    clientID:
+      "demo-client-id-001",
+
+    clientName:
+      "MNO USER",
+
+    clientCode:
+      "DEMO001",
+
+    mobileNumber:
+      "9000000001",
+
+    email:
+      "demouser1@gmail.com",
+
+    channelPartner:
+      "Demo Prime CP",
+
+    panNumber:
+      "DEMOP9876A",
+
     clientReports: [
-      { name: "GST Report", filePath: "/assets/images/GST Report.pdf", reportType: 5 },
-      { name: "ITR Report", filePath: "/assets/images/ITR Report.pdf", reportType: 4 },
-      { name: "Banking Report", filePath: "/assets/images/Banking Report.pdf", reportType: 3 },
-      { name: "Credit Analytics Report", filePath: "/assets/images/Credit Analytics Report.pdf", reportType: 1 },
-      { name: "CAM Report_HL_NEXUS NUTRI SCIENCE LIMITED", filePath: "/assets/images/CAM_Report_Sample_HL.pdf", reportType: 8 },
+      {
+        name: "GST Report",
+
+        filePath:
+          "/assets/images/GST Report.pdf",
+
+        reportType: 5,
+      },
+
+      {
+        name: "ITR Report",
+
+        filePath:
+          "/assets/images/ITR Report.pdf",
+
+        reportType: 4,
+      },
+
+      {
+        name: "Banking Report",
+
+        filePath:
+          "/assets/images/Banking Report.pdf",
+
+        reportType: 3,
+      },
+
+      {
+        name:
+          "Credit Analytics Report",
+
+        filePath:
+          "/assets/images/Credit Analytics Report.pdf",
+
+        reportType: 1,
+      },
+
+      {
+        name:
+          "CAM_Report_ABC_INDUSTRIES_PRIVATE_LIMITED",
+
+        filePath:
+          "/assets/images/CAM_Report_Sample_HL.xlsx",
+
+        reportType: 8,
+      },
     ],
   },
 };
@@ -1724,394 +2156,91 @@ const demoClientMasterResponse: IClientMasterResponse = {
   statusCode: 200,
   message: "List of customers fetched successfully!",
   data: {
-    totalCount: 38,
+    totalCount: 5,
     customersList: [
       {
-        "id": "08de0598-4bee-48ca-8a7c-005b36583e79",
-        "customerCode": "COCU251003",
-        "fullName": "NEXUS NUTRI SCIENCE LIMITED",
-        "phoneNumber": "7UnlDe9E9Dd9xrAPlVCSAQ==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-10-07T17:24:40.020607",
-        "isActive": true,
-        "applicationStatuses": [
-          "Disbursed",
-          "Pending"
-        ]
-      },
-      {
-        "id": "08de8f26-c1c2-493c-8bbc-493b9af79369",
-        "customerCode": "COCU260306",
-        "fullName": "KARAN RAI",
-        "phoneNumber": "9AoQbOtlXb6R8Nyys2hhDQ==",
-        "sourcingPartnerName": null,
-        "createdDate": "2026-03-31T18:39:35.546808",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending",
-          "Disbursed"
-        ]
-      },
-      {
-        "id": "08de8f25-d822-48d7-84f0-b22c46f4c15f",
-        "customerCode": "COCU260305",
-        "fullName": "PARAMJIT SINGH",
-        "phoneNumber": "KGQK4X/cQH0fbBr5YKkv/A==",
-        "sourcingPartnerName": null,
-        "createdDate": "2026-03-31T18:33:03.588916",
-        "isActive": true,
-        "applicationStatuses": []
-      },
-      {
-        "id": "08de8f1e-ae79-4edb-8ec0-2c39fd964c7d",
-        "customerCode": "COCU260304",
-        "fullName": "MARIMUTHU SATHISHKUMAR",
-        "phoneNumber": "z/pzrTBCaUbA/r+gPoyzHQ==",
-        "sourcingPartnerName": null,
-        "createdDate": "2026-03-31T17:41:47.220484",
-        "isActive": true,
-        "applicationStatuses": []
-      },
-      {
-        "id": "08de8f16-381b-4de4-859f-be9de1bde262",
-        "customerCode": "COCU260303",
-        "fullName": "RAHUL NEGI",
-        "phoneNumber": "vO5BMExR9EM6qawgtekoVg==",
-        "sourcingPartnerName": null,
-        "createdDate": "2026-03-31T16:41:12.651931",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending"
-        ]
-      },
-      {
-        "id": "08de6952-8e95-4707-8c85-118482cd08bb",
-        "customerCode": "COCU260201",
-        "fullName": "ABHISHEK JIVANLAL JAIN",
-        "phoneNumber": "NNOLDy8pcZTfHfN3dskeag==",
-        "sourcingPartnerName": null,
-        "createdDate": "2026-02-11T15:17:23.347888",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending"
-        ]
-      },
-      {
-        "id": "08de5d7f-f118-4a11-854e-9ebd1348d63e",
-        "customerCode": "COCU260105",
-        "fullName": "MSACA BIZZSOLVE LLP",
-        "phoneNumber": "tByiHoJPjv2RMThVjCG/Zg==",
-        "sourcingPartnerName": null,
-        "createdDate": "2026-01-27T14:12:02.004245",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending"
-        ]
-      },
-      {
-        "id": "08de4d22-8a7d-4fc2-84ff-ae2465c4e2d0",
-        "customerCode": "COCU260104",
-        "fullName": "BHAVYA TIWARI",
-        "phoneNumber": "B29hKKbxhpyP/RRNF2Psdw==",
-        "sourcingPartnerName": null,
-        "createdDate": "2026-01-06T18:23:08.084577",
-        "isActive": true,
-        "applicationStatuses": [
-          "Sanctioned",
-          "Disbursed",
-          "Applied"
-        ]
-      },
-      {
-        "id": "08de30bb-f423-4e6d-8d1c-94add58b8623",
-        "customerCode": "COCU251202",
-        "fullName": "ACCUSPECTRA ANALYTICAL LAB",
-        "phoneNumber": "VLstAFyp0QqE2MG1TD7n6w==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-12-01T14:58:14.589037",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending"
-        ]
-      },
-      {
-        "id": "08de1ac2-310f-41e6-894f-db823a879de4",
-        "customerCode": "COCU251101",
-        "fullName": "SIDDHI VINAYAK ENTERPRISES",
-        "phoneNumber": "Khaqbj5W7a7rPwizzYGZTw==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-11-03T15:47:28.185679",
-        "isActive": true,
-        "applicationStatuses": [
-          "Disbursed"
-        ]
+        id: "demo-id-001",
+        customerCode: "DEMO001",
+        fullName: "ABC INDUSTRIES PRIVATE LIMITED",
+        phoneNumber: "9000000001",
+        sourcingPartnerName: null,
+        createdDate: "2026-01-10T10:15:00",
+        isActive: true,
+        applicationStatuses: ["Disbursed", "Pending"],
       },
 
       {
-        "id": "08de000a-df7b-4e64-802c-1e86737f6991",
-        "customerCode": "COCU250928",
-        "fullName": "VINOD KUMAR SEVAK",
-        "phoneNumber": "5U8wsmljtwmIsUU9juI9Yw==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-09-30T15:49:43.22825",
-        "isActive": true,
-        "applicationStatuses": [
-          "Disbursed",
-          "Pending"
-        ]
+        id: "demo-id-002",
+        customerCode: "DEMO002",
+        fullName: "MNO USER",
+        phoneNumber: "9000000002",
+        sourcingPartnerName: null,
+        createdDate: "2026-02-05T14:20:00",
+        isActive: true,
+        applicationStatuses: ["Pending"],
       },
+
       {
-        "id": "08ddfb52-666c-4ca3-8ae8-281136b315c2",
-        "customerCode": "COCU250925",
-        "fullName": "NISHITA JUNEJA",
-        "phoneNumber": "ayd9FPvdJnogRJbULyE1JQ==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-09-24T15:39:08.074116",
-        "isActive": true,
-        "applicationStatuses": [
-          "Disbursed",
-          "Pending"
-        ]
+        id: "demo-id-003",
+        customerCode: "DEMO003",
+        fullName: "XYZ BUSINESS SOLUTIONS LLP",
+        phoneNumber: "9000000003",
+        sourcingPartnerName: null,
+        createdDate: "2026-02-18T11:45:00",
+        isActive: true,
+        applicationStatuses: ["Sanctioned", "Disbursed"],
       },
+
       {
-        "id": "08ddee16-2f23-454c-8547-3c22bdefdb60",
-        "customerCode": "COCU250916",
-        "fullName": "VAISHALI BHAUMIK ACHARYA",
-        "phoneNumber": "eI+rIjEr07Nt27NcZ3XrXQ==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-09-07T19:25:20.400831",
-        "isActive": true,
-        "applicationStatuses": [
-          "Disbursed",
-          "Applied"
-        ]
+        id: "demo-id-004",
+        customerCode: "DEMO004",
+        fullName: "OPQ USER",
+        phoneNumber: "9000000004",
+        sourcingPartnerName: null,
+        createdDate: "2026-03-02T09:30:00",
+        isActive: true,
+        applicationStatuses: ["Applied"],
       },
+
       {
-        "id": "08ddee13-a5e4-4f33-869f-117105e188da",
-        "customerCode": "COCU250915",
-        "fullName": "BHAUMIK RAMNIKLAL ACHARYA",
-        "phoneNumber": "cl+ysi2jVzcNmiDaF8KoQw==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-09-07T19:07:11.141738",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending"
-        ]
+        id: "demo-id-005",
+        customerCode: "DEMO005",
+        fullName: "DEF INDUSTRIES PRIVATE LIMITED",
+        phoneNumber: "9000000005",
+        sourcingPartnerName: null,
+        createdDate: "2026-03-15T16:10:00",
+        isActive: true,
+        applicationStatuses: ["Pending", "Query Raised"],
       },
-      {
-        "id": "08dde472-9dc8-4992-877f-18e7fb483b8e",
-        "customerCode": "COCU250847",
-        "fullName": "NIKUNJ MAKRANI",
-        "phoneNumber": "C5Vib1LKCU9NzlqXYsi2Lg==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-08-26T13:01:48.10473",
-        "isActive": true,
-        "applicationStatuses": [
-          "Disbursed"
-        ]
-      },
-      {
-        "id": "08dde300-1440-44e4-8388-7cbfd5af26e8",
-        "customerCode": "COCU250842",
-        "fullName": "TIRTH PARAGBHAI ACHARYA",
-        "phoneNumber": "cureyu1wpzLkIk8xnBPbEQ==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-08-24T16:49:23.573779",
-        "isActive": true,
-        "applicationStatuses": [
-          "Sanctioned",
-          "Disbursed"
-        ]
-      },
-      {
-        "id": "08dde22e-a5e6-4a56-8ebc-9b68c4c0936b",
-        "customerCode": "COCU250841",
-        "fullName": "HARSHADRAY JIVRAMBHAI ACHARYA",
-        "phoneNumber": "dbvZGUurIhuZWO8y2eMnig==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-08-23T15:50:13.620686",
-        "isActive": true,
-        "applicationStatuses": [
-          "Query Raised"
-        ]
-      },
-      {
-        "id": "08dde21f-0fd9-41c7-86e7-5ca28377b93b",
-        "customerCode": "COCU250840",
-        "fullName": "RAJESH JAYSUKHLAL ACHARYA",
-        "phoneNumber": "NxMDnb+0Ekal6B9oBnh88Q==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-08-23T13:58:39.422108",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending",
-          "Disbursed"
-        ]
-      },
-      {
-        "id": "08ddd0e5-bc99-4f82-83c9-cc3cc97d32fc",
-        "customerCode": "COCU250802",
-        "fullName": "MEGHAL BHIKHUBHAI SHAH",
-        "phoneNumber": "vO5BMExR9EM6qawgtekoVg==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-08-01T15:55:28.677326",
-        "isActive": true,
-        "applicationStatuses": [
-          "Disbursed",
-          "Pending"
-        ]
-      },
-      {
-        "id": "08ddd0e0-4490-40eb-8588-8dd1deeca1b2",
-        "customerCode": "COCU250801",
-        "fullName": "SARATHI PIPES INDIA PRIVATE LIMITED",
-        "phoneNumber": "iXt+vgR9GBfPWErXpN/WKw==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-08-01T15:16:19.801637",
-        "isActive": true,
-        "applicationStatuses": [
-          "Disbursed",
-          "Sanctioned"
-        ]
-      },
-      {
-        "id": "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
-        "customerCode": "COCU250555",
-        "fullName": "PRERNA KIRANBHAI THAKER",
-        "phoneNumber": "4Hp8ncXGNVVY08rPYUj1lA==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-05-30T11:35:13.63769",
-        "isActive": true,
-        "applicationStatuses": [
-          "Disbursed",
-          "Applied",
-          "Pending"
-        ]
-      },
-      {
-        "id": "08dd96aa-6c9a-40f7-8d5e-d6f2e75f9b1d",
-        "customerCode": "COCU250529",
-        "fullName": "NISHI BHAVSAR",
-        "phoneNumber": "slrxZTXKtqEqo2MkDA79xQ==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-05-19T13:24:46.711917",
-        "isActive": true,
-        "applicationStatuses": [
-          "Rejected",
-          "Pending"
-        ]
-      },
-      {
-        "id": "08dd914f-ef35-4e11-8ae0-0a4ede6d5bb6",
-        "customerCode": "COCU250517",
-        "fullName": "HIRENKUMAR VITTHALDAS SHAH",
-        "phoneNumber": "C5Vib1LKCU9NzlqXYsi2Lg==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-05-12T17:54:25.819295",
-        "isActive": true,
-        "applicationStatuses": [
-          "Disbursed"
-        ]
-      },
-      {
-        "id": "08dd8614-0cf0-4b90-8049-4b1d68ba9245",
-        "customerCode": "COCU250412",
-        "fullName": "JAIPRAKASH REDDY ARCHANA",
-        "phoneNumber": "EBiK5IfXXAPxPzCO+phM9g==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-04-28T10:48:03.103497",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending"
-        ]
-      },
-      {
-        "id": "08dd822a-914b-47a7-8774-31610d10035f",
-        "customerCode": "COCU250403",
-        "fullName": "ANUJ GULATI",
-        "phoneNumber": "zDgQShcjHn4DzQnvVQaDgg==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-04-23T11:19:09.435065",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending"
-        ]
-      },
-      {
-        "id": "08dd661a-8096-4128-896f-6895fee1f5f7",
-        "customerCode": "COCU250308",
-        "fullName": "SHARAD SIDDHESHWAR NALAWAD",
-        "phoneNumber": "z3XnArzMvoS4bfj48OQsLQ==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-03-18T18:13:36.897967",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending",
-          "Sanctioned"
-        ]
-      },
-      {
-        "id": "08dd609a-f719-4444-8f9d-d666a04a903a",
-        "customerCode": "COCU250306",
-        "fullName": "SHWET N RAVAL",
-        "phoneNumber": "5uKWUN03fFbltPAvSWJiJw==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-03-11T18:18:04.333372",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending",
-          "Disbursed"
-        ]
-      },
-      {
-        "id": "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        "customerCode": "COCU250108",
-        "fullName": "MERCURY CHEM TECH",
-        "phoneNumber": "vTxKSUuXfxJykBgr1ztdMw==",
-        "sourcingPartnerName": null,
-        "createdDate": "2025-01-30T16:20:31.951803",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending"
-        ]
-      },
-      {
-        "id": "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        "customerCode": "COCU241210",
-        "fullName": "MEGHAL SHAH NEW & ASSOCIATES",
-        "phoneNumber": "5CNo5cyh2eSP8sRHvDWlNg==",
-        "sourcingPartnerName": null,
-        "createdDate": "2024-12-30T18:24:10.871753",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending",
-          "Disbursed",
-          "Applied",
-          "Pending at Credit"
-        ]
-      },
-      {
-        "id": "7c06b68e-48f7-423d-bdd2-d84ca204ac1a",
-        "customerCode": "COCU241104",
-        "fullName": "AVULA SATEESH",
-        "phoneNumber": "cpPEzqxr2P3559XDWCwXuw==",
-        "sourcingPartnerName": null,
-        "createdDate": "2024-11-06T21:20:39",
-        "isActive": true,
-        "applicationStatuses": [
-          "Pending"
-        ]
-      }
     ],
+
     categoryList: [
       { id: 1, name: "Individual" },
       { id: 2, name: "Company" },
-      { id: 3, name: "Hindu Undivided Family" },
-      { id: 4, name: "Association Of Persons" },
-      { id: 5, name: "Body Of Individuals" },
-      { id: 6, name: "Government Agency" },
-      { id: 7, name: "Artificial Juridical Person" },
-      { id: 8, name: "Local Authority" },
+      {
+        id: 3,
+        name: "Hindu Undivided Family",
+      },
+      {
+        id: 4,
+        name: "Association Of Persons",
+      },
+      {
+        id: 5,
+        name: "Body Of Individuals",
+      },
+      {
+        id: 6,
+        name: "Government Agency",
+      },
+      {
+        id: 7,
+        name: "Artificial Juridical Person",
+      },
+      {
+        id: 8,
+        name: "Local Authority",
+      },
       { id: 9, name: "Firm" },
       { id: 10, name: "Trust" },
       { id: 11, name: "Person" },
@@ -2459,63 +2588,163 @@ const demoLogoutResponse: ILogoutResponse = {
 
 const demoUserProfileResponse: IUserProfileResponse = {
   status: true,
+
   statusCode: 200,
-  message: "User fetched successfully!",
+
+  message:
+    "User fetched successfully!",
+
   data: {
-    id: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
-    name: "Jarvis Credo CP",
-    panNumber: "uBrXSZkYxtxeJ12EzmYaLA==",
-    emailID: "PjCsDPUr/SMcy0TJrJ1Wb5Ggye2vwjyj41h4oJMW5LQ=",
-    mobileNumber: "DR/IXQnqfRCnSsOyS0i9gA==",
+    id:
+      "demo-cp-id-001",
+
+    name:
+      "Demo Prime CP",
+
+    panNumber:
+      "encrypted-demo-pan",
+
+    emailID:
+      "encrypted-demo-email",
+
+    mobileNumber:
+      "encrypted-demo-mobile",
+
     profilePicture:
-      "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
-    selectedGstNumber: "galvf4LyZEjBmoENB1GWrA==",
+      "https://i.postimg.cc/Njq5CnTY/demo-logo.jpg",
+
+    selectedGstNumber:
+      "encrypted-demo-gst",
+
     gstList: [],
+
     billingDetails: true,
-    role: "Channel Partner",
-    customerID: "COCP241101",
+
+    role:
+      "Channel Partner",
+
+    customerID:
+      "DEMO-CP-001",
+
     isCompany: true,
+
     coApplicants: [],
+
     partners: [
       {
-        id: "08de8bc0-3f7f-49a7-861f-402c96bc70a9",
-        name: "DARSHAK ATULKUMAR ACHARYA",
-        firstName: "DARSHAK",
-        middleName: "ATULKUMAR",
-        lastName: "ACHARYA",
-        pan: "P4OJWWP5SgQ3vzk/ukhRmA==",
-        aadhaarNumber: "rXgHI8q/qWT1mehve3IPxQ==",
+        id:
+          "demo-partner-id-001",
+
+        name:
+          "MNO USER",
+
+        firstName:
+          "MNO",
+
+        middleName:
+          "",
+
+        lastName:
+          "USER",
+
+        pan:
+          "ABCDE1234F",
+
+        aadhaarNumber:
+          "XXXX-XXXX-1234",
+
         address:
-          "xpMThbhpbA2FK/T5gihVNHnKd8UV4gM3uVHZPJ5THFhXdq+yepZgK2bPBSP3h5IeJaoPc2/JvCAnEuZ+iPiLTLNmx3i+7b93ImjalyrmcnmBLrgsdDDjvCYka2jvp5KxzWhFXu+fszl7z22gYMZrl2Q8DdLKu6l8pq1dhHT6Z/w=",
-        state: "",
-        city: "",
-        pinCode: "",
-        mobile: "",
-        dateOfBirth: "D60kyAv6XHMebIyhLZ1KGQ==",
-        gender: "M",
-        creditScore: null,
+          "Demo Corporate Road, Ahmedabad, Gujarat",
+
+        state:
+          "Gujarat",
+
+        city:
+          "Ahmedabad",
+
+        pinCode:
+          "380015",
+
+        mobile:
+          "9000000001",
+
+        dateOfBirth:
+          "1991-02-15",
+
+        gender:
+          "M",
+
+        creditScore:
+          null,
       },
     ],
+
     commission: 2,
-    bankAccountNumber: "ucFzF/VSigoE/NK0huuFFQ==",
-    bankName: "HDFC",
-    ifscCode: "uBT5uZUf8pKY11F7FHqLLA==",
-    dateOfBirth: "Yfs+vfAezK8h6/SmmrGVg9dfX8+EhHqibSdDip2RY1o=",
+
+    bankAccountNumber:
+      "encrypted-demo-bank-account",
+
+    bankName:
+      "Demo Bank",
+
+    ifscCode:
+      "encrypted-demo-ifsc",
+
+    dateOfBirth:
+      "encrypted-demo-dob",
+
     address:
-      "woAABcGudYHuak92v2If/V5CijOeFB3yq+1bscT9j7cXJ2pjce7CqSEDFI03Tdq0xkvl89hPfw+TP0kLYgnaDe9ftOD4/4LxQ/locsEYCI4bVK/K6aNLNjyyjZ+eMoXD",
-    city: "0/uFJ6slmmGhvzYYiBk81g==",
-    state: "ACqMBUzXjoW77dzATOXLvA==",
-    zipCode: "rqTjq8a3SfIm3At4hB+wwQ==",
-    aadhaar: "pY1R+9dga/ja2YTReusQpA==",
-    country: "INDIA",
-    udhyamAadhaar: "RCVHnNRpk28cp5TFP4PN3A==",
+      "encrypted-demo-address",
+
+    city:
+      "encrypted-demo-city",
+
+    state:
+      "encrypted-demo-state",
+
+    zipCode:
+      "encrypted-demo-zipcode",
+
+    aadhaar:
+      "encrypted-demo-aadhaar",
+
+    country:
+      "INDIA",
+
+    udhyamAadhaar:
+      "encrypted-demo-udyam",
+
     userConsents: [
-      { userConsentID: 1, consentName: "Email", isConsented: true },
-      { userConsentID: 3, consentName: "SMS", isConsented: true },
-      { userConsentID: 5, consentName: "WhatsApp", isConsented: true },
+      {
+        userConsentID: 1,
+
+        consentName:
+          "Email",
+
+        isConsented: true,
+      },
+
+      {
+        userConsentID: 3,
+
+        consentName:
+          "SMS",
+
+        isConsented: true,
+      },
+
+      {
+        userConsentID: 5,
+
+        consentName:
+          "WhatsApp",
+
+        isConsented: true,
+      },
     ],
+
     cpCompanyLogo:
-      "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      "https://i.postimg.cc/Njq5CnTY/demo-logo.jpg",
   },
 };
 
@@ -2537,70 +2766,127 @@ const demoUserManagementResponse: IUserDataResponse = {
   status: true,
   statusCode: 200,
   message: "User management list fetched successfully!",
+
   data: {
     totalCount: 7,
+
     userManagementList: [
       {
-        userID: "08dda7f5-9016-44f5-8136-5475a82c5341",
-        userName: "Audra Webster",
+        userID:
+          "demo-user-id-001",
+
+        userName: "MNO USER",
+
         roleName: "Account",
+
         designation: "Manager",
-        email: "uzyiGBViw7ly/pbDameKR2cfWC3fN9ukBglyS63c30k=",
-        mobileNumber: "llZAfsV1VjHSPua5stwnMg==",
+
+        email: "mnouser@gmail.com",
+
+        mobileNumber: "9000000001",
+
         status: true,
       },
+
       {
-        userID: "08dde3d8-51bf-4de8-8097-051a606798c1",
-        userName: "Darshak Acharya",
+        userID:
+          "demo-user-id-002",
+
+        userName: "OPQ USER",
+
         roleName: "Account",
-        designation: "Sraccountant",
-        email: "UpoqYMuiYmchK2RXHgfEUiA8LIN2sxi6Ba3mTI18Gek=",
-        mobileNumber: "7UnlDe9E9Dd9xrAPlVCSAQ==",
+
+        designation: "Senior Accountant",
+
+        email: "opquser@gmail.com",
+
+        mobileNumber: "9000000002",
+
         status: true,
       },
+
       {
-        userID: "08dd9760-147e-4f2b-8637-aa679b9bbcfb",
-        userName: "DEV SANJAYKUMAR BHUPTANI",
+        userID:
+          "demo-user-id-003",
+
+        userName: "RST USER",
+
         roleName: "Account",
-        designation: "Harum",
-        email: "s+gkMLCr7QUNQzepjj/+7YJuIsZ4JURulrRIR72rY9g=",
-        mobileNumber: "vO5BMExR9EM6qawgtekoVg==",
+
+        designation: "Operations Lead",
+
+        email: "rstuser@gmail.com",
+
+        mobileNumber: "9000000003",
+
         status: true,
       },
+
       {
-        userID: "08ddc39a-7c0a-4411-8533-f2f7b54ba403",
-        userName: "Meghal Shah",
+        userID:
+          "demo-user-id-004",
+
+        userName: "UVW USER",
+
         roleName: "Executive",
+
         designation: "Manager",
-        email: "u2yJ2zAKTbCSKdl6UDQnu0YrTjWdjni2KaQ+OVLTzhk=",
-        mobileNumber: "qSQuA0J5H6XDp9KKPaw8mA==",
+
+        email: "uvwuser@gmail.com",
+
+        mobileNumber: "9000000004",
+
         status: true,
       },
+
       {
-        userID: "08ddc39a-4be7-414c-8b99-955909f29bf1",
-        userName: "Ritu V",
+        userID:
+          "demo-user-id-005",
+
+        userName: "XYZ USER",
+
         roleName: "Manager",
-        designation: "Manager",
-        email: "euZuoLMyLKjTpeTMzWrBHjBYfHRxLOTrpTT+Tq+ElXU=",
-        mobileNumber: "RCVHnNRpk28cp5TFP4PN3A==",
+
+        designation: "Branch Manager",
+
+        email: "xyzuser@gmail.com",
+
+        mobileNumber: "9000000005",
+
         status: true,
       },
+
       {
-        userID: "08de3894-11f6-4120-81cf-5592f9e7c96b",
-        userName: "Test Cp",
+        userID:
+          "demo-user-id-006",
+
+        userName: "ABC ADMIN",
+
         roleName: "Admin",
-        designation: "Qa",
-        email: "uR/qE9XlIF8i0Rq40upr+NuLvw17Z3f0JhitWs+hx6Y=",
-        mobileNumber: "ayd9FPvdJnogRJbULyE1JQ==",
+
+        designation: "QA Analyst",
+
+        email: "abcadmin@gmail.com",
+
+        mobileNumber: "9000000006",
+
         status: true,
       },
+
       {
-        userID: "08dde073-33cd-4baf-8e92-0ac27d6ce03d",
-        userName: "Vyom Patel",
+        userID:
+          "demo-user-id-007",
+
+        userName: "DEF USER",
+
         roleName: "Account",
-        designation: "Lead",
-        email: "DBkLG45C3RAutiLCijkO7hnYFo+20J/w0wOKq9lO+Ko=",
-        mobileNumber: "e9QuuQnJM4BrjEDrQAS4lQ==",
+
+        designation: "Team Lead",
+
+        email: "defuser@gmail.com",
+
+        mobileNumber: "9000000007",
+
         status: true,
       },
     ],
@@ -2861,123 +3147,269 @@ const demoRoleUpdateResponse: APIResponseEntity = {
 
 const demoSourcingPartnerResponse: ISourcingPartnerResponse = {
   status: true,
+
   statusCode: 200,
-  message: "List of sourcing partners fetched successfully!",
+
+  message:
+    "List of sourcing partners fetched successfully!",
+
   data: {
-    totalCount: 12,
+    totalCount: 10,
+
     sourcingPartersList: [
       {
-        id: "08dde472-ba92-4d2d-8771-809d3216a7a5",
-        name: "NIKUNJ MAKRANI",
-        code: "COSP250805",
-        registeredDate: "2025-08-26T13:02:36.406697",
-        mobileNumber: "C5Vib1LKCU9NzlqXYsi2Lg==",
+        id:
+          "demo-sp-id-001",
+
+        name:
+          "MNO USER",
+
+        code:
+          "DEMO-SP-001",
+
+        registeredDate:
+          "2025-08-26T13:02:36.406697",
+
+        mobileNumber:
+          "9000000001",
+
         noOfRegisteredSP: 0,
+
         activeCredits: 0,
+
         reservedCredits: 0,
+
         isActive: true,
       },
+
       {
-        id: "08dde075-823a-46eb-864d-9eeb82998f9f",
-        name: "SAMEER KUMAR AGRAWAL",
-        code: "COSP250803",
-        registeredDate: "2025-08-21T11:12:25.714065",
-        mobileNumber: "nNFug1c0BpJw4UkT7ooUPw==",
+        id:
+          "demo-sp-id-002",
+
+        name:
+          "OPQ USER",
+
+        code:
+          "DEMO-SP-002",
+
+        registeredDate:
+          "2025-08-21T11:12:25.714065",
+
+        mobileNumber:
+          "9000000002",
+
         noOfRegisteredSP: 0,
+
         activeCredits: 0,
+
         reservedCredits: 0,
+
         isActive: true,
       },
+
       {
-        id: "08dd914d-869d-4ce6-82a1-f2385cc10eb8",
-        name: "NISHI BHAVSAR",
-        code: "COSP250505",
-        registeredDate: "2025-05-12T17:37:11.347593",
-        mobileNumber: "F+kK6kaQDNjFdOcSTsvHbA==",
+        id:
+          "demo-sp-id-003",
+
+        name:
+          "RST USER",
+
+        code:
+          "DEMO-SP-003",
+
+        registeredDate:
+          "2025-05-12T17:37:11.347593",
+
+        mobileNumber:
+          "9000000003",
+
         noOfRegisteredSP: 0,
+
         activeCredits: 0,
+
         reservedCredits: 0,
+
         isActive: true,
       },
+
       {
-        id: "08dd8614-3a11-464a-868f-e8817e5b32bd",
-        name: "MAULIK GIRISH SHAREDALAL",
-        code: "COSP250403",
-        registeredDate: "2025-04-28T10:49:18.816338",
-        mobileNumber: "m0o7Fky1s3Z4Za5r729c5A==",
+        id:
+          "demo-sp-id-004",
+
+        name:
+          "UVW USER",
+
+        code:
+          "DEMO-SP-004",
+
+        registeredDate:
+          "2025-04-28T10:49:18.816338",
+
+        mobileNumber:
+          "9000000004",
+
         noOfRegisteredSP: 0,
+
         activeCredits: 0,
+
         reservedCredits: 0,
+
         isActive: true,
       },
+
       {
-        id: "08dd8239-f349-49f8-8dd6-dd4bfd149a67",
-        name: "ANUJ  GULATI",
-        code: "COSP250402",
-        registeredDate: "2025-04-23T13:09:16.291292",
-        mobileNumber: "vO5BMExR9EM6qawgtekoVg==",
+        id:
+          "demo-sp-id-005",
+
+        name:
+          "XYZ USER",
+
+        code:
+          "DEMO-SP-005",
+
+        registeredDate:
+          "2025-04-23T13:09:16.291292",
+
+        mobileNumber:
+          "9000000005",
+
         noOfRegisteredSP: 0,
+
         activeCredits: 0,
+
         reservedCredits: 0,
+
         isActive: true,
       },
+
       {
-        id: "08dd8234-f76f-4a0a-8b2a-185316862930",
-        name: "KIRAN  AGARWAL",
-        code: "COSP250401",
-        registeredDate: "2025-04-23T12:33:35.767611",
-        mobileNumber: "zDgQShcjHn4DzQnvVQaDgg==",
+        id:
+          "demo-sp-id-006",
+
+        name:
+          "ABC USER",
+
+        code:
+          "DEMO-SP-006",
+
+        registeredDate:
+          "2025-04-23T12:33:35.767611",
+
+        mobileNumber:
+          "9000000006",
+
         noOfRegisteredSP: 0,
+
         activeCredits: 0,
+
         reservedCredits: 0,
+
         isActive: true,
       },
+
       {
-        id: "08dd6dc0-244d-44e3-840b-c8fc61ba8a91",
-        name: "MIHIR PINAKINBHAI MEHTA",
-        code: "COSP250303",
-        registeredDate: "2025-03-28T11:46:56.666926",
-        mobileNumber: "oPkeD9rt4GOdF7t2Bm2o6A==",
+        id:
+          "demo-sp-id-007",
+
+        name:
+          "DEF USER",
+
+        code:
+          "DEMO-SP-007",
+
+        registeredDate:
+          "2025-03-28T11:46:56.666926",
+
+        mobileNumber:
+          "9000000007",
+
         noOfRegisteredSP: 0,
+
         activeCredits: 0,
+
         reservedCredits: 0,
+
         isActive: true,
       },
+
       {
-        id: "08dd5d47-8d58-4536-816e-69beba1e38f8",
-        name: "DEV SANJAYKUMAR BHUPTANI",
-        code: "COSP250301",
-        registeredDate: "2025-03-07T12:43:25.190751",
-        mobileNumber: "DR/IXQnqfRCnSsOyS0i9gA==",
+        id:
+          "demo-sp-id-008",
+
+        name:
+          "GHI USER",
+
+        code:
+          "DEMO-SP-008",
+
+        registeredDate:
+          "2025-03-07T12:43:25.190751",
+
+        mobileNumber:
+          "9000000008",
+
         noOfRegisteredSP: 0,
+
         activeCredits: 0,
+
         reservedCredits: 0,
+
         isActive: true,
       },
+
       {
-        id: "08dd411c-fe5c-4ee4-8fdb-6c0ede070872",
-        name: "NISHI HITESH WADHWANI",
-        code: "COSP250101",
-        registeredDate: "2025-01-30T16:28:13.887042",
-        mobileNumber: "Uu2U7iKDClCAWJoTKo5+cw==",
+        id:
+          "demo-sp-id-009",
+
+        name:
+          "JKL USER",
+
+        code:
+          "DEMO-SP-009",
+
+        registeredDate:
+          "2025-01-30T16:28:13.887042",
+
+        mobileNumber:
+          "9000000009",
+
         noOfRegisteredSP: 0,
+
         activeCredits: 0,
+
         reservedCredits: 0,
+
         isActive: true,
       },
+
       {
-        id: "08dd2358-96ad-42d6-80e9-cec0d8f438f9",
-        name: "MEGHAL SHAH NEW & ASSOCIATES",
-        code: "COSP24127",
-        registeredDate: "2024-12-23T19:19:14.850335",
-        mobileNumber: "DR/IXQnqfRCnSsOyS0i9gA==",
+        id:
+          "demo-sp-id-010",
+
+        name:
+          "PQR USER",
+
+        code:
+          "DEMO-SP-010",
+
+        registeredDate:
+          "2024-12-23T19:19:14.850335",
+
+        mobileNumber:
+          "9000000010",
+
         noOfRegisteredSP: 0,
+
         activeCredits: 0,
+
         reservedCredits: 0,
+
         isActive: true,
       },
     ],
-    categoryList: demoClientMasterResponse.data.categoryList,
+
+    categoryList:
+      demoClientMasterResponse.data.categoryList,
   },
 };
 
@@ -2985,106 +3417,150 @@ const demoCpReportClientListResponse: IChannelPartnerClientReportResponse = {
   status: true,
   statusCode: 200,
   message: "Channel partner report fetched successfully!",
+
   data: {
     clientsList: [
       {
-        clientID: "08de8f26-c1c2-493c-8bbc-493b9af79369",
-        clientName: "KARAN RAI",
-        clientCode: "COCU260306",
-        mobile: "9AoQbOtlXb6R8Nyys2hhDQ==",
-        sourcingPartnerName: null as unknown as string,
+        clientID: "demo-client-id-001",
+
+        clientName: "MNO USER",
+
+        clientCode: "DEMO001",
+
+        mobile: "9000000001",
+
+        sourcingPartnerName:
+          null as unknown as string,
       },
+
       {
-        clientID: "08de8f25-d822-48d7-84f0-b22c46f4c15f",
-        clientName: "PARAMJIT SINGH",
-        clientCode: "COCU260305",
-        mobile: "KGQK4X/cQH0fbBr5YKkv/A==",
-        sourcingPartnerName: null as unknown as string,
+        clientID: "demo-client-id-002",
+
+        clientName: "OPQ USER",
+
+        clientCode: "DEMO002",
+
+        mobile: "9000000002",
+
+        sourcingPartnerName:
+          null as unknown as string,
       },
+
       {
-        clientID: "08de8f1e-ae79-4edb-8ec0-2c39fd964c7d",
-        clientName: "MARIMUTHU SATHISHKUMAR",
-        clientCode: "COCU260304",
-        mobile: "z/pzrTBCaUbA/r+gPoyzHQ==",
-        sourcingPartnerName: null as unknown as string,
+        clientID: "demo-client-id-003",
+
+        clientName: "RST USER",
+
+        clientCode: "DEMO003",
+
+        mobile: "9000000003",
+
+        sourcingPartnerName:
+          null as unknown as string,
       },
+
       {
-        clientID: "08de8f16-381b-4de4-859f-be9de1bde262",
-        clientName: "RAHUL NEGI",
-        clientCode: "COCU260303",
-        mobile: "vO5BMExR9EM6qawgtekoVg==",
-        sourcingPartnerName: null as unknown as string,
+        clientID: "demo-client-id-004",
+
+        clientName: "UVW USER",
+
+        clientCode: "DEMO004",
+
+        mobile: "9000000004",
+
+        sourcingPartnerName:
+          null as unknown as string,
       },
+
       {
-        clientID: "08de6952-8e95-4707-8c85-118482cd08bb",
-        clientName: "ABHISHEK JIVANLAL JAIN",
-        clientCode: "COCU260201",
-        mobile: "NNOLDy8pcZTfHfN3dskeag==",
-        sourcingPartnerName: null as unknown as string,
+        clientID: "demo-client-id-005",
+
+        clientName: "XYZ USER",
+
+        clientCode: "DEMO005",
+
+        mobile: "9000000005",
+
+        sourcingPartnerName:
+          null as unknown as string,
       },
+
       {
-        clientID: "08de5d7f-f118-4a11-854e-9ebd1348d63e",
-        clientName: "MSACA BIZZSOLVE LLP",
-        clientCode: "COCU260105",
-        mobile: "tByiHoJPjv2RMThVjCG/Zg==",
-        sourcingPartnerName: null as unknown as string,
+        clientID: "demo-client-id-006",
+
+        clientName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+
+        clientCode: "DEMO006",
+
+        mobile: "9000000006",
+
+        sourcingPartnerName:
+          null as unknown as string,
       },
+
       {
-        clientID: "08de4d22-8a7d-4fc2-84ff-ae2465c4e2d0",
-        clientName: "BHAVYA TIWARI",
-        clientCode: "COCU260104",
-        mobile: "B29hKKbxhpyP/RRNF2Psdw==",
-        sourcingPartnerName: null as unknown as string,
+        clientID: "demo-client-id-007",
+
+        clientName:
+          "DEF INDUSTRIES PRIVATE LIMITED",
+
+        clientCode: "DEMO007",
+
+        mobile: "9000000007",
+
+        sourcingPartnerName:
+          null as unknown as string,
       },
+
       {
-        clientID: "08de30bb-f423-4e6d-8d1c-94add58b8623",
-        clientName: "ACCUSPECTRA ANALYTICAL LAB",
-        clientCode: "COCU251202",
-        mobile: "VLstAFyp0QqE2MG1TD7n6w==",
-        sourcingPartnerName: null as unknown as string,
-      },
-      {
-        clientID: "08de1ac2-310f-41e6-894f-db823a879de4",
-        clientName: "SIDDHI VINAYAK ENTERPRISES",
-        clientCode: "COCU251101",
-        mobile: "Khaqbj5W7a7rPwizzYGZTw==",
-        sourcingPartnerName: null as unknown as string,
-      },
-      {
-        clientID: "08de0598-4bee-48ca-8a7c-005b36583e79",
-        clientName: "NEXUS NUTRI SCIENCE LIMITED",
-        clientCode: "COCU251003",
-        mobile: "7UnlDe9E9Dd9xrAPlVCSAQ==",
-        sourcingPartnerName: null as unknown as string,
+        clientID: "demo-client-id-008",
+
+        clientName:
+          "XYZ BUSINESS SOLUTIONS LLP",
+
+        clientCode: "DEMO008",
+
+        mobile: "9000000008",
+
+        sourcingPartnerName:
+          null as unknown as string,
       },
     ],
-    totalCount: 30,
+
+    totalCount: 8,
   },
 };
 
-const demoPendingLoanApplicationsResponse: IGetAllLoanApplicationsResponse = {
+const demoPendingLoanApplicationsResponse: IGetAllLoanApplicationsResponse =
+{
   status: true,
   statusCode: 200,
-  message: "List of all Loan Applications fetched successfully!",
+  message:
+    "List of all Loan Applications fetched successfully!",
   data: {
-    totalLoanApplications: 107,
+    totalLoanApplications: 10,
+
     loanApplications: [
       {
-        loanApplicationID: "08de9641-7d95-4b24-8c07-54050df068a9",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260415",
+        loanApplicationID: "demo-loan-id-001",
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+        loanApplicationCode: "DEMO-LA-001",
         bankName: null,
-        loanType: "Loan against property - Residential",
+        loanType:
+          "Loan against property - Residential",
         loanTypeID: 7,
         date: "2026-04-09",
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 6000000.0,
+        loanAmount: 6000000,
         sanctionedLoanAmount: null,
         disbursedLoanAmount: null,
         sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
+        customerName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+        userID: "demo-user-id-001",
         progressPercent: 40,
         isCamReportGenerated: false,
         status: {
@@ -3093,22 +3569,24 @@ const demoPendingLoanApplicationsResponse: IGetAllLoanApplicationsResponse = {
           statusID: 1,
         },
       },
+
       {
-        loanApplicationID: "08de9639-7eef-4101-85e5-895c5c647b48",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260414",
+        loanApplicationID: "demo-loan-id-002",
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+        loanApplicationCode: "DEMO-LA-002",
         bankName: null,
         loanType: "Home Loan",
         loanTypeID: 1,
-        date: "2026-04-09",
+        date: "2026-04-08",
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 5000000.0,
+        loanAmount: 5000000,
         sanctionedLoanAmount: null,
         disbursedLoanAmount: null,
         sanctionLetterUrl: null,
-        customerName: "SHARAD SIDDHESHWAR NALAWAD",
-        userID: "08dd661a-8096-4128-896f-6895fee1f5f7",
+        customerName: "MNO USER",
+        userID: "demo-user-id-002",
         progressPercent: 80,
         isCamReportGenerated: false,
         status: {
@@ -3117,238 +3595,51 @@ const demoPendingLoanApplicationsResponse: IGetAllLoanApplicationsResponse = {
           statusID: 1,
         },
       },
+
       {
-        loanApplicationID: "08de9639-6aed-4355-8359-04994c12167f",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260413",
+        loanApplicationID: "demo-loan-id-003",
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+        loanApplicationCode: "DEMO-LA-003",
+        bankName: null,
+        loanType: "CC/OD - Secured",
+        loanTypeID: 10,
+        date: "2026-04-07",
+        sanctionedDate: null,
+        disbursedDate: null,
+        loanAmount: 30000000,
+        sanctionedLoanAmount: null,
+        disbursedLoanAmount: null,
+        sanctionLetterUrl: null,
+        customerName:
+          "XYZ BUSINESS SOLUTIONS LLP",
+        userID: "demo-user-id-003",
+        progressPercent: 60,
+        isCamReportGenerated: true,
+        status: {
+          label: "Pending",
+          color: "#FF632C",
+          statusID: 1,
+        },
+      },
+
+      {
+        loanApplicationID: "demo-loan-id-004",
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+        loanApplicationCode: "DEMO-LA-004",
         bankName: null,
         loanType: "Home Loan",
         loanTypeID: 1,
-        date: "2026-04-09",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SHARAD SIDDHESHWAR NALAWAD",
-        userID: "08dd661a-8096-4128-896f-6895fee1f5f7",
-        progressPercent: 80,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de9600-388f-4202-8f37-0f9ddb540a1b",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260410",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2026-04-09",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de955f-4512-461d-8753-19be4ccecf50",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260409",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2026-04-08",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 30000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de955e-20ce-444e-888c-8ad06a3b1f1a",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260408",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2026-04-08",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 30000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "NEXUS NUTRI SCIENCE LIMITED",
-        userID: "08de0598-4bee-48ca-8a7c-005b36583e79",
-        progressPercent: 60,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de955a-a46b-4d93-803c-1c08c035fb6c",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260407",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-04-08",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "AVULA SATEESH",
-        userID: "7c06b68e-48f7-423d-bdd2-d84ca204ac1a",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de955a-236c-4f99-8f84-c84f7ae8f09d",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260406",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2026-04-08",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "NEXUS NUTRI SCIENCE LIMITED",
-        userID: "08de0598-4bee-48ca-8a7c-005b36583e79",
-        progressPercent: 60,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de9555-c0d0-4a45-8a7f-4fbf1be1fdee",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260405",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2026-04-08",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "NEXUS NUTRI SCIENCE LIMITED",
-        userID: "08de0598-4bee-48ca-8a7c-005b36583e79",
-        progressPercent: 60,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de9555-6d6b-4e8b-8ee2-16084fca1339",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260404",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2026-04-08",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "NEXUS NUTRI SCIENCE LIMITED",
-        userID: "08de0598-4bee-48ca-8a7c-005b36583e79",
-        progressPercent: 60,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de93ae-ce35-4eb0-8315-32c2d0930096",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260403",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
         date: "2026-04-06",
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 1500000.0,
+        loanAmount: 3000000,
         sanctionedLoanAmount: null,
         disbursedLoanAmount: null,
         sanctionLetterUrl: null,
-        customerName: "AVULA SATEESH",
-        userID: "7c06b68e-48f7-423d-bdd2-d84ca204ac1a",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de93a9-9519-44b7-88a7-db45501b3266",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260402",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2026-04-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "KARAN RAI",
-        userID: "08de8f26-c1c2-493c-8bbc-493b9af79369",
+        customerName: "OPQ USER",
+        userID: "demo-user-id-004",
         progressPercent: 40,
         isCamReportGenerated: false,
         status: {
@@ -3357,2280 +3648,28 @@ const demoPendingLoanApplicationsResponse: IGetAllLoanApplicationsResponse = {
           statusID: 1,
         },
       },
+
       {
-        loanApplicationID: "08de8f54-7e21-4514-8560-210217417137",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260420",
-        bankName: "Ujjivan Small Finance Bank",
-        loanType: "Loan against property - Residential",
+        loanApplicationID: "demo-loan-id-005",
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+        loanApplicationCode: "DEMO-LA-005",
+        bankName: "Demo Finance Bank",
+        loanType:
+          "Loan against property - Residential",
         loanTypeID: 7,
-        date: "2026-04-01",
+        date: "2026-04-05",
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 5000000.0,
+        loanAmount: 5000000,
         sanctionedLoanAmount: null,
         disbursedLoanAmount: null,
         sanctionLetterUrl: null,
-        customerName: "RAHUL NEGI",
-        userID: "08de8f16-381b-4de4-859f-be9de1bde262",
+        customerName:
+          "DEF INDUSTRIES PRIVATE LIMITED",
+        userID: "demo-user-id-005",
         progressPercent: 100,
         isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de8f26-d4a1-4bb9-8c38-07098ae57dbb",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260319",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2026-03-31",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "KARAN RAI",
-        userID: "08de8f26-c1c2-493c-8bbc-493b9af79369",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de8f1e-d50d-4178-892f-3170f0484a19",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260318",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2026-03-31",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "RAHUL NEGI",
-        userID: "08de8f16-381b-4de4-859f-be9de1bde262",
-        progressPercent: 100,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de8f1b-4267-4cd8-8154-e20e2d3c5582",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260317",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-03-31",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "RAHUL NEGI",
-        userID: "08de8f16-381b-4de4-859f-be9de1bde262",
-        progressPercent: 100,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de898e-2f71-472b-8c08-1ec74ea52aa3",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260313",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2026-03-24",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 50000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "ACCUSPECTRA ANALYTICAL LAB",
-        userID: "08de30bb-f423-4e6d-8d1c-94add58b8623",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de8967-3d6d-474a-8715-656bf69dae0b",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260311",
-        bankName: null,
-        loanType: "Loan against property - Industrial",
-        loanTypeID: 9,
-        date: "2026-03-24",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "ACCUSPECTRA ANALYTICAL LAB",
-        userID: "08de30bb-f423-4e6d-8d1c-94add58b8623",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de8966-a02d-4515-8bf3-13b3a90aed9b",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260310",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-03-24",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "VINOD KUMAR SEVAK",
-        userID: "08de000a-df7b-4e64-802c-1e86737f6991",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de8965-e1c5-4111-8de5-fd93a71e3c8e",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260309",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-03-24",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "ACCUSPECTRA ANALYTICAL LAB",
-        userID: "08de30bb-f423-4e6d-8d1c-94add58b8623",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de88de-0254-4157-8188-2057832d8c5c",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260307",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-03-23",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 10000000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "ABHISHEK JIVANLAL JAIN",
-        userID: "08de6952-8e95-4707-8c85-118482cd08bb",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de7b99-7006-49bc-8c20-0e90ff2aa7c8",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260305",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2026-03-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MSACA BIZZSOLVE LLP",
-        userID: "08de5d7f-f118-4a11-854e-9ebd1348d63e",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de7b99-2e30-410a-84e0-76261b274428",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260304",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2026-03-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL BHIKHUBHAI SHAH",
-        userID: "08ddd0e5-bc99-4f82-83c9-cc3cc97d32fc",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de7b98-c625-4e15-8b3f-cb10afa59638",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260303",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2026-03-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de7b96-4505-4123-8113-4ce1710dbe51",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260302",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2026-03-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SHARAD SIDDHESHWAR NALAWAD",
-        userID: "08dd661a-8096-4128-896f-6895fee1f5f7",
-        progressPercent: 80,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de7b3f-6ba6-44bd-8c64-bb5a1f49b2a4",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260301",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2026-03-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SHARAD SIDDHESHWAR NALAWAD",
-        userID: "08dd661a-8096-4128-896f-6895fee1f5f7",
-        progressPercent: 80,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de76d4-222b-4f68-8782-7e018ae6b2dc",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260208",
-        bankName: "HDFC Bank",
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2026-02-28",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SHARAD SIDDHESHWAR NALAWAD",
-        userID: "08dd661a-8096-4128-896f-6895fee1f5f7",
-        progressPercent: 80,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de7608-a812-4328-8984-5ec9fa05c5ce",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260207",
-        bankName: "Ujjivan Small Finance Bank",
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2026-02-27",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de75c1-dfc9-4698-8dd1-0f5c2f806e57",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260206",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-02-27",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SHARAD SIDDHESHWAR NALAWAD",
-        userID: "08dd661a-8096-4128-896f-6895fee1f5f7",
-        progressPercent: 80,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de597f-3acf-4d10-8035-0f0562dabcc8",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260103",
-        bankName: null,
-        loanType: "Unsecured Business Loan",
-        loanTypeID: 4,
-        date: "2026-01-22",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de4163-879e-4fc9-88d3-bba46f0a6def",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251213",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-12-22",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "NISHITA JUNEJA",
-        userID: "08ddfb52-666c-4ca3-8ae8-281136b315c2",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de4138-0f14-4234-8138-8281ffc29d47",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251211",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-12-22",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SHARAD SIDDHESHWAR NALAWAD",
-        userID: "08dd661a-8096-4128-896f-6895fee1f5f7",
-        progressPercent: 80,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de4135-5ac5-499f-80ba-d93e1ea823d3",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251210",
-        bankName: "Aadhar Housing Finance Ltd",
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-12-22",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de3e14-6122-4ecc-86e1-03935ed4294b",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251207",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-12-18",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 15000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SHARAD SIDDHESHWAR NALAWAD",
-        userID: "08dd661a-8096-4128-896f-6895fee1f5f7",
-        progressPercent: 80,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de3e11-c1da-4a7d-8b5c-471f972062c5",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251206",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-12-18",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 787887.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SHARAD SIDDHESHWAR NALAWAD",
-        userID: "08dd661a-8096-4128-896f-6895fee1f5f7",
-        progressPercent: 80,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de3946-7a2b-4701-8a30-ec0b668bf302",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251205",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-12-12",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de3945-ef5a-4ed3-8466-f46f0be9df23",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251204",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-12-12",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL BHIKHUBHAI SHAH",
-        userID: "08ddd0e5-bc99-4f82-83c9-cc3cc97d32fc",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08de2cb0-4a00-4243-8a75-0b44008a64cc",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251107",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-11-26",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SHARAD SIDDHESHWAR NALAWAD",
-        userID: "08dd661a-8096-4128-896f-6895fee1f5f7",
-        progressPercent: 80,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08ddee15-4dc4-4029-8f9c-7c343fa13f16",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250945",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-07",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "BHAUMIK RAMNIKLAL ACHARYA",
-        userID: "08ddee13-a5e4-4f33-869f-117105e188da",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde9e0-3693-4a1a-837a-b78c81e04fb8",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250920",
-        bankName: "CSB Bank Ltd.",
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-09-02",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 200000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde951-d408-4376-8c45-250c7b9ae361",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250917",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde94a-f2d7-477c-8714-a22d008194ac",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250915",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde947-a3d6-491b-8251-8b16d04d1fee",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250914",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde946-4624-4f79-8b86-5e2ea9a16638",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250913",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde945-5c95-489a-84cf-25634b9f9cef",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250912",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde944-c3ae-458c-885e-e1d25ce10a42",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250911",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde941-b1bc-40dc-8b08-48ca18191fd9",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250910",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde941-1c40-40c4-8f0e-00fd7328d828",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250909",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde940-7e71-480b-8503-51d11bdc700f",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250908",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde940-4c5e-4e7e-8b1c-aeb3eeb0529a",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250907",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde93d-6085-4a59-8b1b-3f9a473d29da",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250906",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde92a-4b24-4c70-8c2d-9a8553c1a07e",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250905",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde928-a92f-4a6b-8493-1d734c14e2eb",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250904",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde91c-2cc0-4dec-8023-a4ea027dd4f1",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250901",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 15000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde3c7-6c77-40f2-87ea-461f154d1f31",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250877",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-08-25",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 15000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde227-46b6-423f-80b8-2e49b1453f65",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250872",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-08-23",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "RAJESH JAYSUKHLAL ACHARYA",
-        userID: "08dde21f-0fd9-41c7-86e7-5ca28377b93b",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde14a-a246-438f-8d9a-93afa94da544",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250869",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-08-22",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "NISHI BHAVSAR",
-        userID: "08dd96aa-6c9a-40f7-8d5e-d6f2e75f9b1d",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde14a-76c5-4228-864f-c7d61eac87cd",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250868",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-08-22",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "ANUJ GULATI",
-        userID: "08dde071-5d4c-4576-8a5a-b6fdd1a30a08",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde14a-35bb-4e09-8933-c24db02082b9",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250867",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-08-22",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "ANUJ GULATI",
-        userID: "08dde071-5d4c-4576-8a5a-b6fdd1a30a08",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dde0e4-ea96-47e6-8424-01f1863a4e62",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250866",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-08-22",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dddb11-c365-4ed4-8a27-d60aed8e0aee",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250850",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-08-14",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 10000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MERCURY CHEM TECH",
-        userID: "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda8ec-8ebd-4b2d-8a96-ba1f4d1e7f4e",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250661",
-        bankName: null,
-        loanType: "Loan against property - Industrial",
-        loanTypeID: 9,
-        date: "2025-06-11",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "PRERNA KIRANBHAI THAKER",
-        userID: "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda8eb-90cd-4e07-8ba4-31e9f5f6943b",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250660",
-        bankName: null,
-        loanType: "Loan against property - Industrial",
-        loanTypeID: 9,
-        date: "2025-06-11",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "PRERNA KIRANBHAI THAKER",
-        userID: "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda8eb-55b1-46f0-8702-f55879e82012",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250659",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-06-11",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 15000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "PRERNA KIRANBHAI THAKER",
-        userID: "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda8e6-eb17-4058-88e6-f03679de816a",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250658",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-06-11",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "PRERNA KIRANBHAI THAKER",
-        userID: "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda7f3-4c22-4533-8371-1f47b904432e",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250644",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-06-10",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1200000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "JAIPRAKASH REDDY ARCHANA",
-        userID: "08dd8614-0cf0-4b90-8049-4b1d68ba9245",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda755-ec72-47d8-8a3f-560d182c817e",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250638",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-06-09",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "NISHI BHAVSAR",
-        userID: "08dd96aa-6c9a-40f7-8d5e-d6f2e75f9b1d",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda716-d32e-4de6-8499-691565263dbe",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250634",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-06-09",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 888888858.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "PRERNA KIRANBHAI THAKER",
-        userID: "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda4f4-3062-45f6-8319-6017f92cde53",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250629",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-06-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "ANUJ GULATI",
-        userID: "08dd822a-914b-47a7-8774-31610d10035f",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda4ea-527d-4a84-809e-e8003ae890c7",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250625",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-06-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "ANUJ GULATI",
-        userID: "08dd822a-914b-47a7-8774-31610d10035f",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda4e9-e13c-41d7-89db-38cf08984c2d",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250622",
-        bankName: null,
-        loanType: "Loan against property - Plot",
-        loanTypeID: 5,
-        date: "2025-06-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "PRERNA KIRANBHAI THAKER",
-        userID: "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda4b4-ef1a-45b2-8eb6-9fb57e7f4ec4",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250613",
-        bankName: null,
-        loanType: "Car Loan",
-        loanTypeID: 11,
-        date: "2025-06-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "PRERNA KIRANBHAI THAKER",
-        userID: "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda42d-e3fd-4297-8739-418c1f5161a0",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250611",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-06-05",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 89996.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "PRERNA KIRANBHAI THAKER",
-        userID: "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda199-2993-4625-8e5c-cca8a098d94c",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250603",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-06-02",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 55588.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "PRERNA KIRANBHAI THAKER",
-        userID: "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dda197-da38-4397-87bf-0519138d9800",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250602",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-06-02",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 55555555.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "PRERNA KIRANBHAI THAKER",
-        userID: "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd9f49-3a42-40e5-8544-f5015d3cf28e",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA2505170",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-05-30",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 15000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MERCURY CHEM TECH",
-        userID: "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd9f48-e309-484b-8521-925604a16350",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA2505169",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-05-30",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "JAIPRAKASH REDDY ARCHANA",
-        userID: "08dd8614-0cf0-4b90-8049-4b1d68ba9245",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd9f47-a73e-4c4a-83b8-04be850406ba",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA2505167",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-05-30",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2400000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd9ea8-b1d7-483e-8d17-09ece06e997e",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA2505133",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-05-29",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 546545.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd9ea5-af55-49ea-816d-e94f004f1b61",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA2505128",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2025-05-29",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 54654.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd9ea5-1bb4-49b7-829c-813e13ad44e8",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA2505126",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-05-29",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 565566.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd9e9b-6abb-4c84-8209-4ab6fa250f7c",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA2505108",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-05-29",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 45454.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd9e9b-5adf-43d1-828d-78eaf22bf542",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA2505107",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-05-29",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 45454.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd9e9b-5645-4144-8bf0-c4a2a29235ad",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA2505106",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-05-29",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 45454.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd9e83-b2e5-486e-8566-f12ccbf75580",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250599",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-05-29",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 457844.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MERCURY CHEM TECH",
-        userID: "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd9dd1-5ab3-4f31-8b3b-963288de79d3",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250567",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-05-28",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 4557777.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "JAIPRAKASH REDDY ARCHANA",
-        userID: "08dd8614-0cf0-4b90-8049-4b1d68ba9245",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd9daa-7647-48ad-8df4-aafb3b61532c",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250557",
-        bankName: null,
-        loanType: "Car Loan",
-        loanTypeID: 11,
-        date: "2025-05-28",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 64564645.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "AVULA SATEESH",
-        userID: "7c06b68e-48f7-423d-bdd2-d84ca204ac1a",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd946d-1a21-4044-8762-39d0a142571c",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250523",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-05-16",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 10000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MERCURY CHEM TECH",
-        userID: "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd864f-68e3-446d-8b12-8a61214410f3",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250412",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-04-28",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "JAIPRAKASH REDDY ARCHANA",
-        userID: "08dd8614-0cf0-4b90-8049-4b1d68ba9245",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd7d73-8d55-445f-845e-d4434b3dafd3",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250409",
-        bankName: null,
-        loanType: "Unsecured Business Loan",
-        loanTypeID: 4,
-        date: "2025-04-17",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MERCURY CHEM TECH",
-        userID: "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd7442-acc3-411a-8afb-bcd7f9ca949e",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250403",
-        bankName: null,
-        loanType: "CC/OD - CGTMSE",
-        loanTypeID: 6,
-        date: "2025-04-05",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SHWET N RAVAL",
-        userID: "08dd609a-f719-4444-8f9d-d666a04a903a",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd701f-056d-4c2c-87cc-a03c3e586e18",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250363",
-        bankName: null,
-        loanType: "Car Loan",
-        loanTypeID: 11,
-        date: "2025-03-31",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 84984949.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MERCURY CHEM TECH",
-        userID: "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd66b7-605d-4da0-8366-3c11c280e474",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250340",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2025-03-19",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 24000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "AVULA SATEESH",
-        userID: "7c06b68e-48f7-423d-bdd2-d84ca204ac1a",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd6155-47f1-445e-835f-f61b52af817c",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250321",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-03-12",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 10000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SHWET N RAVAL",
-        userID: "08dd609a-f719-4444-8f9d-d666a04a903a",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd609b-0b07-433d-82dd-c93e98f78d40",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250320",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2025-03-11",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SHWET N RAVAL",
-        userID: "08dd609a-f719-4444-8f9d-d666a04a903a",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd6099-748b-4674-8c54-023b08e3bfe8",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250319",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2025-03-11",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd5bc7-887b-42ea-86ca-b114f020e8dd",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250316",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-03-05",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 10000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MERCURY CHEM TECH",
-        userID: "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd54fd-545e-490d-876c-6c77f997d84a",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250215",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2025-02-24",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 10.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MERCURY CHEM TECH",
-        userID: "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd5498-338d-49a6-894c-a79da48c1fce",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250206",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2025-02-24",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 12000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MERCURY CHEM TECH",
-        userID: "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd5491-056f-4b5c-8e5f-353c8dfde786",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250205",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2025-02-24",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 11000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MERCURY CHEM TECH",
-        userID: "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd50b4-cffd-4242-8e02-357d131a4119",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250204",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2025-02-19",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MERCURY CHEM TECH",
-        userID: "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd5bb0-27c1-4542-8a29-3c96483ed5d4",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250315",
-        bankName: "Kotak Mahindra Bank",
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-02-05",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1000000.0,
-        sanctionLetterUrl: null,
-        customerName: "MERCURY CHEM TECH",
-        userID: "08dd411b-eb07-462f-86e0-fa4b050cb78c",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd4026-6306-46e9-8964-0b89014a9e72",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250120",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-01-29",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 100000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd3af2-2f85-49ad-84e2-46b9f12ede37",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250117",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-01-22",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 50000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-4b02-4ca6-87be-b0f22bc829ad",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd3af2-17dd-4b05-8f5e-089dab397b73",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250115",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2025-01-22",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 50000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-4b02-4ca6-87be-b0f22bc829ad",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd3af2-0ecd-4326-882b-987787a96794",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250114",
-        bankName: null,
-        loanType: "Personal Loan",
-        loanTypeID: 2,
-        date: "2025-01-22",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 450000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-4b02-4ca6-87be-b0f22bc829ad",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Pending",
-          color: "#FF632C",
-          statusID: 1,
-        },
-      },
-      {
-        loanApplicationID: "08dd2faf-3fcd-499a-8541-47cfab0251ca",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250101",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-01-08",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-4b02-4ca6-87be-b0f22bc829ad",
-        progressPercent: 20,
-        isCamReportGenerated: false,
         status: {
           label: "Pending",
           color: "#FF632C",
@@ -5641,103 +3680,177 @@ const demoPendingLoanApplicationsResponse: IGetAllLoanApplicationsResponse = {
   },
 };
 
-const demoLoginLoanApplicationsResponse: IGetAllLoanApplicationsResponse = {
+const demoLoginLoanApplicationsResponse: IGetAllLoanApplicationsResponse =
+{
   status: true,
   statusCode: 200,
-  message: "List of all Loan Applications fetched successfully!",
+  message:
+    "List of all Loan Applications fetched successfully!",
+
   data: {
     totalLoanApplications: 4,
+
     loanApplications: [
       {
-        loanApplicationID: "08de686b-3f21-41ab-8348-59c9f4753e6c",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260202",
+        loanApplicationID:
+          "demo-loan-id-001",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-001",
+
         bankName: null,
+
         loanType: "Unsecured Business Loan",
         loanTypeID: 4,
+
         date: "2026-02-10",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 2000.0,
+
+        loanAmount: 200000,
+
         sanctionedLoanAmount: null,
         disbursedLoanAmount: null,
+
         sanctionLetterUrl: null,
-        customerName: "BHAVYA TIWARI",
-        userID: "08de4d22-8a7d-4fc2-84ff-ae2465c4e2d0",
+
+        customerName: "MNO USER",
+
+        userID: "demo-user-id-001",
+
         progressPercent: 60,
+
         isCamReportGenerated: false,
+
         status: {
           label: "Applied",
           color: "#3DA0E7",
           statusID: 2,
         },
       },
+
       {
-        loanApplicationID: "08ddf524-3b1d-404f-8c8b-c14650372c6e",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250962",
+        loanApplicationID:
+          "demo-loan-id-002",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-002",
+
         bankName: null,
+
         loanType: "Home Loan",
         loanTypeID: 1,
+
         date: "2025-09-16",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 150000.0,
+
+        loanAmount: 1500000,
+
         sanctionedLoanAmount: null,
         disbursedLoanAmount: null,
+
         sanctionLetterUrl: null,
-        customerName: "VAISHALI BHAUMIK ACHARYA",
-        userID: "08ddee16-2f23-454c-8547-3c22bdefdb60",
+
+        customerName: "OPQ USER",
+
+        userID: "demo-user-id-002",
+
         progressPercent: 40,
+
         isCamReportGenerated: false,
+
         status: {
           label: "Applied",
           color: "#3DA0E7",
           statusID: 2,
         },
       },
+
       {
-        loanApplicationID: "08dde94c-72b3-4cf0-8feb-4fdd1bddc4c3",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250916",
-        bankName: "State Bank of India",
-        loanType: "Loan against property - Residential",
+        loanApplicationID:
+          "demo-loan-id-003",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-003",
+
+        bankName: "Demo Bank",
+
+        loanType:
+          "Loan against property - Residential",
         loanTypeID: 7,
+
         date: "2025-09-01",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 1500000.0,
+
+        loanAmount: 1500000,
+
         sanctionedLoanAmount: null,
         disbursedLoanAmount: null,
+
         sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
+
+        customerName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+
+        userID: "demo-user-id-003",
+
         progressPercent: 40,
+
         isCamReportGenerated: true,
+
         status: {
           label: "Applied",
           color: "#3DA0E7",
           statusID: 2,
         },
       },
+
       {
-        loanApplicationID: "08dda18c-ae7d-43ae-807b-2996edef1ad3",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250601",
+        loanApplicationID:
+          "demo-loan-id-004",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-004",
+
         bankName: null,
+
         loanType: "CC/OD - Secured",
         loanTypeID: 10,
+
         date: "2025-06-02",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 1250000.0,
+
+        loanAmount: 1250000,
+
         sanctionedLoanAmount: null,
         disbursedLoanAmount: null,
+
         sanctionLetterUrl: null,
-        customerName: "PRERNA KIRANBHAI THAKER",
-        userID: "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
+
+        customerName:
+          "DEF INDUSTRIES PRIVATE LIMITED",
+
+        userID: "demo-user-id-004",
+
         progressPercent: 40,
+
         isCamReportGenerated: false,
+
         status: {
           label: "Applied",
           color: "#3DA0E7",
@@ -5748,32 +3861,56 @@ const demoLoginLoanApplicationsResponse: IGetAllLoanApplicationsResponse = {
   },
 };
 
-const demoQueryLoanApplicationsResponse: IGetAllLoanApplicationsResponse = {
+const demoQueryLoanApplicationsResponse: IGetAllLoanApplicationsResponse =
+{
   status: true,
   statusCode: 200,
-  message: "List of all Loan Applications fetched successfully!",
+  message:
+    "List of all Loan Applications fetched successfully!",
+
   data: {
     totalLoanApplications: 1,
+
     loanApplications: [
       {
-        loanApplicationID: "08ddeaa1-53b5-43fb-8dcd-d22d729fe1b5",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250929",
+        loanApplicationID:
+          "demo-loan-id-001",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-001",
+
         bankName: null,
-        loanType: "Loan against property - Industrial",
+
+        loanType:
+          "Loan against property - Industrial",
+
         loanTypeID: 9,
+
         date: "2025-09-03",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 1500000.0,
+
+        loanAmount: 1500000,
+
         sanctionedLoanAmount: null,
         disbursedLoanAmount: null,
+
         sanctionLetterUrl: null,
-        customerName: "HARSHADRAY JIVRAMBHAI ACHARYA",
-        userID: "08dde22e-a5e6-4a56-8ebc-9b68c4c0936b",
+
+        customerName: "MNO USER",
+
+        userID: "demo-user-id-001",
+
         progressPercent: 40,
+
         isCamReportGenerated: false,
-        raisedQuery: "Query Raised for documents",
+
+        raisedQuery:
+          "Query Raised for documents",
+
         status: {
           label: "Query Raised",
           color: "#F4A917",
@@ -5788,100 +3925,168 @@ const demoSanctionedLoanApplicationsResponse: IGetAllLoanApplicationsResponse =
 {
   status: true,
   statusCode: 200,
-  message: "List of all Loan Applications fetched successfully!",
+  message:
+    "List of all Loan Applications fetched successfully!",
+
   data: {
     totalLoanApplications: 4,
+
     loanApplications: [
       {
-        loanApplicationID: "08de4f9d-d404-4d57-85aa-58c7fb25043c",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260101",
+        loanApplicationID:
+          "demo-loan-id-001",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-001",
+
         bankName: null,
+
         loanType: "Home Loan",
         loanTypeID: 1,
+
         date: "2026-01-09",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 500000.0,
-        sanctionedLoanAmount: 15000.0,
+
+        loanAmount: 500000,
+        sanctionedLoanAmount: 150000,
         disbursedLoanAmount: null,
+
         sanctionLetterUrl: null,
-        customerName: "BHAVYA TIWARI",
-        userID: "08de4d22-8a7d-4fc2-84ff-ae2465c4e2d0",
+
+        customerName: "MNO USER",
+
+        userID: "demo-user-id-001",
+
         progressPercent: 60,
+
         isCamReportGenerated: false,
+
         status: {
           label: "Sanctioned",
           color: "#947CFB",
           statusID: 4,
         },
       },
+
       {
-        loanApplicationID: "08de4206-7ba2-438e-86db-f2a051652116",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251214",
+        loanApplicationID:
+          "demo-loan-id-002",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-002",
+
         bankName: null,
+
         loanType: "Home Loan",
         loanTypeID: 1,
+
         date: "2025-12-23",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 15000.0,
-        sanctionedLoanAmount: 15000.0,
+
+        loanAmount: 1500000,
+        sanctionedLoanAmount: 1500000,
         disbursedLoanAmount: null,
+
         sanctionLetterUrl: null,
-        customerName: "SHARAD SIDDHESHWAR NALAWAD",
-        userID: "08dd661a-8096-4128-896f-6895fee1f5f7",
+
+        customerName: "OPQ USER",
+
+        userID: "demo-user-id-002",
+
         progressPercent: 80,
+
         isCamReportGenerated: false,
+
         status: {
           label: "Sanctioned",
           color: "#947CFB",
           statusID: 4,
         },
       },
+
       {
-        loanApplicationID: "08de389a-9dc9-48ba-8d8a-eabe8cd9609b",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251203",
+        loanApplicationID:
+          "demo-loan-id-003",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-003",
+
         bankName: null,
+
         loanType: "Home Loan",
         loanTypeID: 1,
+
         date: "2025-12-11",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: 10000.0,
+
+        loanAmount: 3000000,
+        sanctionedLoanAmount: 2500000,
         disbursedLoanAmount: null,
+
         sanctionLetterUrl: null,
-        customerName: "SARATHI PIPES INDIA PRIVATE LIMITED",
-        userID: "08ddd0e0-4490-40eb-8588-8dd1deeca1b2",
+
+        customerName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+
+        userID: "demo-user-id-003",
+
         progressPercent: 20,
+
         isCamReportGenerated: false,
+
         status: {
           label: "Sanctioned",
           color: "#947CFB",
           statusID: 4,
         },
       },
+
       {
-        loanApplicationID: "08dde3c4-930e-4d1f-8940-5851f9ebc7d5",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250874",
+        loanApplicationID:
+          "demo-loan-id-004",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-004",
+
         bankName: null,
+
         loanType: "Home Loan",
         loanTypeID: 1,
+
         date: "2025-08-25",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 15000.0,
-        sanctionedLoanAmount: 20000.0,
+
+        loanAmount: 2000000,
+        sanctionedLoanAmount: 1800000,
         disbursedLoanAmount: null,
+
         sanctionLetterUrl: null,
-        customerName: "TIRTH PARAGBHAI ACHARYA",
-        userID: "08dde300-1440-44e4-8388-7cbfd5af26e8",
+
+        customerName:
+          "DEF INDUSTRIES PRIVATE LIMITED",
+
+        userID: "demo-user-id-004",
+
         progressPercent: 40,
+
         isCamReportGenerated: false,
+
         status: {
           label: "Sanctioned",
           color: "#947CFB",
@@ -5896,28 +4101,50 @@ const demoPendingAtCreditLoanApplicationsResponse: IGetAllLoanApplicationsRespon
 {
   status: true,
   statusCode: 200,
-  message: "List of all Loan Applications fetched successfully!",
+  message:
+    "List of all Loan Applications fetched successfully!",
+
   data: {
     totalLoanApplications: 1,
+
     loanApplications: [
       {
-        loanApplicationID: "08dde956-07ab-4bd9-80c6-3097991ef09e",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250918",
+        loanApplicationID:
+          "demo-loan-id-001",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-001",
+
         bankName: null,
-        loanType: "Loan against property - Residential",
+
+        loanType:
+          "Loan against property - Residential",
+
         loanTypeID: 7,
+
         date: "2025-09-01",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 1500000.0,
+
+        loanAmount: 1500000,
+
         sanctionedLoanAmount: null,
         disbursedLoanAmount: null,
+
         sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
+
+        customerName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+
+        userID: "demo-user-id-001",
+
         progressPercent: 40,
+
         isCamReportGenerated: true,
+
         status: {
           label: "Pending at Credit",
           color: "#9AC900",
@@ -5928,1807 +4155,217 @@ const demoPendingAtCreditLoanApplicationsResponse: IGetAllLoanApplicationsRespon
   },
 };
 
-const demoDisbursedLoanApplicationsResponse: IGetAllLoanApplicationsResponse = {
+const demoDisbursedLoanApplicationsResponse: IGetAllLoanApplicationsResponse =
+{
   status: true,
   statusCode: 200,
-  message: "List of all Loan Applications fetched successfully!",
+  message:
+    "List of all Loan Applications fetched successfully!",
+
   data: {
-    totalLoanApplications: 79,
+    totalLoanApplications: 10,
+
     loanApplications: [
       {
-        loanApplicationID: "08de971d-3de0-4c29-8806-4960fdb15332",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260421",
+        loanApplicationID:
+          "demo-loan-id-001",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-001",
+
         bankName: null,
+
         loanType: "Home Loan",
         loanTypeID: 1,
+
         date: "2026-04-10",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 6000000.0,
-        sanctionedLoanAmount: 6000000.0,
-        disbursedLoanAmount: 45000.0,
+
+        loanAmount: 6000000,
+        sanctionedLoanAmount: 6000000,
+        disbursedLoanAmount: 4500000,
+
         sanctionLetterUrl: null,
-        customerName: "HIRENKUMAR VITTHALDAS SHAH",
-        userID: "08dd9150-cf8c-4b4f-8502-acda58611393",
+
+        customerName: "MNO USER",
+
+        userID: "demo-user-id-001",
+
         progressPercent: 40,
+
         isCamReportGenerated: false,
+
         status: {
           label: "Disbursed",
           color: "#0BB680",
           statusID: 6,
         },
       },
+
       {
-        loanApplicationID: "08de9715-a36b-4ec9-8f76-0337ef7de7fe",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260420",
+        loanApplicationID:
+          "demo-loan-id-002",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-002",
+
         bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-04-10",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 6000000.0,
-        sanctionedLoanAmount: 6000000.0,
-        disbursedLoanAmount: 3195012.0,
-        sanctionLetterUrl: null,
-        customerName: "HIRENKUMAR VITTHALDAS SHAH",
-        userID: "08dd9150-cf8c-4b4f-8502-acda58611393",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de96e7-f69e-4e1a-8cff-0aca9109db86",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260419",
-        bankName: null,
-        loanType: "Loan against property - Residential",
+
+        loanType:
+          "Loan against property - Residential",
+
         loanTypeID: 7,
-        date: "2026-04-10",
+
+        date: "2026-04-09",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 7000000.0,
-        sanctionedLoanAmount: 1000000.0,
-        disbursedLoanAmount: 100000.0,
+
+        loanAmount: 7000000,
+        sanctionedLoanAmount: 5000000,
+        disbursedLoanAmount: 3000000,
+
         sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
+
+        customerName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+
+        userID: "demo-user-id-002",
+
         progressPercent: 20,
+
         isCamReportGenerated: false,
+
         status: {
           label: "Disbursed",
           color: "#0BB680",
           statusID: 6,
         },
       },
+
       {
-        loanApplicationID: "08de96e3-e686-45d3-8a1b-abf63cb49abb",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260418",
+        loanApplicationID:
+          "demo-loan-id-003",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-003",
+
         bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-04-10",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 6000000.0,
-        sanctionedLoanAmount: 6000000.0,
-        disbursedLoanAmount: 950000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de96c4-3e86-4d61-8da0-37afffd2b8a7",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260417",
-        bankName: null,
+
         loanType: "CC/OD - Secured",
         loanTypeID: 10,
-        date: "2026-04-10",
+
+        date: "2026-04-08",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: 5000000.0,
-        disbursedLoanAmount: 2100000.0,
+
+        loanAmount: 5000000,
+        sanctionedLoanAmount: 5000000,
+        disbursedLoanAmount: 2100000,
+
         sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
+
+        customerName:
+          "XYZ BUSINESS SOLUTIONS LLP",
+
+        userID: "demo-user-id-003",
+
         progressPercent: 40,
+
         isCamReportGenerated: false,
+
         status: {
           label: "Disbursed",
           color: "#0BB680",
           statusID: 6,
         },
       },
+
       {
-        loanApplicationID: "08de96c4-302e-4885-88cc-cdad8d84ed26",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260416",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2026-04-10",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: 5000000.0,
-        disbursedLoanAmount: 400000.0,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de9601-76b5-4691-880a-1116e852fe41",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260412",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2026-04-09",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: 4000000.0,
-        disbursedLoanAmount: 650000.0,
-        sanctionLetterUrl: null,
-        customerName: "NEXUS NUTRI SCIENCE LIMITED",
-        userID: "08de0598-4bee-48ca-8a7c-005b36583e79",
-        progressPercent: 60,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de9600-b9fa-4623-8e9c-ac99dcd09954",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260411",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2026-04-09",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: 1000000.0,
-        disbursedLoanAmount: 300000.0,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de917d-e933-4fb2-8462-cfb49ea9307b",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260401",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-04-03",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 500000000.0,
-        sanctionedLoanAmount: 5000000.0,
-        disbursedLoanAmount: 600000.0,
-        sanctionLetterUrl: null,
-        customerName: "NEXUS NUTRI SCIENCE LIMITED",
-        userID: "08de0598-4bee-48ca-8a7c-005b36583e79",
-        progressPercent: 60,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de8f17-c32e-4d73-8999-950a94c0548c",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260316",
-        bankName: null,
-        loanType: "Loan against property - Industrial",
+        loanApplicationID:
+          "demo-loan-id-004",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-004",
+
+        bankName: "Demo Finance Bank",
+
+        loanType:
+          "Loan against property - Industrial",
+
         loanTypeID: 9,
+
         date: "2026-03-31",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 2000000.0,
-        sanctionedLoanAmount: 2000000.0,
-        disbursedLoanAmount: 2000000.0,
+
+        loanAmount: 2000000,
+        sanctionedLoanAmount: 2000000,
+        disbursedLoanAmount: 2000000,
+
         sanctionLetterUrl: null,
-        customerName: "NISHITA JUNEJA",
-        userID: "08de0629-6d3c-4eee-85f4-39206e812b3e",
+
+        customerName:
+          "DEF INDUSTRIES PRIVATE LIMITED",
+
+        userID: "demo-user-id-004",
+
         progressPercent: 40,
+
         isCamReportGenerated: false,
+
         status: {
           label: "Disbursed",
           color: "#0BB680",
           statusID: 6,
         },
       },
+
       {
-        loanApplicationID: "08de8bd3-7517-4b14-895d-86d153b58721",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260315",
-        bankName: "ICICI Home Finance",
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-03-27",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 10000000.0,
-        sanctionedLoanAmount: 1000000.0,
-        disbursedLoanAmount: 500.0,
-        sanctionLetterUrl: null,
-        customerName: "NEXUS NUTRI SCIENCE LIMITED",
-        userID: "08de0598-4bee-48ca-8a7c-005b36583e79",
-        progressPercent: 60,
-        isCamReportGenerated: true,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de898e-adc3-4a6b-85ac-e701f3e24942",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260314",
+        loanApplicationID:
+          "demo-loan-id-005",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-005",
+
         bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2026-03-24",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 11222222.0,
-        sanctionedLoanAmount: 150000.0,
-        disbursedLoanAmount: 100000.0,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de7b99-b956-4afd-81e1-b2a3505a21a5",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260306",
-        bankName: null,
+
         loanType: "Personal Loan",
         loanTypeID: 2,
+
         date: "2026-03-06",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 500000.0,
-        sanctionedLoanAmount: 500.0,
-        disbursedLoanAmount: 500.0,
+
+        loanAmount: 500000,
+        sanctionedLoanAmount: 500000,
+        disbursedLoanAmount: 500000,
+
         sanctionLetterUrl: null,
-        customerName: "SHWET N RAVAL",
-        userID: "08dd609a-f719-4444-8f9d-d666a04a903a",
+
+        customerName: "OPQ USER",
+
+        userID: "demo-user-id-005",
+
         progressPercent: 40,
+
         isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de72c2-4c48-480e-8e3c-cc1d37d50bca",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260205",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-02-23",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 650000.0,
-        sanctionedLoanAmount: 150000.0,
-        disbursedLoanAmount: 80000.0,
-        sanctionLetterUrl: null,
-        customerName: "HIRENKUMAR VITTHALDAS SHAH",
-        userID: "08dd9150-cf8c-4b4f-8502-acda58611393",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de72a2-2bb5-43c3-8a9f-9796f136aaff",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260204",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-02-23",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 650000.0,
-        sanctionedLoanAmount: 150000.0,
-        disbursedLoanAmount: 15000.0,
-        sanctionLetterUrl: null,
-        customerName: "DHIRAJ DHANJIBHAI DASADIA",
-        userID: "08dd411c-a9d1-432a-8deb-54ff7cc0bdd4",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de6faa-5854-4a84-8645-55cc98da6ae8",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260203",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2026-02-19",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: 5000000.0,
-        disbursedLoanAmount: 2665000.0,
-        sanctionLetterUrl: null,
-        customerName: "HIRENKUMAR VITTHALDAS SHAH",
-        userID: "08dd9150-cf8c-4b4f-8502-acda58611393",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de6273-243c-45e0-8eaa-b7ee8ae2990e",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260201",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2026-02-02",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 12000.0,
-        sanctionedLoanAmount: 2000.0,
-        disbursedLoanAmount: 2000.0,
-        sanctionLetterUrl: null,
-        customerName: "BHAVYA TIWARI",
-        userID: "08de4d22-8a7d-4fc2-84ff-ae2465c4e2d0",
-        progressPercent: 60,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de599d-fda3-4680-8785-fecdde0d4e5f",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260104",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2026-01-22",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2000.0,
-        sanctionedLoanAmount: 2000.0,
-        disbursedLoanAmount: 400.0,
-        sanctionLetterUrl: null,
-        customerName: "BHAVYA TIWARI",
-        userID: "08de4d22-8a7d-4fc2-84ff-ae2465c4e2d0",
-        progressPercent: 60,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de4f9e-24d0-464c-8a16-618dbb7ea432",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA260102",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2026-01-09",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 50000.0,
-        sanctionedLoanAmount: 50000.0,
-        disbursedLoanAmount: 100.0,
-        sanctionLetterUrl: null,
-        customerName: "BHAVYA TIWARI",
-        userID: "08de4d22-8a7d-4fc2-84ff-ae2465c4e2d0",
-        progressPercent: 60,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de478b-13fc-4676-8494-3ce9105d9593",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251216",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-11-30",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 500000.0,
-        sanctionedLoanAmount: 150000.0,
-        disbursedLoanAmount: 150000.0,
-        sanctionLetterUrl: null,
-        customerName: "HIRENKUMAR VITTHALDAS SHAH",
-        userID: "08dd9150-cf8c-4b4f-8502-acda58611393",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de1adc-8e04-4890-86d2-041c1983f130",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251101",
-        bankName: null,
-        loanType: "Loan against property - Plot",
-        loanTypeID: 5,
-        date: "2025-11-03",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2500000.0,
-        sanctionedLoanAmount: 15000.0,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "SIDDHI VINAYAK ENTERPRISES",
-        userID: "08de1ac2-310f-41e6-894f-db823a879de4",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de0a4a-1ed8-4caa-85e3-f4cce894f64a",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251019",
-        bankName: "State Bank of India",
-        loanType: "Loan against property - Industrial",
-        loanTypeID: 9,
-        date: "2025-10-13",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 2500000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de0a49-8a7d-4570-8f76-c8250302f2f4",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251018",
-        bankName: "HDFC Bank",
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-10-13",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5800000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 5800000.0,
-        sanctionLetterUrl: null,
-        customerName: "RAJESH JAYSUKHLAL ACHARYA",
-        userID: "08dde21f-0fd9-41c7-86e7-5ca28377b93b",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de0a3a-ca1e-4b77-8eee-17d81db7db57",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251017",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-10-13",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: null,
-        sanctionLetterUrl: null,
-        customerName: "NEXUS NUTRI SCIENCE LIMITED",
-        userID: "08de0598-4bee-48ca-8a7c-005b36583e79",
-        progressPercent: 60,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de04e7-38d6-4d56-8331-cbc08077392b",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251015",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-10-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5200000.0,
-        sanctionedLoanAmount: 15000.0,
-        disbursedLoanAmount: 15000.0,
-        sanctionLetterUrl: null,
-        customerName: "RAJESH JAYSUKHLAL ACHARYA",
-        userID: "08dde21f-0fd9-41c7-86e7-5ca28377b93b",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de04cd-8516-4cb4-83be-f2b5cedd2adf",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251014",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-10-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 50000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 50000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de04c6-9c41-4f58-8623-971e9eb69bed",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251013",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-10-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 6000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 6000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de04c6-92b9-4f82-8b35-7adf251f35d7",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251012",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-10-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 5000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de04bf-dffe-4f5b-87d9-c78476135576",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251011",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-10-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 5000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de04b1-7328-42be-8d2a-ec9989917562",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251010",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-10-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 5000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de04a4-1954-4207-81b7-8807889dc3dd",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251009",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-10-06",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1700000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1700000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de027e-2d34-404c-8ffd-a570a3f85196",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251008",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-10-03",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1500000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de00f3-0c2b-4a52-8513-1bb9e62f94c5",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251007",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-10-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 150000.0,
-        sanctionLetterUrl: null,
-        customerName: "VINOD KUMAR SEVAK",
-        userID: "08de000a-df7b-4e64-802c-1e86737f6991",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de00e7-3265-4001-872f-3975827386e7",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251006",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-10-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 60000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 60000000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de00e7-28b0-403c-8042-f301a2ce2781",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251005",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-10-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 50000000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 50000000000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de00e6-0afe-4576-87eb-c6354fd494f8",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251004",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-10-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 5000000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de00e5-c758-4281-892c-df86aec6e061",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251003",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-10-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 500000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de00c2-bb5a-4a94-8347-6559fdd73ac9",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251002",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-10-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1200000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1200000.0,
-        sanctionLetterUrl: null,
-        customerName: "VINOD KUMAR SEVAK",
-        userID: "08de000a-df7b-4e64-802c-1e86737f6991",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08de00b9-30f5-475d-8046-ae7d4f9f01b3",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA251001",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-10-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1500000.0,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddfcd2-379f-44ea-87de-478d07b24567",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250973",
-        bankName: null,
-        loanType: "Loan against property - Industrial",
-        loanTypeID: 9,
-        date: "2025-09-26",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1000000.0,
-        sanctionLetterUrl: null,
-        customerName: "DHIRAJ DHANJIBHAI DASADIA",
-        userID: "08dd411c-a9d1-432a-8deb-54ff7cc0bdd4",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddfccf-45d5-437b-8574-7a7c65b896e7",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250972",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-26",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1500000.0,
-        sanctionLetterUrl: null,
-        customerName: "DHIRAJ DHANJIBHAI DASADIA",
-        userID: "08dd411c-a9d1-432a-8deb-54ff7cc0bdd4",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddfcbf-933c-4560-8cfe-38794fc6cbd5",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250971",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-09-26",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 150000.0,
-        sanctionLetterUrl: null,
-        customerName: "NISHITA JUNEJA",
-        userID: "08ddfb52-666c-4ca3-8ae8-281136b315c2",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddfcbf-4cc7-4f05-86d5-1c96024a1091",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250970",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-09-26",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 150000.0,
-        sanctionLetterUrl: null,
-        customerName: "NISHITA JUNEJA",
-        userID: "08ddfb52-666c-4ca3-8ae8-281136b315c2",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddfcbb-2679-427a-819f-acb99246fc67",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250969",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-09-26",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 150000.0,
-        sanctionLetterUrl: null,
-        customerName: "NISHITA JUNEJA",
-        userID: "08ddfb52-666c-4ca3-8ae8-281136b315c2",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddfb2b-ca9d-43e4-8923-8da6436db675",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250968",
-        bankName: "ICICI Home Finance Ltd",
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-09-24",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 300000.0,
-        sanctionedLoanAmount: 15000.0,
-        disbursedLoanAmount: 15000.0,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddf5e4-f716-4f69-8198-ba2ce450dbbe",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250964",
-        bankName: null,
-        loanType: "Unsecured Business Loan",
-        loanTypeID: 4,
-        date: "2025-09-17",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 254000.0,
-        sanctionedLoanAmount: 20000.0,
-        disbursedLoanAmount: 25.0,
-        sanctionLetterUrl: null,
-        customerName: "VAISHALI BHAUMIK ACHARYA",
-        userID: "08ddee16-2f23-454c-8547-3c22bdefdb60",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddf510-98ed-48cd-8a8b-a093623cd60b",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250961",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-09-16",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: 15000.0,
-        disbursedLoanAmount: 15000.0,
-        sanctionLetterUrl: null,
-        customerName: "VAISHALI BHAUMIK ACHARYA",
-        userID: "08ddee16-2f23-454c-8547-3c22bdefdb60",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddec51-e756-4f69-813f-c7cfc5f5958b",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250944",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-09-05",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 3000000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddec51-cc7d-49fc-8d80-d7832170ad9b",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250943",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-09-05",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1500000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddec49-d701-45e4-8ec1-c543b40db1be",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250942",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-09-05",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1500000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddec49-bb51-4c95-8b34-5a2499b7f52f",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250941",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-09-05",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 2500000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddeaa3-d280-4cd2-80e2-70b38c636d0d",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250930",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-09-03",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1500000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddea11-aad2-45e1-82ab-5bb14d559b1c",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250926",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-09-02",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 150000.0,
-        sanctionLetterUrl: null,
-        customerName: "NIKUNJ MAKRANI",
-        userID: "08dde472-9dc8-4992-877f-18e7fb483b8e",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dde9ee-8da9-42c5-8f96-3c7e5879d4ba",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250923",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-09-02",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: 150000.0,
-        disbursedLoanAmount: 15000.0,
-        sanctionLetterUrl: null,
-        customerName: "NIKUNJ MAKRANI",
-        userID: "08dde472-9dc8-4992-877f-18e7fb483b8e",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dde9e5-497f-43f5-8384-7faefebf68eb",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250921",
-        bankName: "ICICI Home Finance Ltd",
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-09-02",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 150000.0,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dde956-6b07-457c-8a22-31b0972c0c17",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250919",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-09-01",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1500000.0,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dde6db-0ecb-48c3-8f67-5dc1cd64b4c6",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250896",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-08-29",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 5000000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dde61f-5867-4abe-84c8-b3a3e084e3c9",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250890",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-08-28",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 15000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 15000000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dde5f5-f120-40b7-88d3-641e29160bc1",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250887",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-08-28",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 2000000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dde5f3-ff60-4a56-8f05-7264102bb4bc",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250886",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-08-28",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1500000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dde5f2-d26a-4c75-8921-b2c960ddc0bc",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250885",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-08-28",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 150000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dde491-0ed9-4e45-88f7-322c28c8224d",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250882",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-08-26",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 5000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 5000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dde3c5-5e20-487d-8389-79e8a710f461",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250875",
-        bankName: null,
-        loanType: "CC/OD - Secured",
-        loanTypeID: 10,
-        date: "2025-08-25",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 150000.0,
-        sanctionedLoanAmount: 120000.0,
-        disbursedLoanAmount: 15000.0,
-        sanctionLetterUrl: null,
-        customerName: "TIRTH PARAGBHAI ACHARYA",
-        userID: "08dde300-1440-44e4-8388-7cbfd5af26e8",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dde395-961d-47d2-845f-5cd2b3d69a4b",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250873",
-        bankName: null,
-        loanType: "Loan against property - Commercial",
-        loanTypeID: 8,
-        date: "2025-08-25",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1200000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1200000.0,
-        sanctionLetterUrl: null,
-        customerName: "HIRENKUMAR VITTHALDAS SHAH",
-        userID: "08dd9150-cf8c-4b4f-8502-acda58611393",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dde0b3-84e8-4eca-8a74-8d9b634c4abe",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250865",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-08-21",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 50000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 50000.0,
-        sanctionLetterUrl: null,
-        customerName: "ANUJ GULATI",
-        userID: "08dde071-5d4c-4576-8a5a-b6fdd1a30a08",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dddf56-f393-46c1-8eda-69d4b8703bff",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250853",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-08-20",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 3000000.0,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddda59-59e2-480b-8f93-cbdd513c5c65",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250847",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-08-13",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 15000.0,
-        sanctionedLoanAmount: 15000.0,
-        disbursedLoanAmount: 100.0,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL BHIKHUBHAI SHAH",
-        userID: "08ddd0e5-bc99-4f82-83c9-cc3cc97d32fc",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddd3dc-c72f-42c9-8a96-16bd17e8e3eb",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250807",
-        bankName: null,
-        loanType: "Home Loan",
-        loanTypeID: 1,
-        date: "2025-08-05",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 4000000.0,
-        sanctionedLoanAmount: 150000.0,
-        disbursedLoanAmount: 30000.0,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL BHIKHUBHAI SHAH",
-        userID: "08ddd0e5-bc99-4f82-83c9-cc3cc97d32fc",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddbae5-b074-45b7-80cc-6b01287a05e5",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250713",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-07-04",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 450000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 450000.0,
-        sanctionLetterUrl: null,
-        customerName: "Nisarg Jani",
-        userID: "2eb3be1f-11cb-49bb-a8d6-b1398963b02e",
-        progressPercent: 20,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08ddbad0-303a-4437-8791-a0c1a3653990",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250712",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-07-04",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1500000.0,
-        sanctionLetterUrl: null,
-        customerName: "DHIRAJ DHANJIBHAI DASADIA",
-        userID: "08dd411c-a9d1-432a-8deb-54ff7cc0bdd4",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dda7f2-4cb6-45c4-8dd8-b08ec531dde4",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250642",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-06-10",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1000000.0,
-        sanctionLetterUrl: null,
-        customerName: "HIRENKUMAR VITTHALDAS SHAH",
-        userID: "08dd914f-ef35-4e11-8ae0-0a4ede6d5bb6",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dd9f4e-586b-4ea0-8cdb-be91b45603cc",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA2505177",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-05-30",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 2100000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 2100000.0,
-        sanctionLetterUrl: null,
-        customerName: "PRERNA KIRANBHAI THAKER",
-        userID: "08dd9f3f-f149-4ca8-814e-b9db808dbfed",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dd9f4d-5e72-406c-8907-4f1e7fbba457",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA2505176",
-        bankName: "Yes Bank Ltd",
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-05-30",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 3000000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 3000000.0,
-        sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
-        progressPercent: 40,
-        isCamReportGenerated: true,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dd9474-80ef-489a-8675-370e4c194688",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250524",
-        bankName: null,
-        loanType: "Loan against property - Residential",
-        loanTypeID: 7,
-        date: "2025-05-16",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 1500000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 1500000.0,
-        sanctionLetterUrl: null,
-        customerName: "HIRENKUMAR VITTHALDAS SHAH",
-        userID: "08dd914f-ef35-4e11-8ae0-0a4ede6d5bb6",
-        progressPercent: 40,
-        isCamReportGenerated: false,
-        status: {
-          label: "Disbursed",
-          color: "#0BB680",
-          statusID: 6,
-        },
-      },
-      {
-        loanApplicationID: "08dda4d2-cc82-4364-82c0-3981b3c34e71",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250619",
-        bankName: "Indian Bank",
-        loanType: "Car Loan",
-        loanTypeID: 11,
-        date: "2025-05-07",
-        sanctionedDate: null,
-        disbursedDate: null,
-        loanAmount: 900000.0,
-        sanctionedLoanAmount: null,
-        disbursedLoanAmount: 900000.0,
-        sanctionLetterUrl: null,
-        customerName: "HIRENKUMAR VITTHALDAS SHAH",
-        userID: "08dd9150-cf8c-4b4f-8502-acda58611393",
-        progressPercent: 40,
-        isCamReportGenerated: false,
+
         status: {
           label: "Disbursed",
           color: "#0BB680",
@@ -7739,55 +4376,97 @@ const demoDisbursedLoanApplicationsResponse: IGetAllLoanApplicationsResponse = {
   },
 };
 
-const demoRejectedLoanApplicationsResponse: IGetAllLoanApplicationsResponse = {
+const demoRejectedLoanApplicationsResponse: IGetAllLoanApplicationsResponse =
+{
   status: true,
   statusCode: 200,
-  message: "List of all Loan Applications fetched successfully!",
+  message:
+    "List of all Loan Applications fetched successfully!",
+
   data: {
     totalLoanApplications: 2,
+
     loanApplications: [
       {
-        loanApplicationID: "08dde9e7-4865-4d7b-8d74-1ea7694e3781",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250922",
+        loanApplicationID:
+          "demo-loan-id-001",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-001",
+
         bankName: null,
-        loanType: "Loan against property - Commercial",
+
+        loanType:
+          "Loan against property - Commercial",
+
         loanTypeID: 8,
+
         date: "2025-09-02",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 15000.0,
+
+        loanAmount: 1500000,
+
         sanctionedLoanAmount: null,
         disbursedLoanAmount: null,
+
         sanctionLetterUrl: null,
-        customerName: "MEGHAL SHAH NEW & ASSOCIATES",
-        userID: "08dd28d1-0e3e-44b7-8cea-c6bdacca5434",
+
+        customerName:
+          "ABC INDUSTRIES PRIVATE LIMITED",
+
+        userID: "demo-user-id-001",
+
         progressPercent: 40,
+
         isCamReportGenerated: false,
+
         status: {
           label: "Rejected",
           color: "#F64F59",
           statusID: 7,
         },
       },
+
       {
-        loanApplicationID: "08dd9c30-4b6d-4e59-8172-f07e19a2d8bb",
-        disbursementId: "00000000-0000-0000-0000-000000000000",
-        loanApplicationCode: "COLA250533",
+        loanApplicationID:
+          "demo-loan-id-002",
+
+        disbursementId:
+          "00000000-0000-0000-0000-000000000000",
+
+        loanApplicationCode: "DEMO-LA-002",
+
         bankName: null,
-        loanType: "Loan against property - Residential",
+
+        loanType:
+          "Loan against property - Residential",
+
         loanTypeID: 7,
+
         date: "2025-05-26",
+
         sanctionedDate: null,
         disbursedDate: null,
-        loanAmount: 1500000.0,
+
+        loanAmount: 1500000,
+
         sanctionedLoanAmount: null,
         disbursedLoanAmount: null,
+
         sanctionLetterUrl: null,
-        customerName: "NISHI BHAVSAR",
-        userID: "08dd96aa-6c9a-40f7-8d5e-d6f2e75f9b1d",
+
+        customerName: "MNO USER",
+
+        userID: "demo-user-id-002",
+
         progressPercent: 40,
+
         isCamReportGenerated: true,
+
         status: {
           label: "Rejected",
           color: "#F64F59",
