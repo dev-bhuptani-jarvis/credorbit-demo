@@ -577,29 +577,29 @@ const demoSubscriptionPlansResponse: ISubscriptionPlanListingResponse = {
   message: "Subscription plans fetched successfully!",
   data: [
     {
-      planID: 2,
-      name: "Value Plus Plan",
-      credits: 2200,
-      price: 1999,
+      "planID": 6,
+      "name": "Value Plus Plan",
+      "credits": 2499,
+      "price": 2499,
     },
     {
-      planID: 3,
-      name: "Power Pack Plan",
-      credits: 6000,
-      price: 4999,
+      "planID": 7,
+      "name": "Power Pack Plan",
+      "credits": 5500,
+      "price": 4999,
     },
     {
-      planID: 4,
-      name: "Max Saver Plan",
-      credits: 12000,
-      price: 9999,
+      "planID": 8,
+      "name": "Max Saver Plan",
+      "credits": 12000,
+      "price": 9999,
     },
     {
-      planID: 5,
-      name: "Custom Plan",
-      credits: 0,
-      price: 0,
-    },
+      "planID": 9,
+      "name": "Custom Plan",
+      "credits": 0,
+      "price": 0,
+    }
   ],
 };
 
