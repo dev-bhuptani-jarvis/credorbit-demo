@@ -552,66 +552,66 @@ const NewApplyLoan = () => {
               : validationMessages.selectLoanType
             : fieldName === "borrowerType"
               ? IsStringNullEmptyOrUndefined(
-                  (value as { displayName?: string })?.displayName ?? "",
-                )
+                (value as { displayName?: string })?.displayName ?? "",
+              )
                 ? validationMessages.selectBorrowerType
                 : ""
               : fieldName === "unit"
                 ? IsStringNullEmptyOrUndefined(
-                    (value as { displayName?: string })?.displayName ?? "",
-                  )
+                  (value as { displayName?: string })?.displayName ?? "",
+                )
                   ? validationMessages.selectUnit
                   : ""
                 : fieldName === "profession"
                   ? IsStringNullEmptyOrUndefined(
-                      (value as { displayName?: string })?.displayName ?? "",
-                    )
+                    (value as { displayName?: string })?.displayName ?? "",
+                  )
                     ? validationMessages.selectProfession
                     : ""
                   : fieldName === "industry"
                     ? IsStringNullEmptyOrUndefined(
-                        (value as { displayName?: string })?.displayName ?? "",
-                      )
+                      (value as { displayName?: string })?.displayName ?? "",
+                    )
                       ? validationMessages.selectIndustry
                       : ""
                     : fieldName === "businessVintage"
                       ? IsStringNullEmptyOrUndefined(
-                          (value as { displayName?: string })?.displayName ??
-                            "",
-                        )
+                        (value as { displayName?: string })?.displayName ??
+                        "",
+                      )
                         ? validationMessages.businessVintage
                         : ""
                       : fieldName === "yearsOfITRFiled"
                         ? IsStringNullEmptyOrUndefined(
-                            (value as { displayName?: string })?.displayName ??
-                              "",
-                          )
+                          (value as { displayName?: string })?.displayName ??
+                          "",
+                        )
                           ? validationMessages.yearsOfITRFiled
                           : ""
                         : fieldName === "typeOfOrganizationWhereEmployeeWorking"
                           ? IsStringNullEmptyOrUndefined(
-                              (value as { displayName?: string })
-                                ?.displayName ?? "",
-                            )
+                            (value as { displayName?: string })
+                              ?.displayName ?? "",
+                          )
                             ? validationMessages.typeOfOrganizationWhereEmployeeWorking
                             : ""
                           : fieldName === "durationOfWorkingAtOrganization"
                             ? IsStringNullEmptyOrUndefined(
-                                (value as { displayName?: string })
-                                  ?.displayName ?? "",
-                              )
+                              (value as { displayName?: string })
+                                ?.displayName ?? "",
+                            )
                               ? validationMessages.durationOfWorkingAtOrganization
                               : ""
                             : fieldName === "salarySlipAvailableMonths"
                               ? IsStringNullEmptyOrUndefined(
-                                  (value as { displayName?: string })
-                                    ?.displayName ?? "",
-                                )
+                                (value as { displayName?: string })
+                                  ?.displayName ?? "",
+                              )
                                 ? validationMessages.salarySlipAvailableMonths
                                 : ""
                               : fieldName === "bankName"
                                 ? formValues.borrowerType.id ===
-                                    MasterEnum.SALARIED &&
+                                  MasterEnum.SALARIED &&
                                   IsStringNullEmptyOrUndefined(
                                     (value as string) ?? "",
                                   )
@@ -643,16 +643,16 @@ const NewApplyLoan = () => {
         const decryptedData = {
           ...response.data,
           emailID: response.data.emailID
-            ? decryptVAPTData(response.data.emailID)
+            ? (response.data.emailID)
             : "",
           mobileNumber: response.data.mobileNumber
-            ? decryptVAPTData(response.data.mobileNumber)
+            ? (response.data.mobileNumber)
             : "",
           panNumber: response.data.panNumber
-            ? decryptVAPTData(response.data.panNumber)
+            ? (response.data.panNumber)
             : "",
           gstNumber: response.data.gstNumber
-            ? decryptVAPTData(response.data.gstNumber)
+            ? (response.data.gstNumber)
             : null,
         };
 
@@ -760,7 +760,7 @@ const NewApplyLoan = () => {
         ...getInitialFormErrors(formValues.isSecuredLoanApp),
         loanAmount:
           IsStringNullEmptyOrUndefined(formValues.loanAmount) ||
-          Number(formValues.loanAmount.replace(/,/g, "")) <= 0
+            Number(formValues.loanAmount.replace(/,/g, "")) <= 0
             ? validationMessages.selectLoanAmount
             : "",
       };
@@ -898,7 +898,7 @@ const NewApplyLoan = () => {
 
       updatedFormErrors.averageGrossMonthlySalary =
         !formValues.isSecuredLoanApp &&
-        IsStringNullEmptyOrUndefined(formValues.averageGrossMonthlySalary)
+          IsStringNullEmptyOrUndefined(formValues.averageGrossMonthlySalary)
           ? validationMessages.averageGrossMonthlySalary
           : "";
 
@@ -1055,7 +1055,7 @@ const NewApplyLoan = () => {
       ...getUpdateFormErrors(),
       loanAmount:
         IsStringNullEmptyOrUndefined(updatedLoanAmount) ||
-        Number(updatedLoanAmount) <= 0
+          Number(updatedLoanAmount) <= 0
           ? validationMessages.selectLoanAmount
           : "",
     };
@@ -1149,13 +1149,13 @@ const NewApplyLoan = () => {
   const filterOptions = () => {
     const filterCriteria: number[] = formValues.isSecuredLoanApp
       ? [
-          LoanApplicationStatusType.UNSECURED_LOAN,
-          LoanApplicationStatusType.BOTH,
-        ]
+        LoanApplicationStatusType.UNSECURED_LOAN,
+        LoanApplicationStatusType.BOTH,
+      ]
       : [
-          LoanApplicationStatusType.SECURED_LOAN,
-          LoanApplicationStatusType.BOTH,
-        ];
+        LoanApplicationStatusType.SECURED_LOAN,
+        LoanApplicationStatusType.BOTH,
+      ];
 
     const filteredList: ILoanTypeData[] = loanTypeList.filter((opt) =>
       filterCriteria.includes(opt.isSecuredLoan),
@@ -1443,9 +1443,9 @@ const NewApplyLoan = () => {
                           restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
                         }
                         maxLength={15}
-                        // onPaste={(e) => e.preventDefault()}
-                        // onCopy={(e) => e.preventDefault()}
-                        // onCut={(e) => e.preventDefault()}
+                      // onPaste={(e) => e.preventDefault()}
+                      // onCopy={(e) => e.preventDefault()}
+                      // onCut={(e) => e.preventDefault()}
                       />
                     </div>
 
@@ -1457,97 +1457,97 @@ const NewApplyLoan = () => {
 
                 {formValues.borrowerType.id ===
                   MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL && (
-                  <div className="col-lg-4 col-12">
-                    <div className="form-group w-100">
-                      <label
-                        className="form-label small font-15"
-                        htmlFor="unit"
-                      >
-                        Nature of Business Activity <sup>*</sup>
-                      </label>
+                    <div className="col-lg-4 col-12">
+                      <div className="form-group w-100">
+                        <label
+                          className="form-label small font-15"
+                          htmlFor="unit"
+                        >
+                          Nature of Business Activity <sup>*</sup>
+                        </label>
 
-                      <Dropdown
-                        value={formValues.unit}
-                        placeholder="Select nature of business activity"
-                        onChange={(e) => handleInputChange("unit", e.value)}
-                        options={unitList.sort((a, b) =>
-                          a.displayName.localeCompare(b.displayName),
+                        <Dropdown
+                          value={formValues.unit}
+                          placeholder="Select nature of business activity"
+                          onChange={(e) => handleInputChange("unit", e.value)}
+                          options={unitList.sort((a, b) =>
+                            a.displayName.localeCompare(b.displayName),
+                          )}
+                          optionLabel="displayName"
+                          disabled={isEditMode}
+                        />
+
+                        {isFormSubmitted && (
+                          <span className="error">{formErrors.unit}</span>
                         )}
-                        optionLabel="displayName"
-                        disabled={isEditMode}
-                      />
-
-                      {isFormSubmitted && (
-                        <span className="error">{formErrors.unit}</span>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {formValues.borrowerType.id ===
                   MasterEnum.SELF_EMPLOYED_PROFESSIONAL && (
-                  <div className="col-lg-4 col-12">
-                    <div className="form-group w-100">
-                      <label
-                        className="form-label small font-15"
-                        htmlFor="profession"
-                      >
-                        Profession <sup>*</sup>
-                      </label>
+                    <div className="col-lg-4 col-12">
+                      <div className="form-group w-100">
+                        <label
+                          className="form-label small font-15"
+                          htmlFor="profession"
+                        >
+                          Profession <sup>*</sup>
+                        </label>
 
-                      <Dropdown
-                        value={formValues.profession}
-                        placeholder="Select Profession"
-                        onChange={(e) =>
-                          handleInputChange("profession", e.value)
-                        }
-                        options={professionList.sort((a, b) =>
-                          a.displayName.localeCompare(b.displayName),
+                        <Dropdown
+                          value={formValues.profession}
+                          placeholder="Select Profession"
+                          onChange={(e) =>
+                            handleInputChange("profession", e.value)
+                          }
+                          options={professionList.sort((a, b) =>
+                            a.displayName.localeCompare(b.displayName),
+                          )}
+                          optionLabel="displayName"
+                          disabled={isEditMode}
+                        />
+
+                        {isFormSubmitted && (
+                          <span className="error">{formErrors.profession}</span>
                         )}
-                        optionLabel="displayName"
-                        disabled={isEditMode}
-                      />
-
-                      {isFormSubmitted && (
-                        <span className="error">{formErrors.profession}</span>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {(formValues.borrowerType.id ===
                   MasterEnum.SELF_EMPLOYED_PROFESSIONAL ||
                   formValues.borrowerType.id ===
-                    MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL) && (
-                  <div className="col-lg-4 col-12">
-                    <div className="form-group w-100">
-                      <label
-                        className="form-label small font-15"
-                        htmlFor="industry"
-                      >
-                        Industry <sup>*</sup>
-                      </label>
+                  MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL) && (
+                    <div className="col-lg-4 col-12">
+                      <div className="form-group w-100">
+                        <label
+                          className="form-label small font-15"
+                          htmlFor="industry"
+                        >
+                          Industry <sup>*</sup>
+                        </label>
 
-                      <Dropdown
-                        value={formValues.industry}
-                        placeholder="Select Industry"
-                        onChange={(e) => handleInputChange("industry", e.value)}
-                        options={industryList.sort((a, b) =>
-                          a.displayName.localeCompare(b.displayName),
+                        <Dropdown
+                          value={formValues.industry}
+                          placeholder="Select Industry"
+                          onChange={(e) => handleInputChange("industry", e.value)}
+                          options={industryList.sort((a, b) =>
+                            a.displayName.localeCompare(b.displayName),
+                          )}
+                          optionLabel="displayName"
+                          filter
+                          filterBy="displayName"
+                          filterPlaceholder="Search Industry"
+                          disabled={isEditMode}
+                        />
+
+                        {isFormSubmitted && (
+                          <span className="error">{formErrors.industry}</span>
                         )}
-                        optionLabel="displayName"
-                        filter
-                        filterBy="displayName"
-                        filterPlaceholder="Search Industry"
-                        disabled={isEditMode}
-                      />
-
-                      {isFormSubmitted && (
-                        <span className="error">{formErrors.industry}</span>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {formValues.borrowerType.id === MasterEnum.SALARIED && (
                   <div className="col-lg-4 col-12">
@@ -1588,34 +1588,34 @@ const NewApplyLoan = () => {
                 {(formValues.borrowerType.id ===
                   MasterEnum.SELF_EMPLOYED_PROFESSIONAL ||
                   formValues.borrowerType.id ===
-                    MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL) && (
-                  <div className="col-lg-4 col-12">
-                    <div className="form-group w-100">
-                      <label
-                        className="form-label small font-15"
-                        htmlFor="industry"
-                      >
-                        Business Vintage <sup>*</sup>
-                      </label>
+                  MasterEnum.SELF_EMPLOYED_NON_PROFESSIONAL) && (
+                    <div className="col-lg-4 col-12">
+                      <div className="form-group w-100">
+                        <label
+                          className="form-label small font-15"
+                          htmlFor="industry"
+                        >
+                          Business Vintage <sup>*</sup>
+                        </label>
 
-                      <Dropdown
-                        value={formValues.businessVintage}
-                        placeholder="Select Business Vintage"
-                        onChange={(e) =>
-                          handleInputChange("businessVintage", e.value)
-                        }
-                        options={businessVintageList}
-                        optionLabel="displayName"
-                        disabled={isEditMode}
-                      />
-                      {isFormSubmitted && (
-                        <span className="error">
-                          {formErrors.businessVintage}
-                        </span>
-                      )}
+                        <Dropdown
+                          value={formValues.businessVintage}
+                          placeholder="Select Business Vintage"
+                          onChange={(e) =>
+                            handleInputChange("businessVintage", e.value)
+                          }
+                          options={businessVintageList}
+                          optionLabel="displayName"
+                          disabled={isEditMode}
+                        />
+                        {isFormSubmitted && (
+                          <span className="error">
+                            {formErrors.businessVintage}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 <div className="col-lg-4 col-12">
                   <div className="form-group w-100">
@@ -1722,9 +1722,9 @@ const NewApplyLoan = () => {
                             }
                             maxLength={50}
                             disabled={isEditMode}
-                            // onPaste={(e) => e.preventDefault()}
-                            // onCopy={(e) => e.preventDefault()}
-                            // onCut={(e) => e.preventDefault()}
+                          // onPaste={(e) => e.preventDefault()}
+                          // onCopy={(e) => e.preventDefault()}
+                          // onCut={(e) => e.preventDefault()}
                           />
                         </div>
 
@@ -2845,9 +2845,8 @@ const NewApplyLoan = () => {
                 />
 
                 <Button
-                  className={`btn ${
-                    loading ? "btn-orange-disabled" : "btn-orange"
-                  } ms-2 text-center`}
+                  className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+                    } ms-2 text-center`}
                   disabled={loading}
                   label={
                     loading ? "Loading..." : isEditMode ? "Update" : "Next"

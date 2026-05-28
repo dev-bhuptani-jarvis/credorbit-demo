@@ -513,16 +513,16 @@ const ClientDetail = () => {
         const decryptedData = {
           ...response.data,
           emailID: response.data.emailID
-            ? decryptVAPTData(response.data.emailID)
+            ? (response.data.emailID)
             : "",
           mobileNumber: response.data.mobileNumber
-            ? decryptVAPTData(response.data.mobileNumber)
+            ? (response.data.mobileNumber)
             : "",
           panNumber: response.data.panNumber
-            ? decryptVAPTData(response.data.panNumber)
+            ? (response.data.panNumber)
             : "",
           gstNumber: response.data.gstNumber
-            ? decryptVAPTData(response.data.gstNumber)
+            ? (response.data.gstNumber)
             : null,
         };
 

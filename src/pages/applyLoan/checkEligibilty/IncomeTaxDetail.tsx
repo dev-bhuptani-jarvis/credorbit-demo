@@ -90,7 +90,11 @@ const IncomeTaxDetail = ({ nextStep, prevStep }: INextStepProps) => {
 
   const { panNumber } = useSelector((state: RootState) => state.user.user);
 
+  console.log('panNumber', panNumber)
+
   const { customerInfo } = useSelector((state: RootState) => state.customer);
+
+  console.log('customerInfo', customerInfo)
 
   const eligibility = getFetchEligibilityStatus(customerInfo.itrReportDate);
 

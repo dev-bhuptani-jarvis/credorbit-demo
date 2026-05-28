@@ -230,8 +230,6 @@ const ClientDashboard = () => {
     const response: IGetAllLoanApplicationsResponse =
       await getAllLoanApplicationsAPI(value);
 
-    console.log('response', response)
-
     if (!response) return;
 
     if (response && response.statusCode === 200) {
@@ -255,7 +253,7 @@ const ClientDashboard = () => {
       const decryptedData = {
         ...response.data,
         gstNumber: response.data.gstNumber
-          ? decryptVAPTData(response.data.gstNumber)
+          ? (response.data.gstNumber)
           : null,
       };
 

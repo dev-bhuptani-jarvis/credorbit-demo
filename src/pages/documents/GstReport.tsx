@@ -68,7 +68,6 @@ import { Calendar } from "primereact/calendar";
 import ModalLoader from "../../components/ModalLoader";
 import { validationMessages } from "../../utils/constants/messages";
 import {
-  decryptVAPTData,
   encryptVAPTData,
 } from "../../utils/functions/encryptDecrypt";
 import { RadioButton } from "primereact/radiobutton";
@@ -210,9 +209,9 @@ const GstReport = () => {
 
   const getGstNumbersArray = () => {
     if (gstInfo?.gstList.length === 1)
-      return gstInfo?.gstList.map((gst) => decryptVAPTData(gst.gstNo));
+      return gstInfo?.gstList.map((gst) => (gst.gstNo));
 
-    return gstInfo?.gstList.map((gst) => decryptVAPTData(gst.gstNo));
+    return gstInfo?.gstList.map((gst) => (gst.gstNo));
   };
 
   const toggleSelectedGst = (gstNumber: string): void => {
@@ -240,7 +239,7 @@ const GstReport = () => {
       const decryptedData = {
         ...response.data,
         gstNumber: response.data.gstNumber
-          ? decryptVAPTData(response.data.gstNumber)
+          ? (response.data.gstNumber)
           : "",
       };
 
@@ -990,7 +989,7 @@ const GstReport = () => {
 
       <Dialog
         visible={reportLoading}
-        onHide={() => {}}
+        onHide={() => { }}
         draggable={false}
         resizable={false}
         modal
@@ -1069,8 +1068,8 @@ const GstReport = () => {
                 body={(rowData: IGSTDetail) =>
                   rowData.retrievedDate
                     ? moment(rowData.retrievedDate).format(
-                        "Do MMMM YYYY, h:mm A",
-                      )
+                      "Do MMMM YYYY, h:mm A",
+                    )
                     : "-"
                 }
                 header="Fetched Date & Time"
@@ -1132,9 +1131,8 @@ const GstReport = () => {
                   {gstNumbersArray.length > 1 ? (
                     <>
                       <div
-                        className={`border rounded-3 p-2 ${
-                          gstSelectionError ? "border-danger" : ""
-                        }`}
+                        className={`border rounded-3 p-2 ${gstSelectionError ? "border-danger" : ""
+                          }`}
                         style={{ maxHeight: "220px", overflowY: "auto" }}
                       >
                         <div
@@ -1148,11 +1146,10 @@ const GstReport = () => {
                               <button
                                 key={gst}
                                 type="button"
-                                className={`w-100 text-start rounded-3 px-3 py-2 border ${
-                                  isSelected
-                                    ? "border-orange bg-light"
-                                    : "border-light-subtle bg-white"
-                                }`}
+                                className={`w-100 text-start rounded-3 px-3 py-2 border ${isSelected
+                                  ? "border-orange bg-light"
+                                  : "border-light-subtle bg-white"
+                                  }`}
                                 onClick={() => toggleSelectedGst(gst)}
                               >
                                 <div className="d-flex align-items-center justify-content-between gap-3">
@@ -1190,9 +1187,9 @@ const GstReport = () => {
                       value={gstNumbersArray[0] || ""}
                       name="gstin"
                       disabled
-                      // onPaste={(e) => e.preventDefault()}
-                      // onCopy={(e) => e.preventDefault()}
-                      // onCut={(e) => e.preventDefault()}
+                    // onPaste={(e) => e.preventDefault()}
+                    // onCopy={(e) => e.preventDefault()}
+                    // onCut={(e) => e.preventDefault()}
                     />
                   )}
                 </div>
@@ -1205,11 +1202,10 @@ const GstReport = () => {
                   />
 
                   <Button
-                    className={`btn ${
-                      gstInfo?.gstNumber === ""
-                        ? "btn-orange-disabled"
-                        : "btn-orange"
-                    } ms-2 w-100 text-center`}
+                    className={`btn ${gstInfo?.gstNumber === ""
+                      ? "btn-orange-disabled"
+                      : "btn-orange"
+                      } ms-2 w-100 text-center`}
                     onClick={handleClickGSTReport}
                     label="Next"
                     disabled={gstInfo?.gstNumber === ""}
@@ -1288,9 +1284,8 @@ const GstReport = () => {
                     label="Back"
                   />
                   <Button
-                    className={`btn ${
-                      !selectedMethod ? "btn-orange-disabled" : "btn-orange"
-                    } ms-2 w-100 text-center`}
+                    className={`btn ${!selectedMethod ? "btn-orange-disabled" : "btn-orange"
+                      } ms-2 w-100 text-center`}
                     onClick={() => handleMethodSelection(selectedMethod)}
                     label="Continue"
                     disabled={!selectedMethod}
@@ -1315,9 +1310,9 @@ const GstReport = () => {
                           setEmail(e.target.value.trim());
                           setEmailError("");
                         }}
-                        // onPaste={(e) => e.preventDefault()}
-                        // onCopy={(e) => e.preventDefault()}
-                        // onCut={(e) => e.preventDefault()}
+                      // onPaste={(e) => e.preventDefault()}
+                      // onCopy={(e) => e.preventDefault()}
+                      // onCut={(e) => e.preventDefault()}
                       />
                       {emailError && (
                         <span className="error">{emailError}</span>
@@ -1332,11 +1327,10 @@ const GstReport = () => {
                       <div className="d-flex flex-column gap-3">
                         {/* OTP Option */}
                         <div
-                          className={`p-3 border rounded ${
-                            referenceId
-                              ? "cursor-not-allowed opacity-50"
-                              : "cursor-pointer"
-                          }`}
+                          className={`p-3 border rounded ${referenceId
+                            ? "cursor-not-allowed opacity-50"
+                            : "cursor-pointer"
+                            }`}
                           onClick={() =>
                             !referenceId && setShareLinkMethod("otp")
                           }
@@ -1361,11 +1355,10 @@ const GstReport = () => {
 
                         {/* Password Option */}
                         <div
-                          className={`p-3 border rounded ${
-                            referenceId
-                              ? "cursor-not-allowed opacity-50"
-                              : "cursor-pointer"
-                          }`}
+                          className={`p-3 border rounded ${referenceId
+                            ? "cursor-not-allowed opacity-50"
+                            : "cursor-pointer"
+                            }`}
                           onClick={() =>
                             !referenceId && setShareLinkMethod("password")
                           }
@@ -1419,9 +1412,9 @@ const GstReport = () => {
                             newErrors[index] = "";
                             setEmailListErrors(newErrors);
                           }}
-                          // onPaste={(e) => e.preventDefault()}
-                          // onCopy={(e) => e.preventDefault()}
-                          // onCut={(e) => e.preventDefault()}
+                        // onPaste={(e) => e.preventDefault()}
+                        // onCopy={(e) => e.preventDefault()}
+                        // onCut={(e) => e.preventDefault()}
                         />
                         {emailListErrors[index] && (
                           <span className="error">
@@ -1441,23 +1434,21 @@ const GstReport = () => {
 
                   {referenceId ? (
                     <Button
-                      className={`btn ${
-                        !referenceId ? "btn-orange-disabled" : "btn-orange"
-                      } ms-2 w-100 text-center`}
+                      className={`btn ${!referenceId ? "btn-orange-disabled" : "btn-orange"
+                        } ms-2 w-100 text-center`}
                       onClick={handleReferenceIdSubmit}
                       label="Generate Report"
                       disabled={!referenceId}
                     />
                   ) : (
                     <Button
-                      className={`btn ${
-                        (selectedGstNumbers.length === 1 &&
-                          (!email || !shareLinkMethod)) ||
+                      className={`btn ${(selectedGstNumbers.length === 1 &&
+                        (!email || !shareLinkMethod)) ||
                         (selectedGstNumbers.length > 1 &&
                           emailList.some((e) => !e || !e.trim()))
-                          ? "btn-orange-disabled"
-                          : "btn-orange"
-                      } ms-2 w-100 text-center`}
+                        ? "btn-orange-disabled"
+                        : "btn-orange"
+                        } ms-2 w-100 text-center`}
                       onClick={() => {
                         if (selectedGstNumbers.length > 1)
                           setShareLinkMethod("password");
@@ -1509,9 +1500,9 @@ const GstReport = () => {
                     maxLength={100}
                     onChange={(e) => handleChange(e.target.value)}
                     disabled={showOTP}
-                    // onPaste={(e) => e.preventDefault()}
-                    // onCopy={(e) => e.preventDefault()}
-                    // onCut={(e) => e.preventDefault()}
+                  // onPaste={(e) => e.preventDefault()}
+                  // onCopy={(e) => e.preventDefault()}
+                  // onCut={(e) => e.preventDefault()}
                   />
 
                   {isFormSubmitted && (
@@ -1546,9 +1537,9 @@ const GstReport = () => {
                         onKeyPress={(e) =>
                           restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
                         }
-                        // onPaste={(e) => e.preventDefault()}
-                        // onCopy={(e) => e.preventDefault()}
-                        // onCut={(e) => e.preventDefault()}
+                      // onPaste={(e) => e.preventDefault()}
+                      // onCopy={(e) => e.preventDefault()}
+                      // onCut={(e) => e.preventDefault()}
                       />
                     </div>
 
@@ -1588,7 +1579,7 @@ const GstReport = () => {
                     className="btn btn-black-line text-center w-100"
                     onClick={handleBackToMethodSelection}
                     label="Back"
-                    // disabled={showOTP}
+                  // disabled={showOTP}
                   />
 
                   <Button
@@ -1711,9 +1702,9 @@ const GstReport = () => {
                 });
               }
             }}
-            // onPaste={(e) => e.preventDefault()}
-            // onCopy={(e) => e.preventDefault()}
-            // onCut={(e) => e.preventDefault()}
+          // onPaste={(e) => e.preventDefault()}
+          // onCopy={(e) => e.preventDefault()}
+          // onCut={(e) => e.preventDefault()}
           />
           {isFormSubmitted && formErrors.gstNumber && (
             <span className="error">{formErrors.gstNumber}</span>
@@ -1735,9 +1726,9 @@ const GstReport = () => {
                 gstAddress: e.target.value.toUpperCase().trim(),
               })
             }
-            // onPaste={(e) => e.preventDefault()}
-            // onCopy={(e) => e.preventDefault()}
-            // onCut={(e) => e.preventDefault()}
+          // onPaste={(e) => e.preventDefault()}
+          // onCopy={(e) => e.preventDefault()}
+          // onCut={(e) => e.preventDefault()}
           />
         </div>
 
@@ -1783,9 +1774,9 @@ const GstReport = () => {
                 tradeName: e.target.value.toUpperCase().trim(),
               })
             }
-            // onPaste={(e) => e.preventDefault()}
-            // onCopy={(e) => e.preventDefault()}
-            // onCut={(e) => e.preventDefault()}
+          // onPaste={(e) => e.preventDefault()}
+          // onCopy={(e) => e.preventDefault()}
+          // onCut={(e) => e.preventDefault()}
           />
         </div>
 
@@ -1804,9 +1795,9 @@ const GstReport = () => {
                 cinOrLlp: e.target.value.toUpperCase().trim(),
               })
             }
-            // onPaste={(e) => e.preventDefault()}
-            // onCopy={(e) => e.preventDefault()}
-            // onCut={(e) => e.preventDefault()}
+          // onPaste={(e) => e.preventDefault()}
+          // onCopy={(e) => e.preventDefault()}
+          // onCut={(e) => e.preventDefault()}
           />
         </div>
       </Dialog>

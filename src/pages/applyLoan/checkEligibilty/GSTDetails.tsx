@@ -175,7 +175,7 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
   // Utility functions
   const getGstNumbersArray = (): string[] => {
     if (customerInfo?.gstList?.length) {
-      return customerInfo.gstList.map((gst: any) => decryptVAPTData(gst.gstNo));
+      return customerInfo.gstList.map((gst: any) => gst.gstNo);
     }
     return [];
   };
@@ -801,7 +801,7 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
     <>
       <Dialog
         visible={reportLoading}
-        onHide={() => {}}
+        onHide={() => { }}
         draggable={false}
         resizable={false}
         modal
@@ -845,9 +845,8 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                       {gstNumbersArray.length > 1 ? (
                         <>
                           <div
-                            className={`border rounded-3 p-2 ${
-                              gstSelectionError ? "border-danger" : ""
-                            }`}
+                            className={`border rounded-3 p-2 ${gstSelectionError ? "border-danger" : ""
+                              }`}
                             style={{ maxHeight: "220px", overflowY: "auto" }}
                           >
                             <div
@@ -862,11 +861,10 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                                   <button
                                     key={gst}
                                     type="button"
-                                    className={`w-100 text-start rounded-3 px-3 py-2 border ${
-                                      isSelected
+                                    className={`w-100 text-start rounded-3 px-3 py-2 border ${isSelected
                                         ? "border-orange bg-light"
                                         : "border-light-subtle bg-white"
-                                    }`}
+                                      }`}
                                     onClick={() => toggleSelectedGst(gst)}
                                   >
                                     <div className="d-flex align-items-center justify-content-between gap-3">
@@ -904,9 +902,9 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                           value={gstNumbersArray[0] || ""}
                           name="gstin"
                           disabled
-                          // onPaste={(e) => e.preventDefault()}
-                          // onCopy={(e) => e.preventDefault()}
-                          // onCut={(e) => e.preventDefault()}
+                        // onPaste={(e) => e.preventDefault()}
+                        // onCopy={(e) => e.preventDefault()}
+                        // onCut={(e) => e.preventDefault()}
                         />
                       )}
                     </div>
@@ -921,12 +919,11 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                         label="Previous"
                       />
                       <Button
-                        className={`btn ${
-                          customerInfo?.gstNumber === "" ||
-                          customerInfo?.gstNumber === null
+                        className={`btn ${customerInfo?.gstNumber === "" ||
+                            customerInfo?.gstNumber === null
                             ? "btn-orange-disabled"
                             : "btn-orange"
-                        } ms-2 w-100 text-center`}
+                          } ms-2 w-100 text-center`}
                         onClick={() => {
                           let newList =
                             gstNumbersArray.length > 1
@@ -1014,9 +1011,8 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                         label="Back"
                       />
                       <Button
-                        className={`btn ${
-                          !selectedMethod ? "btn-orange-disabled" : "btn-orange"
-                        } ms-2 w-100 text-center`}
+                        className={`btn ${!selectedMethod ? "btn-orange-disabled" : "btn-orange"
+                          } ms-2 w-100 text-center`}
                         onClick={() => handleMethodSelection(selectedMethod)}
                         label="Continue"
                         disabled={!selectedMethod}
@@ -1042,9 +1038,9 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                               setEmail(e.target.value.trim());
                               setEmailError("");
                             }}
-                            // onPaste={(e) => e.preventDefault()}
-                            // onCopy={(e) => e.preventDefault()}
-                            // onCut={(e) => e.preventDefault()}
+                          // onPaste={(e) => e.preventDefault()}
+                          // onCopy={(e) => e.preventDefault()}
+                          // onCut={(e) => e.preventDefault()}
                           />
                           {emailError && (
                             <span className="error">{emailError}</span>
@@ -1057,11 +1053,10 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                           </label>
                           <div className="d-flex flex-column gap-3">
                             <div
-                              className={`p-3 border rounded ${
-                                referenceId
+                              className={`p-3 border rounded ${referenceId
                                   ? "cursor-not-allowed opacity-50"
                                   : "cursor-pointer"
-                              }`}
+                                }`}
                               onClick={() =>
                                 !referenceId && setShareLinkMethod("otp")
                               }
@@ -1085,11 +1080,10 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                             </div>
 
                             <div
-                              className={`p-3 border rounded ${
-                                referenceId
+                              className={`p-3 border rounded ${referenceId
                                   ? "cursor-not-allowed opacity-50"
                                   : "cursor-pointer"
-                              }`}
+                                }`}
                               onClick={() =>
                                 !referenceId && setShareLinkMethod("password")
                               }
@@ -1141,9 +1135,9 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                                 newErrors[index] = "";
                                 setEmailListErrors(newErrors);
                               }}
-                              // onPaste={(e) => e.preventDefault()}
-                              // onCopy={(e) => e.preventDefault()}
-                              // onCut={(e) => e.preventDefault()}
+                            // onPaste={(e) => e.preventDefault()}
+                            // onCopy={(e) => e.preventDefault()}
+                            // onCut={(e) => e.preventDefault()}
                             />
                             {emailListErrors[index] && (
                               <span className="error">
@@ -1167,23 +1161,21 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
 
                       {referenceId ? (
                         <Button
-                          className={`btn ${
-                            !referenceId ? "btn-orange-disabled" : "btn-orange"
-                          } ms-2 w-100 text-center`}
+                          className={`btn ${!referenceId ? "btn-orange-disabled" : "btn-orange"
+                            } ms-2 w-100 text-center`}
                           onClick={handleReferenceIdSubmit}
                           label="Generate Report"
                           disabled={!referenceId}
                         />
                       ) : (
                         <Button
-                          className={`btn ${
-                            (selectedGstNumbers.length === 1 &&
+                          className={`btn ${(selectedGstNumbers.length === 1 &&
                               (!email || !shareLinkMethod)) ||
-                            (selectedGstNumbers.length > 1 &&
-                              emailList.some((e) => !e || !e.trim()))
+                              (selectedGstNumbers.length > 1 &&
+                                emailList.some((e) => !e || !e.trim()))
                               ? "btn-orange-disabled"
                               : "btn-orange"
-                          } ms-2 w-100 text-center`}
+                            } ms-2 w-100 text-center`}
                           onClick={handleShareLinkGeneration}
                           label="Send Link"
                           disabled={
@@ -1233,9 +1225,9 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                           maxLength={100}
                           onChange={(e) => handleChangeUserName(e.target.value)}
                           disabled={showOTP}
-                          // onPaste={(e) => e.preventDefault()}
-                          // onCopy={(e) => e.preventDefault()}
-                          // onCut={(e) => e.preventDefault()}
+                        // onPaste={(e) => e.preventDefault()}
+                        // onCopy={(e) => e.preventDefault()}
+                        // onCut={(e) => e.preventDefault()}
                         />
                         {isFormSubmitted && (
                           <span className="error">{gstUserNameError}</span>
@@ -1267,9 +1259,9 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                               onKeyPress={(e) =>
                                 restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
                               }
-                              // onPaste={(e) => e.preventDefault()}
-                              // onCopy={(e) => e.preventDefault()}
-                              // onCut={(e) => e.preventDefault()}
+                            // onPaste={(e) => e.preventDefault()}
+                            // onCopy={(e) => e.preventDefault()}
+                            // onCut={(e) => e.preventDefault()}
                             />
                           </div>
 
@@ -1442,9 +1434,9 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                 setFormErrors({ ...formErrors, gstNumber: "" });
               }
             }}
-            // onPaste={(e) => e.preventDefault()}
-            // onCopy={(e) => e.preventDefault()}
-            // onCut={(e) => e.preventDefault()}
+          // onPaste={(e) => e.preventDefault()}
+          // onCopy={(e) => e.preventDefault()}
+          // onCut={(e) => e.preventDefault()}
           />
           {isFormSubmitted && formErrors.gstNumber && (
             <span className="error">{formErrors.gstNumber}</span>
@@ -1466,9 +1458,9 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                 gstAddress: e.target.value.toUpperCase().trim(),
               })
             }
-            // onPaste={(e) => e.preventDefault()}
-            // onCopy={(e) => e.preventDefault()}
-            // onCut={(e) => e.preventDefault()}
+          // onPaste={(e) => e.preventDefault()}
+          // onCopy={(e) => e.preventDefault()}
+          // onCut={(e) => e.preventDefault()}
           />
         </div>
 
@@ -1514,9 +1506,9 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                 tradeName: e.target.value.toUpperCase().trim(),
               })
             }
-            // onPaste={(e) => e.preventDefault()}
-            // onCopy={(e) => e.preventDefault()}
-            // onCut={(e) => e.preventDefault()}
+          // onPaste={(e) => e.preventDefault()}
+          // onCopy={(e) => e.preventDefault()}
+          // onCut={(e) => e.preventDefault()}
           />
         </div>
 
@@ -1535,9 +1527,9 @@ const GSTDetails = ({ nextStep, prevStep }: INextStepProps) => {
                 cinOrLlp: e.target.value.toUpperCase().trim(),
               })
             }
-            // onPaste={(e) => e.preventDefault()}
-            // onCopy={(e) => e.preventDefault()}
-            // onCut={(e) => e.preventDefault()}
+          // onPaste={(e) => e.preventDefault()}
+          // onCopy={(e) => e.preventDefault()}
+          // onCut={(e) => e.preventDefault()}
           />
         </div>
 

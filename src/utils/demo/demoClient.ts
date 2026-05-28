@@ -415,7 +415,7 @@ const demoClientDashboardResponse = {
     rocReportDate: null,
     cfoReportDate: null,
 
-    gstNumber: "encrypted-demo-gst-number",
+    gstNumber: "encrypted-gst-1",
 
     gstList: [
       {
