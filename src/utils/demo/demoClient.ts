@@ -415,13 +415,13 @@ const demoClientDashboardResponse = {
     rocReportDate: null,
     cfoReportDate: null,
 
-    gstNumber: "encrypted-gst-1",
+    gstNumber: "29AAACC1206D2ZB",
 
     gstList: [
       {
         id: 220,
         userId: "08de0598-4bee-48ca-8a7c-005b36583e79",
-        gstNo: "encrypted-gst-1",
+        gstNo: "29AAACC1206D2ZB",
         dateOfGstRegistration: null,
         tradeName: "Orbitex Industries",
         gstAddress: null,
@@ -431,7 +431,7 @@ const demoClientDashboardResponse = {
       {
         id: 221,
         userId: "08de0598-4bee-48ca-8a7c-005b36583e79",
-        gstNo: "encrypted-gst-2",
+        gstNo: "29AAACC1206D2ZC",
         dateOfGstRegistration: null,
         tradeName: "Orbitex Logistics",
         gstAddress: null,
@@ -441,7 +441,7 @@ const demoClientDashboardResponse = {
       {
         id: 222,
         userId: "08de0598-4bee-48ca-8a7c-005b36583e79",
-        gstNo: "encrypted-gst-3",
+        gstNo: "29AAACC1206D2ZD",
         dateOfGstRegistration: null,
         tradeName: "Orbitex Manufacturing",
         gstAddress: null,
@@ -479,7 +479,7 @@ const demoClientDashboardResponse = {
 
     userDetails: {
       contractEnforcementDate: "2025-10-09T00:00:00",
-      emailID: "encrypted-demo-email",
+      emailID: "abc@gmail.com",
       isContractSigned: true,
       profilePicture:
         "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",

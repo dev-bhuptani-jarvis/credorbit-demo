@@ -330,7 +330,7 @@ const demoGstDetailsResponse = {
     gstDetailsList: [
       {
         id:
-          "demo-gst-id-001",
+          "29AAACC1206D2ZB",
 
         fileName:
           "GST_Report_ABC_INDUSTRIES_PRIVATE_LIMITED_20260226_105117",
@@ -356,7 +356,7 @@ const demoGstDetailsResponse = {
 
       {
         id:
-          "demo-gst-id-002",
+          "29AAACC1206D2ZB",
 
         fileName:
           "GST_Report_ABC_INDUSTRIES_PRIVATE_LIMITED_20251101_150042",
@@ -382,7 +382,7 @@ const demoGstDetailsResponse = {
 
       {
         id:
-          "demo-gst-id-003",
+          "29AAACC1206D2ZB",
 
         fileName:
           "GST_Report_ABC_INDUSTRIES_PRIVATE_LIMITED_20251101_142842",
@@ -408,7 +408,7 @@ const demoGstDetailsResponse = {
 
       {
         id:
-          "demo-gst-id-004",
+          "29AAACC1206D2ZB",
 
         fileName:
           "GST_Report_ABC_INDUSTRIES_PRIVATE_LIMITED_20251015_160645",
@@ -429,7 +429,7 @@ const demoGstDetailsResponse = {
           "Aug 2025",
 
         gstNumber:
-          "27ABCDE1234F1Z5, 24ABCDE1234F1Z2, 29ABCDE1234F1Z8",
+          "29AAACC1206D2ZB, 29AAACC1206D2ZC, 29AAACC1206D2ZD",
       },
     ],
   },

@@ -26,16 +26,16 @@ const adminProfileResponse = {
       "encrypted-demo-pan",
 
     emailID:
-      "encrypted-demo-email",
+      "abc@gmail.com",
 
     mobileNumber:
-      "encrypted-demo-mobile",
+      "9000000001",
 
     profilePicture:
       "https://i.postimg.cc/Njq5CnTY/demo-logo.jpg",
 
     selectedGstNumber:
-      "encrypted-demo-gst",
+      "29AAACC1206D2ZB",
 
     gstList: [],
 
@@ -301,16 +301,16 @@ const sourcingPartnerProfileResponse = {
       "encrypted-demo-pan",
 
     emailID:
-      "encrypted-demo-email",
+      "abc@gmail.com",
 
     mobileNumber:
-      "encrypted-demo-mobile",
+      "9000000001",
 
     profilePicture:
       "https://i.postimg.cc/Njq5CnTY/demo-logo.jpg",
 
     selectedGstNumber:
-      "encrypted-demo-gst",
+      "29AAACC1206D2ZB",
 
     gstList: [],
 

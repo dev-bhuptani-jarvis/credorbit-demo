@@ -47,7 +47,6 @@ import {
 } from "../../interface/wallet";
 import { encryptVAPTData } from "../functions/encryptDecrypt";
 import { ISourcingPartnerDetailsResponse } from "../../interface/sourcingPartner";
-import { isNullOrUndefined } from "util";
 
 const wait = (ms: number) =>
   new Promise((resolve) => {
@@ -67,123 +66,123 @@ const demoPartnerListResponse: IGetPartnerListResponse = {
   data: [
     {
       id:
-        "demo-partner-id-001",
+        "DEMO-LA-001",
 
       name:
         "ABC INDUSTRIES PRIVATE LIMITED",
 
       email:
-        "encrypted-demo-email-001",
+        "abc@gmail.com",
     },
 
     {
       id:
-        "demo-partner-id-002",
+        "DEMO-LA-002",
 
       name:
         "XYZ BUSINESS SOLUTIONS LLP",
 
       email:
-        "encrypted-demo-email-002",
+        "abc@gmail.com",
     },
 
     {
       id:
-        "demo-partner-id-003",
+        "DEMO-LA-003",
 
       name:
         "MNO USER",
 
       email:
-        "encrypted-demo-email-003",
+        "abc@gmail.com",
     },
 
     {
       id:
-        "demo-partner-id-004",
+        "DEMO-LA-004",
 
       name:
         "OPQ USER",
 
       email:
-        "encrypted-demo-email-004",
+        "abc@gmail.com",
     },
 
     {
       id:
-        "demo-partner-id-005",
+        "DEMO-LA-005",
 
       name:
         "RST USER",
 
       email:
-        "encrypted-demo-email-005",
+        "abc@gmail.com",
     },
 
     {
       id:
-        "demo-partner-id-006",
+        "DEMO-LA-006",
 
       name:
         "UVW USER",
 
       email:
-        "encrypted-demo-email-006",
+        "abc@gmail.com",
     },
 
     {
       id:
-        "demo-partner-id-007",
+        "DEMO-LA-007",
 
       name:
         "XYZ USER",
 
       email:
-        "encrypted-demo-email-007",
+        "abc@gmail.com",
     },
 
     {
       id:
-        "demo-partner-id-008",
+        "DEMO-LA-008",
 
       name:
         "GLOBAL TECH ENTERPRISES",
 
       email:
-        "encrypted-demo-email-008",
+        "abc@gmail.com",
     },
 
     {
       id:
-        "demo-partner-id-009",
+        "DEMO-LA-009",
 
       name:
         "NEXUS INDUSTRIAL SOLUTIONS LLP",
 
       email:
-        "encrypted-demo-email-009",
+        "abc@gmail.com",
     },
 
     {
       id:
-        "demo-partner-id-010",
+        "DEMO-LA-010",
 
       name:
         "ABC SOURCE SP",
 
       email:
-        "encrypted-demo-email-010",
+        "abc@gmail.com",
     },
 
     {
       id:
-        "demo-partner-id-011",
+        "DEMO-LA-011",
 
       name:
         "DEF SOURCE SP",
 
       email:
-        "encrypted-demo-email-011",
+        "abc@gmail.com",
     },
   ],
 };
@@ -2043,10 +2042,10 @@ const demoSourcingPartnerDetailResponse: ISourcingPartnerDetailsResponse = {
       "DEMO-SP-001",
 
     mobileNumber:
-      "encrypted-demo-mobile",
+      "9000000001",
 
     email:
-      "encrypted-demo-email",
+      "abc@gmail.com",
 
     channelPartner:
       "Demo Prime CP",
@@ -2606,16 +2605,16 @@ const demoUserProfileResponse: IUserProfileResponse = {
       "encrypted-demo-pan",
 
     emailID:
-      "encrypted-demo-email",
+      "abc@gmail.com",
 
     mobileNumber:
-      "encrypted-demo-mobile",
+      "9000000001",
 
     profilePicture:
       "https://i.postimg.cc/Njq5CnTY/demo-logo.jpg",
 
     selectedGstNumber:
-      "encrypted-demo-gst",
+      "29AAACC1206D2ZB",
 
     gstList: [],
 

@@ -403,10 +403,10 @@ const demoLoginResponses = {
       showPanDetailPopUp: false,
 
       emailID:
-        "encrypted-demo-email",
+        "abc@gmail.com",
 
       mobileNumber:
-        "encrypted-demo-mobile",
+        "9000000001",
 
       token:
         "demo-jwt-token",
@@ -421,7 +421,7 @@ const demoLoginResponses = {
         "encrypted-demo-pan",
 
       gstNumber:
-        "encrypted-demo-gst",
+        "29AAACC1206D2ZB",
 
       roleName:
         "Admin",
@@ -482,10 +482,10 @@ const demoLoginResponses = {
       showPanDetailPopUp: false,
 
       emailID:
-        "encrypted-demo-email",
+        "abc@gmail.com",
 
       mobileNumber:
-        "encrypted-demo-mobile",
+        "9000000001",
 
       token:
         "demo-jwt-token",
@@ -500,7 +500,7 @@ const demoLoginResponses = {
         "encrypted-demo-pan",
 
       gstNumber:
-        "encrypted-demo-gst",
+        "29AAACC1206D2ZB",
 
       roleName:
         "Sourcing Partner",
