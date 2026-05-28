@@ -2946,7 +2946,7 @@ const userRightsForUserManagementResponse = {
   statusCode: 200,
   message: "Roles and rights of User Management fetched successfully!",
   data: {
-    userEmail: "uzyiGBViw7ly/pbDameKR2cfWC3fN9ukBglyS63c30k=",
+    userEmail: "demouser@yopmail.com",
     rolesAndRights: [
       { id: 997, rightID: 1, rightName: "Dashboard", displayName: "Dashboard", displayOrder: 1, create: true, view: null, list: true },
       { id: 998, rightID: 2, rightName: "Profile", displayName: "Profile", displayOrder: 2, create: true, view: null, list: true },

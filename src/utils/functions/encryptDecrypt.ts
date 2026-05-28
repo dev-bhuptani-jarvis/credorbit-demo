@@ -52,9 +52,9 @@ export const encryptVAPTData = (data: any): string => {
  * @returns {string} - Decrypted data as string
  */
 export const decryptVAPTData = (
-  data: string | CryptoJS.lib.CipherParams
+  data: string
 ): string => {
-  const bytes = CryptoJS.AES.decrypt(data, vaptKey, options);
-  const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
-  return decryptedData;
+  // const bytes = CryptoJS.AES.decrypt(data, vaptKey, options);
+  // const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+  return data;
 };
