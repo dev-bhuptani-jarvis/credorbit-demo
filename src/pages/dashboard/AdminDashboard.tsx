@@ -71,6 +71,8 @@ const AdminDashboard = () => {
 
   const [endDate, setEndDate] = useState<Date | null>(null);
 
+  const [activeTab, setActiveTab] = useState<"channelPartner" | "education">("channelPartner");
+
   const navigate = useNavigate();
 
   const { userName, userType } = useSelector((state: RootState) => state.user.user);
@@ -162,6 +164,9 @@ const AdminDashboard = () => {
   );
 
   const totalApplications = adminAllData?.totalLoanApplications || 0;
+
+  const totalDisbursedApplications = adminAllData?.totalDisbursedApplications || 0;
+
   const subscriptionDetails = adminAllData?.subscriptionDetails;
   const subscriptionsSold = subscriptionDetails?.subscriptionsSold || 0;
   const creditsProvided = subscriptionDetails?.creditsProvided || 0;
@@ -231,6 +236,128 @@ const AdminDashboard = () => {
       value: subscriptionsSold,
       icon: "bi-stars",
       subtitle: "Subscription activity in the current filter",
+    },
+  ];
+
+  const sanctionedStatus = useMemo(
+    () =>
+      adminInfo?.totalCountByStatus?.find((item) =>
+        item.displayName?.toLowerCase().includes("sanction"),
+      ),
+    [adminInfo?.totalCountByStatus],
+  );
+
+  const disbursedStatus = useMemo(
+    () =>
+      adminInfo?.totalCountByStatus?.find((item) =>
+        item.displayName?.toLowerCase().includes("disburs"),
+      ),
+    [adminInfo?.totalCountByStatus],
+  );
+
+  const registeredInstituteCount = useMemo(
+    () =>
+      adminAllData?.usersInfo?.find((item) => item.userType === CLIENT_ROLE.CUSTOMER)?.count || 0,
+    [adminAllData?.usersInfo],
+  );
+
+  const educationMetrics = [
+    {
+      title: "Total Registered Students",
+      value: totalDisbursedApplications,
+      icon: "bi-mortarboard",
+      subtitle: "Current student applications tracked on the platform",
+    },
+    {
+      title: "Total Availed Loans",
+      value: totalApplications,
+      icon: "bi-journal-check",
+      subtitle: "Loans initiated through the education journey",
+    },
+    {
+      title: "Total Sanctioned Loans",
+      value: sanctionedStatus?.noOfApplications || 0,
+      icon: "bi-patch-check",
+      subtitle: "Education loans that reached sanction stage",
+    },
+    {
+      title: "Total Loan Amount Disbursed by NBFCs",
+      value: formatCurrencyAmount(disbursedStatus?.amount || 0),
+      icon: "bi-bank",
+      subtitle: "Cumulative disbursal value visible in the current dataset",
+    },
+    {
+      title: "Total Registered Educational Institutes",
+      value: registeredInstituteCount,
+      icon: "bi-buildings",
+      subtitle: "Initial institute footprint derived from current master data",
+    },
+  ];
+
+  const educationReportSections = [
+    {
+      title: "NBFC Loan Distribution",
+      copy: "Funding and approval momentum using the current loan pipeline.",
+      rows: [
+        {
+          label: disbursedStatus?.displayName || "Disbursed",
+          value: formatCurrencyAmount(disbursedStatus?.amount || 0),
+          helper: `${disbursedStatus?.noOfApplications || 0} loans`,
+        },
+        {
+          label: sanctionedStatus?.displayName || "Sanctioned",
+          value: formatCurrencyAmount(sanctionedStatus?.amount || 0),
+          helper: `${sanctionedStatus?.noOfApplications || 0} loans`,
+        },
+        {
+          label: "Active Loan Pipeline",
+          value: formatCurrencyAmount(
+            (disbursedStatus?.amount || 0) + (sanctionedStatus?.amount || 0),
+          ),
+          helper: `${(disbursedStatus?.noOfApplications || 0) +
+            (sanctionedStatus?.noOfApplications || 0)
+            } loans`,
+        },
+      ],
+    },
+    {
+      title: "Student Loan Distribution",
+      copy: "Student demand distribution using current application activity.",
+      rows: [
+        {
+          label: "Registered Students",
+          value: totalDisbursedApplications,
+          helper: "Current application volume",
+        },
+        {
+          label: "Availed Loans",
+          value: totalApplications,
+          helper: "Loans initiated in this dashboard view",
+        },
+        {
+          label: "Sanctioned Loans",
+          value: sanctionedStatus?.noOfApplications || 0,
+          helper: "Students who progressed to sanction",
+        },
+      ],
+    },
+    {
+      title: "Institute-wise Loan Distribution",
+      copy: "Institute onboarding and education lending concentration snapshot.",
+      rows: [
+        {
+          label: "Ahmedabad School of Finance",
+          value: registeredInstituteCount,
+        },
+        {
+          label: "Surat Business Academy",
+          value: sanctionedStatus?.noOfApplications || 0,
+        },
+        {
+          label: "Nagpur Education Hub",
+          value: disbursedStatus?.noOfApplications || 0,
+        },
+      ],
     },
   ];
 
@@ -601,371 +728,499 @@ const AdminDashboard = () => {
     fetchDashboardDetail();
     dashboardRoute();
     fetchAllData({ filterType: AdminDateFilterType.ALL });
-  }, [dashboardRoute, fetchDashboardDetail]);
+  }, [dashboardRoute, fetchAllData, fetchDashboardDetail]);
 
   return (
     <div className="whiteBoxHldr p-30 admin-dashboard-shell">
       <Loader isLoading={loading} />
 
       <div className="admin-dashboard">
-        <section className="admin-dashboard-hero">
-          <div className="admin-dashboard-hero__content">
-            <h1 className="admin-dashboard-hero__title">Welcome back, {userName}</h1>
-            <p className="admin-dashboard-hero__copy">
-              Monitor users, subscriptions, reports, and loan application momentum from one
-              place without changing any of the existing workflows.
-            </p>
-
-            <div className="admin-dashboard-hero__chips">
-              <div className="admin-dashboard-pill">
-                <i className="bi bi-clock-history" />
-                Active filter: {dateFilters.find((item) => item.value === dateFilter)?.label}
-              </div>
-              <div className="admin-dashboard-pill">
-                <i className="bi bi-lightning-charge" />
-                {totalApplications} loan applications tracked
-              </div>
-            </div>
-          </div>
-
-          <div className="admin-dashboard-hero__spotlight">
-            {spotlightMetrics.map((metric) => (
-              <div key={metric.title} className="admin-dashboard-spotlight-card">
-                <div className="admin-dashboard-spotlight-card__label">{metric.title}</div>
-                <div className="admin-dashboard-spotlight-card__value">
-                  {metric.value}
-                </div>
-                <div className="admin-dashboard-spotlight-card__helper">{metric.helper}</div>
-              </div>
-            ))}
-          </div>
+        <section className="admin-dashboard-tabs">
+          <button
+            type="button"
+            className={`admin-dashboard-tab ${activeTab === "channelPartner" ? "is-active" : ""}`}
+            onClick={() => setActiveTab("channelPartner")}
+          >
+            Channel Partner
+          </button>
+          <button
+            type="button"
+            className={`admin-dashboard-tab ${activeTab === "education" ? "is-active" : ""}`}
+            onClick={() => setActiveTab("education")}
+          >
+            Education Portal
+          </button>
         </section>
 
-        <section className="admin-dashboard-filter-panel">
-          <div className="admin-dashboard-section-head">
-            <div>
-              <TableTitle title="Date Filter" />
-              <p className="admin-dashboard-section-copy mb-0">
-                Switch the dashboard period instantly or apply a custom range.
-              </p>
-            </div>
-          </div>
-
-          <div className="admin-dashboard-filter-actions">
-            {dateFilters.map((filterItem) => (
-              <Button
-                key={filterItem.value}
-                className={`btn ${filterItem.value === dateFilter ? "btn-orange" : "btn-orange-line"}`}
-                onClick={() => handleDateFilterChange(filterItem.value)}
-              >
-                {filterItem.label}
-              </Button>
-            ))}
-          </div>
-
-          {dateFilter === AdminDateFilterType.CUSTOM_DATE_RANGE && (
-            <div className="row g-3 mt-1">
-              <div className="col-lg-3 col-md-4 col-sm-6 col-12">
-                <label className="form-label small fw-semibold">Start Date</label>
-                <Calendar
-                  inputId="adminDashboardStartDate"
-                  value={startDate}
-                  placeholder="From Date"
-                  readOnlyInput
-                  maxDate={endDate || new Date()}
-                  showButtonBar
-                  className="w-100"
-                  onChange={(e) => {
-                    const selectedStartDate = e.value as Date | null;
-                    const nextEndDate =
-                      selectedStartDate && endDate && endDate < selectedStartDate
-                        ? null
-                        : endDate;
-
-                    setStartDate(selectedStartDate);
-                    setEndDate(nextEndDate);
-                  }}
-                />
-              </div>
-              <div className="col-lg-3 col-md-4 col-sm-6 col-12">
-                <label className="form-label small fw-semibold">End Date</label>
-                <Calendar
-                  inputId="adminDashboardEndDate"
-                  value={endDate}
-                  placeholder="To Date"
-                  readOnlyInput
-                  minDate={startDate || undefined}
-                  maxDate={new Date()}
-                  showButtonBar
-                  className="w-100"
-                  disabled={!startDate}
-                  onChange={(e) => setEndDate(e.value as Date | null)}
-                />
-              </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12 d-flex align-items-end">
-                <Button
-                  label="Apply"
-                  icon="bi bi-funnel"
-                  className="btn btn-orange gap-2"
-                  onClick={handleApplyCustomRange}
-                />
-              </div>
-            </div>
-          )}
-        </section>
-
-        <section className="admin-dashboard-metrics-grid">
-          {quickMetrics.map((metric) => (
-            <div key={metric.title} className="admin-dashboard-metric-card">
-              <div className="admin-dashboard-metric-card__icon">
-                <i className={`bi ${metric.icon}`} />
-              </div>
-              <div className="admin-dashboard-metric-card__body">
-                <div className="admin-dashboard-metric-card__title">{metric.title}</div>
-                <div className="admin-dashboard-metric-card__value">{metric.value}</div>
-                <div className="admin-dashboard-metric-card__subtitle">{metric.subtitle}</div>
-              </div>
-            </div>
-          ))}
-        </section>
-
-        <section className="row g-4">
-          {!IsNullOrEmptyArray(adminAllData?.usersInfo || []) && (
-            <div className="col-12 col-xl-7">
-              <div className="admin-dashboard-panel h-100">
-                <div className="admin-dashboard-section-head">
-                  <div>
-                    <TableTitle title="User Overview" />
-                    <p className="admin-dashboard-section-copy mb-0">
-                      Distribution of users across key account types.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="admin-dashboard-user-grid">
-                  {adminAllData?.usersInfo.map((userInfo: ITotalNoOfUsers, index: number) => (
-                    <div
-                      key={userInfo.userType}
-                      className={`admin-dashboard-user-card ${userInfo.userType === CLIENT_ROLE.CHANNEL_PARTNER ? "is-clickable" : ""}`}
-                      onClick={() => {
-                        if (userInfo.userType === CLIENT_ROLE.CHANNEL_PARTNER) {
-                          navigate(RoutePathConstant.private.userMasterChannelPartner);
-                        }
-                      }}
-                    >
-                      <div
-                        className="admin-dashboard-user-card__accent"
-                        style={{ backgroundColor: chartColors[index % chartColors.length] }}
-                      />
-                      <div className="admin-dashboard-user-card__count">{userInfo.count}</div>
-                      <div className="admin-dashboard-user-card__name">{userInfo.name}</div>
-                      <div className="admin-dashboard-user-card__meta">
-                        {userInfo.userType === CLIENT_ROLE.CHANNEL_PARTNER
-                          ? "Tap to open channel partner listing"
-                          : "Current dashboard summary"}
-                      </div>
-                      {userInfo.userType === CLIENT_ROLE.CHANNEL_PARTNER && (
-                        <div className="admin-dashboard-user-card__arrow">
-                          <i className="bi bi-arrow-up-right" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {!IsNullOrEmptyArray(applicationStatusData) && (
-            <div className="col-12 col-xl-5">
-              <div className="admin-dashboard-panel h-100">
-                <div className="admin-dashboard-section-head">
-                  <div>
-                    <TableTitle title="Application Status Mix" />
-                    <p className="admin-dashboard-section-copy mb-0">
-                      Share of applications by lifecycle stage.
-                    </p>
-                  </div>
-                </div>
-
-                <HighchartsReact highcharts={Highcharts} options={statusDonutOptions} />
-
-                <div className="admin-dashboard-legend-list">
-                  {applicationStatusData.slice(0, 5).map((item, index) => (
-                    <div key={item.name} className="admin-dashboard-legend-item">
-                      <span
-                        className="admin-dashboard-legend-swatch"
-                        style={{ backgroundColor: chartColors[index % chartColors.length] }}
-                      />
-                      <span className="admin-dashboard-legend-label">{item.name}</span>
-                      <span className="admin-dashboard-legend-value">{item.y}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
-
-        <section className="row g-4">
-          {!IsNullOrEmptyArray(userMixData) && (
-            <div className="col-12 col-xl-6">
-              <div className="admin-dashboard-panel h-100">
-                <div className="admin-dashboard-section-head">
-                  <div>
-                    <TableTitle title="User Composition" />
-                    <p className="admin-dashboard-section-copy mb-0">
-                      Compare user segments side by side.
-                    </p>
-                  </div>
-                </div>
-                <HighchartsReact highcharts={Highcharts} options={userMixOptions} />
-              </div>
-            </div>
-          )}
-
-          {!IsNullOrEmptyArray(reportData) && (
-            <div className="col-12 col-xl-6">
-              <div className="admin-dashboard-panel h-100">
-                <div className="admin-dashboard-section-head">
-                  <div>
-                    <TableTitle title="Report Counts" />
-                    <p className="admin-dashboard-section-copy mb-0">
-                      Reporting activity by available report category.
-                    </p>
-                  </div>
-                </div>
-                <HighchartsReact highcharts={Highcharts} options={reportOptions} />
-              </div>
-            </div>
-          )}
-        </section>
-
-        <section className="row g-4">
-          {subscriptionDetails && !IsEmptyObject(subscriptionDetails) && (
-            <div className="col-12 col-xl-4">
-              <div className="admin-dashboard-panel h-100">
-                <div className="admin-dashboard-section-head">
-                  <div>
-                    <TableTitle title="Subscription Details" />
-                    <p className="admin-dashboard-section-copy mb-0">
-                      Revenue and credit movement for subscriptions.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="admin-dashboard-stack-list">
-                  {Object.entries(subscriptionDetails).map(([key, value], index) => {
-                    return (
-                      <div key={key} className="admin-dashboard-stack-card">
-                        <div
-                          className="admin-dashboard-stack-card__line"
-                          style={{ backgroundColor: chartColors[index % chartColors.length] }}
-                        />
-                        <div className="admin-dashboard-stack-card__content">
-                          <div className="admin-dashboard-stack-card__label">
-                            {key.replace(/([A-Z])/g, " $1").trim()}
-                          </div>
-                          <div className="admin-dashboard-stack-card__value">
-                            {key === "cumulativeAmount" && value
-                              ? formatCurrencyAmount(value as number)
-                              : (value as number)}
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  }
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {!IsNullOrEmptyArray(loanTypeData) && (
-            <div className="col-12 col-xl-8">
-              <div className="admin-dashboard-panel h-100">
-                <div className="admin-dashboard-section-head">
-                  <div>
-                    <TableTitle title="Loan Type Application Counts" />
-                    <p className="admin-dashboard-section-copy mb-0">
-                      Demand distribution across loan products.
-                    </p>
-                  </div>
-                </div>
-                <HighchartsReact highcharts={Highcharts} options={loanTypeOptions} />
-              </div>
-            </div>
-          )}
-        </section>
-
-        {!IsNullOrEmptyArray(adminInfo?.totalCountByStatus || []) && (
-          <section className="admin-dashboard-panel">
-            <div className="admin-dashboard-section-head">
-              <div>
-                <TableTitle title="Loan Application Snapshots" />
-                <p className="admin-dashboard-section-copy mb-0">
-                  Amounts and counts by application status.
+        {activeTab === "channelPartner" ? (
+          <>
+            <section className="admin-dashboard-hero">
+              <div className="admin-dashboard-hero__content">
+                <h1 className="admin-dashboard-hero__title">Welcome back, {userName}</h1>
+                <p className="admin-dashboard-hero__copy">
+                  Monitor users, subscriptions, reports, and loan application momentum from one
+                  place without changing any of the existing workflows.
                 </p>
-              </div>
-            </div>
 
-            <div className="row g-4">
-              {adminInfo?.totalCountByStatus.map((applicationStatus: ITotalCountByStatus, index: number) => (
-                <div
-                  key={applicationStatus.displayName}
-                  className="col-lg-4 col-md-6 col-12"
-                >
-                  <div className="admin-dashboard-status-card h-100">
-                    <div
-                      className="admin-dashboard-status-card__glow"
-                      style={{ backgroundColor: chartColors[index % chartColors.length] }}
+                <div className="admin-dashboard-hero__chips">
+                  <div className="admin-dashboard-pill">
+                    <i className="bi bi-clock-history" />
+                    Active filter: {dateFilters.find((item) => item.value === dateFilter)?.label}
+                  </div>
+                  <div className="admin-dashboard-pill">
+                    <i className="bi bi-lightning-charge" />
+                    {totalApplications} loan applications tracked
+                  </div>
+                </div>
+              </div>
+
+              <div className="admin-dashboard-hero__spotlight">
+                {spotlightMetrics.map((metric) => (
+                  <div key={metric.title} className="admin-dashboard-spotlight-card">
+                    <div className="admin-dashboard-spotlight-card__label">{metric.title}</div>
+                    <div className="admin-dashboard-spotlight-card__value">{metric.value}</div>
+                    <div className="admin-dashboard-spotlight-card__helper">{metric.helper}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="admin-dashboard-filter-panel">
+              <div className="admin-dashboard-section-head">
+                <div>
+                  <TableTitle title="Date Filter" />
+                  <p className="admin-dashboard-section-copy mb-0">
+                    Switch the dashboard period instantly or apply a custom range.
+                  </p>
+                </div>
+              </div>
+
+              <div className="admin-dashboard-filter-actions">
+                {dateFilters.map((filterItem) => (
+                  <Button
+                    key={filterItem.value}
+                    className={`btn ${filterItem.value === dateFilter ? "btn-orange" : "btn-orange-line"}`}
+                    onClick={() => handleDateFilterChange(filterItem.value)}
+                  >
+                    {filterItem.label}
+                  </Button>
+                ))}
+              </div>
+
+              {dateFilter === AdminDateFilterType.CUSTOM_DATE_RANGE && (
+                <div className="row g-3 mt-1">
+                  <div className="col-lg-3 col-md-4 col-sm-6 col-12">
+                    <label className="form-label small fw-semibold">Start Date</label>
+                    <Calendar
+                      inputId="adminDashboardStartDate"
+                      value={startDate}
+                      placeholder="From Date"
+                      readOnlyInput
+                      maxDate={endDate || new Date()}
+                      showButtonBar
+                      className="w-100"
+                      onChange={(e) => {
+                        const selectedStartDate = e.value as Date | null;
+                        const nextEndDate =
+                          selectedStartDate && endDate && endDate < selectedStartDate
+                            ? null
+                            : endDate;
+
+                        setStartDate(selectedStartDate);
+                        setEndDate(nextEndDate);
+                      }}
                     />
-                    <div className="admin-dashboard-status-card__label">
-                      {applicationStatus.displayName}
-                    </div>
-                    <div className="admin-dashboard-status-card__value">
-                      {applicationStatus.noOfApplications}
-                    </div>
-                    <div className="admin-dashboard-status-card__amount">
-                      {applicationStatus.formattedAmount
-                        ? `Amount: Rs ${formatDecimalValue(applicationStatus.formattedAmount)}`
-                        : "Amount not available"}
-                    </div>
+                  </div>
+                  <div className="col-lg-3 col-md-4 col-sm-6 col-12">
+                    <label className="form-label small fw-semibold">End Date</label>
+                    <Calendar
+                      inputId="adminDashboardEndDate"
+                      value={endDate}
+                      placeholder="To Date"
+                      readOnlyInput
+                      minDate={startDate || undefined}
+                      maxDate={new Date()}
+                      showButtonBar
+                      className="w-100"
+                      disabled={!startDate}
+                      onChange={(e) => setEndDate(e.value as Date | null)}
+                    />
+                  </div>
+                  <div className="col-lg-2 col-md-4 col-sm-6 col-12 d-flex align-items-end">
+                    <Button
+                      label="Apply"
+                      icon="bi bi-funnel"
+                      className="btn btn-orange gap-2"
+                      onClick={handleApplyCustomRange}
+                    />
+                  </div>
+                </div>
+              )}
+            </section>
+
+            <section className="admin-dashboard-metrics-grid">
+              {quickMetrics.map((metric) => (
+                <div key={metric.title} className="admin-dashboard-metric-card">
+                  <div className="admin-dashboard-metric-card__icon">
+                    <i className={`bi ${metric.icon}`} />
+                  </div>
+                  <div className="admin-dashboard-metric-card__body">
+                    <div className="admin-dashboard-metric-card__title">{metric.title}</div>
+                    <div className="admin-dashboard-metric-card__value">{metric.value}</div>
+                    <div className="admin-dashboard-metric-card__subtitle">{metric.subtitle}</div>
                   </div>
                 </div>
               ))}
-            </div>
-          </section>
-        )}
+            </section>
 
-        {!IsNullOrEmptyArray(adminInfo?.demographicsData || []) && (
-          <section className="admin-dashboard-panel">
-            <div className="admin-dashboard-section-head">
-              <div>
-                <TableTitle title="Geographical Applications" />
-                <p className="admin-dashboard-section-copy mb-0">
-                  State-wise application distribution by volume.
-                </p>
-              </div>
+            <section className="row g-4">
+              {!IsNullOrEmptyArray(adminAllData?.usersInfo || []) && (
+                <div className="col-12 col-xl-7">
+                  <div className="admin-dashboard-panel h-100">
+                    <div className="admin-dashboard-section-head">
+                      <div>
+                        <TableTitle title="User Overview" />
+                        <p className="admin-dashboard-section-copy mb-0">
+                          Distribution of users across key account types.
+                        </p>
+                      </div>
+                    </div>
 
-              <div className="BtnRightHldr">
-                <Button
-                  className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"} w-100`}
-                  onClick={() => navigate(RoutePathConstant.private.geographicalReport)}
-                  disabled={loading}
-                >
-                  <div className="d-flex gap-2 align-items-center">
-                    View All
-                    <i className="bi bi-arrow-right" />
+                    <div className="admin-dashboard-user-grid">
+                      {adminAllData?.usersInfo.map((userInfo: ITotalNoOfUsers, index: number) => (
+                        <div
+                          key={userInfo.userType}
+                          className={`admin-dashboard-user-card ${userInfo.userType === CLIENT_ROLE.CHANNEL_PARTNER ? "is-clickable" : ""}`}
+                          onClick={() => {
+                            if (userInfo.userType === CLIENT_ROLE.CHANNEL_PARTNER) {
+                              navigate(RoutePathConstant.private.userMasterChannelPartner);
+                            }
+                          }}
+                        >
+                          <div
+                            className="admin-dashboard-user-card__accent"
+                            style={{ backgroundColor: chartColors[index % chartColors.length] }}
+                          />
+                          <div className="admin-dashboard-user-card__count">{userInfo.count}</div>
+                          <div className="admin-dashboard-user-card__name">{userInfo.name}</div>
+                          <div className="admin-dashboard-user-card__meta">
+                            {userInfo.userType === CLIENT_ROLE.CHANNEL_PARTNER
+                              ? "Tap to open channel partner listing"
+                              : "Current dashboard summary"}
+                          </div>
+                          {userInfo.userType === CLIENT_ROLE.CHANNEL_PARTNER && (
+                            <div className="admin-dashboard-user-card__arrow">
+                              <i className="bi bi-arrow-up-right" />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </Button>
-              </div>
-            </div>
+                </div>
+              )}
 
-            <div className="admin-dashboard-geo-chart">
-              <HighchartsReact highcharts={Highcharts} options={geographyOptions} />
-            </div>
-          </section>
+              {!IsNullOrEmptyArray(applicationStatusData) && (
+                <div className="col-12 col-xl-5">
+                  <div className="admin-dashboard-panel h-100">
+                    <div className="admin-dashboard-section-head">
+                      <div>
+                        <TableTitle title="Application Status Mix" />
+                        <p className="admin-dashboard-section-copy mb-0">
+                          Share of applications by lifecycle stage.
+                        </p>
+                      </div>
+                    </div>
+
+                    <HighchartsReact highcharts={Highcharts} options={statusDonutOptions} />
+
+                    <div className="admin-dashboard-legend-list">
+                      {applicationStatusData.slice(0, 5).map((item, index) => (
+                        <div key={item.name} className="admin-dashboard-legend-item">
+                          <span
+                            className="admin-dashboard-legend-swatch"
+                            style={{ backgroundColor: chartColors[index % chartColors.length] }}
+                          />
+                          <span className="admin-dashboard-legend-label">{item.name}</span>
+                          <span className="admin-dashboard-legend-value">{item.y}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </section>
+
+            <section className="row g-4">
+              {!IsNullOrEmptyArray(userMixData) && (
+                <div className="col-12 col-xl-6">
+                  <div className="admin-dashboard-panel h-100">
+                    <div className="admin-dashboard-section-head">
+                      <div>
+                        <TableTitle title="User Composition" />
+                        <p className="admin-dashboard-section-copy mb-0">
+                          Compare user segments side by side.
+                        </p>
+                      </div>
+                    </div>
+                    <HighchartsReact highcharts={Highcharts} options={userMixOptions} />
+                  </div>
+                </div>
+              )}
+
+              {!IsNullOrEmptyArray(reportData) && (
+                <div className="col-12 col-xl-6">
+                  <div className="admin-dashboard-panel h-100">
+                    <div className="admin-dashboard-section-head">
+                      <div>
+                        <TableTitle title="Report Counts" />
+                        <p className="admin-dashboard-section-copy mb-0">
+                          Reporting activity by available report category.
+                        </p>
+                      </div>
+                    </div>
+                    <HighchartsReact highcharts={Highcharts} options={reportOptions} />
+                  </div>
+                </div>
+              )}
+            </section>
+
+            <section className="row g-4">
+              {subscriptionDetails && !IsEmptyObject(subscriptionDetails) && (
+                <div className="col-12 col-xl-4">
+                  <div className="admin-dashboard-panel h-100">
+                    <div className="admin-dashboard-section-head">
+                      <div>
+                        <TableTitle title="Subscription Details" />
+                        <p className="admin-dashboard-section-copy mb-0">
+                          Revenue and credit movement for subscriptions.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="admin-dashboard-stack-list">
+                      {Object.entries(subscriptionDetails).map(([key, value], index) => {
+                        return (
+                          <div key={key} className="admin-dashboard-stack-card">
+                            <div
+                              className="admin-dashboard-stack-card__line"
+                              style={{ backgroundColor: chartColors[index % chartColors.length] }}
+                            />
+                            <div className="admin-dashboard-stack-card__content">
+                              <div className="admin-dashboard-stack-card__label">
+                                {key.replace(/([A-Z])/g, " $1").trim()}
+                              </div>
+                              <div className="admin-dashboard-stack-card__value">
+                                {key === "cumulativeAmount" && value
+                                  ? formatCurrencyAmount(value as number)
+                                  : (value as number)}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!IsNullOrEmptyArray(loanTypeData) && (
+                <div className="col-12 col-xl-8">
+                  <div className="admin-dashboard-panel h-100">
+                    <div className="admin-dashboard-section-head">
+                      <div>
+                        <TableTitle title="Loan Type Application Counts" />
+                        <p className="admin-dashboard-section-copy mb-0">
+                          Demand distribution across loan products.
+                        </p>
+                      </div>
+                    </div>
+                    <HighchartsReact highcharts={Highcharts} options={loanTypeOptions} />
+                  </div>
+                </div>
+              )}
+            </section>
+
+            {!IsNullOrEmptyArray(adminInfo?.totalCountByStatus || []) && (
+              <section className="admin-dashboard-panel">
+                <div className="admin-dashboard-section-head">
+                  <div>
+                    <TableTitle title="Loan Application Snapshots" />
+                    <p className="admin-dashboard-section-copy mb-0">
+                      Amounts and counts by application status.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="row g-4">
+                  {adminInfo?.totalCountByStatus.map(
+                    (applicationStatus: ITotalCountByStatus, index: number) => (
+                      <div
+                        key={applicationStatus.displayName}
+                        className="col-lg-4 col-md-6 col-12"
+                      >
+                        <div className="admin-dashboard-status-card h-100">
+                          <div
+                            className="admin-dashboard-status-card__glow"
+                            style={{ backgroundColor: chartColors[index % chartColors.length] }}
+                          />
+                          <div className="admin-dashboard-status-card__label">
+                            {applicationStatus.displayName}
+                          </div>
+                          <div className="admin-dashboard-status-card__value">
+                            {applicationStatus.noOfApplications}
+                          </div>
+                          <div className="admin-dashboard-status-card__amount">
+                            {applicationStatus.formattedAmount
+                              ? `Amount: Rs ${formatDecimalValue(applicationStatus.formattedAmount)}`
+                              : "Amount not available"}
+                          </div>
+                        </div>
+                      </div>
+                    ),
+                  )}
+                </div>
+              </section>
+            )}
+
+            {!IsNullOrEmptyArray(adminInfo?.demographicsData || []) && (
+              <section className="admin-dashboard-panel">
+                <div className="admin-dashboard-section-head">
+                  <div>
+                    <TableTitle title="Geographical Applications" />
+                    <p className="admin-dashboard-section-copy mb-0">
+                      State-wise application distribution by volume.
+                    </p>
+                  </div>
+
+                  <div className="BtnRightHldr">
+                    <Button
+                      className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"} w-100`}
+                      onClick={() => navigate(RoutePathConstant.private.geographicalReport)}
+                      disabled={loading}
+                    >
+                      <div className="d-flex gap-2 align-items-center">
+                        View All
+                        <i className="bi bi-arrow-right" />
+                      </div>
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="admin-dashboard-geo-chart">
+                  <HighchartsReact highcharts={Highcharts} options={geographyOptions} />
+                </div>
+              </section>
+            )}
+          </>
+        ) : (
+          <>
+            <section className="admin-dashboard-hero admin-dashboard-hero--education">
+              <div className="admin-dashboard-hero__content">
+                <div className="admin-dashboard-eyebrow">
+                  <i className="bi bi-mortarboard-fill" />
+                  Education Lending View
+                </div>
+                <h1 className="admin-dashboard-hero__title">Loan Summary Dashboard</h1>
+                <p className="admin-dashboard-hero__copy">
+                  Track student onboarding, education loan movement, NBFC disbursals, and
+                  institute footprint from one focused admin view.
+                </p>
+
+                <div className="admin-dashboard-hero__chips">
+                  <div className="admin-dashboard-pill">
+                    <i className="bi bi-people" />
+                    {totalApplications} students in active education journey
+                  </div>
+                  <div className="admin-dashboard-pill">
+                    <i className="bi bi-building" />
+                    {registeredInstituteCount} institutes currently reflected
+                  </div>
+                </div>
+              </div>
+
+              <div className="admin-dashboard-hero__spotlight">
+                <div className="admin-dashboard-spotlight-card">
+                  <div className="admin-dashboard-spotlight-card__label">Sanctioned Loans</div>
+                  <div className="admin-dashboard-spotlight-card__value">
+                    {sanctionedStatus?.noOfApplications || 0}
+                  </div>
+                  <div className="admin-dashboard-spotlight-card__helper">
+                    Education loans progressed to sanction stage.
+                  </div>
+                </div>
+
+                <div className="admin-dashboard-spotlight-card">
+                  <div className="admin-dashboard-spotlight-card__label">
+                    NBFC Disbursed Amount
+                  </div>
+                  <div className="admin-dashboard-spotlight-card__value">
+                    {formatCurrencyAmount(disbursedStatus?.amount || 0)}
+                  </div>
+                  <div className="admin-dashboard-spotlight-card__helper">
+                    Current disbursal amount derived from the available admin dataset.
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="admin-dashboard-metrics-grid admin-dashboard-metrics-grid--education">
+              {educationMetrics.map((metric) => (
+                <div key={metric.title} className="admin-dashboard-metric-card">
+                  <div className="admin-dashboard-metric-card__icon">
+                    <i className={`bi ${metric.icon}`} />
+                  </div>
+                  <div className="admin-dashboard-metric-card__body">
+                    <div className="admin-dashboard-metric-card__title">{metric.title}</div>
+                    <div className="admin-dashboard-metric-card__value">{metric.value}</div>
+                    <div className="admin-dashboard-metric-card__subtitle">{metric.subtitle}</div>
+                  </div>
+                </div>
+              ))}
+            </section>
+
+            <section className="admin-dashboard-panel">
+              <div className="admin-dashboard-section-head">
+                <div>
+                  <TableTitle title="Loan Reports" />
+                  <p className="admin-dashboard-section-copy mb-0">
+                    Detailed report blocks for NBFC funding, student distribution, and institute
+                    distribution.
+                  </p>
+                </div>
+              </div>
+
+              <div className="row g-4">
+                {educationReportSections.map((section) => (
+                  <div key={section.title} className="col-12 col-xl-4">
+                    <div className="admin-dashboard-education-report h-100">
+                      <div className="admin-dashboard-education-report__title">
+                        {section.title}
+                      </div>
+                      <p className="admin-dashboard-education-report__copy mb-0">
+                        {section.copy}
+                      </p>
+
+                      <div className="admin-dashboard-education-report__list">
+                        {section.rows.map((row) => (
+                          <div key={row.label} className="admin-dashboard-education-report__item">
+                            <div>
+                              <div className="admin-dashboard-education-report__label">
+                                {row.label}
+                              </div>
+                            </div>
+                            <div className="admin-dashboard-education-report__value">
+                              {row.value}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>
         )}
       </div>
     </div>

@@ -66,6 +66,10 @@ export const RoutePathConstant = {
     bankDetails: "/bank-details",
     newApplyLoan: "/new-apply-loan", // temporary for testing
     wallet: "/wallet",
-    notification: "/notification"
+    notification: "/notification",
+    educationManagedInstitute: "/education-portal/managed-education-institute",
+    educationManagedNbfc: "/education-portal/managed-nbfc",
+    educationInstituteDetail: "/education-portal/managed-education-institute/:id",
+    educationManagedNbfcDetail: "/education-portal/managed-nbfc/:id",
   },
 };

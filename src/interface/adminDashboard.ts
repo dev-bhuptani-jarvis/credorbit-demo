@@ -43,6 +43,7 @@ export interface IAdminAllDataResponse extends APIResponseEntity {
 export interface IAdminAllData {
   usersInfo: ITotalNoOfUsers[];
   totalLoanApplications: number;
+  totalDisbursedApplications: number;
   subscriptionDetails: ISubscriptionDetails;
   reportCounts: IReportCounts[];
   loanTypeApplicationCounts: ILoanTypeApplicationCount[];

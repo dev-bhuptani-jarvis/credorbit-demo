@@ -101,6 +101,13 @@ const DocumentFileList = lazy(
 );
 const DeleteAccount = lazy(() => import("../pages/auth/DeleteAccont"));
 const Wallet = lazy(() => import("../pages/wallet/wallet"));
+const ManagedEducationInstitute = lazy(
+  () => import("../pages/educationPortal/ManagedEducationInstitute"),
+);
+const ManagedNBFC = lazy(() => import("../pages/educationPortal/ManagedNBFC"));
+const EducationInstituteDetail = lazy(
+  () => import("../pages/educationPortal/EducationInstituteDetail"),
+);
 
 export const publicRoutes: RouteObject[] = [
   {
@@ -359,6 +366,18 @@ export const privateRoutes: RouteObject[] = [
       {
         path: RoutePathConstant.private.notification,
         element: <NotificationPage />,
+      },
+      {
+        path: RoutePathConstant.private.educationManagedInstitute,
+        element: <ManagedEducationInstitute />,
+      },
+      {
+        path: RoutePathConstant.private.educationInstituteDetail,
+        element: <EducationInstituteDetail />,
+      },
+      {
+        path: RoutePathConstant.private.educationManagedNbfc,
+        element: <ManagedNBFC />,
       },
       {
         path: "*",

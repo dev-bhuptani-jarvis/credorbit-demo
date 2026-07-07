@@ -813,6 +813,7 @@ const getAdminAllDataResponse = {
       }
     ],
     "totalLoanApplications": 562,
+    "totalDisbursedApplications": 780,
     "subscriptionDetails": {
       "subscriptionsSold": 49,
       "cumulativeAmount": 1751667.52,
@@ -2247,9 +2248,9 @@ const adminDashboardResponse = {
       { displayName: "Pending Applications", displayOrder: 1, amount: 13529593971, noOfApplications: 401, formattedAmount: "1352.96 Cr+", statusID: 1 },
       { displayName: "Login Applications", displayOrder: 2, amount: 11102000, noOfApplications: 7, formattedAmount: "1.11 Cr+", statusID: 2 },
       { displayName: "Query Raised Applications", displayOrder: 3, amount: 57850000, noOfApplications: 5, formattedAmount: "5.78 Cr+", statusID: 3 },
-      { displayName: "Sanctioned Applications", displayOrder: 4, amount: 105930000, noOfApplications: 8, formattedAmount: "10.59 Cr+", statusID: 4 },
+      { displayName: "Sanctioned Applications", displayOrder: 4, amount: 111020000, noOfApplications: 102, formattedAmount: "10.59 Cr+", statusID: 4 },
       { displayName: "Pending at Credit Applications", displayOrder: 5, amount: 51800000, noOfApplications: 4, formattedAmount: "5.18 Cr+", statusID: 5 },
-      { displayName: "Disbursed Applications", displayOrder: 6, amount: 51177562424, noOfApplications: 117, formattedAmount: "5117.76 Cr+", statusID: 6 },
+      { displayName: "Disbursed Applications", displayOrder: 6, amount: 105930000, noOfApplications: 117, formattedAmount: "11.10 Cr+", statusID: 6 },
       { displayName: "Rejected Applications", displayOrder: 7, amount: 1515000, noOfApplications: 2, formattedAmount: "15.15 Lac+", statusID: 7 },
     ],
     usersInfo: [

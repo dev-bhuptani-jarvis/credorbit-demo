@@ -58,3 +58,17 @@ export const decryptVAPTData = (
   // const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
   return data;
 };
+
+/**
+ * Decrypts an encrypted string and returns the original data as string.
+ *
+ * @param {string} data - Encrypted string to decrypt
+ * @returns {string} - Decrypted data as string
+ */
+export const decryptLoginVAPTData = (
+  data: string
+): string => {
+  const bytes = CryptoJS.AES.decrypt(data, vaptKey, options);
+  const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+  return decryptedData;
+};

@@ -6,12 +6,14 @@ import {
   Permission,
   SideBarMenuItem,
 } from "../interface/sidebarPermission";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { IsNullOrEmptyArray } from "../utils/functions/nullCheck";
 
 const Sidebar = () => {
+  const educationPortalIcon = "/assets/images/user-master.svg";
+
   const [activeId, setActiveId] = useState<number | null>(null);
 
   const [menuTree, setMenuTree] = useState<MenuItem[]>([]);
@@ -28,7 +30,7 @@ const Sidebar = () => {
     (state: RootState) => state.impersonateUser
   );
 
-  const dashboardRoute = (): string => {
+  const dashboardRoute = useCallback((): string => {
     switch (userType) {
       case CLIENT_ROLE.SUPER_ADMIN:
         return RoutePathConstant.private.dashboard;
@@ -39,9 +41,9 @@ const Sidebar = () => {
       default:
         return RoutePathConstant.private.channelPartnerDashboard;
     }
-  };
+  }, [userType]);
 
-  const reportsRoute = (): string => {
+  const reportsRoute = useCallback((): string => {
     switch (userType) {
       case CLIENT_ROLE.CHANNEL_PARTNER:
         return RoutePathConstant.private.reports;
@@ -52,90 +54,105 @@ const Sidebar = () => {
       default:
         return "";
     }
-  };
+  }, [userType]);
 
-  const SideBarMenu = {
-    Dashboard: {
-      icon: "icon-dashboard",
-      path: dashboardRoute(),
-    },
-    Profile: { icon: "icon-profile", path: RoutePathConstant.private.profile },
-    RoleMaster: {
-      icon: "icon-profile-user",
-      path: RoutePathConstant.private.roleMaster,
-    },
-    Reports: { icon: "/assets/images/reports.svg", path: reportsRoute() },
-    Policy: {
-      icon: "/assets/images/policy.svg",
-      path: RoutePathConstant.private.policy,
-    },
-    Support: { icon: "icon-support", path: RoutePathConstant.private.support },
-    PayOuts: { icon: "icon-support", path: RoutePathConstant.private.payouts },
-    Contracts: { icon: "icon-contract", path: "#" },
-    ContractChannelPartner: {
-      icon: "",
-      path: RoutePathConstant.private.contractChannelMaster,
-    },
-    ContractSourcingPartner: {
-      icon: "",
-      path: RoutePathConstant.private.contractSourcingPartner,
-    },
-    ContractClient: {
-      icon: "",
-      path: RoutePathConstant.private.contractClient,
-    },
-    UserMaster: { icon: "/assets/images/user-master.svg", path: "#" },
-    ChannelPartner: {
-      icon: "",
-      path: RoutePathConstant.private.userMasterChannelPartner,
-    },
-    ClientMaster: {
-      icon: "",
-      path: RoutePathConstant.private.userMasterClientMaster,
-    },
-    SourcingPartner: {
-      icon: "",
-      path: RoutePathConstant.private.userMasterSourcingPartner,
-    },
-    TermsAndConditions: {
-      icon: "icon-profile",
-      path: RoutePathConstant.private.termsConditions,
-    },
-    ChannelPartnerPayout: {
-      icon: "icon-profile",
-      path: RoutePathConstant.private.payouts,
-    },
-    SourcingPartnerPayout: {
-      icon: "icon-profile",
-      path: RoutePathConstant.private.sourcingPartnerPayouts,
-    },
-    ChannelPartnerReport: {
-      icon: "",
-      path: RoutePathConstant.private.channelPartnerReport,
-    },
-    GeographicalReport: {
-      icon: "",
-      path: RoutePathConstant.private.geographicalReport,
-    },
-    UserManagement: {
-      icon: "/assets/images/user-management.svg",
-      path: RoutePathConstant.private.userManagement,
-    },
-    Subscription: {
-      icon: "/assets/images/subscription.svg",
-      path: RoutePathConstant.private.subscription,
-    },
-    ManageUsers: {
-      icon: "/assets/images/user-management.svg",
-      path: RoutePathConstant.private.userManagement,
-    },
-    WalletAndReferral: {
-      icon: "/assets/images/subscription.svg",
-      path: RoutePathConstant.private.wallet,
-    },
-  };
+  const SideBarMenu = useMemo(
+    () => ({
+      Dashboard: {
+        icon: "icon-dashboard",
+        path: dashboardRoute(),
+      },
+      Profile: { icon: "icon-profile", path: RoutePathConstant.private.profile },
+      RoleMaster: {
+        icon: "icon-profile-user",
+        path: RoutePathConstant.private.roleMaster,
+      },
+      Reports: { icon: "/assets/images/reports.svg", path: reportsRoute() },
+      Policy: {
+        icon: "/assets/images/policy.svg",
+        path: RoutePathConstant.private.policy,
+      },
+      Support: { icon: "icon-support", path: RoutePathConstant.private.support },
+      PayOuts: { icon: "icon-support", path: RoutePathConstant.private.payouts },
+      Contracts: { icon: "icon-contract", path: "#" },
+      ContractChannelPartner: {
+        icon: "",
+        path: RoutePathConstant.private.contractChannelMaster,
+      },
+      ContractSourcingPartner: {
+        icon: "",
+        path: RoutePathConstant.private.contractSourcingPartner,
+      },
+      ContractClient: {
+        icon: "",
+        path: RoutePathConstant.private.contractClient,
+      },
+      UserMaster: { icon: "/assets/images/user-master.svg", path: "#" },
+      ChannelPartner: {
+        icon: "",
+        path: RoutePathConstant.private.userMasterChannelPartner,
+      },
+      ClientMaster: {
+        icon: "",
+        path: RoutePathConstant.private.userMasterClientMaster,
+      },
+      SourcingPartner: {
+        icon: "",
+        path: RoutePathConstant.private.userMasterSourcingPartner,
+      },
+      TermsAndConditions: {
+        icon: "icon-profile",
+        path: RoutePathConstant.private.termsConditions,
+      },
+      ChannelPartnerPayout: {
+        icon: "icon-profile",
+        path: RoutePathConstant.private.payouts,
+      },
+      SourcingPartnerPayout: {
+        icon: "icon-profile",
+        path: RoutePathConstant.private.sourcingPartnerPayouts,
+      },
+      ChannelPartnerReport: {
+        icon: "",
+        path: RoutePathConstant.private.channelPartnerReport,
+      },
+      GeographicalReport: {
+        icon: "",
+        path: RoutePathConstant.private.geographicalReport,
+      },
+      UserManagement: {
+        icon: "/assets/images/user-management.svg",
+        path: RoutePathConstant.private.userManagement,
+      },
+      Subscription: {
+        icon: "/assets/images/subscription.svg",
+        path: RoutePathConstant.private.subscription,
+      },
+      ManageUsers: {
+        icon: "/assets/images/user-management.svg",
+        path: RoutePathConstant.private.userManagement,
+      },
+      WalletAndReferral: {
+        icon: "/assets/images/subscription.svg",
+        path: RoutePathConstant.private.wallet,
+      },
+      EducationPortal: {
+        icon: educationPortalIcon,
+        path: "#",
+      },
+      ManagedEducationInstitute: {
+        icon: "",
+        path: RoutePathConstant.private.educationManagedInstitute,
+      },
+      ManagedNBFC: {
+        icon: "",
+        path: RoutePathConstant.private.educationManagedNbfc,
+      },
+    }),
+    [dashboardRoute, educationPortalIcon, reportsRoute],
+  );
 
-  const buildMenuTree = (): MenuItem[] => {
+  const buildMenuTree = useCallback((): MenuItem[] => {
     const menuMapping: { [key: string]: SideBarMenuItem } = SideBarMenu;
     const itemMap: { [key: number]: MenuItem } = {};
 
@@ -180,7 +197,7 @@ const Sidebar = () => {
     });
 
     return menuTree;
-  };
+  }, [permissions, SideBarMenu]);
 
   const handleToggle = (id: number): void => {
     setActiveId((prevId) => (prevId === id ? null : id));
@@ -217,20 +234,66 @@ const Sidebar = () => {
   useEffect(() => {
     let FinalSideBarArray: MenuItem[] = buildMenuTree();
 
+    FinalSideBarArray = FinalSideBarArray.filter(
+      (item) => item.name !== "EducationalManagement"
+    );
+
+    if (userType === CLIENT_ROLE.SUPER_ADMIN) {
+      const hasEducationPortal = FinalSideBarArray.some(
+        (item) => item.name === "EducationPortal"
+      );
+
+      if (!hasEducationPortal) {
+        FinalSideBarArray.push({
+          id: 100001,
+          parentId: 0,
+          name: "EducationPortal",
+          displayName: "Education Portal",
+          icon: educationPortalIcon,
+          path: null,
+          children: [
+            {
+              id: 100002,
+              parentId: 100001,
+              name: "ManagedEducationInstitute",
+              displayName: "Managed Education Institute",
+              icon: null,
+              path: RoutePathConstant.private.educationManagedInstitute,
+              children: [],
+              displayOrder: 1,
+            },
+            {
+              id: 100003,
+              parentId: 100001,
+              name: "ManagedNBFC",
+              displayName: "Managed NBFC",
+              icon: null,
+              path: RoutePathConstant.private.educationManagedNbfc,
+              children: [],
+              displayOrder: 2,
+            },
+          ],
+          displayOrder: 24,
+        });
+      }
+    }
+
     if (userType === CLIENT_ROLE.CUSTOMER && !isDefaultCpClient) {
       FinalSideBarArray = FinalSideBarArray.filter(
         (item) => item.name !== "Subscription"
       );
     }
 
+    FinalSideBarArray.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
     setMenuTree(FinalSideBarArray);
-  }, [isImpersonate]);
+  }, [buildMenuTree, educationPortalIcon, isDefaultCpClient, isImpersonate, userType]);
 
   useEffect(() => {
     if (location.pathname === "/") {
       navigate(dashboardRoute());
     }
-  }, []);
+  }, [dashboardRoute, location.pathname, navigate]);
 
   useEffect(() => {
     // Auto-expand parent if a child route is active

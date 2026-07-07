@@ -8,7 +8,7 @@ import { ISendOTPResponse } from "../../interface/signIn";
 import { IRefferalDataResponse } from "../../interface/wallet";
 import { CLIENT_ROLE } from "../constants/constant";
 import { OtpRequestType } from "../constants/enum";
-import { decryptVAPTData, encryptVAPTData } from "../functions/encryptDecrypt";
+import { decryptLoginVAPTData, decryptVAPTData, encryptVAPTData } from "../functions/encryptDecrypt";
 
 const DEMO_DELAY_MS = 300;
 
@@ -18,7 +18,7 @@ const decryptDemoValue = (value?: string): string => {
   if (!value) return "";
 
   try {
-    return decryptVAPTData(value).trim();
+    return decryptLoginVAPTData(value).trim();
   } catch {
     return "";
   }
@@ -330,6 +330,8 @@ const demoAdminPermissions: Permission[] = [
   { rightID: 21, parentID: 13, rightName: "ChannelPartnerPayout", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "My Payout", displayOrder: 21 } as Permission,
   { rightID: 22, parentID: 13, rightName: "SourcingPartnerPayout", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "SP Payout", displayOrder: 22 } as Permission,
   { rightID: 23, parentID: 0, rightName: "UserManagement", create: true, delete: null as unknown as boolean, view: true, list: true, displayName: "User Management", displayOrder: 3 } as Permission,
+  { rightID: 24, parentID: 0, rightName: "EducationalManagement", create: true, delete: null as unknown as boolean, view: true, list: true, displayName: "Educational Management", displayOrder: 24 } as Permission,
+  { rightID: 25, parentID: 0, rightName: "UserManagement", create: true, delete: null as unknown as boolean, view: true, list: true, displayName: "User Management", displayOrder: 3 } as Permission,
 ];
 
 const demoSourcingPartnerPermissions: Permission[] = [
