@@ -30,10 +30,6 @@ import { IExternalReportResponse } from "../../../interface/reports";
 import { environment } from "../../../utils/constants/environments";
 import { ILogoutResponse } from "../../../interface/logout";
 import { incrementResendCount } from "../../../store/reducer/resendCountSlice";
-import {
-  CREDIT_SCORE_REPORT_NORMAL_ERROR,
-  CREDIT_SCORE_REPORT_TECHNICAL_ERROR,
-} from "../../../utils/constants/constant";
 import { useLocation, useNavigate } from "react-router-dom";
 import { RoutePathConstant } from "../../../utils/constants/routePaths";
 import { Dialog } from "primereact/dialog";
@@ -113,20 +109,6 @@ const GetCreditScore = ({ nextStep }: INextStepProps) => {
     }
 
     setShowNormalError("");
-  };
-
-  const handleErrorMessage = (response: IExternalReportResponse) => {
-    if (
-      CREDIT_SCORE_REPORT_NORMAL_ERROR.includes(response?.data?.responseCode)
-    ) {
-      showGlobalReportModal(response?.message, "Credit Report Update");
-    } else if (
-      CREDIT_SCORE_REPORT_TECHNICAL_ERROR.includes(response?.data?.responseCode)
-    ) {
-      setShowNormalError(response?.message);
-    } else {
-      showGlobalReportModal(response?.message, "Credit Report Update");
-    }
   };
 
   const handleClickCreditReport = async (): Promise<void> => {
@@ -385,7 +367,7 @@ const GetCreditScore = ({ nextStep }: INextStepProps) => {
         draggable={false}
         resizable={false}
         className="modalWrapper"
-        onHide={() => {}}
+        onHide={() => { }}
         blockScroll
       >
         <div className="text-center">
@@ -679,7 +661,7 @@ const GetCreditScore = ({ nextStep }: INextStepProps) => {
               ) : (
                 <>
                   {!customerInfo?.partners ||
-                  customerInfo?.partners?.length === 0 ? (
+                    customerInfo?.partners?.length === 0 ? (
                     <>
                       <p>
                         Generate an OTP to securely fetch your latest credit
@@ -693,9 +675,8 @@ const GetCreditScore = ({ nextStep }: INextStepProps) => {
                           disabled={loading}
                         />
                         <Button
-                          className={`btn ${
-                            loading ? "btn-orange-disabled" : "btn-orange"
-                          } text-center`}
+                          className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+                            } text-center`}
                           onClick={() => {
                             setShowCreditScore(false);
                             handleGetCreditScore();

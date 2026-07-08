@@ -6,7 +6,7 @@ import { DataTable } from "primereact/datatable";
 import Loader from "../../components/Loader";
 import TableTitle from "../../components/TableTitle";
 import { ILoanMarketBankDetails, ILoanMarketResponse } from "../../interface/loanMarketPlace";
-import { fetchLoanMarketPlaceListingAPI } from "../../utils/axios/apiServices";
+import { fetchNBFCLoanMarketPlaceListingAPI } from "../../utils/axios/apiServices";
 import { formatCurrencyAmount } from "../../utils/constants/constant";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import { getEducationLoanDraftById } from "../../utils/demo/demoEducationLoanFlow";
@@ -22,9 +22,11 @@ const cardStyle = {
 
 const EducationLoanOffer = () => {
   const navigate = useNavigate();
+
   const { id = "" } = useParams();
 
   const [loading, setLoading] = useState<boolean>(false);
+
   const [lenders, setLenders] = useState<ILoanMarketBankDetails[]>([]);
 
   const draft = useMemo(() => getEducationLoanDraftById(id), [id]);
@@ -36,7 +38,7 @@ const EducationLoanOffer = () => {
       setLoading(true);
 
       try {
-        const response: ILoanMarketResponse = await fetchLoanMarketPlaceListingAPI({
+        const response: ILoanMarketResponse = await fetchNBFCLoanMarketPlaceListingAPI({
           loanAppID: id,
         });
 
@@ -151,31 +153,6 @@ const EducationLoanOffer = () => {
               header="NBFC Name"
               body={(rowData: ILoanMarketBankDetails) => (
                 <div className="d-flex align-items-center gap-3">
-                  {rowData.bankImage ? (
-                    <img
-                      src={rowData.bankImage}
-                      alt={rowData.bankName}
-                      style={{
-                        width: "44px",
-                        height: "44px",
-                        objectFit: "contain",
-                        borderRadius: "12px",
-                        border: "1px solid #ece5dc",
-                        padding: "6px",
-                        backgroundColor: "#fff",
-                      }}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        width: "44px",
-                        height: "44px",
-                        borderRadius: "12px",
-                        backgroundColor: "#fff7f0",
-                        border: "1px solid #ece5dc",
-                      }}
-                    />
-                  )}
                   <div>
                     <h3 className="mb-0" style={{ fontSize: "18px" }}>
                       {rowData.bankName}
@@ -192,20 +169,6 @@ const EducationLoanOffer = () => {
               body={(rowData: ILoanMarketBankDetails) =>
                 formatCurrencyAmount(rowData.loanAmount)
               }
-            />
-
-            <Column
-              field="roI_Min"
-              header="ROI (Min)"
-              sortable
-              body={(rowData: ILoanMarketBankDetails) => `${rowData.roI_Min} %`}
-            />
-
-            <Column
-              field="roI_Max"
-              header="ROI (Max)"
-              sortable
-              body={(rowData: ILoanMarketBankDetails) => `${rowData.roI_Max} %`}
             />
 
             <Column
@@ -228,7 +191,7 @@ const EducationLoanOffer = () => {
               header="Action"
               body={(rowData: ILoanMarketBankDetails) => (
                 <Button
-                  className="btn btn-orange-line w-130"
+                  className="btn btn-orange-line text-center"
                   label="Apply"
                   onClick={() =>
                     navigate(
@@ -241,15 +204,6 @@ const EducationLoanOffer = () => {
               )}
             />
           </DataTable>
-        </div>
-
-        <div className="mt-4">
-          <Button
-            className="btn btn-black-line"
-            onClick={() => navigate(RoutePathConstant.private.clientReports)}
-          >
-            Review CAM Reports
-          </Button>
         </div>
       </div>
     </>

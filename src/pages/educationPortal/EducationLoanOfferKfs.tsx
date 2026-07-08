@@ -13,6 +13,8 @@ import {
   getEducationLoanDraftById,
 } from "../../utils/demo/demoEducationLoanFlow";
 import { toastError, toastSuccess } from "../../utils/functions/shared";
+import { InputText } from "primereact/inputtext";
+import { formatCurrencyAmount } from "../../utils/constants/constant";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -40,9 +42,9 @@ const EducationLoanOfferKfs = () => {
     { key: "studentAadhaar", label: "Applicant Aadhaar" },
     ...(draft?.hasCoApplicant
       ? [
-          { key: "coApplicantPan", label: "Co-applicant PAN" },
-          { key: "coApplicantAadhaar", label: "Co-applicant Aadhaar" },
-        ]
+        { key: "coApplicantPan", label: "Co-applicant PAN" },
+        { key: "coApplicantAadhaar", label: "Co-applicant Aadhaar" },
+      ]
       : []),
   ];
 
@@ -51,7 +53,7 @@ const EducationLoanOfferKfs = () => {
 
     const redirectTimeout = window.setTimeout(() => {
       setShowThankYou(false);
-      navigate(RoutePathConstant.private.clientDashboard);
+      navigate(RoutePathConstant.private.channelPartnerDashboard);
     }, 5000);
 
     return () => window.clearTimeout(redirectTimeout);
@@ -148,7 +150,6 @@ const EducationLoanOfferKfs = () => {
       return;
     }
 
-    toastSuccess("Education loan application submitted successfully.");
     setShowThankYou(true);
   };
 
@@ -179,31 +180,31 @@ const EducationLoanOfferKfs = () => {
                 <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                   <b>Agreed Course Fee</b>
                   <p className="text-break">
-                    INR {new Intl.NumberFormat("en-IN").format(draft.courseFees)}
+                    {formatCurrencyAmount(draft.courseFees)}
                   </p>
                 </div>
                 <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                   <b>Discount Amount</b>
                   <p className="text-break">
-                    INR {new Intl.NumberFormat("en-IN").format(draft.discountAmount)}
+                    {formatCurrencyAmount(draft.discountAmount)}
                   </p>
                 </div>
                 <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                   <b>Discounted Course Fee</b>
                   <p className="text-break">
-                    INR {new Intl.NumberFormat("en-IN").format(draft.discountedCourseFee)}
+                    {formatCurrencyAmount(draft.discountedCourseFee)}
                   </p>
                 </div>
                 <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                   <b>Downpayment</b>
                   <p className="text-break">
-                    INR {new Intl.NumberFormat("en-IN").format(draft.downpayment)}
+                    {formatCurrencyAmount(draft.downpayment)}
                   </p>
                 </div>
                 <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                   <b>Loan Amount</b>
                   <p className="text-break">
-                    INR {new Intl.NumberFormat("en-IN").format(draft.loanAmount)}
+                    {formatCurrencyAmount(draft.loanAmount)}
                   </p>
                 </div>
                 <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
@@ -213,7 +214,7 @@ const EducationLoanOfferKfs = () => {
                 <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                   <b>Advance EMI</b>
                   <p className="text-break">
-                    INR {new Intl.NumberFormat("en-IN").format(draft.advanceEmi)}
+                    {formatCurrencyAmount(draft.advanceEmi)}
                   </p>
                 </div>
                 <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
@@ -223,13 +224,13 @@ const EducationLoanOfferKfs = () => {
                 <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                   <b>EMI Amount</b>
                   <p className="text-break">
-                    INR {new Intl.NumberFormat("en-IN").format(draft.emiAmount)}
+                    {formatCurrencyAmount(draft.emiAmount)}
                   </p>
                 </div>
                 <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                   <b>Total Amount to Institute</b>
                   <p className="text-break">
-                    INR {new Intl.NumberFormat("en-IN").format(draft.totalAmountToInstitute)}
+                    {formatCurrencyAmount(draft.totalAmountToInstitute)}
                   </p>
                 </div>
               </div>
@@ -246,7 +247,7 @@ const EducationLoanOfferKfs = () => {
                       {field.label}
                       <sup>*</sup>
                     </label>
-                    <input
+                    <InputText
                       type="file"
                       className="form-control"
                       accept=".pdf,.png,.jpg,.jpeg"
@@ -271,7 +272,7 @@ const EducationLoanOfferKfs = () => {
 
           <div className="col-12 mt-4">
             <div className="borderBoxHldr p-24">
-              <div className="d-flex align-items-start gap-3">
+              <div className="form-check d-flex align-items-start gap-3">
                 <Checkbox
                   inputId="reviewOffer"
                   checked={reviewAccepted}
@@ -283,7 +284,7 @@ const EducationLoanOfferKfs = () => {
                     }));
                   }}
                 />
-                <label htmlFor="reviewOffer" className="mb-0">
+                <label htmlFor="reviewOffer" className="form-label mb-0">
                   I have reviewed the KFS above offer and I am ready to submit.
                 </label>
               </div>
@@ -319,7 +320,7 @@ const EducationLoanOfferKfs = () => {
         modal
         onHide={() => {
           setShowThankYou(false);
-          navigate(RoutePathConstant.private.clientDashboard);
+          navigate(RoutePathConstant.private.channelPartnerDashboard);
         }}
         className="modalWrapper"
         draggable={false}
@@ -327,13 +328,21 @@ const EducationLoanOfferKfs = () => {
         blockScroll
         style={{ width: "500px" }}
       >
-        <div className="text-center py-3">
-          <h3 className="txt-orange">Thank you</h3>
+        <div className="text-center py-4">
+          <img
+            src="/assets/images/tick-circle.svg"
+            alt="tick-circle"
+            loading="lazy"
+            style={{
+              width: "80px",
+              height: "80px",
+            }}
+          />
+
+          <h4 className="mb-0 mt-3">Thank you</h4>
+
           <p className="mb-2">
             The student education loan application has been submitted successfully.
-          </p>
-          <p className="mb-0 text-muted">
-            Redirecting to the student dashboard in 5 seconds.
           </p>
         </div>
       </Dialog>

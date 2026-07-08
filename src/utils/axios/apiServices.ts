@@ -187,7 +187,7 @@ import {
   getDemoImpersonateUser,
 } from "../demo/demoClient";
 import { getDemoUserProfileByContext } from "../demo/demoProfile";
-import { getAdminAllData, getDemoCpReportDetailByClientId, getGstReportForLinkApproach, updateAadhar, updateGstDetails } from "../demo/demoReports";
+import { getAdminAllData, getDemoCpReportDetailByClientId, getDemoNBFCLoanMarketplace, getGstReportForLinkApproach, updateAadhar, updateGstDetails } from "../demo/demoReports";
 import {
   getDemoAddPanForCP,
   getDemoAdminChannelPartnerReport,
@@ -535,7 +535,7 @@ export const fetchImpersonateUser = async (
 export const fetchImpersonateStudent = async (
   body: IGeneratePublicTokenRequest
 ): Promise<IVerifyEmailOTPResponse> => {
-  return await getDemoImpersonateStudent();
+  return await getDemoImpersonateStudent(body);
 };
 
 export const getInstitutionList =
@@ -871,6 +871,12 @@ export const fetchLoanMarketPlaceListingAPI = async (
   params: ILoanMarketPlacePayload
 ): Promise<ILoanMarketResponse> => {
   return await getDemoLoanMarketplace();
+};
+
+export const fetchNBFCLoanMarketPlaceListingAPI = async (
+  params: ILoanMarketPlacePayload
+): Promise<ILoanMarketResponse> => {
+  return await getDemoNBFCLoanMarketplace();
 };
 
 export const submitApplicationToBankAPI = async (

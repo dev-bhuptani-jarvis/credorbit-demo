@@ -65,7 +65,10 @@ import {
 import { IVerifyEmailOTPResponse } from "../../interface/otpRequest";
 import { setImpersonateUser } from "../../store/reducer/impersonateSlice";
 import { setUserData } from "../../store/reducer/userSlice";
-import { setEncryptedSessionStorage } from "../../utils/functions/sessionStorage";
+import {
+  getDecryptedSessionStorage,
+  setEncryptedSessionStorage,
+} from "../../utils/functions/sessionStorage";
 import {
   LoanStatus,
   LoanStatusType,
@@ -209,6 +212,7 @@ const ChannelPartnerDashboard = () => {
     userType,
     showPanDetailPopUp,
     userID,
+    roleName,
     isContractSigned,
     contractEnforcementDate,
   } = useSelector((state: RootState) => state.user.user);
@@ -229,15 +233,29 @@ const ChannelPartnerDashboard = () => {
 
   const dropdownRef = useRef<any>(null);
 
+  const impersonatedStudentId = getDecryptedSessionStorage(
+    StorageKeyEnum.CRED_ORBIT_IMPERSONATE_STUDENT_ID,
+  );
+
   const isEducationInstituteDashboard =
     userType === CLIENT_ROLE.CHANNEL_PARTNER &&
     userID === EDUCATION_INSTITUTE_USER_ID;
   const isStudentDashboard =
     userType === CLIENT_ROLE.CUSTOMER &&
-    userID === STUDENT_USER_ID;
+    (userID === STUDENT_USER_ID ||
+      roleName === "Student" ||
+      Boolean(impersonatedStudentId));
 
   const studentEnrollments = useMemo(
-    () => (isStudentDashboard ? getStudentEnrollments(userID) : []),
+    () => {
+      if (!isStudentDashboard) return [];
+
+      const matchedEnrollments = getStudentEnrollments(userID);
+
+      return matchedEnrollments.length > 0
+        ? matchedEnrollments
+        : getStudentEnrollments(STUDENT_USER_ID);
+    },
     [isStudentDashboard, userID],
   );
 

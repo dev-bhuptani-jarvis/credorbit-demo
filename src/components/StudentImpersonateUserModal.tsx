@@ -14,10 +14,12 @@ import { setUserData } from "../store/reducer/userSlice";
 import { setEncryptedSessionStorage } from "../utils/functions/sessionStorage";
 import { StorageKeyEnum } from "../utils/constants/enum";
 import { RoutePathConstant } from "../utils/constants/routePaths";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Loader from "./Loader";
+import { RootState } from "../store";
 
 interface ImpersonateModalProps {
   impersonateModal: boolean;
@@ -35,6 +37,8 @@ const StudentImpersonateUserModal = ({
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
+
+  const currentUser = useSelector((state: RootState) => state.user.user);
 
   const handleImpersonateUser = async (): Promise<void> => {
     setLoading(true);
@@ -70,13 +74,28 @@ const StudentImpersonateUserModal = ({
       dispatch(setUserData(decryptedData));
 
       setEncryptedSessionStorage(
+        StorageKeyEnum.CRED_ORBIT_IMPERSONATE_USER_DATA,
+        JSON.stringify(currentUser),
+      );
+
+      setEncryptedSessionStorage(
+        StorageKeyEnum.CRED_ORBIT_IMPERSONATE_STUDENT_ID,
+        impersonateId,
+      );
+
+      setEncryptedSessionStorage(
         StorageKeyEnum.CRED_ORBIT_PUBLIC_TOKEN,
         decryptedData.token
       );
 
       toastSuccess(response.message);
 
-      navigate(RoutePathConstant.private.clientDashboard);
+      navigate(RoutePathConstant.private.educationStudentLoanApplication, {
+        state: {
+          preselectedStudentId: impersonateId,
+          studentSelfFlow: true,
+        },
+      });
     } else {
       toastError(response.message);
     }

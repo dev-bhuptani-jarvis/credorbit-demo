@@ -25,11 +25,11 @@ const CheckEligibility = () => {
   const items = isEducationFlow
     ? [{ label: "Credit Bureau Fetch" }, { label: "Bank Statement Upload" }]
     : [
-        { label: "Get Credit Score" },
-        { label: "Income Tax Details" },
-        { label: "GST Details" },
-        { label: "Bank Details" },
-      ];
+      { label: "Get Credit Score" },
+      { label: "Income Tax Details" },
+      { label: "GST Details" },
+      { label: "Bank Details" },
+    ];
 
   const nextStep = (): void => {
     if (activeIndex < items.length - 1) {
@@ -45,12 +45,7 @@ const CheckEligibility = () => {
 
   const handleMessage = () => {
     if (isEducationFlow) {
-      switch (activeIndex) {
-        case 0:
-          return "Step 4 of 6: Fetch the student or co-applicant credit bureau report.";
-        case 1:
-          return "Step 5 of 6: Upload bank statements and generate the CAM report.";
-      }
+      return "";
     }
 
     switch (activeIndex) {
@@ -100,21 +95,22 @@ const CheckEligibility = () => {
             >
               {handleMessage()}
             </h3>
-
-            <Steps
-              className="mt-5 mb-4"
-              model={items.map((step, index) => ({
-                ...step,
-                className: index > activeIndex ? "disabled-step" : "", // Add a custom class to disable
-              }))}
-              activeIndex={activeIndex}
-              onSelect={(e) => {
-                if (e.index <= activeIndex) {
-                  setActiveIndex(e.index);
-                }
-              }}
-              readOnly={false}
-            />
+            {!isEducationFlow &&
+              <Steps
+                className="mt-5 mb-4"
+                model={items.map((step, index) => ({
+                  ...step,
+                  className: index > activeIndex ? "disabled-step" : "", // Add a custom class to disable
+                }))}
+                activeIndex={activeIndex}
+                onSelect={(e) => {
+                  if (e.index <= activeIndex) {
+                    setActiveIndex(e.index);
+                  }
+                }}
+                readOnly={false}
+              />
+            }
           </div>
         </div>
 
@@ -130,8 +126,8 @@ const CheckEligibility = () => {
 
         {((!isEducationFlow && activeIndex === 3) ||
           (isEducationFlow && activeIndex === 1)) && (
-          <BankDetails prevStep={prevStep} />
-        )}
+            <BankDetails prevStep={prevStep} />
+          )}
       </div>
     </div>
   );

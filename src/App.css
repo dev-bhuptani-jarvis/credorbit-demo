@@ -1482,6 +1482,12 @@ span.p-dropdown-label.p-inputtext {
   font-family: BomstadDisplay-Black;
 }
 
+.check-eligibilty-title-text {
+  font-weight: 400;
+  font-size: 1.5em !important;
+  font-family: BomstadDisplay-Black;
+}
+
 .client-welcome span {
   font-weight: 400;
   font-size: 24px !important;

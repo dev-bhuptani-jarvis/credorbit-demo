@@ -99,7 +99,7 @@ const StudentEnrolledCourseDetail = () => {
                 <p className="text-break">{enrollment.repaymentStatus}</p>
               </div>
               <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Active/Closed Loans</b>
+                <b>Loan Status</b>
                 <p className="text-break">{enrollment.loanStatus}</p>
               </div>
             </div>

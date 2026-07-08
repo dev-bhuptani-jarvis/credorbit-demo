@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { Column } from "primereact/column";
@@ -52,7 +52,10 @@ import {
   toastError,
   toastSuccess,
 } from "../../utils/functions/shared";
-import { setEncryptedSessionStorage } from "../../utils/functions/sessionStorage";
+import {
+  getDecryptedSessionStorage,
+  setEncryptedSessionStorage,
+} from "../../utils/functions/sessionStorage";
 import { defaultStudentForm } from "./ManageStudents";
 
 const parseAmount = (value: string): number =>
@@ -75,6 +78,7 @@ const cardStyle = {
 const EducationLoanApplication = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { state } = useLocation();
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -129,6 +133,9 @@ const EducationLoanApplication = () => {
   });
 
   const currentUser = useSelector((state: RootState) => state.user.user);
+  const isStudentUser =
+    currentUser.userID === "student-role-001" ||
+    currentUser.roleName === "Student";
 
   const selectedCourse = useMemo(
     () => courses.find((course) => course.id === selectedCourseId),
@@ -192,6 +199,17 @@ const EducationLoanApplication = () => {
   const formatNumber = (value: number): string =>
     value > 0 ? new Intl.NumberFormat("en-IN").format(value) : "";
 
+  const applySelectedCourse = (course: IEducationCourse | undefined): void => {
+    setSelectedCourseId(course?.id || "");
+    setSelectedCourseTenure(course?.courseTenure || "");
+    setCourseFees(course ? formatNumber(course.courseFees) : "");
+    setEmiOptionMonths(0);
+    setDownpayment("");
+    setDiscountType("percentage");
+    setDiscountValue("");
+    setReviewErrors({});
+  };
+
   const resetStudentForm = (): void => {
     setStudentForm(defaultStudentForm);
     setFormErrors({});
@@ -208,6 +226,36 @@ const EducationLoanApplication = () => {
 
       setStudents(studentResponse);
       setCourses(courseResponse);
+
+      const preselectedStudentId =
+        state?.preselectedStudentId ||
+        getDecryptedSessionStorage(StorageKeyEnum.CRED_ORBIT_IMPERSONATE_STUDENT_ID);
+
+      if (preselectedStudentId) {
+        const matchedStudent = studentResponse.find(
+          (student) => student.id === preselectedStudentId,
+        );
+
+        if (matchedStudent) {
+          setSelectedStudent(matchedStudent);
+          applySelectedCourse(undefined);
+          setActiveIndex(1);
+        }
+      } else if (isStudentUser) {
+        const matchedStudent = studentResponse.find(
+          (student) =>
+            student.email.toLowerCase() === currentUser.emailID?.toLowerCase() ||
+            student.mobileNumber === currentUser.mobileNumber ||
+            student.studentPan === currentUser.panNumber ||
+            student.studentName === currentUser.userName,
+        );
+
+        if (matchedStudent) {
+          setSelectedStudent(matchedStudent);
+          applySelectedCourse(undefined);
+          setActiveIndex(1);
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -465,27 +513,30 @@ const EducationLoanApplication = () => {
 
       const draft = response.data;
 
-      const impersonatedStudent = {
-        ...currentUser,
-        userID: draft.studentUserId,
-        userName: draft.studentName,
-        emailID: draft.studentEmail,
-        mobileNumber: draft.studentMobileNumber,
-        panNumber: draft.studentPan,
-        userType: CLIENT_ROLE.CUSTOMER,
-        roleName: "Student",
-        cpID: currentUser.userID || "edu-inst-001",
-        cpName: currentUser.userName || "Education Institute",
-      };
-
-      setEncryptedSessionStorage(
-        StorageKeyEnum.CRED_ORBIT_IMPERSONATE_USER_DATA,
-        JSON.stringify(currentUser),
-      );
-
-      dispatch(setImpersonateUser(true));
-      dispatch(setUserData(impersonatedStudent));
       dispatch(setCustomerInfo(buildEducationCustomerInfo(draftStudent)));
+
+      if (!isStudentUser) {
+        const impersonatedStudent = {
+          ...currentUser,
+          userID: draft.studentUserId,
+          userName: draft.studentName,
+          emailID: draft.studentEmail,
+          mobileNumber: draft.studentMobileNumber,
+          panNumber: draft.studentPan,
+          userType: CLIENT_ROLE.CUSTOMER,
+          roleName: "Student",
+          cpID: currentUser.userID || "edu-inst-001",
+          cpName: currentUser.userName || "Education Institute",
+        };
+
+        setEncryptedSessionStorage(
+          StorageKeyEnum.CRED_ORBIT_IMPERSONATE_USER_DATA,
+          JSON.stringify(currentUser),
+        );
+
+        dispatch(setImpersonateUser(true));
+        dispatch(setUserData(impersonatedStudent));
+      }
 
       toastSuccess(
         `${draft.studentName}'s application is ready for credit and banking checks.`,
@@ -514,7 +565,7 @@ const EducationLoanApplication = () => {
             <h2 className="txt-30 fw-bold mb-2">Education Loan Application</h2>
           </div>
 
-          {currentUser.userType === CLIENT_ROLE.CHANNEL_PARTNER && (
+          {currentUser.userType === CLIENT_ROLE.CHANNEL_PARTNER && !isStudentUser && (
             <Button
               type="button"
               className="btn btn-orange"
@@ -610,21 +661,11 @@ const EducationLoanApplication = () => {
                     className="w-100"
                     value={selectedCourseId}
                     options={courseOptions}
-                    onChange={(event) => {
-                      const nextCourse = courses.find(
-                        (course) => course.id === event.value,
-                      );
-                      setSelectedCourseId(event.value || "");
-                      setSelectedCourseTenure(nextCourse?.courseTenure || "");
-                      setCourseFees(
-                        nextCourse ? formatNumber(nextCourse.courseFees) : "",
-                      );
-                      setEmiOptionMonths(0);
-                      setDownpayment("");
-                      setDiscountType("percentage");
-                      setDiscountValue("");
-                      setReviewErrors({});
-                    }}
+                    onChange={(event) =>
+                      applySelectedCourse(
+                        courses.find((course) => course.id === event.value),
+                      )
+                    }
                     placeholder="Select course"
                   />
                 </div>

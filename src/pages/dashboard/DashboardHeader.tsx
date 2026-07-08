@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store";
 import {
   getDecryptedSessionStorage,
+  removeSessionStorageKey,
   setEncryptedSessionStorage,
 } from "../../utils/functions/sessionStorage";
 import { StorageKeyEnum } from "../../utils/constants/enum";
@@ -71,6 +72,8 @@ const DashboardHeader = () => {
       previousUserData.token,
     );
 
+    removeSessionStorageKey(StorageKeyEnum.CRED_ORBIT_IMPERSONATE_STUDENT_ID);
+
     navigate(RoutePathConstant.private.channelPartnerDashboard);
 
     setShowLogoutDialog(false);
@@ -81,6 +84,7 @@ const DashboardHeader = () => {
   };
 
   const handleStandardLogout = (message: string): void => {
+    removeSessionStorageKey(StorageKeyEnum.CRED_ORBIT_IMPERSONATE_STUDENT_ID);
     toastSuccess(message);
     dispatch(setLogout());
   };

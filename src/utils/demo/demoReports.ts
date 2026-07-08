@@ -1613,6 +1613,29 @@ const loanMarketplaceResponse = {
   },
 } as unknown as ILoanMarketResponse;
 
+const nbfcLoanMarketplaceResponse = {
+  status: true,
+  statusCode: 200,
+  message: "NBFC Loan market place loaded successfully!",
+  data: {
+    bankDetails: [
+      {
+        "bankID": 109,
+        "bankName": "NBFC Bank 1",
+        "loanAmount": 1193985.0000000000000000000000,
+        "emi": 11793.000000000000000000000000,
+        "roI_Min": 8.550000000000000000000000000,
+        "roI_Max": 10.050000000000000000000000000,
+        "tenure": 15.000000000000000000000000000,
+        "loanType": "Home Loan",
+        "loanTypeID": 1,
+        "minCreditScore": 0,
+        "bankImage": "https://credstagestorage.blob.core.windows.net/credorbit-dev/BankLogoImages/ICICI-HF-logo.jpg?sv=2025-05-05&se=2026-04-15T12%3A30%3A05Z&sr=b&sp=r&sig=3DtFIHk1WNSS5p3C4PHH43J2f%2BoTKB%2BRwOIfPxH2N7k%3D"
+      }
+    ],
+  },
+} as unknown as ILoanMarketResponse;
+
 const applyForLoanResponse = {
   status: true,
 
@@ -2218,6 +2241,12 @@ export const getDemoLoanMarketplace =
   async (): Promise<ILoanMarketResponse> => {
     await wait(DEMO_DELAY_MS);
     return loanMarketplaceResponse;
+  };
+
+export const getDemoNBFCLoanMarketplace =
+  async (): Promise<ILoanMarketResponse> => {
+    await wait(DEMO_DELAY_MS);
+    return nbfcLoanMarketplaceResponse;
   };
 
 export const getDemoApplyForLoan =

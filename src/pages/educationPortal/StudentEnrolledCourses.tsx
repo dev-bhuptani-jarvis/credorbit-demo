@@ -54,6 +54,8 @@ const StudentEnrolledCourses = () => {
     setLoading(false);
   };
 
+  console.log('enrollments', enrollments)
+
   const filteredEnrollments = useMemo(() => {
     const searchValue = filterReq.searchText?.trim().toLowerCase() || "";
 

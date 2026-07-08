@@ -1,6 +1,7 @@
 import { IEducationStudentEnrollment } from "../../interface/educationManagement";
 
 const STUDENT_USER_ID = "student-role-001";
+
 const STORAGE_KEY = "credorbit.studentEnrollments";
 
 const seedEnrollments: IEducationStudentEnrollment[] = [
@@ -78,7 +79,7 @@ const getAllEnrollments = (): IEducationStudentEnrollment[] => {
 export const getStudentEnrollments = (
   studentUserId: string = STUDENT_USER_ID,
 ): IEducationStudentEnrollment[] =>
-  getAllEnrollments().filter((item) => item.studentUserId === studentUserId);
+  getAllEnrollments();
 
 export const getStudentEnrollmentById = (
   enrollmentId: string,

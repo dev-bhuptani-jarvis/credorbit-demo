@@ -2,6 +2,7 @@ export enum StorageKeyEnum {
   CRED_ORBIT_PUBLIC_TOKEN = "cred_orbit_public_token",
   CRED_ORBIT_USER_DATA = "cred_orbit_user_data",
   CRED_ORBIT_IMPERSONATE_USER_DATA = "cred_orbit_impersonate_user_data",
+  CRED_ORBIT_IMPERSONATE_STUDENT_ID = "cred_orbit_impersonate_student_id",
   CRED_ORBIT_USER_EXPIRY_TIMER = "cred_orbit_user_expiry_timer",
   CRED_ORBIT_USER_PROFILE_FETCH = "cred_orbit_user_profile_fetch",
   CRED_ORBIT_CP_TOTAL_CREDIT = "cred_orbit_cp_total_credit",

@@ -1,5 +1,8 @@
 import { IVerifyEmailOTPResponse } from "../../interface/otpRequest";
+import { IGeneratePublicTokenRequest } from "../../interface/publicToken";
 import { IClientDashboardResponse } from "../../interface/clientDashboard";
+import { Permission } from "../../interface/sidebarPermission";
+import { getEducationStudentById } from "./demoEducationStudents";
 
 const DEMO_DELAY_MS = 300;
 
@@ -336,14 +339,105 @@ const demoImpersonateUserResponse = {
   },
 } as IVerifyEmailOTPResponse;
 
-const demoImpersonateStudentResponse = {
-  status: true,
-  statusCode: 200,
-  message: "Student impersonated successfully!",
-  data: {
-    
+const demoStudentPermissions: Permission[] = [
+  {
+    rightID: 1,
+    parentID: 0,
+    rightName: "Dashboard",
+    create: null,
+    delete: null,
+    view: null,
+    list: true,
+    displayName: "Dashboard",
+    displayOrder: 1,
   },
-} as IVerifyEmailOTPResponse;
+  {
+    rightID: 2,
+    parentID: 0,
+    rightName: "Profile",
+    create: true,
+    delete: null,
+    view: null,
+    list: true,
+    displayName: "Profile",
+    displayOrder: 2,
+  },
+  {
+    rightID: 7,
+    parentID: 0,
+    rightName: "Reports",
+    create: null,
+    delete: null,
+    view: true,
+    list: true,
+    displayName: "Reports",
+    displayOrder: 10,
+  },
+  {
+    rightID: 11,
+    parentID: 0,
+    rightName: "Policy",
+    create: null,
+    delete: null,
+    view: null,
+    list: false,
+    displayName: "Policy",
+    displayOrder: 17,
+  },
+  {
+    rightID: 12,
+    parentID: 0,
+    rightName: "Support",
+    create: null,
+    delete: null,
+    view: null,
+    list: true,
+    displayName: "Support",
+    displayOrder: 18,
+  },
+  {
+    rightID: 16,
+    parentID: 0,
+    rightName: "TermsAndConditions",
+    create: null,
+    delete: null,
+    view: null,
+    list: true,
+    displayName: "Terms & Conditions",
+    displayOrder: 19,
+  },
+];
+
+const buildDemoImpersonateStudentResponse = (
+  body: IGeneratePublicTokenRequest,
+): IVerifyEmailOTPResponse => {
+  const matchedStudent = getEducationStudentById(body.userID);
+
+  return {
+    status: true,
+    statusCode: 200,
+    message: "Student impersonated successfully!",
+    data: {
+      userID: matchedStudent?.id || body.userID,
+      userName: matchedStudent?.studentName || "Student User",
+      showPanDetailPopUp: false,
+      emailID: matchedStudent?.email || "student.demo@yopmail.com",
+      mobileNumber: matchedStudent?.mobileNumber || "9876500000",
+      token: `demo-student-token-${matchedStudent?.id || body.userID}`,
+      userType: 4,
+      panTypeID: 2,
+      roleID: 4,
+      panNumber: matchedStudent?.studentPan || "STUDN1234S",
+      gstNumber: null,
+      roleName: "Student",
+      profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      contractEnforcementDate: "2025-10-09T00:00:00",
+      isDefaultCpClient: false,
+      isContractSigned: true,
+      permissions: demoStudentPermissions,
+    },
+  };
+};
 
 const demoClientDashboardResponse = {
   status: true,
@@ -598,8 +692,9 @@ export const getDemoClientDashboard =
     return demoClientDashboardResponse;
   };
 
-export const getDemoImpersonateStudent =
-  async (): Promise<IVerifyEmailOTPResponse> => {
+export const getDemoImpersonateStudent = async (
+  body: IGeneratePublicTokenRequest,
+): Promise<IVerifyEmailOTPResponse> => {
     await wait(DEMO_DELAY_MS);
-    return demoImpersonateStudentResponse;
+    return buildDemoImpersonateStudentResponse(body);
   };

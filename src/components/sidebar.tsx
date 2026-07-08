@@ -10,6 +10,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { IsNullOrEmptyArray } from "../utils/functions/nullCheck";
+import { StorageKeyEnum } from "../utils/constants/enum";
+import { getDecryptedSessionStorage } from "../utils/functions/sessionStorage";
 
 const Sidebar = () => {
   const educationPortalIcon = "/assets/images/user-master.svg";
@@ -22,7 +24,7 @@ const Sidebar = () => {
 
   const navigate = useNavigate();
 
-  const { userType, permissions, isDefaultCpClient, userID } = useSelector(
+  const { userType, permissions, isDefaultCpClient, userID, roleName } = useSelector(
     (state: RootState) => state.user.user
   );
 
@@ -30,8 +32,17 @@ const Sidebar = () => {
     (state: RootState) => state.impersonateUser
   );
 
+  const impersonatedStudentId = getDecryptedSessionStorage(
+    StorageKeyEnum.CRED_ORBIT_IMPERSONATE_STUDENT_ID,
+  );
+
+  const isStudentPortalUser =
+    userID === "student-role-001" ||
+    roleName === "Student" ||
+    Boolean(impersonatedStudentId);
+
   const dashboardRoute = useCallback((): string => {
-    if (userID === "student-role-001") {
+    if (isStudentPortalUser) {
       return RoutePathConstant.private.channelPartnerDashboard;
     }
 
@@ -45,7 +56,7 @@ const Sidebar = () => {
       default:
         return RoutePathConstant.private.channelPartnerDashboard;
     }
-  }, [userType]);
+  }, [isStudentPortalUser, userType]);
 
   const reportsRoute = useCallback((): string => {
     switch (userType) {
@@ -193,7 +204,7 @@ const Sidebar = () => {
         return menuItem;
       });
 
-    menuItems.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    menuItems?.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
     const menuTree: MenuItem[] = menuItems?.filter((item) => {
       if (item.parentId !== 0) {
@@ -203,7 +214,7 @@ const Sidebar = () => {
           item.icon = null;
           parentItem.children.push(item);
 
-          parentItem.children.sort(
+          parentItem.children?.sort(
             (a, b) => (a.displayOrder || 0) - (b.displayOrder || 0)
           );
           return false;
@@ -250,7 +261,7 @@ const Sidebar = () => {
   useEffect(() => {
     let FinalSideBarArray: MenuItem[] = buildMenuTree();
 
-    FinalSideBarArray = FinalSideBarArray.filter(
+    FinalSideBarArray = FinalSideBarArray?.filter(
       (item) => item.name !== "EducationalManagement"
     );
 
@@ -295,7 +306,7 @@ const Sidebar = () => {
     }
 
     if (userID === "edu-inst-001") {
-      FinalSideBarArray = FinalSideBarArray.filter(
+      FinalSideBarArray = FinalSideBarArray?.filter(
         (item) =>
           item.name === "Dashboard" ||
           item.name === "Profile" ||
@@ -337,8 +348,8 @@ const Sidebar = () => {
       });
     }
 
-    if (userID === "student-role-001") {
-      FinalSideBarArray = FinalSideBarArray.filter(
+    if (isStudentPortalUser) {
+      FinalSideBarArray = FinalSideBarArray?.filter(
         (item) =>
           item.name === "Dashboard" ||
           item.name === "Reports" ||
@@ -359,12 +370,22 @@ const Sidebar = () => {
           {
             id: 100021,
             parentId: 100020,
+            name: "StudentLoanApplication",
+            displayName: "Loan Application",
+            icon: null,
+            path: RoutePathConstant.private.educationStudentLoanApplication,
+            children: [],
+            displayOrder: 1,
+          },
+          {
+            id: 100022,
+            parentId: 100020,
             name: "EnrolledCourses",
             displayName: "Enrolled Courses",
             icon: null,
             path: RoutePathConstant.private.studentEnrolledCourses,
             children: [],
-            displayOrder: 1,
+            displayOrder: 2,
           },
         ],
         displayOrder: 6,
@@ -389,15 +410,23 @@ const Sidebar = () => {
     }
 
     if (userType === CLIENT_ROLE.CUSTOMER && !isDefaultCpClient) {
-      FinalSideBarArray = FinalSideBarArray.filter(
+      FinalSideBarArray = FinalSideBarArray?.filter(
         (item) => item.name !== "Subscription"
       );
     }
 
-    FinalSideBarArray.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    FinalSideBarArray?.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
     setMenuTree(FinalSideBarArray);
-  }, [buildMenuTree, educationPortalIcon, isDefaultCpClient, isImpersonate, userID, userType]);
+  }, [
+    buildMenuTree,
+    educationPortalIcon,
+    isDefaultCpClient,
+    isImpersonate,
+    isStudentPortalUser,
+    userID,
+    userType,
+  ]);
 
   useEffect(() => {
     if (location.pathname === "/") {
@@ -407,7 +436,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     // Auto-expand parent if a child route is active
-    const matchedParent = menuTree.find((parent) =>
+    const matchedParent = menuTree?.find((parent) =>
       parent.children?.some((child) =>
         location.pathname.startsWith(child.path || "")
       )
