@@ -322,6 +322,15 @@ const demoLoginAssociatedUsers = [
     userName: "Student One",
     userID: "student-role-001",
   },
+  {
+    userType: CLIENT_ROLE.CHANNEL_PARTNER,
+    cpID: null,
+    spID: null,
+    cpName: null,
+    spName: null,
+    userName: "NBFC One",
+    userID: "nbfc-user-001",
+  },
 ];
 
 const demoAdminPermissions: Permission[] = [
@@ -634,6 +643,30 @@ const demoLoginResponses = {
       permissions: demoClientPermissions,
     },
   },
+  nbfcUser: {
+    statusCode: 200,
+    status: true,
+    message: "Successfully signed in!",
+    data: {
+      userID: "nbfc-user-001",
+      userName: "NBFC One",
+      showPanDetailPopUp: false,
+      emailID: "nbfc1@yopmail.com",
+      mobileNumber: "2222222222",
+      token: "demo-nbfc-user-token",
+      userType: 2,
+      panTypeID: 9,
+      roleID: 2,
+      panNumber: "NBFCC1234N",
+      gstNumber: "24NBFCC1234N1Z5",
+      roleName: "NBFC User",
+      profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      contractEnforcementDate: "2025-10-09T00:00:00",
+      isDefaultCpClient: false,
+      isContractSigned: true,
+      permissions: demoChannelPartnerPermissions,
+    },
+  },
 };
 
 const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) => {
@@ -678,6 +711,13 @@ const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) =
     return {
       associatedUsers: [demoLoginAssociatedUsers[5]],
       response: demoLoginResponses.student,
+    };
+  }
+
+  if (email === "nbfc1@yopmail.com" && mobile === "2222222222") {
+    return {
+      associatedUsers: [demoLoginAssociatedUsers[6]],
+      response: demoLoginResponses.nbfcUser,
     };
   }
 

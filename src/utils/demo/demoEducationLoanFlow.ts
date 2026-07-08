@@ -6,7 +6,11 @@ import {
   IEducationLoanDraft,
   IEducationStudent,
 } from "../../interface/educationManagement";
-import { addStudentEnrollment, getStudentEnrollments } from "./demoStudentEnrollments";
+import {
+  addStudentEnrollment,
+  getStudentEnrollments,
+  updateStudentEnrollmentApplicationStatus,
+} from "./demoStudentEnrollments";
 
 const STUDENT_CAM_REPORTS_KEY = "credorbit.studentCamReports";
 const EDUCATION_LOAN_DRAFTS_KEY = "credorbit.educationLoanDrafts";
@@ -150,6 +154,10 @@ export const createEducationLoanDraft = ({
     studentPan: student.studentPan,
     studentEmail: student.email,
     studentMobileNumber: student.mobileNumber,
+    parentPan: student.parentPan,
+    coApplicantName: student.coApplicantName,
+    coApplicantMobileNumber: student.coApplicantMobileNumber,
+    coApplicantRelation: student.coApplicantRelation,
     courseId: course.id,
     courseName: course.courseName,
     courseTenure: course.courseTenure,
@@ -168,6 +176,20 @@ export const createEducationLoanDraft = ({
     totalAmountToInstitute: summary.totalAmountToInstitute,
     consentAccepted: true,
     hasCoApplicant: !!student.coApplicantName.trim(),
+    loanApplicationStatus: "Pending",
+    sanctionDate: null,
+    disbursementDate: null,
+    utrNumber: "",
+    transactionReference: "",
+    disbursementRemarks: "",
+    queryRemarks: "",
+    enachEnabled: false,
+    enachRegisteredAt: null,
+    loanAgreementSentAt: null,
+    sanctionLetterUrl: null,
+    loanAgreementUrl: null,
+    repaymentScheduleUrl: null,
+    disbursementAdviceUrl: null,
     status: "draft",
     createdAt: now,
     updatedAt: now,
@@ -199,6 +221,101 @@ export const updateEducationLoanDraftStatus = (
   persistEducationLoanDrafts(nextDrafts);
   return updatedDraft;
 };
+
+export const getNbfcEducationLoanApplications = (): IEducationLoanDraft[] =>
+  getEducationLoanDrafts().filter((draft) => draft.status === "submitted");
+
+export const updateNbfcEducationLoanApplicationStatus = (
+  draftId: string,
+  updates: Partial<
+    Pick<
+      IEducationLoanDraft,
+      | "loanApplicationStatus"
+      | "sanctionDate"
+      | "disbursementDate"
+      | "utrNumber"
+      | "transactionReference"
+      | "disbursementRemarks"
+      | "queryRemarks"
+      | "enachEnabled"
+      | "enachRegisteredAt"
+      | "loanAgreementSentAt"
+      | "sanctionLetterUrl"
+      | "loanAgreementUrl"
+      | "repaymentScheduleUrl"
+      | "disbursementAdviceUrl"
+    >
+  >,
+): IEducationLoanDraft | undefined => {
+  const drafts = getEducationLoanDrafts();
+  let updatedDraft: IEducationLoanDraft | undefined;
+
+  const nextDrafts = drafts.map((draft) => {
+    if (draft.id !== draftId) return draft;
+
+    const nextStatus = updates.loanApplicationStatus || draft.loanApplicationStatus;
+
+    updatedDraft = {
+      ...draft,
+      ...updates,
+      loanApplicationStatus: nextStatus,
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (nextStatus === "Sanctioned" && !updatedDraft.sanctionDate) {
+      updatedDraft.sanctionDate = new Date().toISOString();
+    }
+
+    if (nextStatus === "Sanctioned") {
+      updatedDraft.sanctionLetterUrl =
+        updates.sanctionLetterUrl || "/assets/images/sanction-letter.pdf";
+      updatedDraft.loanAgreementUrl =
+        updates.loanAgreementUrl || "/assets/images/sanction-letter.pdf";
+      updatedDraft.repaymentScheduleUrl =
+        updates.repaymentScheduleUrl || "/assets/images/CAM_Report_Sample_HL.xlsx";
+    }
+
+    if (nextStatus === "Disbursed") {
+      updatedDraft.disbursementAdviceUrl =
+        updates.disbursementAdviceUrl || "/assets/images/sanction-letter.pdf";
+      updatedDraft.disbursementDate =
+        updates.disbursementDate || updatedDraft.disbursementDate || new Date().toISOString();
+    }
+
+    return updatedDraft;
+  });
+
+  persistEducationLoanDrafts(nextDrafts);
+
+  const linkedEnrollment = getStudentEnrollments().find(
+    (enrollment) => enrollment.draftId === draftId,
+  );
+
+  if (linkedEnrollment) {
+    updateStudentEnrollmentApplicationStatus(
+      linkedEnrollment.id,
+      updatedDraft?.loanApplicationStatus || linkedEnrollment.applicationStatus,
+    );
+  }
+
+  return updatedDraft;
+};
+
+export const sendNbfcLoanAgreementForSigning = (
+  draftId: string,
+): IEducationLoanDraft | undefined =>
+  updateNbfcEducationLoanApplicationStatus(draftId, {
+    loanAgreementSentAt: new Date().toISOString(),
+    loanAgreementUrl: "/assets/images/sanction-letter.pdf",
+  });
+
+export const enableNbfcEnach = (
+  draftId: string,
+): IEducationLoanDraft | undefined =>
+  updateNbfcEducationLoanApplicationStatus(draftId, {
+    enachEnabled: true,
+    enachRegisteredAt: new Date().toISOString(),
+  });
 
 export const getStudentCamReports = (
   studentUserId: string = DEFAULT_STUDENT_USER_ID,
@@ -333,6 +450,7 @@ export const completeEducationLoanApplication = (
 
   addStudentEnrollment({
     id: `enroll-${Date.now()}`,
+    draftId: draft.id,
     studentUserId: draft.studentUserId,
     instituteName: draft.instituteName,
     courseName: draft.courseName,

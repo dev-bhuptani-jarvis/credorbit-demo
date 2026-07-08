@@ -80,5 +80,8 @@ export const RoutePathConstant = {
     educationStudentLoanOfferKfs: "/education-portal/student-loan-offer/:id/kfs/:bankId",
     studentEnrolledCourses: "/education-portal/enrolled-courses",
     studentEnrolledCourseDetail: "/education-portal/enrolled-courses/:id",
+    educationNbfcStudentApplications: "/education-portal/nbfc-student-applications",
+    educationNbfcStudentApplicationDetail:
+      "/education-portal/nbfc-student-applications/:id",
   },
 };

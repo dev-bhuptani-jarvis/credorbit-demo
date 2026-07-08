@@ -75,6 +75,7 @@ export interface IEducationStudentFormData {
 
 export interface IEducationStudentEnrollment {
   id: string;
+  draftId?: string;
   studentUserId: string;
   instituteName: string;
   courseName: string;
@@ -88,7 +89,13 @@ export interface IEducationStudentEnrollment {
   emiSchedule: string;
   repaymentStatus: "On-Time" | "Delayed" | "Overdue" | "Closed" | "Pending";
   loanStatus: "Active" | "Closed";
-  applicationStatus: "Pending" | "Approved" | "Disbursed" | "Rejected";
+  applicationStatus:
+    | "Pending"
+    | "Approved"
+    | "Sanctioned"
+    | "Disbursed"
+    | "Rejected"
+    | "Query Raised";
   creditBureauSummary: string;
   creditScore: number;
   creditHistory: string;
@@ -106,6 +113,10 @@ export interface IEducationLoanDraft {
   studentPan: string;
   studentEmail: string;
   studentMobileNumber: string;
+  parentPan?: string;
+  coApplicantName?: string;
+  coApplicantMobileNumber?: string;
+  coApplicantRelation?: string;
   courseId: string;
   courseName: string;
   courseTenure: string;
@@ -124,6 +135,26 @@ export interface IEducationLoanDraft {
   totalAmountToInstitute: number;
   consentAccepted: boolean;
   hasCoApplicant: boolean;
+  loanApplicationStatus:
+    | "Pending"
+    | "Approved"
+    | "Sanctioned"
+    | "Disbursed"
+    | "Rejected"
+    | "Query Raised";
+  sanctionDate: string | null;
+  disbursementDate: string | null;
+  utrNumber: string;
+  transactionReference: string;
+  disbursementRemarks: string;
+  queryRemarks: string;
+  enachEnabled: boolean;
+  enachRegisteredAt: string | null;
+  loanAgreementSentAt: string | null;
+  sanctionLetterUrl: string | null;
+  loanAgreementUrl: string | null;
+  repaymentScheduleUrl: string | null;
+  disbursementAdviceUrl: string | null;
   status: "draft" | "cam_generated" | "submitted";
   createdAt: string;
   updatedAt: string;

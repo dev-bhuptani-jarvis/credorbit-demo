@@ -93,3 +93,37 @@ export const addStudentEnrollment = (
   persistEnrollments([enrollment, ...enrollments]);
   return enrollment;
 };
+
+export const updateStudentEnrollmentApplicationStatus = (
+  enrollmentId: string,
+  applicationStatus: IEducationStudentEnrollment["applicationStatus"],
+): IEducationStudentEnrollment | undefined => {
+  const enrollments = getAllEnrollments();
+  let updatedEnrollment: IEducationStudentEnrollment | undefined;
+
+  const nextEnrollments = enrollments.map((enrollment) => {
+    if (enrollment.id !== enrollmentId) return enrollment;
+
+    updatedEnrollment = {
+      ...enrollment,
+      applicationStatus,
+      loanStatus:
+        applicationStatus === "Rejected" || applicationStatus === "Approved"
+          ? "Closed"
+          : "Active",
+      outstandingAmount:
+        applicationStatus === "Rejected" ? 0 : enrollment.outstandingAmount,
+      repaymentStatus:
+        applicationStatus === "Disbursed"
+          ? enrollment.repaymentStatus
+          : applicationStatus === "Rejected"
+            ? "Closed"
+            : "Pending",
+    };
+
+    return updatedEnrollment;
+  });
+
+  persistEnrollments(nextEnrollments);
+  return updatedEnrollment;
+};

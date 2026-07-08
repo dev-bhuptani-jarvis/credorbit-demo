@@ -127,6 +127,12 @@ const StudentEnrolledCourses = lazy(
 const StudentEnrolledCourseDetail = lazy(
   () => import("../pages/educationPortal/StudentEnrolledCourseDetail"),
 );
+const NbfcStudentApplications = lazy(
+  () => import("../pages/educationPortal/NbfcStudentApplications"),
+);
+const NbfcStudentApplicationDetail = lazy(
+  () => import("../pages/educationPortal/NbfcStudentApplicationDetail"),
+);
 
 export const publicRoutes: RouteObject[] = [
   {
@@ -433,6 +439,14 @@ export const privateRoutes: RouteObject[] = [
       {
         path: RoutePathConstant.private.studentEnrolledCourseDetail,
         element: <StudentEnrolledCourseDetail />,
+      },
+      {
+        path: RoutePathConstant.private.educationNbfcStudentApplications,
+        element: <NbfcStudentApplications />,
+      },
+      {
+        path: RoutePathConstant.private.educationNbfcStudentApplicationDetail,
+        element: <NbfcStudentApplicationDetail />,
       },
       {
         path: "*",

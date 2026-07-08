@@ -175,6 +175,10 @@ const Sidebar = () => {
         icon: "",
         path: RoutePathConstant.private.studentEnrolledCourses,
       },
+      NbfcStudentApplications: {
+        icon: "",
+        path: RoutePathConstant.private.educationNbfcStudentApplications,
+      },
     }),
     [dashboardRoute, educationPortalIcon, reportsRoute],
   );
@@ -348,6 +352,39 @@ const Sidebar = () => {
       });
     }
 
+    if (roleName === "NBFC User") {
+      FinalSideBarArray = FinalSideBarArray?.filter(
+        (item) =>
+          item.name === "Dashboard" ||
+          item.name === "Profile" ||
+          item.name === "Support" ||
+          item.name === "TermsAndConditions" ||
+          item.name === "Policy",
+      );
+
+      FinalSideBarArray.push({
+        id: 100030,
+        parentId: 0,
+        name: "EducationNBFC",
+        displayName: "NBFC Operations",
+        icon: educationPortalIcon,
+        path: null,
+        children: [
+          {
+            id: 100031,
+            parentId: 100030,
+            name: "NbfcStudentApplications",
+            displayName: "Student Applications",
+            icon: null,
+            path: RoutePathConstant.private.educationNbfcStudentApplications,
+            children: [],
+            displayOrder: 2,
+          },
+        ],
+        displayOrder: 6,
+      });
+    }
+
     if (isStudentPortalUser) {
       FinalSideBarArray = FinalSideBarArray?.filter(
         (item) =>
@@ -424,6 +461,7 @@ const Sidebar = () => {
     isDefaultCpClient,
     isImpersonate,
     isStudentPortalUser,
+    roleName,
     userID,
     userType,
   ]);
