@@ -282,6 +282,83 @@ const channelPartnerProfileResponse: IUserProfileResponse = {
   },
 };
 
+const educationInstituteProfileResponse: IUserProfileResponse = {
+  status: true,
+
+  statusCode: 200,
+
+  message: "User fetched successfully!",
+
+  data: {
+    id: "edu-inst-001",
+
+    name: "Education Institute One",
+
+    panNumber: "EDUIN1234E",
+
+    emailID: "educationinstitute1@yopmail.com",
+
+    mobileNumber: "2222222222",
+
+    profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+
+    selectedGstNumber: "24EDUIN1234E1Z5",
+
+    gstList: [],
+
+    billingDetails: true,
+
+    role: "Educational Institute",
+
+    customerID: "EDU-CP-001",
+
+    isCompany: true,
+
+    coApplicants: [],
+
+    partners: [],
+
+    commission: 2,
+
+    bankAccountNumber: "XXXXXX2211",
+
+    bankName: "HDFC Bank",
+
+    ifscCode: "HDFC0002211",
+
+    dateOfBirth: "1991-06-12",
+
+    address: "Education House, SG Highway, Ahmedabad, Gujarat",
+
+    city: "Ahmedabad",
+
+    state: "Gujarat",
+
+    country: "INDIA",
+
+    zipCode: "380015",
+
+    aadhaar: "XXXX-XXXX-2211",
+
+    udhyamAadhaar: "UDYAM-GJ-24-0002211",
+
+    cpCompanyLogo: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+
+    userConsents: [
+      {
+        userConsentID: 1,
+        consentName: "Email",
+        isConsented: true,
+      },
+      {
+        userConsentID: 2,
+        consentName: "SMS",
+        isConsented: true,
+      },
+    ],
+  },
+};
+
 const sourcingPartnerProfileResponse = {
   status: true,
 
@@ -733,6 +810,13 @@ export const getDemoUserProfileByContext = async (
       email === "nexustest@yopmail.com"
     ) {
       return impersonatedClientProfileResponse;
+    }
+
+    if (
+      userId === "edu-inst-001" ||
+      email === "educationinstitute1@yopmail.com"
+    ) {
+      return educationInstituteProfileResponse;
     }
 
     if (

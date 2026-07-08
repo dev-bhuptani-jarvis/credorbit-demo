@@ -17,7 +17,7 @@ import { IEducationInstitute, IEducationInstituteFormData } from "../../interfac
 import { PaginateReqEntity } from "../../interface/pagination";
 import { debounceTimeInMilliseconds, formatMobileNumber } from "../../utils/constants/constant";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
-import { EMAIL_PATTERN, GST_NUMBER_PATTERN, INDIAN_MOBILE_NUMBER_PATTERN } from "../../utils/constants/pattern";
+import { EMAIL_PATTERN, GST_NUMBER_PATTERN, INDIAN_MOBILE_NUMBER_PATTERN, PAN_NUMBER_PATTERN } from "../../utils/constants/pattern";
 import {
   addEducationInstituteDocument,
   createEducationInstitute,
@@ -54,6 +54,7 @@ const defaultInstituteForm: IEducationInstituteFormData = {
   city: "",
   address: "",
   gstNumber: "",
+  panNumber: "",
   registrationNumber: "",
   isActive: true,
 };
@@ -173,6 +174,13 @@ const ManagedEducationInstitute = () => {
       nextErrors.gstNumber = "Enter a valid GST number.";
     }
 
+    if (
+      instituteForm.panNumber.trim() &&
+      !PAN_NUMBER_PATTERN.test(instituteForm.panNumber.trim().toUpperCase())
+    ) {
+      nextErrors.panNumber = "Enter a valid PAN number.";
+    }
+
     if (!instituteForm.registrationNumber.trim()) {
       nextErrors.registrationNumber = "Registration number is required.";
     }
@@ -189,6 +197,7 @@ const ManagedEducationInstitute = () => {
     const nextInstitute = createEducationInstitute({
       ...instituteForm,
       gstNumber: instituteForm.gstNumber.trim().toUpperCase(),
+      panNumber: instituteForm.panNumber.trim().toUpperCase(),
     });
 
     toastSuccess(`${nextInstitute.instituteName} added successfully.`);
@@ -566,6 +575,22 @@ const ManagedEducationInstitute = () => {
               }
             />
             {formErrors.gstNumber && <small className="error">{formErrors.gstNumber}</small>}
+          </div>
+
+          <div className="form-group col-sm-12 col-lg-6">
+            <label className="form-label" htmlFor="panNumber">
+              PAN Number
+            </label>
+            <InputText
+              id="panNumber"
+              className="form-control"
+              placeholder="Enter PAN number"
+              value={instituteForm.panNumber}
+              onChange={(e) =>
+                handleFormFieldChange("panNumber", e.target.value.toUpperCase())
+              }
+            />
+            {formErrors.panNumber && <small className="error">{formErrors.panNumber}</small>}
           </div>
 
           <div className="form-group col-12">

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   CLIENT_ROLE,
   debounceTimeInMilliseconds,
@@ -96,6 +96,8 @@ import { environment } from "../../utils/constants/environments";
 import { ISubscriptionListingResponse } from "../../interface/subscription";
 
 const ChannelPartnerDashboard = () => {
+  const EDUCATION_INSTITUTE_USER_ID = "edu-inst-001";
+
   const [adminInfo, setAdminInfo] = useState<IGetAllLoanApplicationsData>();
 
   const [channelPartnerInfo, setChannelPartnerInfo] =
@@ -224,6 +226,82 @@ const ChannelPartnerDashboard = () => {
   )();
 
   const dropdownRef = useRef<any>(null);
+
+  const isEducationInstituteDashboard =
+    userType === CLIENT_ROLE.CHANNEL_PARTNER &&
+    userID === EDUCATION_INSTITUTE_USER_ID;
+
+  const educationInstituteSummaryMetrics = useMemo(
+    () => [
+      {
+        title: "Total Registered Students",
+        value: 146,
+        icon: "bi-mortarboard-fill",
+        subtitle: "Students onboarded under the current institute cohort",
+      },
+      {
+        title: "Total Loan Applications",
+        value: 22,
+        icon: "bi-journal-text",
+        subtitle: "Applications initiated from institute-led sourcing",
+      },
+      {
+        title: "Total Approved/Sanctioned Applications",
+        value: 4,
+        icon: "bi-patch-check-fill",
+        subtitle: "Applications that moved successfully to sanction",
+      },
+      {
+        title: "Total Disbursed Applications",
+        value: 5,
+        icon: "bi-bank2",
+        subtitle: "Students whose loans have already been disbursed",
+      },
+      {
+        title: "Total Rejected Applications",
+        value: 2,
+        icon: "bi-x-circle-fill",
+        subtitle: "Applications declined in the current lending journey",
+      },
+      {
+        title: "Total Pending Applications",
+        value: 11,
+        icon: "bi-hourglass-split",
+        subtitle: "Applications still progressing through the pipeline",
+      },
+    ],
+    [],
+  );
+
+  const educationInstituteRepaymentMetrics = useMemo(
+    () => [
+      {
+        title: "On-Time Repayment Applications",
+        value: 9,
+        icon: "bi-check-circle-fill",
+        subtitle: "Accounts repaying as scheduled without any delay",
+      },
+      {
+        title: "Delayed Repayment Applications",
+        value: 4,
+        icon: "bi-clock-history",
+        subtitle: "Accounts showing payment delays but still active",
+      },
+      {
+        title: "Overdue Loan Applications",
+        value: 3,
+        icon: "bi-exclamation-triangle-fill",
+        subtitle: "Accounts that crossed the expected repayment window",
+      },
+      {
+        title: "Closed Applications",
+        value: 6,
+        icon: "bi-folder-check",
+        subtitle: "Loans that have completed the repayment lifecycle",
+      },
+    ],
+    [],
+  );
 
   const headersMap: Record<string, string> = {
     "Loan Application Code": "loanApplicationCode",
@@ -1255,7 +1333,7 @@ const ChannelPartnerDashboard = () => {
                   className="BtnRightHldr d-flex flex-row"
                   style={{ gap: "10px" }}
                 >
-                  {create && (
+                  {create && !isEducationInstituteDashboard && (
                     <div className="form-group">
                       <Button
                         className="btn btn-orange-line"
@@ -1269,7 +1347,8 @@ const ChannelPartnerDashboard = () => {
                     </div>
                   )}
 
-                  {(clientMasterRight.create ||
+                  {!isEducationInstituteDashboard &&
+                    (clientMasterRight.create ||
                     sourcingPartnerRight.create) && (
                       <div className="form-group">
                         <Button
@@ -1298,7 +1377,7 @@ const ChannelPartnerDashboard = () => {
             </div>
           )}
 
-          {!status && channelPartnerInfo && (
+          {!status && channelPartnerInfo && !isEducationInstituteDashboard && (
             <div className="col-12 ApplicationsBoxWrapper mb-4">
               <div className="row">
                 {channelPartnerInfo.totalLoanApplicationsCountByStatus.map(
@@ -1356,7 +1435,109 @@ const ChannelPartnerDashboard = () => {
             </div>
           )}
 
-          {!status && channelPartnerInfo?.loanApplicationStatusGraphList && (
+          {!status && channelPartnerInfo && isEducationInstituteDashboard && (
+            <>
+              <div className="col-12 mb-4">
+                <section className="admin-dashboard-hero admin-dashboard-hero--education">
+                  <div className="admin-dashboard-hero__content">
+                    <div className="admin-dashboard-eyebrow">
+                      <i className="bi bi-mortarboard-fill" />
+                      Education Institute Dashboard
+                    </div>
+                    <h1 className="admin-dashboard-hero__title">Repayment Analytics</h1>
+                    <p className="admin-dashboard-hero__copy">
+                      Monitor student applications and repayment behaviour from one focused
+                      institute view.
+                    </p>
+
+                    <div className="admin-dashboard-hero__chips">
+                      <div className="admin-dashboard-pill">
+                        <i className="bi bi-people" />
+                        146 registered students
+                      </div>
+                      <div className="admin-dashboard-pill">
+                        <i className="bi bi-journal-check" />
+                        22 active loan applications
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="admin-dashboard-hero__spotlight">
+                    <div className="admin-dashboard-spotlight-card">
+                      <div className="admin-dashboard-spotlight-card__label">
+                        Approved/Sanctioned
+                      </div>
+                      <div className="admin-dashboard-spotlight-card__value">4</div>
+                      <div className="admin-dashboard-spotlight-card__helper">
+                        Applications successfully moved to sanction stage.
+                      </div>
+                    </div>
+
+                    <div className="admin-dashboard-spotlight-card">
+                      <div className="admin-dashboard-spotlight-card__label">
+                        Disbursed Applications
+                      </div>
+                      <div className="admin-dashboard-spotlight-card__value">5</div>
+                      <div className="admin-dashboard-spotlight-card__helper">
+                        Students who have already received disbursals.
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <div className="col-12 mb-4">
+                <section className="admin-dashboard-metrics-grid admin-dashboard-metrics-grid--education">
+                  {educationInstituteSummaryMetrics.map((metric) => (
+                    <div key={metric.title} className="admin-dashboard-metric-card">
+                      <div className="admin-dashboard-metric-card__icon">
+                        <i className={`bi ${metric.icon}`} />
+                      </div>
+                      <div className="admin-dashboard-metric-card__body">
+                        <div className="admin-dashboard-metric-card__title">{metric.title}</div>
+                        <div className="admin-dashboard-metric-card__value">{metric.value}</div>
+                        <div className="admin-dashboard-metric-card__subtitle">
+                          {metric.subtitle}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </section>
+              </div>
+
+              <div className="col-12 mb-4">
+                <section className="admin-dashboard-panel">
+                  <div className="admin-dashboard-section-head">
+                    <div>
+                      <TableTitle title="Repayment Analytics" />
+                      <p className="admin-dashboard-section-copy mb-0">
+                        Current repayment health across institute-originated loan applications.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="admin-dashboard-metrics-grid admin-dashboard-metrics-grid--education">
+                    {educationInstituteRepaymentMetrics.map((metric) => (
+                      <div key={metric.title} className="admin-dashboard-metric-card">
+                        <div className="admin-dashboard-metric-card__icon">
+                          <i className={`bi ${metric.icon}`} />
+                        </div>
+                        <div className="admin-dashboard-metric-card__body">
+                          <div className="admin-dashboard-metric-card__title">{metric.title}</div>
+                          <div className="admin-dashboard-metric-card__value">{metric.value}</div>
+                          <div className="admin-dashboard-metric-card__subtitle">
+                            {metric.subtitle}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            </>
+          )}
+
+          {!status && channelPartnerInfo?.loanApplicationStatusGraphList && !isEducationInstituteDashboard && (
             <div className="col-12">
               <div className="row">
                 <div className="col-lg-12 mt-4">

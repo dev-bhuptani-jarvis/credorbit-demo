@@ -22,6 +22,7 @@ import {
   EMAIL_PATTERN,
   GST_NUMBER_PATTERN,
   INDIAN_MOBILE_NUMBER_PATTERN,
+  PAN_NUMBER_PATTERN,
 } from "../../utils/constants/pattern";
 import {
   createNbfcInstitute,
@@ -52,6 +53,7 @@ const defaultNbfcForm: IEducationInstituteFormData = {
   city: "",
   address: "",
   gstNumber: "",
+  panNumber: "",
   registrationNumber: "",
   isActive: true,
 };
@@ -70,8 +72,6 @@ const ManagedNBFC = () => {
   });
 
   const [selectedState, setSelectedState] = useState<string>("");
-
-  const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   const [totalRecords, setTotalRecords] = useState<number>(0);
 
@@ -103,13 +103,10 @@ const ManagedNBFC = () => {
         item.city.toLowerCase().includes(searchValue);
 
       const matchesState = !selectedState || item.state === selectedState;
-      const matchesStatus =
-        !selectedStatus ||
-        (selectedStatus === "active" ? item.isActive : !item.isActive);
 
-      return matchesSearch && matchesState && matchesStatus;
+      return matchesSearch && matchesState;
     });
-  }, [filterReq.searchText, nbfcList, selectedState, selectedStatus]);
+  }, [filterReq.searchText, nbfcList, selectedState]);
 
   const paginatedNbfcList = useMemo(() => {
     const startIndex = filterReq.pageNumber * filterReq.pageSize;
@@ -169,6 +166,13 @@ const ManagedNBFC = () => {
       nextErrors.gstNumber = "Enter a valid GST number.";
     }
 
+    if (
+      nbfcForm.panNumber.trim() &&
+      !PAN_NUMBER_PATTERN.test(nbfcForm.panNumber.trim().toUpperCase())
+    ) {
+      nextErrors.panNumber = "Enter a valid PAN number.";
+    }
+
     if (!nbfcForm.registrationNumber.trim()) {
       nextErrors.registrationNumber = "Registration number is required.";
     }
@@ -200,6 +204,7 @@ const ManagedNBFC = () => {
       city: nbfcData.city,
       address: nbfcData.address,
       gstNumber: nbfcData.gstNumber,
+      panNumber: nbfcData.panNumber,
       registrationNumber: nbfcData.registrationNumber,
       isActive: nbfcData.isActive,
     });
@@ -215,6 +220,7 @@ const ManagedNBFC = () => {
     const payload: IEducationInstituteFormData = {
       ...nbfcForm,
       gstNumber: nbfcForm.gstNumber.trim().toUpperCase(),
+      panNumber: nbfcForm.panNumber.trim().toUpperCase(),
     };
 
     if (selectedNbfc) {
@@ -529,6 +535,22 @@ const ManagedNBFC = () => {
               }
             />
             {formErrors.gstNumber && <small className="error">{formErrors.gstNumber}</small>}
+          </div>
+
+          <div className="form-group col-sm-12 col-lg-6">
+            <label className="form-label" htmlFor="nbfcPanNumber">
+              PAN Number
+            </label>
+            <InputText
+              id="nbfcPanNumber"
+              className="form-control"
+              placeholder="Enter PAN number"
+              value={nbfcForm.panNumber}
+              onChange={(e) =>
+                handleFormFieldChange("panNumber", e.target.value.toUpperCase())
+              }
+            />
+            {formErrors.panNumber && <small className="error">{formErrors.panNumber}</small>}
           </div>
 
           <div className="form-group col-12">

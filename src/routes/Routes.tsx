@@ -108,6 +108,10 @@ const ManagedNBFC = lazy(() => import("../pages/educationPortal/ManagedNBFC"));
 const EducationInstituteDetail = lazy(
   () => import("../pages/educationPortal/EducationInstituteDetail"),
 );
+const ManageCourses = lazy(() => import("../pages/educationPortal/ManageCourses"));
+const CourseDetail = lazy(() => import("../pages/educationPortal/CourseDetail"));
+const ManageStudents = lazy(() => import("../pages/educationPortal/ManageStudents"));
+const StudentDetail = lazy(() => import("../pages/educationPortal/StudentDetail"));
 
 export const publicRoutes: RouteObject[] = [
   {
@@ -378,6 +382,22 @@ export const privateRoutes: RouteObject[] = [
       {
         path: RoutePathConstant.private.educationManagedNbfc,
         element: <ManagedNBFC />,
+      },
+      {
+        path: RoutePathConstant.private.educationManageCourse,
+        element: <ManageCourses />,
+      },
+      {
+        path: RoutePathConstant.private.educationCourseDetail,
+        element: <CourseDetail />,
+      },
+      {
+        path: RoutePathConstant.private.educationManageStudents,
+        element: <ManageStudents />,
+      },
+      {
+        path: RoutePathConstant.private.educationStudentDetail,
+        element: <StudentDetail />,
       },
       {
         path: "*",

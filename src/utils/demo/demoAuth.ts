@@ -287,6 +287,15 @@ const demoLoginAssociatedUsers = [
     userID: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
   },
   {
+    userType: CLIENT_ROLE.CHANNEL_PARTNER,
+    cpID: null,
+    spID: null,
+    cpName: null,
+    spName: null,
+    userName: "Education Institute One",
+    userID: "edu-inst-001",
+  },
+  {
     userType: CLIENT_ROLE.SOURCING_PARTNER,
     cpID: "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9",
     spID: null,
@@ -331,7 +340,6 @@ const demoAdminPermissions: Permission[] = [
   { rightID: 22, parentID: 13, rightName: "SourcingPartnerPayout", create: null as unknown as boolean, delete: null as unknown as boolean, view: null as unknown as boolean, list: null as unknown as boolean, displayName: "SP Payout", displayOrder: 22 } as Permission,
   { rightID: 23, parentID: 0, rightName: "UserManagement", create: true, delete: null as unknown as boolean, view: true, list: true, displayName: "User Management", displayOrder: 3 } as Permission,
   { rightID: 24, parentID: 0, rightName: "EducationalManagement", create: true, delete: null as unknown as boolean, view: true, list: true, displayName: "Educational Management", displayOrder: 24 } as Permission,
-  { rightID: 25, parentID: 0, rightName: "UserManagement", create: true, delete: null as unknown as boolean, view: true, list: true, displayName: "User Management", displayOrder: 3 } as Permission,
 ];
 
 const demoSourcingPartnerPermissions: Permission[] = [
@@ -466,6 +474,30 @@ const demoLoginResponses = {
       permissions: demoChannelPartnerPermissions,
     },
   },
+  educationInstitute: {
+    statusCode: 200,
+    status: true,
+    message: "Successfully signed in!",
+    data: {
+      userID: "edu-inst-001",
+      userName: "Education Institute One",
+      showPanDetailPopUp: false,
+      emailID: "educationinstitute1@yopmail.com",
+      mobileNumber: "2222222222",
+      token: "demo-education-institute-token",
+      userType: 2,
+      panTypeID: 9,
+      roleID: 2,
+      panNumber: "EDUIN1234E",
+      gstNumber: "24EDUIN1234E1Z5",
+      roleName: "Educational Institute",
+      profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      contractEnforcementDate: "2025-10-09T00:00:00",
+      isDefaultCpClient: false,
+      isContractSigned: true,
+      permissions: demoChannelPartnerPermissions,
+    },
+  },
   sourcingPartner: {
     statusCode: 200,
 
@@ -589,15 +621,22 @@ const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) =
   if (email === "credsp1@yopmail.com" && mobile === "3333333333") {
     console.log('sourcing partner');
     return {
-      associatedUsers: [demoLoginAssociatedUsers[2]],
+      associatedUsers: [demoLoginAssociatedUsers[3]],
       response: demoLoginResponses.sourcingPartner,
+    };
+  }
+
+  if (email === "educationinstitute1@yopmail.com" && mobile === "2222222222") {
+    return {
+      associatedUsers: [demoLoginAssociatedUsers[2]],
+      response: demoLoginResponses.educationInstitute,
     };
   }
 
   if (email === "client@yopmail.com" && mobile === "4444444444") {
     console.log('client');
     return {
-      associatedUsers: [demoLoginAssociatedUsers[3]],
+      associatedUsers: [demoLoginAssociatedUsers[4]],
       response: demoLoginResponses.client,
     };
   }

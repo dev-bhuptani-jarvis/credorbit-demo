@@ -42,6 +42,7 @@ export interface IEducationInstitute {
   city: string;
   address: string;
   gstNumber: string;
+  panNumber: string;
   registrationNumber: string;
   isActive: boolean;
   createdAt: string;
@@ -59,6 +60,7 @@ export interface IEducationInstituteFormData {
   city: string;
   address: string;
   gstNumber: string;
+  panNumber: string;
   registrationNumber: string;
   isActive: boolean;
 }

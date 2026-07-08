@@ -71,5 +71,9 @@ export const RoutePathConstant = {
     educationManagedNbfc: "/education-portal/managed-nbfc",
     educationInstituteDetail: "/education-portal/managed-education-institute/:id",
     educationManagedNbfcDetail: "/education-portal/managed-nbfc/:id",
+    educationManageCourse: "/education-portal/manage-course",
+    educationCourseDetail: "/education-portal/manage-course/:id",
+    educationManageStudents: "/education-portal/manage-students",
+    educationStudentDetail: "/education-portal/manage-students/:id",
   },
 };

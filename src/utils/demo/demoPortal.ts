@@ -46,6 +46,8 @@ import {
   IWalletListingResponse,
 } from "../../interface/wallet";
 import { encryptVAPTData } from "../functions/encryptDecrypt";
+import { getDecryptedSessionStorage } from "../functions/sessionStorage";
+import { StorageKeyEnum } from "../constants/enum";
 import { ISourcingPartnerDetailsResponse } from "../../interface/sourcingPartner";
 
 const wait = (ms: number) =>
@@ -316,6 +318,37 @@ const demoChannelPartnerDashboardResponse: IChannelPartnerDashboardResponse = {
       userName: "Jarvis Credo CP",
     },
   },
+};
+
+const demoEducationInstituteDashboardResponse: IChannelPartnerDashboardResponse = {
+  status: true,
+  statusCode: 200,
+  message: "Dashboard of the education institute fetched successfully!",
+  data: {
+    ...demoChannelPartnerDashboardResponse.data,
+    userDetails: {
+      contractEnforcementDate: "2025-10-09T00:00:00",
+      emailID: "educationinstitute1@yopmail.com",
+      isContractSigned: true,
+      profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      showPanDetailPopUp: false,
+      userName: "Education Institute One",
+    },
+  },
+};
+
+const getCurrentDemoUser = (): { userID?: string } | null => {
+  const currentUserData = getDecryptedSessionStorage(
+    StorageKeyEnum.CRED_ORBIT_USER_DATA,
+  );
+
+  if (!currentUserData) return null;
+
+  try {
+    return JSON.parse(currentUserData);
+  } catch {
+    return null;
+  }
 };
 
 const demoSubscriptionHistoryResponse: ISubscriptionListingResponse = {
@@ -4501,6 +4534,12 @@ export const getDemoCpSpList = async (): Promise<IGetPartnerListResponse> => {
 export const getDemoChannelPartnerDashboard =
   async (): Promise<IChannelPartnerDashboardResponse> => {
     await wait(DEMO_DELAY_MS);
+    const currentUser = getCurrentDemoUser();
+
+    if (currentUser?.userID === "edu-inst-001") {
+      return demoEducationInstituteDashboardResponse;
+    }
+
     return demoChannelPartnerDashboardResponse;
   };
 

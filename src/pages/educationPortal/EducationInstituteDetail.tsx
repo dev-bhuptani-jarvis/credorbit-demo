@@ -440,6 +440,11 @@ const EducationInstituteDetail = () => {
                   </div>
 
                   <div className="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+                    <b className="fw-semibold">PAN Number</b>
+                    <p className="text-break mb-0">{instituteDetail.panNumber || "-"}</p>
+                  </div>
+
+                  <div className="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
                     <b className="fw-semibold">Registration Number</b>
                     <p className="text-break mb-0">
                       {instituteDetail.registrationNumber || "-"}

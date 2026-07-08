@@ -22,7 +22,7 @@ const Sidebar = () => {
 
   const navigate = useNavigate();
 
-  const { userType, permissions, isDefaultCpClient } = useSelector(
+  const { userType, permissions, isDefaultCpClient, userID } = useSelector(
     (state: RootState) => state.user.user
   );
 
@@ -147,6 +147,14 @@ const Sidebar = () => {
       ManagedNBFC: {
         icon: "",
         path: RoutePathConstant.private.educationManagedNbfc,
+      },
+      ManageCourse: {
+        icon: "",
+        path: RoutePathConstant.private.educationManageCourse,
+      },
+      ManageStudents: {
+        icon: "",
+        path: RoutePathConstant.private.educationManageStudents,
       },
     }),
     [dashboardRoute, educationPortalIcon, reportsRoute],
@@ -278,6 +286,49 @@ const Sidebar = () => {
       }
     }
 
+    if (userID === "edu-inst-001") {
+      FinalSideBarArray = FinalSideBarArray.filter(
+        (item) =>
+          item.name === "Dashboard" ||
+          item.name === "Profile" ||
+          item.name === "Support" ||
+          item.name === "TermsAndConditions" ||
+          item.name === "Policy",
+      );
+
+      FinalSideBarArray.push({
+        id: 100010,
+        parentId: 0,
+        name: "EducationManagement",
+        displayName: "Education Management",
+        icon: educationPortalIcon,
+        path: null,
+        children: [
+          {
+            id: 100011,
+            parentId: 100010,
+            name: "ManageCourse",
+            displayName: "Manage Course",
+            icon: null,
+            path: RoutePathConstant.private.educationManageCourse,
+            children: [],
+            displayOrder: 1,
+          },
+          {
+            id: 100012,
+            parentId: 100010,
+            name: "ManageStudents",
+            displayName: "Manage Students",
+            icon: null,
+            path: RoutePathConstant.private.educationManageStudents,
+            children: [],
+            displayOrder: 2,
+          },
+        ],
+        displayOrder: 6,
+      });
+    }
+
     if (userType === CLIENT_ROLE.CUSTOMER && !isDefaultCpClient) {
       FinalSideBarArray = FinalSideBarArray.filter(
         (item) => item.name !== "Subscription"
@@ -287,7 +338,7 @@ const Sidebar = () => {
     FinalSideBarArray.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
     setMenuTree(FinalSideBarArray);
-  }, [buildMenuTree, educationPortalIcon, isDefaultCpClient, isImpersonate, userType]);
+  }, [buildMenuTree, educationPortalIcon, isDefaultCpClient, isImpersonate, userID, userType]);
 
   useEffect(() => {
     if (location.pathname === "/") {
