@@ -63,6 +63,11 @@ import {
   IIsProceedForReportEntity,
 } from "../../../interface/wallet";
 import { Tooltip } from "primereact/tooltip";
+import {
+  addStudentCamReport,
+  getEducationLoanDraftById,
+  updateEducationLoanDraftStatus,
+} from "../../../utils/demo/demoEducationLoanFlow";
 
 interface IWrongUserDialog {
   modal: boolean;
@@ -147,6 +152,29 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
+
+  const isEducationFlow = !!state?.educationFlow;
+
+  const continueEducationLoanFlow = () => {
+    if (!state?.educationLoanApplicationId) return;
+
+    const draft = getEducationLoanDraftById(state.educationLoanApplicationId);
+
+    if (!draft) return;
+
+    addStudentCamReport({
+      studentUserId: draft.studentUserId,
+      courseName: draft.courseName,
+    });
+    updateEducationLoanDraftStatus(draft.id, "cam_generated");
+
+    navigate(
+      RoutePathConstant.private.educationStudentLoanOffer.replace(
+        ":id",
+        draft.id,
+      ),
+    );
+  };
 
   const handleDropFileUpload = async (
     event: React.DragEvent<HTMLDivElement>,
@@ -457,13 +485,17 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
         showGlobalReportModal(response?.message, "Banking Report Update");
 
-        navigate(RoutePathConstant.private.loanMarketPlace, {
-          state: {
-            showDocument: true,
-            loanType: state?.loanType,
-            loanApp: state?.loanApp,
-          },
-        });
+        if (isEducationFlow) {
+          continueEducationLoanFlow();
+        } else {
+          navigate(RoutePathConstant.private.loanMarketPlace, {
+            state: {
+              showDocument: true,
+              loanType: state?.loanType,
+              loanApp: state?.loanApp,
+            },
+          });
+        }
       }
     } else {
       toastErrorWithExtraTime(response?.message);
@@ -948,6 +980,16 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
   const footerContentCamReport = (
     <div className="flex justify-content-end mt-3">
+      {isEducationFlow && (
+        <Button
+          className="btn btn-orange text-center me-2"
+          label="Continue"
+          onClick={() => {
+            setCAMReportPopUp(false);
+            continueEducationLoanFlow();
+          }}
+        />
+      )}
       <Button
         className="btn btn-black-line text-center"
         data-bs-dismiss="modal"

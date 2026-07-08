@@ -31,6 +31,10 @@ const Sidebar = () => {
   );
 
   const dashboardRoute = useCallback((): string => {
+    if (userID === "student-role-001") {
+      return RoutePathConstant.private.channelPartnerDashboard;
+    }
+
     switch (userType) {
       case CLIENT_ROLE.SUPER_ADMIN:
         return RoutePathConstant.private.dashboard;
@@ -155,6 +159,10 @@ const Sidebar = () => {
       ManageStudents: {
         icon: "",
         path: RoutePathConstant.private.educationManageStudents,
+      },
+      EnrolledCourses: {
+        icon: "",
+        path: RoutePathConstant.private.studentEnrolledCourses,
       },
     }),
     [dashboardRoute, educationPortalIcon, reportsRoute],
@@ -323,10 +331,61 @@ const Sidebar = () => {
             path: RoutePathConstant.private.educationManageStudents,
             children: [],
             displayOrder: 2,
+          }
+        ],
+        displayOrder: 6,
+      });
+    }
+
+    if (userID === "student-role-001") {
+      FinalSideBarArray = FinalSideBarArray.filter(
+        (item) =>
+          item.name === "Dashboard" ||
+          item.name === "Reports" ||
+          item.name === "Profile" ||
+          item.name === "Support" ||
+          item.name === "TermsAndConditions" ||
+          item.name === "Policy",
+      );
+
+      FinalSideBarArray.push({
+        id: 100020,
+        parentId: 0,
+        name: "EducationLearning",
+        displayName: "Education Learning",
+        icon: educationPortalIcon,
+        path: null,
+        children: [
+          {
+            id: 100021,
+            parentId: 100020,
+            name: "EnrolledCourses",
+            displayName: "Enrolled Courses",
+            icon: null,
+            path: RoutePathConstant.private.studentEnrolledCourses,
+            children: [],
+            displayOrder: 1,
           },
         ],
         displayOrder: 6,
       });
+
+      const hasReportsMenu = FinalSideBarArray.some(
+        (item) => item.name === "Reports",
+      );
+
+      if (!hasReportsMenu) {
+        FinalSideBarArray.push({
+          id: 100022,
+          parentId: 0,
+          name: "Reports",
+          displayName: "Reports",
+          icon: "/assets/images/reports.svg",
+          path: RoutePathConstant.private.clientReports,
+          children: [],
+          displayOrder: 7,
+        });
+      }
     }
 
     if (userType === CLIENT_ROLE.CUSTOMER && !isDefaultCpClient) {

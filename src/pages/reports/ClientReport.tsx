@@ -17,6 +17,7 @@ import {
 import TableTitle from "../../components/TableTitle";
 import moment from "moment";
 import { Tooltip } from "primereact/tooltip";
+import { getStudentCamReports } from "../../utils/demo/demoEducationLoanFlow";
 
 const ClientReport = () => {
   const [reportsData, setReportsData] = useState<IClientDetailList[]>([]);
@@ -60,6 +61,12 @@ const ClientReport = () => {
 
   const fetchClientReports = async (): Promise<void> => {
     setLoading(true);
+
+    if (userID === "student-role-001") {
+      setReportsData(getStudentCamReports(userID));
+      setLoading(false);
+      return;
+    }
 
     const params: IClientDetailListParams = {
       clientID: userID,

@@ -8,22 +8,28 @@ import { useNavigate } from "react-router-dom";
 import { RoutePathConstant } from "../../../utils/constants/routePaths";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
+import { useLocation } from "react-router-dom";
 
 const CheckEligibility = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
   const navigate = useNavigate();
+  const { state } = useLocation();
 
   const { customerInfo } = useSelector((state: RootState) => state.customer);
 
   const { userName } = useSelector((state: RootState) => state.user.user);
 
-  const items = [
-    { label: "Get Credit Score" },
-    { label: "Income Tax Details" },
-    { label: "GST Details" },
-    { label: "Bank Details" },
-  ];
+  const isEducationFlow = !!state?.educationFlow;
+
+  const items = isEducationFlow
+    ? [{ label: "Credit Bureau Fetch" }, { label: "Bank Statement Upload" }]
+    : [
+        { label: "Get Credit Score" },
+        { label: "Income Tax Details" },
+        { label: "GST Details" },
+        { label: "Bank Details" },
+      ];
 
   const nextStep = (): void => {
     if (activeIndex < items.length - 1) {
@@ -38,6 +44,15 @@ const CheckEligibility = () => {
   };
 
   const handleMessage = () => {
+    if (isEducationFlow) {
+      switch (activeIndex) {
+        case 0:
+          return "Step 4 of 6: Fetch the student or co-applicant credit bureau report.";
+        case 1:
+          return "Step 5 of 6: Upload bank statements and generate the CAM report.";
+      }
+    }
+
     switch (activeIndex) {
       case 0:
         return "You're just 4-step away from your eligibility check!";
@@ -105,15 +120,18 @@ const CheckEligibility = () => {
 
         {activeIndex === 0 && <GetCreditScore nextStep={nextStep} />}
 
-        {activeIndex === 1 && (
+        {!isEducationFlow && activeIndex === 1 && (
           <IncomeTaxDetail nextStep={nextStep} prevStep={prevStep} />
         )}
 
-        {activeIndex === 2 && (
+        {!isEducationFlow && activeIndex === 2 && (
           <GSTDetails nextStep={nextStep} prevStep={prevStep} />
         )}
 
-        {activeIndex === 3 && <BankDetails prevStep={prevStep} />}
+        {((!isEducationFlow && activeIndex === 3) ||
+          (isEducationFlow && activeIndex === 1)) && (
+          <BankDetails prevStep={prevStep} />
+        )}
       </div>
     </div>
   );

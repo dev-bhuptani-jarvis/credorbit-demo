@@ -359,6 +359,83 @@ const educationInstituteProfileResponse: IUserProfileResponse = {
   },
 };
 
+const studentProfileResponse: IUserProfileResponse = {
+  status: true,
+
+  statusCode: 200,
+
+  message: "User fetched successfully!",
+
+  data: {
+    id: "student-role-001",
+
+    name: "Student One",
+
+    panNumber: "STUDN1234S",
+
+    emailID: "student1@yopmail.com",
+
+    mobileNumber: "2222222222",
+
+    profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+
+    selectedGstNumber: null,
+
+    gstList: [],
+
+    billingDetails: false,
+
+    role: "Student",
+
+    customerID: "STU260701",
+
+    isCompany: false,
+
+    coApplicants: [],
+
+    partners: [],
+
+    commission: 0,
+
+    bankAccountNumber: null,
+
+    bankName: null,
+
+    ifscCode: null,
+
+    dateOfBirth: "2004-02-18",
+
+    address: "Satellite, Ahmedabad, Gujarat",
+
+    city: "Ahmedabad",
+
+    state: "Gujarat",
+
+    country: "INDIA",
+
+    zipCode: "380015",
+
+    aadhaar: "XXXX-XXXX-7788",
+
+    udhyamAadhaar: null,
+
+    cpCompanyLogo: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+
+    userConsents: [
+      {
+        userConsentID: 1,
+        consentName: "Email",
+        isConsented: true,
+      },
+      {
+        userConsentID: 2,
+        consentName: "SMS",
+        isConsented: true,
+      },
+    ],
+  },
+};
+
 const sourcingPartnerProfileResponse = {
   status: true,
 
@@ -803,6 +880,21 @@ export const getDemoUserProfileByContext = async (
     }
 
     if (
+      userId === "edu-inst-001" ||
+      email === "educationinstitute1@yopmail.com"
+    ) {
+      return educationInstituteProfileResponse;
+    }
+
+    if (
+      userId === "student-role-001" ||
+      email === "student1@yopmail.com" ||
+      roleName === "student"
+    ) {
+      return studentProfileResponse;
+    }
+
+    if (
       userType === 4 ||
       roleName === "client" ||
       userId === "08de0598-4bee-48ca-8a7c-005b36583e79" ||
@@ -810,13 +902,6 @@ export const getDemoUserProfileByContext = async (
       email === "nexustest@yopmail.com"
     ) {
       return impersonatedClientProfileResponse;
-    }
-
-    if (
-      userId === "edu-inst-001" ||
-      email === "educationinstitute1@yopmail.com"
-    ) {
-      return educationInstituteProfileResponse;
     }
 
     if (

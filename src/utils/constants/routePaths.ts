@@ -75,5 +75,10 @@ export const RoutePathConstant = {
     educationCourseDetail: "/education-portal/manage-course/:id",
     educationManageStudents: "/education-portal/manage-students",
     educationStudentDetail: "/education-portal/manage-students/:id",
+    educationStudentLoanApplication: "/education-portal/student-loan-application",
+    educationStudentLoanOffer: "/education-portal/student-loan-offer/:id",
+    educationStudentLoanOfferKfs: "/education-portal/student-loan-offer/:id/kfs/:bankId",
+    studentEnrolledCourses: "/education-portal/enrolled-courses",
+    studentEnrolledCourseDetail: "/education-portal/enrolled-courses/:id",
   },
 };

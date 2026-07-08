@@ -1,3 +1,5 @@
+import { APIResponseEntity } from "./apiResponse";
+
 export interface IEducationCourse {
   id: string;
   courseName: string;
@@ -69,4 +71,75 @@ export interface IEducationStudentFormData {
   coApplicantMobileNumber: string;
   coApplicantRelation: string;
   isActive: boolean;
+}
+
+export interface IEducationStudentEnrollment {
+  id: string;
+  studentUserId: string;
+  instituteName: string;
+  courseName: string;
+  duration: string;
+  feeStructure: number;
+  courseType: "Online" | "Offline";
+  loanAccountNumber: string;
+  loanAmount: number;
+  outstandingAmount: number;
+  emiAmount: number;
+  emiSchedule: string;
+  repaymentStatus: "On-Time" | "Delayed" | "Overdue" | "Closed" | "Pending";
+  loanStatus: "Active" | "Closed";
+  applicationStatus: "Pending" | "Approved" | "Disbursed" | "Rejected";
+  creditBureauSummary: string;
+  creditScore: number;
+  creditHistory: string;
+  createdAt: string;
+}
+
+export type EducationDiscountType = "percentage" | "amount";
+
+export interface IEducationLoanDraft {
+  id: string;
+  studentId: string;
+  studentUserId: string;
+  instituteName: string;
+  studentName: string;
+  studentPan: string;
+  studentEmail: string;
+  studentMobileNumber: string;
+  courseId: string;
+  courseName: string;
+  courseTenure: string;
+  courseType: "Online" | "Offline";
+  courseFees: number;
+  emiOptionMonths: number;
+  downpayment: number;
+  discountType: EducationDiscountType;
+  discountValue: number;
+  discountAmount: number;
+  discountedCourseFee: number;
+  loanAmount: number;
+  advanceEmi: number;
+  numberOfEmis: number;
+  emiAmount: number;
+  totalAmountToInstitute: number;
+  consentAccepted: boolean;
+  hasCoApplicant: boolean;
+  status: "draft" | "cam_generated" | "submitted";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ICreateEducationLoanDraftBody {
+  student: IEducationStudent;
+  course: IEducationCourse;
+  instituteName: string;
+  courseFees: number;
+  emiOptionMonths: number;
+  downpayment: number;
+  discountType: EducationDiscountType;
+  discountValue: number;
+}
+
+export interface ICreateEducationLoanDraftResponse extends APIResponseEntity {
+  data: IEducationLoanDraft;
 }

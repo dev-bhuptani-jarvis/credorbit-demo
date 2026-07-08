@@ -313,6 +313,15 @@ const demoLoginAssociatedUsers = [
     userName: "DEMO INDUSTRIES PRIVATE LIMITED",
     userID: "08de0598-4bee-48ca-8a7c-005b36583e79",
   },
+  {
+    userType: CLIENT_ROLE.CUSTOMER,
+    cpID: "edu-inst-001",
+    spID: null,
+    cpName: "Education Institute One",
+    spName: null,
+    userName: "Student One",
+    userID: "student-role-001",
+  },
 ];
 
 const demoAdminPermissions: Permission[] = [
@@ -601,6 +610,30 @@ const demoLoginResponses = {
       permissions: demoClientPermissions,
     },
   },
+  student: {
+    statusCode: 200,
+    status: true,
+    message: "Successfully signed in!",
+    data: {
+      userID: "student-role-001",
+      userName: "Student One",
+      showPanDetailPopUp: false,
+      emailID: "student1@yopmail.com",
+      mobileNumber: "2222222222",
+      token: "demo-student-token",
+      userType: 4,
+      panTypeID: 2,
+      roleID: 4,
+      panNumber: "STUDN1234S",
+      gstNumber: null,
+      roleName: "Student",
+      profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      contractEnforcementDate: "2025-10-09T00:00:00",
+      isDefaultCpClient: false,
+      isContractSigned: true,
+      permissions: demoClientPermissions,
+    },
+  },
 };
 
 const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) => {
@@ -638,6 +671,13 @@ const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) =
     return {
       associatedUsers: [demoLoginAssociatedUsers[4]],
       response: demoLoginResponses.client,
+    };
+  }
+
+  if (email === "student1@yopmail.com" && mobile === "2222222222") {
+    return {
+      associatedUsers: [demoLoginAssociatedUsers[5]],
+      response: demoLoginResponses.student,
     };
   }
 

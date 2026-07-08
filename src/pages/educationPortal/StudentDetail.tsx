@@ -40,124 +40,112 @@ const StudentDetail = () => {
         </Button>
       </div>
 
-      <div className="row g-4">
-        <div className="col-12 col-lg-6">
-          <div className="whiteBoxHldr h-100">
-            <h5 className="mb-3">Personal Details</h5>
-            <div className="row g-3">
-              <div className="col-sm-6">
-                <label className="form-label small">Student Information</label>
-                <p className="mb-0">{student.studentName}</p>
-              </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Student Code</label>
-                <p className="mb-0">{student.studentCode}</p>
-              </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Course</label>
-                <p className="mb-0">{student.courseName}</p>
-              </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Student PAN</label>
-                <p className="mb-0">{student.studentPan}</p>
-              </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Parent PAN</label>
-                <p className="mb-0">{student.parentPan || "-"}</p>
-              </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Minor Student</label>
-                <p className="mb-0">{student.isMinor ? "Yes" : "No"}</p>
+      <div className="row">
+        <div className="col-12">
+          <div className="row">
+            <div className="col-12">
+              <h5 className="mb-3">Personal Details</h5>
+              <div className="borderBoxHldr p-24">
+                <div className="row">
+                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                    <b>Student Information</b>
+                    <p className="text-break">{student.studentName}</p>
+                  </div>
+                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                    <b>Student Code</b>
+                    <p className="text-break">{student.studentCode}</p>
+                  </div>
+                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                    <b>Course</b>
+                    <p className="text-break">{student.courseName}</p>
+                  </div>
+                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                    <b>Student PAN</b>
+                    <p className="text-break">{student.studentPan}</p>
+                  </div>
+                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                    <b>Parent PAN</b>
+                    <p className="text-break">{student.parentPan || "-"}</p>
+                  </div>
+                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                    <b>Minor Student</b>
+                    <p className="text-break">{student.isMinor ? "Yes" : "No"}</p>
+                  </div>
+                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                    <b>Credit Score</b>
+                    <p className="text-break">{student.creditInformation.creditScore}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="col-12 col-lg-6">
-          <div className="whiteBoxHldr h-100">
-            <h5 className="mb-3">Contact Details</h5>
-            <div className="row g-3">
-              <div className="col-sm-6">
-                <label className="form-label small">Mobile Number</label>
-                <p className="mb-0">{formatMobileNumber(student.mobileNumber)}</p>
+        <div className="col-12 mt-4">
+          <h5 className="mb-3">Contact Details</h5>
+          <div className="borderBoxHldr p-24">
+            <div className="row">
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>Mobile Number</b>
+                <p className="text-break">{formatMobileNumber(student.mobileNumber)}</p>
               </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Email Address</label>
-                <p className="mb-0 text-break">{student.email}</p>
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>Email Address</b>
+                <p className="text-break">{student.email}</p>
               </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Co-applicant Name</label>
-                <p className="mb-0">{student.coApplicantName || "-"}</p>
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>Co-applicant Name</b>
+                <p className="text-break">{student.coApplicantName || "-"}</p>
               </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Co-applicant Relation</label>
-                <p className="mb-0">{student.coApplicantRelation || "-"}</p>
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>Co-applicant Relation</b>
+                <p className="text-break">{student.coApplicantRelation || "-"}</p>
               </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Co-applicant Mobile</label>
-                <p className="mb-0">
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>Co-applicant Mobile</b>
+                <p className="text-break">
                   {student.coApplicantMobileNumber
                     ? formatMobileNumber(student.coApplicantMobileNumber)
                     : "-"}
                 </p>
               </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Registered On</label>
-                <p className="mb-0">{formatDate(student.createdAt, "DD MMM, YYYY")}</p>
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>Registered On</b>
+                <p className="text-break">{formatDate(student.createdAt, "DD MMM, YYYY")}</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="col-12 col-lg-6">
-          <div className="whiteBoxHldr h-100">
-            <h5 className="mb-3">Loan Details</h5>
-            <div className="row g-3">
-              <div className="col-sm-6">
-                <label className="form-label small">Total Loans Availed</label>
-                <p className="mb-0">{student.loanDetails.totalLoansAvailed}</p>
+        <div className="col-12 mt-4">
+          <h5 className="mb-3">Loan Details</h5>
+          <div className="borderBoxHldr p-24">
+            <div className="row">
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>Total Loans Availed</b>
+                <p className="text-break">{student.loanDetails.totalLoansAvailed}</p>
               </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Active Loans</label>
-                <p className="mb-0">{student.loanDetails.activeLoans}</p>
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>Active Loans</b>
+                <p className="text-break">{student.loanDetails.activeLoans}</p>
               </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Closed Loans</label>
-                <p className="mb-0">{student.loanDetails.closedLoans}</p>
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>Closed Loans</b>
+                <p className="text-break">{student.loanDetails.closedLoans}</p>
               </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Outstanding Amount</label>
-                <p className="mb-0">
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>Outstanding Amount</b>
+                <p className="text-break">
                   {formatCurrencyAmount(student.loanDetails.outstandingAmount)}
                 </p>
               </div>
-              <div className="col-sm-6">
-                <label className="form-label small">EMI Information</label>
-                <p className="mb-0">{student.loanDetails.emiInformation}</p>
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>EMI Information</b>
+                <p className="text-break">{student.loanDetails.emiInformation}</p>
               </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Repayment Status</label>
-                <p className="mb-0">{student.loanDetails.repaymentStatus}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-12 col-lg-6">
-          <div className="whiteBoxHldr h-100">
-            <h5 className="mb-3">Credit Information</h5>
-            <div className="row g-3">
-              <div className="col-12">
-                <label className="form-label small">Credit Bureau Summary</label>
-                <p className="mb-0">{student.creditInformation.creditBureauSummary}</p>
-              </div>
-              <div className="col-sm-6">
-                <label className="form-label small">Credit Score</label>
-                <p className="mb-0">{student.creditInformation.creditScore}</p>
-              </div>
-              <div className="col-12">
-                <label className="form-label small">Credit History</label>
-                <p className="mb-0">{student.creditInformation.creditHistory}</p>
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>Repayment Status</b>
+                <p className="text-break">{student.loanDetails.repaymentStatus}</p>
               </div>
             </div>
           </div>

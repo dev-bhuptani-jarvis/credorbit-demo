@@ -122,6 +122,13 @@ import {
   ISubmitLoanApplicationToBankResponse,
 } from "../../interface/applyLoan";
 import {
+  ICreateEducationLoanDraftBody,
+  ICreateEducationLoanDraftResponse,
+  IEducationCourse,
+  IEducationStudent,
+  IEducationStudentFormData,
+} from "../../interface/educationManagement";
+import {
   IGetAddEditRoleUserResponse,
   IGetUserRightsForUserManagementResponse,
   ISaveUserDetailData,
@@ -176,6 +183,7 @@ import {
 } from "../demo/demoAuth";
 import {
   getDemoClientDashboard,
+  getDemoImpersonateStudent,
   getDemoImpersonateUser,
 } from "../demo/demoClient";
 import { getDemoUserProfileByContext } from "../demo/demoProfile";
@@ -289,6 +297,17 @@ import {
   updateDemoContractStatus as updateDemoCmsContractStatus,
   updateDemoSupportData as updateDemoCmsSupportData,
 } from "../demo/demoContent";
+import {
+  createEducationLoanDraft,
+} from "../demo/demoEducationLoanFlow";
+import {
+  getEducationCourses,
+} from "../demo/demoEducationCourses";
+import {
+  createEducationStudent,
+  getEducationStudents,
+  updateEducationStudent,
+} from "../demo/demoEducationStudents";
 
 export const generatePublicTokenAPI = async (
   payload: IGeneratePublicTokenRequest
@@ -513,6 +532,12 @@ export const fetchImpersonateUser = async (
   return await getDemoImpersonateUser();
 };
 
+export const fetchImpersonateStudent = async (
+  body: IGeneratePublicTokenRequest
+): Promise<IVerifyEmailOTPResponse> => {
+  return await getDemoImpersonateStudent();
+};
+
 export const getInstitutionList =
   async (): Promise<IInstitutionListResponse> => {
     return await getDemoInstitutionList();
@@ -556,6 +581,40 @@ export const addLoanApplicationAPI = async (
   body: IAddLoanApplication
 ): Promise<IApplyLoanApplicationResponse> => {
   return await addDemoLoanApplication();
+};
+
+export const getEducationStudentsAPI = async (): Promise<IEducationStudent[]> => {
+  return getEducationStudents();
+};
+
+export const createEducationStudentAPI = async (
+  body: IEducationStudentFormData
+): Promise<IEducationStudent> => {
+  return createEducationStudent(body);
+};
+
+export const updateEducationStudentAPI = async (
+  studentId: string,
+  body: IEducationStudentFormData
+): Promise<IEducationStudent | undefined> => {
+  return updateEducationStudent(studentId, body);
+};
+
+export const getEducationCoursesAPI = async (): Promise<IEducationCourse[]> => {
+  return getEducationCourses();
+};
+
+export const createEducationLoanDraftAPI = async (
+  body: ICreateEducationLoanDraftBody
+): Promise<ICreateEducationLoanDraftResponse> => {
+  const draft = createEducationLoanDraft(body);
+
+  return {
+    status: true,
+    statusCode: 200,
+    message: "Education loan draft created successfully.",
+    data: draft,
+  };
 };
 
 export const getAdminDashboardAPI =

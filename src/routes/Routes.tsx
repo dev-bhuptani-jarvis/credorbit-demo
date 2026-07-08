@@ -112,6 +112,21 @@ const ManageCourses = lazy(() => import("../pages/educationPortal/ManageCourses"
 const CourseDetail = lazy(() => import("../pages/educationPortal/CourseDetail"));
 const ManageStudents = lazy(() => import("../pages/educationPortal/ManageStudents"));
 const StudentDetail = lazy(() => import("../pages/educationPortal/StudentDetail"));
+const EducationLoanApplication = lazy(
+  () => import("../pages/educationPortal/EducationLoanApplication"),
+);
+const EducationLoanOffer = lazy(
+  () => import("../pages/educationPortal/EducationLoanOffer"),
+);
+const EducationLoanOfferKfs = lazy(
+  () => import("../pages/educationPortal/EducationLoanOfferKfs"),
+);
+const StudentEnrolledCourses = lazy(
+  () => import("../pages/educationPortal/StudentEnrolledCourses"),
+);
+const StudentEnrolledCourseDetail = lazy(
+  () => import("../pages/educationPortal/StudentEnrolledCourseDetail"),
+);
 
 export const publicRoutes: RouteObject[] = [
   {
@@ -398,6 +413,26 @@ export const privateRoutes: RouteObject[] = [
       {
         path: RoutePathConstant.private.educationStudentDetail,
         element: <StudentDetail />,
+      },
+      {
+        path: RoutePathConstant.private.educationStudentLoanApplication,
+        element: <EducationLoanApplication />,
+      },
+      {
+        path: RoutePathConstant.private.educationStudentLoanOffer,
+        element: <EducationLoanOffer />,
+      },
+      {
+        path: RoutePathConstant.private.educationStudentLoanOfferKfs,
+        element: <EducationLoanOfferKfs />,
+      },
+      {
+        path: RoutePathConstant.private.studentEnrolledCourses,
+        element: <StudentEnrolledCourses />,
+      },
+      {
+        path: RoutePathConstant.private.studentEnrolledCourseDetail,
+        element: <StudentEnrolledCourseDetail />,
       },
       {
         path: "*",

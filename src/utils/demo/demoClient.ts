@@ -336,6 +336,15 @@ const demoImpersonateUserResponse = {
   },
 } as IVerifyEmailOTPResponse;
 
+const demoImpersonateStudentResponse = {
+  status: true,
+  statusCode: 200,
+  message: "Student impersonated successfully!",
+  data: {
+    
+  },
+} as IVerifyEmailOTPResponse;
+
 const demoClientDashboardResponse = {
   status: true,
   statusCode: 200,
@@ -587,4 +596,10 @@ export const getDemoClientDashboard =
   async (): Promise<IClientDashboardResponse> => {
     await wait(DEMO_DELAY_MS);
     return demoClientDashboardResponse;
+  };
+
+export const getDemoImpersonateStudent =
+  async (): Promise<IVerifyEmailOTPResponse> => {
+    await wait(DEMO_DELAY_MS);
+    return demoImpersonateStudentResponse;
   };

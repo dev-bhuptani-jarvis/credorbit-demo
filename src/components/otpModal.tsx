@@ -227,7 +227,11 @@ const OtpModal = ({
         navigate(RoutePathConstant.private.dashboard);
         break;
       case CLIENT_ROLE.CUSTOMER:
-        navigate(RoutePathConstant.private.clientDashboard);
+        navigate(
+          response.data.userID === "student-role-001"
+            ? RoutePathConstant.private.channelPartnerDashboard
+            : RoutePathConstant.private.clientDashboard,
+        );
         break;
       case CLIENT_ROLE.SOURCING_PARTNER:
         navigate(RoutePathConstant.private.userMasterClientMaster);

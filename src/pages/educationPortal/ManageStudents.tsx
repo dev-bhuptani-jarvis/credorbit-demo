@@ -32,11 +32,13 @@ import {
   getEducationStudents,
   updateEducationStudent,
 } from "../../utils/demo/demoEducationStudents";
-import { formatDate, toastSuccess } from "../../utils/functions/shared";
+import { toastSuccess } from "../../utils/functions/shared";
 import useDebouncedEffect from "../../hooks/useDebounce";
 import { IsNullOrEmptyArray } from "../../utils/functions/nullCheck";
+import { Tooltip } from "primereact/tooltip";
+import StudentImpersonateUserModal from "../../components/StudentImpersonateUserModal";
 
-const defaultStudentForm: IEducationStudentFormData = {
+export const defaultStudentForm: IEducationStudentFormData = {
   studentName: "",
   courseId: "",
   studentPan: "",
@@ -54,21 +56,36 @@ const ManageStudents = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState<boolean>(false);
+
   const [students, setStudents] = useState<IEducationStudent[]>([]);
+
   const [searchText, setSearchText] = useState<string>("");
+
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
+
   const [selectedRepaymentStatus, setSelectedRepaymentStatus] = useState<string>("");
+
   const [filterReq, setFilterReq] = useState<PaginateReqEntity>({
     pageNumber: 0,
     pageSize: 10,
     searchText: "",
   });
+
   const [totalRecords, setTotalRecords] = useState<number>(0);
+
   const [showStudentDialog, setShowStudentDialog] = useState<boolean>(false);
+
   const [selectedStudent, setSelectedStudent] = useState<IEducationStudent | null>(null);
+
   const [studentForm, setStudentForm] = useState<IEducationStudentFormData>(defaultStudentForm);
+
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
   const [deleteTarget, setDeleteTarget] = useState<IEducationStudent | null>(null);
+
+  const [impersonateId, setImpersonateId] = useState<string>("");
+
+  const [impersonateModal, setImpersonateModal] = useState<boolean>(false);
 
   const isEditMode = !!selectedStudent;
 
@@ -229,6 +246,11 @@ const ManageStudents = () => {
     setLoading(false);
   };
 
+  const handleImpersonate = (userId: string): void => {
+    setImpersonateId(userId);
+    setImpersonateModal(true);
+  };
+
   const handleDeleteStudent = (): void => {
     if (!deleteTarget) return;
 
@@ -330,24 +352,68 @@ const ManageStudents = () => {
                   emptyMessage="No students found."
                 >
                   <Column field="studentCode" header="Student Code" />
-                  <Column field="studentName" header="Student Name" />
+
+                  <Column body={(rowData: IEducationStudent) => {
+                    const tooltipId = `tooltip-${rowData.id}`;
+
+                    const style: React.CSSProperties = {
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    };
+
+                    return (
+                      <>
+                        <span
+                          id={tooltipId}
+                          style={style}
+                          onClick={() => {
+                            handleImpersonate(rowData.id);
+                          }}
+                        >
+                          {rowData.studentName}
+                        </span>
+                        <Tooltip
+                          target={`#${tooltipId}`}
+                          content="Login as Student"
+                          position="top"
+                        />
+                      </>
+                    );
+                  }} header="Student Name" />
+
                   <Column field="courseName" header="Course" />
+
                   <Column
                     body={(rowData: IEducationStudent) =>
                       formatMobileNumber(rowData.mobileNumber)
                     }
                     header="Mobile Number"
                   />
+
                   <Column field="email" header="Email Address" />
+
                   <Column
                     body={(rowData: IEducationStudent) => rowData.loanDetails.repaymentStatus}
                     header="Repayment Status"
                   />
-                  
+
                   <Column
                     header="Action"
                     body={(rowData: IEducationStudent) => (
                       <div className="d-flex gap-2">
+                        <Button
+                          className="trash-icon p-0"
+                          onClick={() =>
+                            navigate(
+                              RoutePathConstant.private.educationStudentLoanApplication,
+                              {
+                                state: { preselectedStudentId: rowData.id },
+                              },
+                            )
+                          }
+                        >
+                          <i className="bi bi-journal-check" />
+                        </Button>
                         <Button
                           className="trash-icon p-0"
                           onClick={() =>
@@ -621,6 +687,12 @@ const ManageStudents = () => {
           <strong>{deleteTarget?.studentName}</strong>?
         </p>
       </Dialog>
+
+      <StudentImpersonateUserModal
+        impersonateModal={impersonateModal}
+        setImpersonateModal={setImpersonateModal}
+        impersonateId={impersonateId}
+      />
     </>
   );
 };

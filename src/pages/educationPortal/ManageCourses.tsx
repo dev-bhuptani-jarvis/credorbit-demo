@@ -54,20 +54,31 @@ const ManageCourses = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState<boolean>(false);
+
   const [courses, setCourses] = useState<IEducationCourse[]>([]);
+
   const [searchText, setSearchText] = useState<string>("");
+
   const [selectedCourseType, setSelectedCourseType] = useState<string>("");
+
   const [selectedJobGuaranteed, setSelectedJobGuaranteed] = useState<string>("");
+
   const [filterReq, setFilterReq] = useState<PaginateReqEntity>({
     pageNumber: 0,
     pageSize: 10,
     searchText: "",
   });
+
   const [totalRecords, setTotalRecords] = useState<number>(0);
+
   const [showCourseDialog, setShowCourseDialog] = useState<boolean>(false);
+
   const [selectedCourse, setSelectedCourse] = useState<IEducationCourse | null>(null);
+
   const [courseForm, setCourseForm] = useState<IEducationCourseFormData>(defaultCourseForm);
+
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
   const [deleteTarget, setDeleteTarget] = useState<IEducationCourse | null>(null);
 
   const isEditMode = !!selectedCourse;
@@ -293,14 +304,18 @@ const ManageCourses = () => {
                   emptyMessage="No courses found."
                 >
                   <Column field="courseName" header="Course Name" />
+
                   <Column field="courseTenure" header="Course Tenure" />
+                  
                   <Column
                     body={(rowData: IEducationCourse) =>
                       formatCurrencyAmount(rowData.courseFees)
                     }
                     header="Course Fees"
                   />
+                  
                   <Column field="courseType" header="Course Type" />
+                  
                   <Column
                     body={(rowData: IEducationCourse) =>
                       rowData.isJobGuaranteed ? "Yes" : "No"
