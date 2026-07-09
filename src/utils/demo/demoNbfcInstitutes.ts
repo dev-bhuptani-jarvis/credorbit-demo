@@ -8,7 +8,7 @@ const STORAGE_KEY = "credorbit.nbfcInstitutes";
 const seedNbfcInstitutes: IEducationInstitute[] = [
   {
     id: "nbfc-001",
-    instituteCode: "NBFC-1001",
+    instituteCode: "CONBFC2601",
     instituteName: "Astra Finance Limited",
     contactPerson: "Mehul Shah",
     mobileNumber: "9876600001",
@@ -23,11 +23,12 @@ const seedNbfcInstitutes: IEducationInstitute[] = [
     createdAt: "2026-02-03T10:00:00.000Z",
     updatedAt: "2026-02-03T10:00:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
   {
     id: "nbfc-002",
-    instituteCode: "NBFC-1002",
+    instituteCode: "CONBFC2602",
     instituteName: "Vertex Capital Finance",
     contactPerson: "Priya Desai",
     mobileNumber: "9876600002",
@@ -42,11 +43,12 @@ const seedNbfcInstitutes: IEducationInstitute[] = [
     createdAt: "2026-02-12T11:20:00.000Z",
     updatedAt: "2026-02-12T11:20:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
   {
     id: "nbfc-003",
-    instituteCode: "NBFC-1003",
+    instituteCode: "CONBFC2603",
     instituteName: "EduCred Lending Services",
     contactPerson: "Rohit Verma",
     mobileNumber: "9876600003",
@@ -61,11 +63,12 @@ const seedNbfcInstitutes: IEducationInstitute[] = [
     createdAt: "2026-03-01T09:45:00.000Z",
     updatedAt: "2026-03-08T12:10:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
   {
     id: "nbfc-004",
-    instituteCode: "NBFC-1004",
+    instituteCode: "CONBFC2604",
     instituteName: "Progressive Credit Partners",
     contactPerson: "Sneha Reddy",
     mobileNumber: "9876600004",
@@ -80,6 +83,7 @@ const seedNbfcInstitutes: IEducationInstitute[] = [
     createdAt: "2026-03-18T13:30:00.000Z",
     updatedAt: "2026-03-18T13:30:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
 ];
@@ -127,7 +131,7 @@ export const createNbfcInstitute = (
 
   const nextInstitute: IEducationInstitute = {
     id: `nbfc-${Date.now()}`,
-    instituteCode: `NBFC-${nextNumber}`,
+    instituteCode: `CONBFC26-${nextNumber}`,
     instituteName: instituteData.instituteName.trim(),
     contactPerson: instituteData.contactPerson.trim(),
     mobileNumber: instituteData.mobileNumber.trim(),
@@ -142,6 +146,7 @@ export const createNbfcInstitute = (
     createdAt: now,
     updatedAt: now,
     documents: [],
+    totalStudents: 0,
     branches: [],
   };
 

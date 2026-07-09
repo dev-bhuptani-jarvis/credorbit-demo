@@ -18,7 +18,7 @@ const createSeedBranch = (
   paymentBranch: boolean,
 ): IEducationInstituteBranch => ({
   id: `branch-${suffix}`,
-  branchCode: `BR-${suffix}`,
+  branchCode: `COBR26${suffix}`,
   branchName,
   contactPerson: "Operations Desk",
   mobileNumber: "9876511111",
@@ -43,7 +43,7 @@ const createSeedBranch = (
 const seedInstitutes: IEducationInstitute[] = [
   {
     id: "edu-001",
-    instituteCode: "EDU-1001",
+    instituteCode: "COEDU2601",
     instituteName: "Ahmedabad School of Finance",
     contactPerson: "Riya Mehta",
     mobileNumber: "9876500001",
@@ -58,6 +58,7 @@ const seedInstitutes: IEducationInstitute[] = [
     createdAt: "2026-01-11T10:30:00.000Z",
     updatedAt: "2026-01-11T10:30:00.000Z",
     documents: [],
+    totalStudents: 1500,
     branches: [
       createSeedBranch("1001", "Ahmedabad Main Branch", "Ahmedabad", "Gujarat", true),
       createSeedBranch("1002", "Ahmedabad Satellite Branch", "Ahmedabad", "Gujarat", false),
@@ -65,7 +66,7 @@ const seedInstitutes: IEducationInstitute[] = [
   },
   {
     id: "edu-002",
-    instituteCode: "EDU-1002",
+    instituteCode: "COEDU2602",
     instituteName: "Vadodara Institute of Analytics",
     contactPerson: "Kunal Shah",
     mobileNumber: "9876500002",
@@ -80,11 +81,12 @@ const seedInstitutes: IEducationInstitute[] = [
     createdAt: "2026-01-14T09:15:00.000Z",
     updatedAt: "2026-01-14T09:15:00.000Z",
     documents: [],
+    totalStudents: 800,
     branches: [createSeedBranch("1003", "Vadodara Main Branch", "Vadodara", "Gujarat", true)],
   },
   {
     id: "edu-003",
-    instituteCode: "EDU-1003",
+    instituteCode: "COEDU2603",
     instituteName: "Surat Business Academy",
     contactPerson: "Neha Patel",
     mobileNumber: "9876500003",
@@ -99,11 +101,12 @@ const seedInstitutes: IEducationInstitute[] = [
     createdAt: "2026-01-20T11:00:00.000Z",
     updatedAt: "2026-02-02T12:00:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
   {
     id: "edu-004",
-    instituteCode: "EDU-1004",
+    instituteCode: "COEDU2604",
     instituteName: "Mumbai School of Management",
     contactPerson: "Ananya Joshi",
     mobileNumber: "9876500004",
@@ -118,11 +121,12 @@ const seedInstitutes: IEducationInstitute[] = [
     createdAt: "2026-02-04T08:00:00.000Z",
     updatedAt: "2026-02-04T08:00:00.000Z",
     documents: [],
+    totalStudents: 2200,
     branches: [createSeedBranch("1004", "Mumbai Main Branch", "Mumbai", "Maharashtra", true)],
   },
   {
     id: "edu-005",
-    instituteCode: "EDU-1005",
+    instituteCode: "COEDU2605",
     instituteName: "Pune Tech and Commerce Institute",
     contactPerson: "Aditya Kulkarni",
     mobileNumber: "9876500005",
@@ -137,11 +141,12 @@ const seedInstitutes: IEducationInstitute[] = [
     createdAt: "2026-02-12T14:20:00.000Z",
     updatedAt: "2026-02-12T14:20:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
   {
     id: "edu-006",
-    instituteCode: "EDU-1006",
+    instituteCode: "COEDU2606",
     instituteName: "Nagpur Education Hub",
     contactPerson: "Sonal Verma",
     mobileNumber: "9876500006",
@@ -156,11 +161,12 @@ const seedInstitutes: IEducationInstitute[] = [
     createdAt: "2026-02-28T16:45:00.000Z",
     updatedAt: "2026-03-10T10:05:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
   {
     id: "edu-007",
-    instituteCode: "EDU-1007",
+    instituteCode: "COEDU2607",
     instituteName: "Jaipur Career Institute",
     contactPerson: "Mohit Jain",
     mobileNumber: "9876500007",
@@ -175,11 +181,12 @@ const seedInstitutes: IEducationInstitute[] = [
     createdAt: "2026-03-06T10:10:00.000Z",
     updatedAt: "2026-03-06T10:10:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
   {
     id: "edu-008",
-    instituteCode: "EDU-1008",
+    instituteCode: "COEDU2608",
     instituteName: "Udaipur Learning Centre",
     contactPerson: "Isha Soni",
     mobileNumber: "9876500008",
@@ -194,11 +201,12 @@ const seedInstitutes: IEducationInstitute[] = [
     createdAt: "2026-03-15T12:40:00.000Z",
     updatedAt: "2026-03-15T12:40:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
   {
     id: "edu-009",
-    instituteCode: "EDU-1009",
+    instituteCode: "COEDU2609",
     instituteName: "Bengaluru Skills Academy",
     contactPerson: "Varun Rao",
     mobileNumber: "9876500009",
@@ -213,11 +221,12 @@ const seedInstitutes: IEducationInstitute[] = [
     createdAt: "2026-03-21T09:05:00.000Z",
     updatedAt: "2026-03-21T09:05:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
   {
     id: "edu-010",
-    instituteCode: "EDU-1010",
+    instituteCode: "COEDU2610",
     instituteName: "Mysuru Commerce College",
     contactPerson: "Pooja Nair",
     mobileNumber: "9876500010",
@@ -232,11 +241,12 @@ const seedInstitutes: IEducationInstitute[] = [
     createdAt: "2026-04-02T15:35:00.000Z",
     updatedAt: "2026-04-06T08:25:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
   {
     id: "edu-011",
-    instituteCode: "EDU-1011",
+    instituteCode: "COEDU2611",
     instituteName: "Hyderabad Global Institute",
     contactPerson: "Rahul Reddy",
     mobileNumber: "9876500011",
@@ -251,11 +261,12 @@ const seedInstitutes: IEducationInstitute[] = [
     createdAt: "2026-04-18T11:55:00.000Z",
     updatedAt: "2026-04-18T11:55:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
   {
     id: "edu-012",
-    instituteCode: "EDU-1012",
+    instituteCode: "COEDU2612",
     instituteName: "Warangal FinTech School",
     contactPerson: "Sneha Gupta",
     mobileNumber: "9876500012",
@@ -270,6 +281,7 @@ const seedInstitutes: IEducationInstitute[] = [
     createdAt: "2026-04-26T13:30:00.000Z",
     updatedAt: "2026-04-26T13:30:00.000Z",
     documents: [],
+    totalStudents: 0,
     branches: [],
   },
 ];
@@ -288,7 +300,7 @@ const getNextBranchCode = (institutes: IEducationInstitute[]): string => {
     0,
   );
 
-  return `BR-${1001 + branchCount}`;
+  return `COBR26${1001 + branchCount}`;
 };
 
 export const getEducationInstitutes = (): IEducationInstitute[] => {
@@ -329,7 +341,7 @@ export const createEducationInstitute = (
 
   const nextInstitute: IEducationInstitute = {
     id: `edu-${Date.now()}`,
-    instituteCode: `EDU-${instituteNumber}`,
+    instituteCode: `COEDU26${instituteNumber}`,
     instituteName: instituteData.instituteName.trim(),
     contactPerson: instituteData.contactPerson.trim(),
     mobileNumber: instituteData.mobileNumber.trim(),
@@ -344,6 +356,7 @@ export const createEducationInstitute = (
     createdAt: now,
     updatedAt: now,
     documents: [],
+    totalStudents: 0,
     branches: [],
   };
 

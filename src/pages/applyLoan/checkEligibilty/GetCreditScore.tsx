@@ -692,18 +692,18 @@ const GetCreditScore = ({ nextStep }: INextStepProps) => {
                         <div className="credit-score-partner-state-header">
                           <div>
                             <span className="credit-score-eyebrow">
-                              Partner Profiles
+                              Co-Applicant Profiles
                             </span>
                             <h3 className="credit-score-panel-title">
-                              Select a partner to fetch the score
+                              Select a co-applicant to fetch the score
                             </h3>
                             <p className="form-text mb-0">
-                              Review available partner records and continue with
-                              the person whose score you want to retrieve.
+                              Review available co-applicant records and continue
+                              with the person whose score you want to retrieve.
                             </p>
                           </div>
                           <span className="credit-score-partner-count">
-                            {customerInfo?.partners?.length} Partners
+                            {customerInfo?.partners?.length} Co-Applicants
                           </span>
                         </div>
 

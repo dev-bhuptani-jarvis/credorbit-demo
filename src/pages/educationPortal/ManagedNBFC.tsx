@@ -295,7 +295,7 @@ const ManagedNBFC = () => {
         <div className="row">
           <div className="col-lg-12">
             <div className="col-12 mb-4 titleBtnWrapper flex-md-wrap">
-              <TableTitle title="Managed NBFC" />
+              <TableTitle title="Manage NBFC" />
 
               <div className="BtnRightHldr flex-md-wrap">
                 <SearchButton

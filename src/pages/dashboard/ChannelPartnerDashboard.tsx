@@ -1565,7 +1565,7 @@ const ChannelPartnerDashboard = () => {
                       <i className="bi bi-mortarboard-fill" />
                       Education Institute Dashboard
                     </div>
-                    <h1 className="admin-dashboard-hero__title">Collection Overview</h1>
+                    <h1 className="admin-dashboard-hero__title">Students Loan Summary</h1>
                     <p className="admin-dashboard-hero__copy">
                       Monitor student applications and repayment behaviour from one focused
                       institute view.
@@ -1630,7 +1630,7 @@ const ChannelPartnerDashboard = () => {
                 <section className="admin-dashboard-panel">
                   <div className="admin-dashboard-section-head">
                     <div>
-                      <TableTitle title="Collection Overview" />
+                      <TableTitle title="Students Loan Summary" />
                       <p className="admin-dashboard-section-copy mb-0">
                         Current repayment health across institute-originated loan applications.
                       </p>
@@ -1667,7 +1667,7 @@ const ChannelPartnerDashboard = () => {
                       <i className="bi bi-mortarboard-fill" />
                       Student Dashboard
                     </div>
-                    <h1 className="admin-dashboard-hero__title">Collection Overview</h1>
+                    <h1 className="admin-dashboard-hero__title">Students Loan Summary</h1>
                     <p className="admin-dashboard-hero__copy">
                       Review your enrolled-course loans, repayment status, and credit posture
                       from one student-focused dashboard.
@@ -1741,7 +1741,7 @@ const ChannelPartnerDashboard = () => {
                 <section className="admin-dashboard-panel">
                   <div className="admin-dashboard-section-head">
                     <div>
-                      <TableTitle title="Collection Overview" />
+                      <TableTitle title="Students Loan Summary" />
                       <p className="admin-dashboard-section-copy mb-0">
                         Repayment health and closure status across your enrolled-course loans.
                       </p>

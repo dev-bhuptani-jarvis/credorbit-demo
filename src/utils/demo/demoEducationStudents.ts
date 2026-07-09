@@ -9,7 +9,7 @@ const STORAGE_KEY = "credorbit.educationStudents";
 const seedStudents: IEducationStudent[] = [
   {
     id: "student-001",
-    studentCode: "STU-1001",
+    studentCode: "COSTU2001",
     studentName: "Aarav Shah",
     courseId: "course-001",
     courseName: "BBA in Finance and Lending",
@@ -40,7 +40,7 @@ const seedStudents: IEducationStudent[] = [
   },
   {
     id: "student-002",
-    studentCode: "STU-1002",
+    studentCode: "COSTU2002",
     studentName: "Diya Patel",
     courseId: "course-002",
     courseName: "Diploma in Credit Underwriting",
@@ -115,7 +115,7 @@ export const createEducationStudent = (
 
   const nextStudent: IEducationStudent = {
     id: `student-${Date.now()}`,
-    studentCode: `STU-${nextNumber}`,
+    studentCode: `COSTU20${nextNumber}`,
     studentName: studentData.studentName.trim(),
     courseId: studentData.courseId,
     courseName: matchedCourse?.courseName || "Unassigned Course",

@@ -342,7 +342,7 @@ const ManagedEducationInstitute = () => {
         <div className="row">
           <div className="col-lg-12">
             <div className="col-12 mb-4 titleBtnWrapper flex-md-wrap">
-              <TableTitle title="Managed Education Institute" />
+              <TableTitle title="Manage Education Institute" />
 
               <div className="BtnRightHldr flex-md-wrap">
                 <SearchButton
@@ -396,6 +396,17 @@ const ManagedEducationInstitute = () => {
                     }
                     header="Mobile Number"
                   />
+
+                  <Column field="totalStudents" header="Total Students" />
+
+                  <Column
+                    body={(rowData: IEducationInstitute) =>
+                      rowData.branches.length
+                    }
+                    header="Total Branches"
+                  />
+
+                  <Column field="city" header="City" />
 
                   <Column field="state" header="State" />
 

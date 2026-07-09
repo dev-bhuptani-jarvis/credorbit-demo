@@ -26,7 +26,7 @@ import {
   getEducationCourses,
   updateEducationCourse,
 } from "../../utils/demo/demoEducationCourses";
-import { formatDate, toastSuccess } from "../../utils/functions/shared";
+import { toastSuccess } from "../../utils/functions/shared";
 import useDebouncedEffect from "../../hooks/useDebounce";
 import { IsNullOrEmptyArray } from "../../utils/functions/nullCheck";
 
@@ -46,6 +46,7 @@ const defaultCourseForm: IEducationCourseFormData = {
   courseFees: "",
   courseType: "",
   isJobGuaranteed: false,
+  numberOfEmi: 0,
   description: "",
   isActive: true,
 };
@@ -157,6 +158,10 @@ const ManageCourses = () => {
       nextErrors.description = "Course description is required.";
     }
 
+    if (!courseForm.numberOfEmi) {
+      nextErrors.numberOfEmi = "Number of EMI options is required";
+    }
+
     setFormErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -174,6 +179,7 @@ const ManageCourses = () => {
       courseFees: String(course.courseFees),
       courseType: course.courseType,
       isJobGuaranteed: course.isJobGuaranteed,
+      numberOfEmi: course.numberOfEmi,
       description: course.description,
       isActive: course.isActive,
     });
@@ -303,26 +309,30 @@ const ManageCourses = () => {
                   value={paginatedCourses}
                   emptyMessage="No courses found."
                 >
+                  <Column field="id" header="Course Code" />
+
                   <Column field="courseName" header="Course Name" />
 
                   <Column field="courseTenure" header="Course Tenure" />
-                  
+
+                  <Column field="numberOfEmi" header="No. of EMI" />
+
                   <Column
                     body={(rowData: IEducationCourse) =>
                       formatCurrencyAmount(rowData.courseFees)
                     }
                     header="Course Fees"
                   />
-                  
+
                   <Column field="courseType" header="Course Type" />
-                  
+
                   <Column
                     body={(rowData: IEducationCourse) =>
                       rowData.isJobGuaranteed ? "Yes" : "No"
                     }
                     header="Job Guaranteed"
                   />
-                  
+
                   <Column
                     header="Action"
                     body={(rowData: IEducationCourse) => (
@@ -444,6 +454,26 @@ const ManageCourses = () => {
               }
             />
             {formErrors.courseFees && <small className="error">{formErrors.courseFees}</small>}
+          </div>
+
+          <div className="form-group col-sm-12 col-lg-6">
+            <label className="form-label" htmlFor="numberOfEmi">
+              Number of EMI Options<sup>*</sup>
+            </label>
+            <InputText
+              id="numberOfEmi"
+              className="form-control"
+              placeholder="Enter number of EMI options"
+              value={String(courseForm.numberOfEmi)}
+              onChange={(e) =>
+                handleFieldChange("numberOfEmi", e.target.value.replace(/\D/g, ""))
+              }
+              keyfilter="int"
+              maxLength={2}
+            />
+            {formErrors.numberOfEmi && (
+              <small className="error">{formErrors.numberOfEmi}</small>
+            )}
           </div>
 
           <div className="form-group col-sm-12 col-lg-6">

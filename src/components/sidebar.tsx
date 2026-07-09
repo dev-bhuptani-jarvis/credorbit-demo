@@ -155,7 +155,7 @@ const Sidebar = () => {
         icon: educationPortalIcon,
         path: "#",
       },
-      ManagedEducationInstitute: {
+      ManageEducationInstitute: {
         icon: "",
         path: RoutePathConstant.private.educationManagedInstitute,
       },
@@ -286,8 +286,8 @@ const Sidebar = () => {
             {
               id: 100002,
               parentId: 100001,
-              name: "ManagedEducationInstitute",
-              displayName: "Managed Education Institute",
+              name: "ManageEducationInstitute",
+              displayName: "Manage Education Institute",
               icon: null,
               path: RoutePathConstant.private.educationManagedInstitute,
               children: [],
@@ -297,7 +297,7 @@ const Sidebar = () => {
               id: 100003,
               parentId: 100001,
               name: "ManagedNBFC",
-              displayName: "Managed NBFC",
+              displayName: "Manage NBFC",
               icon: null,
               path: RoutePathConstant.private.educationManagedNbfc,
               children: [],
@@ -404,16 +404,6 @@ const Sidebar = () => {
         icon: educationPortalIcon,
         path: null,
         children: [
-          {
-            id: 100021,
-            parentId: 100020,
-            name: "StudentLoanApplication",
-            displayName: "Loan Application",
-            icon: null,
-            path: RoutePathConstant.private.educationStudentLoanApplication,
-            children: [],
-            displayOrder: 1,
-          },
           {
             id: 100022,
             parentId: 100020,

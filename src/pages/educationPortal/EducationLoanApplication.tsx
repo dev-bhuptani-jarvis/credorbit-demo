@@ -106,7 +106,7 @@ const EducationLoanApplication = () => {
   const [discountValue, setDiscountValue] = useState<string>("");
 
   const [consentState, setConsentState] = useState<boolean[]>(
-    consentChecklist.map(() => false),
+    consentChecklist.map(() => true),
   );
 
   const [consentError, setConsentError] = useState<string>("");
@@ -368,9 +368,9 @@ const EducationLoanApplication = () => {
     const discountNumericValue = parseAmount(discountValue);
 
     const downpaymentValue = parseAmount(downpayment);
-    
+
     const effectiveCourseFees = parseAmount(courseFees);
-    
+
     const isCoApplicantStarted = Object.values(coApplicantForm).some((value) =>
       value.trim(),
     );
@@ -565,7 +565,7 @@ const EducationLoanApplication = () => {
             <h2 className="txt-30 fw-bold mb-2">Education Loan Application</h2>
           </div>
 
-          {currentUser.userType === CLIENT_ROLE.CHANNEL_PARTNER && !isStudentUser && (
+          {activeIndex === 0 && currentUser.userType === CLIENT_ROLE.CHANNEL_PARTNER && !isStudentUser && (
             <Button
               type="button"
               className="btn btn-orange"

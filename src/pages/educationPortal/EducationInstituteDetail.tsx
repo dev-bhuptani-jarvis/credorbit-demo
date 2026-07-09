@@ -475,7 +475,7 @@ const EducationInstituteDetail = () => {
             <div className="col-12">
               <div className="whiteBoxHldr">
                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                  <h3 className="txt-20 mb-0">Institute Documents</h3>
+                  <h3 className="txt-20 mb-0">Uploaded Documents</h3>
                   <span className="text-muted small">
                     {instituteDetail.documents.length} document(s) available
                   </span>
@@ -543,8 +543,9 @@ const EducationInstituteDetail = () => {
                           <th>Branch Name</th>
                           <th>Contact Person</th>
                           <th>Mobile Number</th>
-                          <th>Bank Name</th>
                           <th>Is Payment Branch</th>
+                          <th>City</th>
+                          <th>State</th>
                           <th>Status</th>
                           <th>Action</th>
                         </tr>
@@ -556,7 +557,6 @@ const EducationInstituteDetail = () => {
                             <td>{branch.branchName}</td>
                             <td>{branch.contactPerson}</td>
                             <td>{formatMobileNumber(branch.mobileNumber)}</td>
-                            <td>{branch.bankName}</td>
                             <td>
                               {branch.isPaymentBranch ? (
                                 <span className="StatusLabel greenLine">Yes</span>
@@ -568,6 +568,8 @@ const EducationInstituteDetail = () => {
                                 />
                               )}
                             </td>
+                            <td>{branch.city}</td>
+                            <td>{branch.state}</td>
                             <td>
                               <span
                                 className={`StatusLabel ${branch.isActive ? "greenLine" : "redLine"
@@ -845,81 +847,92 @@ const EducationInstituteDetail = () => {
               )}
             </div>
 
-            <div className="form-group col-sm-12 col-lg-6">
-              <label className="form-label" htmlFor="branchAccountHolderName">
-                Account Holder Name<sup>*</sup>
-              </label>
-              <InputText
-                id="branchAccountHolderName"
-                className="form-control"
-                placeholder="Enter account holder name"
-                value={branchForm.accountHolderName}
-                onChange={(e) =>
-                  handleBranchFormFieldChange("accountHolderName", e.target.value)
-                }
-                disabled={isViewMode}
-              />
-              {branchFormErrors.accountHolderName && (
-                <small className="error">{branchFormErrors.accountHolderName}</small>
-              )}
-            </div>
+            {/* -------------------- Bank Account Details -------------------- */}
+            <div className="col-12 mt-4">
+              <div className="border rounded-3 p-3 bg-light">
+                <h5 className="mb-3">Bank Account Details</h5>
 
-            <div className="form-group col-sm-12 col-lg-6">
-              <label className="form-label" htmlFor="branchBankName">
-                Bank Name<sup>*</sup>
-              </label>
-              <InputText
-                id="branchBankName"
-                className="form-control"
-                placeholder="Enter bank name"
-                value={branchForm.bankName}
-                onChange={(e) => handleBranchFormFieldChange("bankName", e.target.value)}
-                disabled={isViewMode}
-              />
-              {branchFormErrors.bankName && (
-                <small className="error">{branchFormErrors.bankName}</small>
-              )}
-            </div>
+                <div className="row g-3">
+                  <div className="form-group col-sm-12 col-lg-6">
+                    <label className="form-label" htmlFor="branchAccountHolderName">
+                      Account Holder Name<sup>*</sup>
+                    </label>
+                    <InputText
+                      id="branchAccountHolderName"
+                      className="form-control"
+                      placeholder="Enter account holder name"
+                      value={branchForm.accountHolderName}
+                      onChange={(e) =>
+                        handleBranchFormFieldChange("accountHolderName", e.target.value)
+                      }
+                      disabled={isViewMode}
+                    />
+                    {branchFormErrors.accountHolderName && (
+                      <small className="error">{branchFormErrors.accountHolderName}</small>
+                    )}
+                  </div>
 
-            <div className="form-group col-sm-12 col-lg-6">
-              <label className="form-label" htmlFor="branchAccountNumber">
-                Account Number<sup>*</sup>
-              </label>
-              <InputText
-                id="branchAccountNumber"
-                className="form-control"
-                placeholder="Enter bank account number"
-                value={branchForm.accountNumber}
-                onChange={(e) =>
-                  handleBranchFormFieldChange(
-                    "accountNumber",
-                    e.target.value.replace(/[^0-9-]/g, ""),
-                  )
-                }
-                disabled={isViewMode}
-              />
-              {branchFormErrors.accountNumber && (
-                <small className="error">{branchFormErrors.accountNumber}</small>
-              )}
-            </div>
+                  <div className="form-group col-sm-12 col-lg-6">
+                    <label className="form-label" htmlFor="branchBankName">
+                      Bank Name<sup>*</sup>
+                    </label>
+                    <InputText
+                      id="branchBankName"
+                      className="form-control"
+                      placeholder="Enter bank name"
+                      value={branchForm.bankName}
+                      onChange={(e) =>
+                        handleBranchFormFieldChange("bankName", e.target.value)
+                      }
+                      disabled={isViewMode}
+                    />
+                    {branchFormErrors.bankName && (
+                      <small className="error">{branchFormErrors.bankName}</small>
+                    )}
+                  </div>
 
-            <div className="form-group col-sm-12 col-lg-6">
-              <label className="form-label" htmlFor="branchIfscCode">
-                IFSC Code<sup>*</sup>
-              </label>
-              <InputText
-                id="branchIfscCode"
-                className="form-control"
-                placeholder="Enter IFSC code"
-                value={branchForm.ifscCode}
-                onChange={(e) =>
-                  handleBranchFormFieldChange("ifscCode", e.target.value.toUpperCase())
-                }
-                disabled={isViewMode}
-              />
-              {branchFormErrors.ifscCode && (
-                <small className="error">{branchFormErrors.ifscCode}</small>
-              )}
+                  <div className="form-group col-sm-12 col-lg-6">
+                    <label className="form-label" htmlFor="branchAccountNumber">
+                      Account Number<sup>*</sup>
+                    </label>
+                    <InputText
+                      id="branchAccountNumber"
+                      className="form-control"
+                      placeholder="Enter bank account number"
+                      value={branchForm.accountNumber}
+                      onChange={(e) =>
+                        handleBranchFormFieldChange(
+                          "accountNumber",
+                          e.target.value.replace(/[^0-9-]/g, "")
+                        )
+                      }
+                      disabled={isViewMode}
+                    />
+                    {branchFormErrors.accountNumber && (
+                      <small className="error">{branchFormErrors.accountNumber}</small>
+                    )}
+                  </div>
+
+                  <div className="form-group col-sm-12 col-lg-6">
+                    <label className="form-label" htmlFor="branchIfscCode">
+                      IFSC Code<sup>*</sup>
+                    </label>
+                    <InputText
+                      id="branchIfscCode"
+                      className="form-control"
+                      placeholder="Enter IFSC code"
+                      value={branchForm.ifscCode}
+                      onChange={(e) =>
+                        handleBranchFormFieldChange("ifscCode", e.target.value.toUpperCase())
+                      }
+                      disabled={isViewMode}
+                    />
+                    {branchFormErrors.ifscCode && (
+                      <small className="error">{branchFormErrors.ifscCode}</small>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="form-group col-12">

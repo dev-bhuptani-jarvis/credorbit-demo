@@ -56,6 +56,11 @@ const CourseDetail = () => {
                   </div>
 
                   <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                    <b>Number of EMI Options</b>
+                    <p className="text-break">{course.numberOfEmi}</p>
+                  </div>
+
+                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                     <b>Course Fees</b>
                     <p className="text-break">
                       {formatCurrencyAmount(course?.courseFees)}

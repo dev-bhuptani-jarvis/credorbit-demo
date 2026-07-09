@@ -393,11 +393,6 @@ const ManageStudents = () => {
                   <Column field="email" header="Email Address" />
 
                   <Column
-                    body={(rowData: IEducationStudent) => rowData.loanDetails.repaymentStatus}
-                    header="Repayment Status"
-                  />
-
-                  <Column
                     header="Action"
                     body={(rowData: IEducationStudent) => (
                       <div className="d-flex gap-2">
@@ -501,21 +496,6 @@ const ManageStudents = () => {
               onChange={(e) => handleFieldChange("studentName", e.target.value)}
             />
             {formErrors.studentName && <small className="error">{formErrors.studentName}</small>}
-          </div>
-
-          <div className="form-group col-sm-12 col-lg-6">
-            <label className="form-label" htmlFor="studentCourse">
-              Course<sup>*</sup>
-            </label>
-            <Dropdown
-              id="studentCourse"
-              className="w-100"
-              value={studentForm.courseId}
-              options={courseOptions}
-              onChange={(e) => handleFieldChange("courseId", e.value)}
-              placeholder="Select course"
-            />
-            {formErrors.courseId && <small className="error">{formErrors.courseId}</small>}
           </div>
 
           <div className="form-group col-sm-12 col-lg-6">

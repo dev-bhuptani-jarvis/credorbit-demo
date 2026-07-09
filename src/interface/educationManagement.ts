@@ -8,6 +8,7 @@ export interface IEducationCourse {
   courseType: "Online" | "Offline";
   isJobGuaranteed: boolean;
   description: string;
+  numberOfEmi: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -19,6 +20,7 @@ export interface IEducationCourseFormData {
   courseFees: string;
   courseType: "Online" | "Offline" | "";
   isJobGuaranteed: boolean;
+  numberOfEmi: number;
   description: string;
   isActive: boolean;
 }

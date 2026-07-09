@@ -269,7 +269,7 @@ const AdminDashboard = () => {
       subtitle: "Current student applications tracked on the platform",
     },
     {
-      title: "Total Availed Loans",
+      title: "Total Applied Loans",
       value: totalApplications,
       icon: "bi-journal-check",
       subtitle: "Loans initiated through the education journey",
@@ -1121,7 +1121,7 @@ const AdminDashboard = () => {
                   <i className="bi bi-mortarboard-fill" />
                   Education Lending View
                 </div>
-                <h1 className="admin-dashboard-hero__title">Loan Summary Dashboard</h1>
+                <h1 className="admin-dashboard-hero__title">Education Loan Summary Dashboard</h1>
                 <p className="admin-dashboard-hero__copy">
                   Track student onboarding, education loan movement, NBFC disbursals, and
                   institute footprint from one focused admin view.
@@ -1134,7 +1134,7 @@ const AdminDashboard = () => {
                   </div>
                   <div className="admin-dashboard-pill">
                     <i className="bi bi-building" />
-                    {registeredInstituteCount} institutes currently reflected
+                    {registeredInstituteCount} institutes currently registered
                   </div>
                 </div>
               </div>

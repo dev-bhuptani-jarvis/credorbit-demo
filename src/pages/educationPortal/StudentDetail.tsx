@@ -122,7 +122,7 @@ const StudentDetail = () => {
           <div className="borderBoxHldr p-24">
             <div className="row">
               <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Total Loans Availed</b>
+                <b>Total Loans Applied</b>
                 <p className="text-break">{student.loanDetails.totalLoansAvailed}</p>
               </div>
               <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">

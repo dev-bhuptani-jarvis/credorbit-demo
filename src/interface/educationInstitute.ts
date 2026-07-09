@@ -48,6 +48,7 @@ export interface IEducationInstitute {
   createdAt: string;
   updatedAt: string;
   documents: IEducationInstituteDocument[];
+  totalStudents: number;
   branches: IEducationInstituteBranch[];
 }
 
