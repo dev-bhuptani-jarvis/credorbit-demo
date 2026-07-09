@@ -1,9 +1,34 @@
 import {
   IEducationInstitute,
+  IEducationInstituteDocument,
   IEducationInstituteFormData,
 } from "../../interface/educationInstitute";
 
 const STORAGE_KEY = "credorbit.nbfcInstitutes";
+
+const documentUrlMap = new Map<string, string>();
+
+const seedNbfcDocuments: IEducationInstituteDocument[] = [
+  {
+    id: "nbfc-doc-1783578115277",
+    type: "Loan Agreement Document",
+    fileName: "/assets/images/dummy-registration-document.pdf",
+    mimeType: "application/pdf",
+    fileSize: 2149384,
+    uploadedAt: "2026-07-09T06:21:48.502Z",
+  },
+  {
+    id: "nbfc-doc-1783578115278",
+    type: "Loan Documentation",
+    fileName: "/assets/images/dummy-gst-registration.pdf",
+    mimeType: "application/pdf",
+    fileSize: 2159001,
+    uploadedAt: "2026-07-09T06:21:55.278Z",
+  },
+];
+
+const getSeedNbfcDocuments = (): IEducationInstituteDocument[] =>
+  seedNbfcDocuments.map((document) => ({ ...document }));
 
 const seedNbfcInstitutes: IEducationInstitute[] = [
   {
@@ -22,7 +47,7 @@ const seedNbfcInstitutes: IEducationInstitute[] = [
     isActive: true,
     createdAt: "2026-02-03T10:00:00.000Z",
     updatedAt: "2026-02-03T10:00:00.000Z",
-    documents: [],
+    documents: getSeedNbfcDocuments(),
     totalStudents: 0,
     branches: [],
   },
@@ -90,6 +115,23 @@ const seedNbfcInstitutes: IEducationInstitute[] = [
 
 const canUseStorage = (): boolean => typeof window !== "undefined" && !!window.localStorage;
 
+const normalizeNbfcInstitutes = (institutes: IEducationInstitute[]): IEducationInstitute[] =>
+  institutes.map((item) => {
+    if (item.id === "nbfc-001" && (!item.documents || item.documents.length === 0)) {
+      return {
+        ...item,
+        documents: getSeedNbfcDocuments(),
+        branches: item.branches || [],
+      };
+    }
+
+    return {
+      ...item,
+      documents: item.documents || [],
+      branches: item.branches || [],
+    };
+  });
+
 const persistNbfcInstitutes = (institutes: IEducationInstitute[]): void => {
   if (!canUseStorage()) return;
 
@@ -97,30 +139,40 @@ const persistNbfcInstitutes = (institutes: IEducationInstitute[]): void => {
 };
 
 export const getNbfcInstitutes = (): IEducationInstitute[] => {
-  if (!canUseStorage()) return seedNbfcInstitutes;
+  if (!canUseStorage()) return normalizeNbfcInstitutes(seedNbfcInstitutes);
 
   const storedValue = window.localStorage.getItem(STORAGE_KEY);
 
   if (!storedValue) {
-    persistNbfcInstitutes(seedNbfcInstitutes);
-    return seedNbfcInstitutes;
+    const normalizedSeedInstitutes = normalizeNbfcInstitutes(seedNbfcInstitutes);
+    persistNbfcInstitutes(normalizedSeedInstitutes);
+    return normalizedSeedInstitutes;
   }
 
   try {
     const parsedValue = JSON.parse(storedValue) as IEducationInstitute[];
+    if (!Array.isArray(parsedValue)) {
+      return normalizeNbfcInstitutes(seedNbfcInstitutes);
+    }
 
-    return Array.isArray(parsedValue)
-      ? parsedValue.map((item) => ({
-          ...item,
-          documents: item.documents || [],
-          branches: item.branches || [],
-        }))
-      : seedNbfcInstitutes;
+    const normalizedInstitutes = normalizeNbfcInstitutes(parsedValue);
+
+    if (JSON.stringify(normalizedInstitutes) !== JSON.stringify(parsedValue)) {
+      persistNbfcInstitutes(normalizedInstitutes);
+    }
+
+    return normalizedInstitutes;
   } catch {
-    persistNbfcInstitutes(seedNbfcInstitutes);
-    return seedNbfcInstitutes;
+    const normalizedSeedInstitutes = normalizeNbfcInstitutes(seedNbfcInstitutes);
+    persistNbfcInstitutes(normalizedSeedInstitutes);
+    return normalizedSeedInstitutes;
   }
 };
+
+export const getNbfcInstituteById = (
+  instituteId: string,
+): IEducationInstitute | undefined =>
+  getNbfcInstitutes().find((institute) => institute.id === instituteId);
 
 export const createNbfcInstitute = (
   instituteData: IEducationInstituteFormData,
@@ -179,4 +231,26 @@ export const updateNbfcInstitute = (
   persistNbfcInstitutes(nextInstitutes);
 
   return updatedInstitute;
+};
+
+export const getNbfcDocumentUrl = (
+  document: Pick<IEducationInstituteDocument, "id" | "fileName">,
+): string | undefined => {
+  const inSessionDocumentUrl = documentUrlMap.get(document.id);
+
+  if (inSessionDocumentUrl) {
+    return inSessionDocumentUrl;
+  }
+
+  const trimmedFileName = document.fileName.trim();
+
+  if (
+    trimmedFileName.startsWith("/") ||
+    trimmedFileName.startsWith("http://") ||
+    trimmedFileName.startsWith("https://")
+  ) {
+    return trimmedFileName;
+  }
+
+  return undefined;
 };

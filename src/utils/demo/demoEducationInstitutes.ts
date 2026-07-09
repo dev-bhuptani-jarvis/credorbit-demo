@@ -10,12 +10,35 @@ const STORAGE_KEY = "credorbit.educationInstitutes";
 
 const documentUrlMap = new Map<string, string>();
 
+const seedBranchDocuments: IEducationInstituteDocument[] = [
+  {
+    id: "edu-branch-doc-1783578115277",
+    type: "PAN",
+    fileName: "/assets/images/dummy-registration-document.pdf",
+    mimeType: "application/pdf",
+    fileSize: 2149384,
+    uploadedAt: "2026-07-09T06:21:48.502Z",
+  },
+  {
+    id: "edu-branch-doc-1783578115278",
+    type: "GST Certificate",
+    fileName: "/assets/images/dummy-gst-registration.pdf",
+    mimeType: "application/pdf",
+    fileSize: 2159001,
+    uploadedAt: "2026-07-09T06:21:55.278Z",
+  },
+];
+
+const getSeedBranchDocuments = (): IEducationInstituteDocument[] =>
+  seedBranchDocuments.map((document) => ({ ...document }));
+
 const createSeedBranch = (
   suffix: string,
   branchName: string,
   city: string,
   state: string,
   paymentBranch: boolean,
+  documents: IEducationInstituteDocument[] = [],
 ): IEducationInstituteBranch => ({
   id: `branch-${suffix}`,
   branchCode: `COBR26${suffix}`,
@@ -37,7 +60,7 @@ const createSeedBranch = (
   isPaymentBranch: paymentBranch,
   createdAt: "2026-01-11T10:30:00.000Z",
   updatedAt: "2026-01-11T10:30:00.000Z",
-  documents: [],
+  documents,
 });
 
 const seedInstitutes: IEducationInstitute[] = [
@@ -57,10 +80,34 @@ const seedInstitutes: IEducationInstitute[] = [
     isActive: true,
     createdAt: "2026-01-11T10:30:00.000Z",
     updatedAt: "2026-01-11T10:30:00.000Z",
-    documents: [],
+    documents: [
+      {
+        id: "edu-doc-1783578115277",
+        type: "GST Certificate",
+        fileName: "/assets/images/dummy-gst-registration.pdf",
+        mimeType: "application/pdf",
+        fileSize: 2159001,
+        uploadedAt: "2026-07-09T06:21:55.278Z"
+      },
+      {
+        id: "edu-doc-1783578108501",
+        type: "Registration Document",
+        fileName: "/assets/images/dummy-registration-document.pdf",
+        mimeType: "application/pdf",
+        fileSize: 2149384,
+        uploadedAt: "2026-07-09T06:21:48.502Z"
+      }
+    ],
     totalStudents: 1500,
     branches: [
-      createSeedBranch("1001", "Ahmedabad Main Branch", "Ahmedabad", "Gujarat", true),
+      createSeedBranch(
+        "1001",
+        "Ahmedabad Main Branch",
+        "Ahmedabad",
+        "Gujarat",
+        true,
+        getSeedBranchDocuments(),
+      ),
       createSeedBranch("1002", "Ahmedabad Satellite Branch", "Ahmedabad", "Gujarat", false),
     ],
   },
@@ -288,6 +335,26 @@ const seedInstitutes: IEducationInstitute[] = [
 
 const canUseStorage = (): boolean => typeof window !== "undefined" && !!window.localStorage;
 
+const normalizeEducationInstitutes = (
+  institutes: IEducationInstitute[],
+): IEducationInstitute[] =>
+  institutes.map((institute) => ({
+    ...institute,
+    branches: (institute.branches || []).map((branch) => {
+      if (branch.id === "branch-1001" && (!branch.documents || branch.documents.length === 0)) {
+        return {
+          ...branch,
+          documents: getSeedBranchDocuments(),
+        };
+      }
+
+      return {
+        ...branch,
+        documents: branch.documents || [],
+      };
+    }),
+  }));
+
 const persistInstitutes = (institutes: IEducationInstitute[]): void => {
   if (!canUseStorage()) return;
 
@@ -300,30 +367,37 @@ const getNextBranchCode = (institutes: IEducationInstitute[]): string => {
     0,
   );
 
-  return `COBR26${1001 + branchCount}`;
+  return `COBR26${branchCount}`;
 };
 
 export const getEducationInstitutes = (): IEducationInstitute[] => {
-  if (!canUseStorage()) return seedInstitutes;
+  if (!canUseStorage()) return normalizeEducationInstitutes(seedInstitutes);
 
   const storedValue = window.localStorage.getItem(STORAGE_KEY);
 
   if (!storedValue) {
-    persistInstitutes(seedInstitutes);
-    return seedInstitutes;
+    const normalizedSeedInstitutes = normalizeEducationInstitutes(seedInstitutes);
+    persistInstitutes(normalizedSeedInstitutes);
+    return normalizedSeedInstitutes;
   }
 
   try {
     const parsedValue = JSON.parse(storedValue) as IEducationInstitute[];
-    return Array.isArray(parsedValue)
-      ? parsedValue.map((institute) => ({
-        ...institute,
-        branches: institute.branches || [],
-      }))
-      : seedInstitutes;
+    if (!Array.isArray(parsedValue)) {
+      return normalizeEducationInstitutes(seedInstitutes);
+    }
+
+    const normalizedInstitutes = normalizeEducationInstitutes(parsedValue);
+
+    if (JSON.stringify(normalizedInstitutes) !== JSON.stringify(parsedValue)) {
+      persistInstitutes(normalizedInstitutes);
+    }
+
+    return normalizedInstitutes;
   } catch {
-    persistInstitutes(seedInstitutes);
-    return seedInstitutes;
+    const normalizedSeedInstitutes = normalizeEducationInstitutes(seedInstitutes);
+    persistInstitutes(normalizedSeedInstitutes);
+    return normalizedSeedInstitutes;
   }
 };
 
@@ -575,5 +649,23 @@ export const addEducationInstituteBranchDocument = (
 };
 
 export const getEducationInstituteDocumentUrl = (
-  documentId: string,
-): string | undefined => documentUrlMap.get(documentId);
+  document: Pick<IEducationInstituteDocument, "id" | "fileName">,
+): string | undefined => {
+  const inSessionDocumentUrl = documentUrlMap.get(document.id);
+
+  if (inSessionDocumentUrl) {
+    return inSessionDocumentUrl;
+  }
+
+  const trimmedFileName = document.fileName.trim();
+
+  if (
+    trimmedFileName.startsWith("/") ||
+    trimmedFileName.startsWith("http://") ||
+    trimmedFileName.startsWith("https://")
+  ) {
+    return trimmedFileName;
+  }
+
+  return undefined;
+};

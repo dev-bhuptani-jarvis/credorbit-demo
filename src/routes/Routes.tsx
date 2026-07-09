@@ -105,6 +105,7 @@ const ManagedEducationInstitute = lazy(
   () => import("../pages/educationPortal/ManagedEducationInstitute"),
 );
 const ManagedNBFC = lazy(() => import("../pages/educationPortal/ManagedNBFC"));
+const NBFCDetail = lazy(() => import("../pages/educationPortal/NBFCDetail"));
 const EducationInstituteDetail = lazy(
   () => import("../pages/educationPortal/EducationInstituteDetail"),
 );
@@ -403,6 +404,10 @@ export const privateRoutes: RouteObject[] = [
       {
         path: RoutePathConstant.private.educationManagedNbfc,
         element: <ManagedNBFC />,
+      },
+      {
+        path: RoutePathConstant.private.educationManagedNbfcDetail,
+        element: <NBFCDetail />,
       },
       {
         path: RoutePathConstant.private.educationManageCourse,

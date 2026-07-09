@@ -164,7 +164,7 @@ const EducationInstituteDetail = () => {
   };
 
   const openDocument = (documentData: IEducationInstituteDocument): void => {
-    const documentUrl = getEducationInstituteDocumentUrl(documentData.id);
+    const documentUrl = getEducationInstituteDocumentUrl(documentData);
 
     if (documentUrl && typeof window !== "undefined") {
       window.open(documentUrl, "_blank", "noopener,noreferrer");
@@ -487,7 +487,6 @@ const EducationInstituteDetail = () => {
                       <thead>
                         <tr>
                           <th>Document Type</th>
-                          <th>File Name</th>
                           <th>Uploaded Date</th>
                           <th>File Size</th>
                           <th>Action</th>
@@ -497,7 +496,6 @@ const EducationInstituteDetail = () => {
                         {instituteDetail.documents.map((documentData) => (
                           <tr key={documentData.id}>
                             <td>{documentData.type}</td>
-                            <td>{documentData.fileName}</td>
                             <td>{formatDate(documentData.uploadedAt, "DD MMM, YYYY h:mm A")}</td>
                             <td>{(documentData.fileSize / 1024 / 1024).toFixed(2)} MB</td>
                             <td>

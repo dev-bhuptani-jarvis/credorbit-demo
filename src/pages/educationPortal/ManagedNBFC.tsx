@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
@@ -12,12 +13,14 @@ import Loader from "../../components/Loader";
 import PrimePaginator from "../../components/PrimePaginator";
 import SearchButton from "../../components/SearchButton";
 import TableTitle from "../../components/TableTitle";
+import { Tooltip } from "primereact/tooltip";
 import {
   IEducationInstitute,
   IEducationInstituteFormData,
 } from "../../interface/educationInstitute";
 import { PaginateReqEntity } from "../../interface/pagination";
 import { debounceTimeInMilliseconds, formatMobileNumber } from "../../utils/constants/constant";
+import { RoutePathConstant } from "../../utils/constants/routePaths";
 import {
   EMAIL_PATTERN,
   GST_NUMBER_PATTERN,
@@ -59,6 +62,8 @@ const defaultNbfcForm: IEducationInstituteFormData = {
 };
 
 const ManagedNBFC = () => {
+  const navigate = useNavigate();
+
   const [loading, setLoading] = useState<boolean>(false);
 
   const [nbfcList, setNbfcList] = useState<IEducationInstitute[]>([]);
@@ -256,14 +261,39 @@ const ManagedNBFC = () => {
     return <span className={`StatusLabel ${statusClass}`}>{statusText}</span>;
   };
 
-  const actionBodyTemplate = (rowData: IEducationInstitute): JSX.Element => (
-    <Button
-      className="trash-icon p-0 me-2"
-      onClick={() => openEditDialog(rowData)}
-    >
-      <i className="bi bi-pencil" />
-    </Button>
-  );
+  const actionBodyTemplate = (rowData: IEducationInstitute): JSX.Element => {
+    const viewId = `nbfc-view-${rowData.id}`;
+    const editId = `nbfc-edit-${rowData.id}`;
+
+    return (
+      <>
+        <Tooltip target={`#${viewId}`} position="top" />
+        <Tooltip target={`#${editId}`} position="top" />
+
+        <Button
+          id={viewId}
+          className="trash-icon p-0 me-2"
+          data-pr-tooltip="View NBFC"
+          onClick={() =>
+            navigate(
+              RoutePathConstant.private.educationManagedNbfcDetail.replace(":id", rowData.id),
+            )
+          }
+        >
+          <img src="/assets/images/eye.svg" alt="eye-icon" />
+        </Button>
+
+        <Button
+          id={editId}
+          className="trash-icon p-0 me-2"
+          data-pr-tooltip="Edit NBFC"
+          onClick={() => openEditDialog(rowData)}
+        >
+          <i className="bi bi-pencil" />
+        </Button>
+      </>
+    );
+  };
 
   useDebouncedEffect(
     () => {
