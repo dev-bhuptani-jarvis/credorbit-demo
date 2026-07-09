@@ -77,16 +77,83 @@ const EducationLoanOffer = () => {
 
       <div className="whiteBoxHldr p-24">
         <div className="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
-          <div>
-            <TableTitle title={`Loan Eligibility Screen - ${draft.studentName}`} />
-            <p className="mt-2 mb-0 text-muted" style={{ maxWidth: "820px" }}>
-              Compare the eligible NBFC offers for this student application and
-              continue with the lender that best matches the course financing need.
-            </p>
+          <TableTitle title={`Loan Eligibility Screen - ${draft.studentName}`} />
+        </div>
+
+        <div className="row">
+          <div className="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+            <TableTitle title="KFS Details" />
+          </div>
+
+          <div className="col-12 mt-2">
+            <div className="borderBoxHldr p-24">
+              <div className="row">
+                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                  <b>Course Name</b>
+                  <p className="text-break">{draft.courseName}</p>
+                </div>
+                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                  <b>Agreed Course Fee</b>
+                  <p className="text-break">
+                    {formatCurrencyAmount(draft.courseFees)}
+                  </p>
+                </div>
+                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                  <b>Discount Amount</b>
+                  <p className="text-break">
+                    {formatCurrencyAmount(draft.discountAmount)}
+                  </p>
+                </div>
+                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                  <b>Discounted Course Fee</b>
+                  <p className="text-break">
+                    {formatCurrencyAmount(draft.discountedCourseFee)}
+                  </p>
+                </div>
+                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                  <b>Downpayment</b>
+                  <p className="text-break">
+                    {formatCurrencyAmount(draft.downpayment)}
+                  </p>
+                </div>
+                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                  <b>Loan Amount</b>
+                  <p className="text-break">
+                    {formatCurrencyAmount(draft.loanAmount)}
+                  </p>
+                </div>
+                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                  <b>Loan Tenure</b>
+                  <p className="text-break">{draft.emiOptionMonths} Months</p>
+                </div>
+                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                  <b>Advance EMI</b>
+                  <p className="text-break">
+                    {formatCurrencyAmount(draft.advanceEmi)}
+                  </p>
+                </div>
+                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                  <b>Number of EMIs</b>
+                  <p className="text-break">{draft.numberOfEmis}</p>
+                </div>
+                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                  <b>EMI Amount</b>
+                  <p className="text-break">
+                    {formatCurrencyAmount(draft.emiAmount)}
+                  </p>
+                </div>
+                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                  <b>Total Amount to Institute</b>
+                  <p className="text-break">
+                    {formatCurrencyAmount(draft.totalAmountToInstitute)}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="row g-3 mb-4">
+        <div className="row g-3 mb-4 mt-2">
           <div className="col-12 col-md-6 col-xl-4">
             <div style={cardStyle} className="h-100">
               <p

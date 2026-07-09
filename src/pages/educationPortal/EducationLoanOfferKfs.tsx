@@ -3,37 +3,33 @@ import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { Dialog } from "primereact/dialog";
 import { useNavigate, useParams } from "react-router-dom";
-import Loader from "../../components/Loader";
 import TableTitle from "../../components/TableTitle";
-import { ILoanMarketBankDetails, ILoanMarketResponse } from "../../interface/loanMarketPlace";
-import { fetchLoanMarketPlaceListingAPI } from "../../utils/axios/apiServices";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import {
   completeEducationLoanApplication,
   getEducationLoanDraftById,
 } from "../../utils/demo/demoEducationLoanFlow";
-import { toastError, toastSuccess } from "../../utils/functions/shared";
+import { toastError } from "../../utils/functions/shared";
 import { InputText } from "primereact/inputtext";
-import { formatCurrencyAmount } from "../../utils/constants/constant";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 const EducationLoanOfferKfs = () => {
   const navigate = useNavigate();
-  const { id = "", bankId = "" } = useParams();
+  const { id = "" } = useParams();
 
-  const [loading, setLoading] = useState<boolean>(false);
   const [reviewAccepted, setReviewAccepted] = useState<boolean>(false);
+
   const [fileErrors, setFileErrors] = useState<Record<string, string>>({});
+
   const [showThankYou, setShowThankYou] = useState<boolean>(false);
+
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, File | null>>({
     studentPan: null,
     studentAadhaar: null,
     coApplicantPan: null,
     coApplicantAadhaar: null,
   });
-  const [selectedLender, setSelectedLender] =
-    useState<ILoanMarketBankDetails | null>(null);
 
   const draft = useMemo(() => getEducationLoanDraftById(id), [id]);
 
@@ -58,31 +54,6 @@ const EducationLoanOfferKfs = () => {
 
     return () => window.clearTimeout(redirectTimeout);
   }, [navigate, showThankYou]);
-
-  useEffect(() => {
-    const loadSelectedLender = async (): Promise<void> => {
-      if (!draft) return;
-
-      setLoading(true);
-
-      try {
-        const response: ILoanMarketResponse = await fetchLoanMarketPlaceListingAPI({
-          loanAppID: draft.id,
-        });
-
-        const lender =
-          response?.data?.bankDetails?.find(
-            (item) => String(item.bankID) === String(bankId),
-          ) || null;
-
-        setSelectedLender(lender);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSelectedLender();
-  }, [bankId, draft]);
 
   if (!draft) {
     return (
@@ -155,90 +126,15 @@ const EducationLoanOfferKfs = () => {
 
   return (
     <>
-      <Loader isLoading={loading} />
-
       <div className="whiteBoxHldr p-24">
         <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
           <div>
-            <TableTitle title={`KFS Details - ${draft.studentName}`} />
-            {selectedLender && (
-              <p className="mt-2 mb-0 text-muted">
-                Selected NBFC: <strong>{selectedLender.bankName}</strong>
-              </p>
-            )}
+            <TableTitle title="Upload Applicant Documents" />
           </div>
         </div>
 
         <div className="row">
-          <div className="col-12 mt-2">
-            <div className="borderBoxHldr p-24">
-              <div className="row">
-                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                  <b>Course Name</b>
-                  <p className="text-break">{draft.courseName}</p>
-                </div>
-                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                  <b>Agreed Course Fee</b>
-                  <p className="text-break">
-                    {formatCurrencyAmount(draft.courseFees)}
-                  </p>
-                </div>
-                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                  <b>Discount Amount</b>
-                  <p className="text-break">
-                    {formatCurrencyAmount(draft.discountAmount)}
-                  </p>
-                </div>
-                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                  <b>Discounted Course Fee</b>
-                  <p className="text-break">
-                    {formatCurrencyAmount(draft.discountedCourseFee)}
-                  </p>
-                </div>
-                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                  <b>Downpayment</b>
-                  <p className="text-break">
-                    {formatCurrencyAmount(draft.downpayment)}
-                  </p>
-                </div>
-                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                  <b>Loan Amount</b>
-                  <p className="text-break">
-                    {formatCurrencyAmount(draft.loanAmount)}
-                  </p>
-                </div>
-                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                  <b>Loan Tenure</b>
-                  <p className="text-break">{draft.emiOptionMonths} Months</p>
-                </div>
-                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                  <b>Advance EMI</b>
-                  <p className="text-break">
-                    {formatCurrencyAmount(draft.advanceEmi)}
-                  </p>
-                </div>
-                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                  <b>Number of EMIs</b>
-                  <p className="text-break">{draft.numberOfEmis}</p>
-                </div>
-                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                  <b>EMI Amount</b>
-                  <p className="text-break">
-                    {formatCurrencyAmount(draft.emiAmount)}
-                  </p>
-                </div>
-                <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                  <b>Total Amount to Institute</b>
-                  <p className="text-break">
-                    {formatCurrencyAmount(draft.totalAmountToInstitute)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-12 mt-4">
-            <h5 className="mb-3">Upload Applicant Documents</h5>
+          <div className="col-12">
             <div className="borderBoxHldr p-24">
               <div className="row">
                 {documentFields.map((field) => (

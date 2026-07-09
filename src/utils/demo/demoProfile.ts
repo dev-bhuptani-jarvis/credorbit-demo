@@ -359,7 +359,7 @@ const educationInstituteProfileResponse: IUserProfileResponse = {
   },
 };
 
-const studentProfileResponse: IUserProfileResponse = {
+const nbfcUserProfileResponse: IUserProfileResponse = {
   status: true,
 
   statusCode: 200,
@@ -367,45 +367,45 @@ const studentProfileResponse: IUserProfileResponse = {
   message: "User fetched successfully!",
 
   data: {
-    id: "student-role-001",
+    id: "nbfc-user-001",
 
-    name: "Student One",
+    name: "NBFC One",
 
-    panNumber: "STUDN1234S",
+    panNumber: "NBFCC1234N",
 
-    emailID: "student1@yopmail.com",
+    emailID: "nbfc1@yopmail.com",
 
     mobileNumber: "2222222222",
 
     profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
 
-    selectedGstNumber: null,
+    selectedGstNumber: "24NBFCC1234N1Z5",
 
     gstList: [],
 
-    billingDetails: false,
+    billingDetails: true,
 
-    role: "Student",
+    role: "NBFC User",
 
-    customerID: "STU260701",
+    customerID: "NBFC-CP-001",
 
-    isCompany: false,
+    isCompany: true,
 
     coApplicants: [],
 
     partners: [],
 
-    commission: 0,
+    commission: 2,
 
-    bankAccountNumber: null,
+    bankAccountNumber: "XXXXXX3311",
 
-    bankName: null,
+    bankName: "ICICI Bank",
 
-    ifscCode: null,
+    ifscCode: "ICIC0003311",
 
-    dateOfBirth: "2004-02-18",
+    dateOfBirth: "1992-04-16",
 
-    address: "Satellite, Ahmedabad, Gujarat",
+    address: "NBFC House, Prahladnagar, Ahmedabad, Gujarat",
 
     city: "Ahmedabad",
 
@@ -415,9 +415,9 @@ const studentProfileResponse: IUserProfileResponse = {
 
     zipCode: "380015",
 
-    aadhaar: "XXXX-XXXX-7788",
+    aadhaar: "XXXX-XXXX-3311",
 
-    udhyamAadhaar: null,
+    udhyamAadhaar: "UDYAM-GJ-24-0003311",
 
     cpCompanyLogo: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
 
@@ -887,11 +887,19 @@ export const getDemoUserProfileByContext = async (
     }
 
     if (
+      userId === "nbfc-user-001" ||
+      email === "nbfc1@yopmail.com" ||
+      roleName === "nbfc user"
+    ) {
+      return nbfcUserProfileResponse;
+    }
+
+    if (
       userId === "student-role-001" ||
       email === "student1@yopmail.com" ||
       roleName === "student"
     ) {
-      return studentProfileResponse;
+      return impersonatedClientProfileResponse;
     }
 
     if (

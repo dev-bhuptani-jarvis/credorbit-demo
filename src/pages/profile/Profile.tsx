@@ -156,6 +156,12 @@ const Profile = () => {
 
   const dispatch = useDispatch();
 
+  const isRestrictedBusinessProfile = [
+    "Educational Institute",
+    "NBFC User",
+    "NBFC",
+  ].includes(userFormData?.role || "");
+
   const fetchUserInfo = async (): Promise<void> => {
     setLoading(true);
 
@@ -1373,7 +1379,8 @@ const Profile = () => {
                           </label>
 
                           {userData.userType ===
-                            CLIENT_ROLE.CHANNEL_PARTNER && (
+                            CLIENT_ROLE.CHANNEL_PARTNER &&
+                            !isRestrictedBusinessProfile && (
                               <>
                                 <span
                                   id="registrationLink"
@@ -1760,48 +1767,55 @@ const Profile = () => {
                           placeholder="Select GST number to view address"
                         />
 
-                        {/* Trade Name */}
-                        <ProfileTextField
-                          label="Trade Name"
-                          name={`tradeName-${selectedGSTDetail?.tradeName}`}
-                          value={selectedGSTDetail?.tradeName!}
-                          placeholder="Select GST number to view trade name"
-                        />
+                        {!isRestrictedBusinessProfile &&
+                          <>
+                            {/* Trade Name */}
+                            <ProfileTextField
+                              label="Trade Name"
+                              name={`tradeName-${selectedGSTDetail?.tradeName}`}
+                              value={selectedGSTDetail?.tradeName!}
+                              placeholder="Select GST number to view trade name"
+                            />
 
-                        {/* CIN/LLP */}
-                        <ProfileTextField
-                          label="CIN/LLP"
-                          name={`cinOrLlp-${selectedGSTDetail?.cinOrLlp}`}
-                          value={selectedGSTDetail?.cinOrLlp!}
-                          placeholder="Select GST number to view CIN/LLP"
-                          tooltip={true}
-                        />
+                            {/* CIN/LLP */}
+                            <ProfileTextField
+                              label="CIN/LLP"
+                              name={`cinOrLlp-${selectedGSTDetail?.cinOrLlp}`}
+                              value={selectedGSTDetail?.cinOrLlp!}
+                              placeholder="Select GST number to view CIN/LLP"
+                              tooltip={true}
+                            />
+                          </>
+                        }
+
                       </>
                     )}
 
-                  <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                    <div className="form-group mb-4">
-                      <label
-                        className="form-label small"
-                        htmlFor="udhyamAadhaar"
-                      >
-                        Udhyam Aadhaar
-                      </label>
+                  {!isRestrictedBusinessProfile && (
+                    <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                      <div className="form-group mb-4">
+                        <label
+                          className="form-label small"
+                          htmlFor="udhyamAadhaar"
+                        >
+                          Udhyam Aadhaar
+                        </label>
 
-                      <InputText
-                        className="form-control"
-                        placeholder="Enter your Udhyam Aadhaar"
-                        name="udhyamAadhaar"
-                        value={userFormData?.udhyamAadhaar ?? ""}
-                        onChange={handleChange}
-                        disabled={!isEditable}
-                        maxLength={25}
-                      // onPaste={(e) => e.preventDefault()}
-                      // onCopy={(e) => e.preventDefault()}
-                      // onCut={(e) => e.preventDefault()}
-                      />
+                        <InputText
+                          className="form-control"
+                          placeholder="Enter your Udhyam Aadhaar"
+                          name="udhyamAadhaar"
+                          value={userFormData?.udhyamAadhaar ?? ""}
+                          onChange={handleChange}
+                          disabled={!isEditable}
+                          maxLength={25}
+                        // onPaste={(e) => e.preventDefault()}
+                        // onCopy={(e) => e.preventDefault()}
+                        // onCut={(e) => e.preventDefault()}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Company Logo */}
                   {userData.userType === CLIENT_ROLE.CHANNEL_PARTNER && (
@@ -1885,7 +1899,8 @@ const Profile = () => {
           </div>
 
           {(userData.userType === CLIENT_ROLE.CHANNEL_PARTNER ||
-            userData.userType === CLIENT_ROLE.SOURCING_PARTNER) && (
+            userData.userType === CLIENT_ROLE.SOURCING_PARTNER) &&
+            !isRestrictedBusinessProfile && (
               <div className="col-lg-12 mb-2">
                 <div className="titleMainWrapper">
                   <h2 className="txt-24">Bank Details</h2>
@@ -2015,44 +2030,46 @@ const Profile = () => {
             )}
         </div>
 
-        {!IsNullOrEmptyArray(userFormData?.userConsents || []) && (
-          <div className="col-lg-12 mb-4">
-            <div className="titleMainWrapper">
-              <h2 className="txt-24">My Consents</h2>
-            </div>
+        {!isRestrictedBusinessProfile &&
+          !IsNullOrEmptyArray(userFormData?.userConsents || []) && (
+            <div className="col-lg-12 mb-4">
+              <div className="titleMainWrapper">
+                <h2 className="txt-24">My Consents</h2>
+              </div>
 
-            <div className="col-12 mt-3 d-flex flex-wrap gap-3">
-              {!IsNullOrEmptyArray(userFormData?.userConsents || []) &&
-                userFormData?.userConsents.map((consent) => {
-                  return (
-                    <div
-                      className="d-flex align-items-center text-center px-3 py-2 form-check"
-                      key={consent.userConsentID}
-                    >
-                      <Checkbox
-                        inputId={`consent-${consent.userConsentID}`}
-                        className="me-2"
-                        checked={consent.isConsented}
-                        onChange={(e) =>
-                          handleConsentChange(
-                            consent.userConsentID,
-                            e.checked as boolean,
-                          )
-                        }
-                        disabled={!isEditable}
-                      />
-                      <label htmlFor={`consent-${consent.userConsentID}`}>
-                        {consent.consentName}
-                      </label>
-                    </div>
-                  );
-                })}
+              <div className="col-12 mt-3 d-flex flex-wrap gap-3">
+                {!IsNullOrEmptyArray(userFormData?.userConsents || []) &&
+                  userFormData?.userConsents.map((consent) => {
+                    return (
+                      <div
+                        className="d-flex align-items-center text-center px-3 py-2 form-check"
+                        key={consent.userConsentID}
+                      >
+                        <Checkbox
+                          inputId={`consent-${consent.userConsentID}`}
+                          className="me-2"
+                          checked={consent.isConsented}
+                          onChange={(e) =>
+                            handleConsentChange(
+                              consent.userConsentID,
+                              e.checked as boolean,
+                            )
+                          }
+                          disabled={!isEditable}
+                        />
+                        <label htmlFor={`consent-${consent.userConsentID}`}>
+                          {consent.consentName}
+                        </label>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {(userData.userType === CLIENT_ROLE.CUSTOMER ||
-          userData.userType === CLIENT_ROLE.CHANNEL_PARTNER) && (
+          userData.userType === CLIENT_ROLE.CHANNEL_PARTNER) &&
+          !isRestrictedBusinessProfile && (
             <div className="col-lg-12 mb-4">
               <div className="titleMainWrapper">
                 <h2 className="txt-24">Partners / Directors</h2>

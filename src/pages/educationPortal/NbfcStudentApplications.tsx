@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
@@ -14,10 +14,12 @@ import { PaginateReqEntity } from "../../interface/pagination";
 import { debounceTimeInMilliseconds, formatCurrencyAmount } from "../../utils/constants/constant";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import { getNbfcEducationLoanApplications } from "../../utils/demo/demoEducationLoanFlow";
+import { getEducationStudentById } from "../../utils/demo/demoEducationStudents";
 import useDebouncedEffect from "../../hooks/useDebounce";
 import { IsNullOrEmptyArray } from "../../utils/functions/nullCheck";
 
 const statusOptions = [
+  { label: "Approved", value: "Approved" },
   { label: "Pending", value: "Pending" },
   { label: "Query Raised", value: "Query Raised" },
   { label: "Sanctioned", value: "Sanctioned" },
@@ -25,16 +27,30 @@ const statusOptions = [
   { label: "Rejected", value: "Rejected" },
 ];
 
+const repaymentStatusOptions = [
+  { label: "On-Time", value: "On-Time" },
+  { label: "Delayed", value: "Delayed" },
+  { label: "Overdue", value: "Overdue" },
+  { label: "Closed", value: "Closed" },
+  { label: "Pending", value: "Pending" },
+];
+
+type INbfcStudentApplicationRow = IEducationLoanDraft & {
+  repaymentStatus: string;
+};
+
 const NbfcStudentApplications = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [applications, setApplications] = useState<IEducationLoanDraft[]>([]);
+  const [applications, setApplications] = useState<INbfcStudentApplicationRow[]>([]);
 
   const [searchText, setSearchText] = useState<string>("");
 
   const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [selectedRepaymentStatus, setSelectedRepaymentStatus] = useState<string>("");
 
   const [filterReq, setFilterReq] = useState<PaginateReqEntity>({
     pageNumber: 0,
@@ -44,9 +60,21 @@ const NbfcStudentApplications = () => {
 
   const [totalRecords, setTotalRecords] = useState<number>(0);
 
+  const statusFilterFromNavigation =
+    (location.state as { loanApplicationStatusFilter?: string } | null)
+      ?.loanApplicationStatusFilter || "";
+  const repaymentFilterFromNavigation =
+    (location.state as { repaymentStatusFilter?: string } | null)?.repaymentStatusFilter || "";
+
   const fetchApplications = (): void => {
     setLoading(true);
-    setApplications(getNbfcEducationLoanApplications());
+    setApplications(
+      getNbfcEducationLoanApplications().map((application) => ({
+        ...application,
+        repaymentStatus:
+          getEducationStudentById(application.studentId)?.loanDetails.repaymentStatus || "Pending",
+      })),
+    );
     setLoading(false);
   };
 
@@ -63,10 +91,12 @@ const NbfcStudentApplications = () => {
 
       const matchesStatus =
         !selectedStatus || item.loanApplicationStatus === selectedStatus;
+      const matchesRepayment =
+        !selectedRepaymentStatus || item.repaymentStatus === selectedRepaymentStatus;
 
-      return matchesSearch && matchesStatus;
+      return matchesSearch && matchesStatus && matchesRepayment;
     });
-  }, [applications, filterReq.searchText, selectedStatus]);
+  }, [applications, filterReq.searchText, selectedRepaymentStatus, selectedStatus]);
 
   const paginatedApplications = useMemo(() => {
     const startIndex = filterReq.pageNumber * filterReq.pageSize;
@@ -98,6 +128,17 @@ const NbfcStudentApplications = () => {
   useEffect(() => {
     fetchApplications();
   }, []);
+
+  useEffect(() => {
+    if (!statusFilterFromNavigation && !repaymentFilterFromNavigation) return;
+
+    setSelectedStatus(statusFilterFromNavigation);
+    setSelectedRepaymentStatus(repaymentFilterFromNavigation);
+    setFilterReq((prev) => ({
+      ...prev,
+      pageNumber: 0,
+    }));
+  }, [repaymentFilterFromNavigation, statusFilterFromNavigation]);
 
   useEffect(() => {
     setTotalRecords(filteredApplications.length);
@@ -132,6 +173,20 @@ const NbfcStudentApplications = () => {
                   placeholder="Filter by Status"
                 />
               </div>
+
+              <div className="form-group">
+                <Dropdown
+                  style={{ width: "220px" }}
+                  value={selectedRepaymentStatus}
+                  onChange={(e) => {
+                    setSelectedRepaymentStatus(e.value);
+                    setFilterReq((prev) => ({ ...prev, pageNumber: 0 }));
+                  }}
+                  options={repaymentStatusOptions}
+                  showClear={selectedRepaymentStatus !== ""}
+                  placeholder="Filter by Repayment"
+                />
+              </div>
             </div>
           </div>
 
@@ -146,21 +201,22 @@ const NbfcStudentApplications = () => {
                 <Column field="studentMobileNumber" header="Mobile Number" />
                 <Column field="courseName" header="Course Name" />
                 <Column field="instituteName" header="Institute Name" />
+                <Column field="repaymentStatus" header="Repayment Status" />
                 <Column
                   header="Loan Amount"
-                  body={(rowData: IEducationLoanDraft) =>
+                  body={(rowData: INbfcStudentApplicationRow) =>
                     formatCurrencyAmount(rowData.loanAmount)
                   }
                 />
                 <Column
                   header="Applied On"
-                  body={(rowData: IEducationLoanDraft) =>
+                  body={(rowData: INbfcStudentApplicationRow) =>
                     new Date(rowData.createdAt).toLocaleDateString("en-IN")
                   }
                 />
                 <Column
                   header="Action"
-                  body={(rowData: IEducationLoanDraft) => (
+                  body={(rowData: INbfcStudentApplicationRow) => (
                     <div className="d-flex gap-3">
                       <Button
                         className="trash-icon p-0"

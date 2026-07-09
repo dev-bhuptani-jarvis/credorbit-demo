@@ -1,17 +1,28 @@
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "primereact/button";
+import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
 import TableTitle from "../../components/TableTitle";
+import { IEducationLoanDraft } from "../../interface/educationManagement";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import { formatCurrencyAmount, formatMobileNumber } from "../../utils/constants/constant";
 import { formatDate } from "../../utils/functions/shared";
 import { getEducationStudentById } from "../../utils/demo/demoEducationStudents";
+import { getEducationLoanDrafts } from "../../utils/demo/demoEducationLoanFlow";
 
 const StudentDetail = () => {
   const navigate = useNavigate();
   const { id = "" } = useParams();
 
   const student = useMemo(() => getEducationStudentById(id), [id]);
+  const appliedLoanApplications = useMemo(
+    () =>
+      getEducationLoanDrafts().filter(
+        (draft) => draft.studentId === id && draft.status === "submitted",
+      ),
+    [id],
+  );
 
   if (!student) {
     return (
@@ -62,14 +73,6 @@ const StudentDetail = () => {
                   <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                     <b>Student PAN</b>
                     <p className="text-break">{student.studentPan}</p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Parent PAN</b>
-                    <p className="text-break">{student.parentPan || "-"}</p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Minor Student</b>
-                    <p className="text-break">{student.isMinor ? "Yes" : "No"}</p>
                   </div>
                   <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                     <b>Credit Score</b>
@@ -134,19 +137,50 @@ const StudentDetail = () => {
                 <p className="text-break">{student.loanDetails.closedLoans}</p>
               </div>
               <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Outstanding Amount</b>
+                <b>Enrolled Course Count</b>
                 <p className="text-break">
-                  {formatCurrencyAmount(student.loanDetails.outstandingAmount)}
+                  {student.loanDetails.enrolledCourseCount}
+                </p>
+              </div>
+              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                <b>Applied Loan Amount</b>
+                <p className="text-break">
+                  {formatCurrencyAmount(student.loanDetails.appliedLoanAmount)}
                 </p>
               </div>
               <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                 <b>EMI Information</b>
                 <p className="text-break">{student.loanDetails.emiInformation}</p>
               </div>
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Repayment Status</b>
-                <p className="text-break">{student.loanDetails.repaymentStatus}</p>
-              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-12 mt-4">
+          <h5 className="mb-3">Applied Loan Applications</h5>
+          <div className="borderBoxHldr p-24">
+            <div className="table-responsive">
+              <DataTable
+                className="tableMain"
+                value={appliedLoanApplications}
+                emptyMessage="No applied loan applications found for this student."
+              >
+                <Column field="courseName" header="Course Name" />
+                <Column field="instituteName" header="Institute Name" />
+                <Column
+                  header="Loan Amount"
+                  body={(rowData: IEducationLoanDraft) =>
+                    formatCurrencyAmount(rowData.loanAmount)
+                  }
+                />
+                <Column field="loanApplicationStatus" header="Application Status" />
+                <Column
+                  header="Applied On"
+                  body={(rowData: IEducationLoanDraft) =>
+                    formatDate(rowData.createdAt, "DD MMM, YYYY")
+                  }
+                />
+              </DataTable>
             </div>
           </div>
         </div>

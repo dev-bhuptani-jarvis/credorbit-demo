@@ -6,6 +6,19 @@ import { getEducationCourseById, getEducationCourses } from "./demoEducationCour
 
 const STORAGE_KEY = "credorbit.educationStudents";
 
+const normalizeStudentLoanDetails = (
+  student: IEducationStudent,
+): IEducationStudent => ({
+  ...student,
+  loanDetails: {
+    ...student.loanDetails,
+    enrolledCourseCount:
+      student.loanDetails.enrolledCourseCount || student.loanDetails.totalLoansAvailed || 1,
+    appliedLoanAmount:
+      student.loanDetails.appliedLoanAmount || student.loanDetails.outstandingAmount || 0,
+  },
+});
+
 const seedStudents: IEducationStudent[] = [
   {
     id: "student-001",
@@ -25,6 +38,8 @@ const seedStudents: IEducationStudent[] = [
     createdAt: "2026-05-01T11:00:00.000Z",
     updatedAt: "2026-05-01T11:00:00.000Z",
     loanDetails: {
+      enrolledCourseCount: 2,
+      appliedLoanAmount: 240000,
       totalLoansAvailed: 2,
       activeLoans: 1,
       closedLoans: 1,
@@ -56,6 +71,8 @@ const seedStudents: IEducationStudent[] = [
     createdAt: "2026-05-07T14:30:00.000Z",
     updatedAt: "2026-05-07T14:30:00.000Z",
     loanDetails: {
+      enrolledCourseCount: 1,
+      appliedLoanAmount: 95000,
       totalLoansAvailed: 1,
       activeLoans: 1,
       closedLoans: 0,
@@ -69,9 +86,120 @@ const seedStudents: IEducationStudent[] = [
       creditHistory: "New borrower with one active education loan and minor repayment delays.",
     },
   },
+  {
+    id: "student-003",
+    studentCode: "COSTU2003",
+    studentName: "Kavya Nair",
+    courseId: "COCOU2603",
+    courseName: "Certificate in NBFC Operations",
+    studentPan: "KAVYA1234N",
+    isMinor: false,
+    parentPan: "",
+    mobileNumber: "9876507788",
+    email: "kavya.nair@student.demo",
+    coApplicantName: "Suresh Nair",
+    coApplicantMobileNumber: "9876508899",
+    coApplicantRelation: "Father",
+    isActive: true,
+    createdAt: "2026-05-10T10:15:00.000Z",
+    updatedAt: "2026-05-10T10:15:00.000Z",
+    loanDetails: {
+      enrolledCourseCount: 1,
+      appliedLoanAmount: 55000,
+      totalLoansAvailed: 1,
+      activeLoans: 1,
+      closedLoans: 0,
+      outstandingAmount: 48000,
+      emiInformation: "INR 4,200 / month",
+      repaymentStatus: "Overdue",
+    },
+    creditInformation: {
+      creditBureauSummary: "Short-tenure borrower with overdue installments requiring follow-up.",
+      creditScore: 661,
+      creditHistory: "One active education loan with overdue repayment behaviour.",
+    },
+  },
+  {
+    id: "student-004",
+    studentCode: "COSTU2004",
+    studentName: "Rohan Mehta",
+    courseId: "COCOU2601",
+    courseName: "BBA in Finance and Lending",
+    studentPan: "ROHAN1234M",
+    isMinor: false,
+    parentPan: "",
+    mobileNumber: "9876509900",
+    email: "rohan.mehta@student.demo",
+    coApplicantName: "Milan Mehta",
+    coApplicantMobileNumber: "9876509911",
+    coApplicantRelation: "Brother",
+    isActive: true,
+    createdAt: "2026-05-12T09:45:00.000Z",
+    updatedAt: "2026-05-12T09:45:00.000Z",
+    loanDetails: {
+      enrolledCourseCount: 2,
+      appliedLoanAmount: 180000,
+      totalLoansAvailed: 2,
+      activeLoans: 0,
+      closedLoans: 2,
+      outstandingAmount: 0,
+      emiInformation: "Closed",
+      repaymentStatus: "Closed",
+    },
+    creditInformation: {
+      creditBureauSummary: "Completed both course-linked loans without any residual balance.",
+      creditScore: 771,
+      creditHistory: "Two education loans successfully closed with solid repayment discipline.",
+    },
+  },
+  {
+    id: "student-005",
+    studentCode: "COSTU2005",
+    studentName: "Mihir Joshi",
+    courseId: "COCOU2602",
+    courseName: "Diploma in Credit Underwriting",
+    studentPan: "MIHIR1234J",
+    isMinor: false,
+    parentPan: "",
+    mobileNumber: "9876506677",
+    email: "mihir.joshi@student.demo",
+    coApplicantName: "Rupal Joshi",
+    coApplicantMobileNumber: "9876507766",
+    coApplicantRelation: "Mother",
+    isActive: true,
+    createdAt: "2026-05-15T16:20:00.000Z",
+    updatedAt: "2026-05-15T16:20:00.000Z",
+    loanDetails: {
+      enrolledCourseCount: 1,
+      appliedLoanAmount: 95000,
+      totalLoansAvailed: 1,
+      activeLoans: 1,
+      closedLoans: 0,
+      outstandingAmount: 76000,
+      emiInformation: "INR 3,950 / month",
+      repaymentStatus: "On-Time",
+    },
+    creditInformation: {
+      creditBureauSummary: "Consistent repayment pattern with a stable student credit profile.",
+      creditScore: 733,
+      creditHistory: "One active education loan with clean on-time EMI servicing.",
+    },
+  },
 ];
 
 const canUseStorage = (): boolean => typeof window !== "undefined" && !!window.localStorage;
+
+const normalizeEducationStudents = (
+  students: IEducationStudent[],
+): IEducationStudent[] => {
+  const normalizedStudents = students.map(normalizeStudentLoanDetails);
+  const existingStudentIds = new Set(normalizedStudents.map((student) => student.id));
+  const missingSeedStudents = seedStudents.filter(
+    (student) => !existingStudentIds.has(student.id),
+  );
+
+  return [...normalizedStudents, ...missingSeedStudents.map(normalizeStudentLoanDetails)];
+};
 
 const persistStudents = (students: IEducationStudent[]): void => {
   if (!canUseStorage()) return;
@@ -79,21 +207,33 @@ const persistStudents = (students: IEducationStudent[]): void => {
 };
 
 export const getEducationStudents = (): IEducationStudent[] => {
-  if (!canUseStorage()) return seedStudents;
+  if (!canUseStorage()) return normalizeEducationStudents(seedStudents);
 
   const storedValue = window.localStorage.getItem(STORAGE_KEY);
 
   if (!storedValue) {
-    persistStudents(seedStudents);
-    return seedStudents;
+    const normalizedSeedStudents = normalizeEducationStudents(seedStudents);
+    persistStudents(normalizedSeedStudents);
+    return normalizedSeedStudents;
   }
 
   try {
     const parsedValue = JSON.parse(storedValue) as IEducationStudent[];
-    return Array.isArray(parsedValue) ? parsedValue : seedStudents;
+    if (!Array.isArray(parsedValue)) {
+      return normalizeEducationStudents(seedStudents);
+    }
+
+    const normalizedStudents = normalizeEducationStudents(parsedValue);
+
+    if (JSON.stringify(normalizedStudents) !== JSON.stringify(parsedValue)) {
+      persistStudents(normalizedStudents);
+    }
+
+    return normalizedStudents;
   } catch {
-    persistStudents(seedStudents);
-    return seedStudents;
+    const normalizedSeedStudents = normalizeEducationStudents(seedStudents);
+    persistStudents(normalizedSeedStudents);
+    return normalizedSeedStudents;
   }
 };
 
@@ -131,6 +271,8 @@ export const createEducationStudent = (
     createdAt: now,
     updatedAt: now,
     loanDetails: {
+      enrolledCourseCount: 1,
+      appliedLoanAmount: 125000,
       totalLoansAvailed: 1,
       activeLoans: 1,
       closedLoans: 0,

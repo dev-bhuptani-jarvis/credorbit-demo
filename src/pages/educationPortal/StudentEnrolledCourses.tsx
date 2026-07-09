@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
@@ -34,6 +34,7 @@ const repaymentStatusOptions = [
 
 const StudentEnrolledCourses = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { userID } = useSelector((state: RootState) => state.user.user);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -48,13 +49,14 @@ const StudentEnrolledCourses = () => {
   });
   const [totalRecords, setTotalRecords] = useState<number>(0);
 
+  const repaymentStatusFilterFromNavigation =
+    (location.state as { repaymentStatusFilter?: string } | null)?.repaymentStatusFilter || "";
+
   const fetchEnrollments = (): void => {
     setLoading(true);
     setEnrollments(getStudentEnrollments(userID));
     setLoading(false);
   };
-
-  console.log('enrollments', enrollments)
 
   const filteredEnrollments = useMemo(() => {
     const searchValue = filterReq.searchText?.trim().toLowerCase() || "";
@@ -104,6 +106,16 @@ const StudentEnrolledCourses = () => {
   useEffect(() => {
     fetchEnrollments();
   }, [userID]);
+
+  useEffect(() => {
+    if (!repaymentStatusFilterFromNavigation) return;
+
+    setSelectedRepaymentStatus(repaymentStatusFilterFromNavigation);
+    setFilterReq((prev) => ({
+      ...prev,
+      pageNumber: 0,
+    }));
+  }, [repaymentStatusFilterFromNavigation]);
 
   useEffect(() => {
     setTotalRecords(filteredEnrollments.length);

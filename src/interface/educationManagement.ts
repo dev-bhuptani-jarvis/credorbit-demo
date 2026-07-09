@@ -26,6 +26,8 @@ export interface IEducationCourseFormData {
 }
 
 export interface IEducationStudentLoanSummary {
+  enrolledCourseCount: number;
+  appliedLoanAmount: number;
   totalLoansAvailed: number;
   activeLoans: number;
   closedLoans: number;
@@ -98,6 +100,9 @@ export interface IEducationStudentEnrollment {
     | "Disbursed"
     | "Rejected"
     | "Query Raised";
+  sanctionLetterUrl?: string | null;
+  loanAgreementUrl?: string | null;
+  repaymentScheduleUrl?: string | null;
   creditBureauSummary: string;
   creditScore: number;
   creditHistory: string;

@@ -3,8 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "primereact/button";
 import TableTitle from "../../components/TableTitle";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
-import { formatCurrencyAmount } from "../../utils/constants/constant";
+import {
+  formatCurrencyAmount,
+  formatMobileNumber,
+} from "../../utils/constants/constant";
 import { getEducationCourseById } from "../../utils/demo/demoEducationCourses";
+import { getEducationStudents } from "../../utils/demo/demoEducationStudents";
 
 const CourseDetail = () => {
   const navigate = useNavigate();
@@ -12,6 +16,14 @@ const CourseDetail = () => {
   const { id = "" } = useParams();
 
   const course = useMemo(() => getEducationCourseById(id), [id]);
+  const appliedStudents = useMemo(() => {
+    if (!course) return [];
+
+    return getEducationStudents().filter(
+      (student) =>
+        student.courseId === course.id || student.courseName === course.courseName,
+    );
+  }, [course]);
 
   if (!course) {
     return (
@@ -91,6 +103,51 @@ const CourseDetail = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div className="col-12 mt-4">
+          <div className="whiteBoxHldr">
+            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+              <div>
+                <h3 className="txt-20 mb-1">Students Applied for Loan</h3>
+                <p className="mb-0 text-muted">
+                  Students currently mapped to this course and carrying loan records.
+                </p>
+              </div>
+              <span className="text-muted small">
+                {appliedStudents.length} student(s)
+              </span>
+            </div>
+
+            {appliedStudents.length > 0 ? (
+              <div className="table-responsive">
+                <table className="tableMain">
+                  <thead>
+                    <tr>
+                      <th>Student Code</th>
+                      <th>Student Name</th>
+                      <th>Mobile Number</th>
+                      <th>Email Address</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {appliedStudents.map((student) => (
+                      <tr key={student.id}>
+                        <td>{student.studentCode}</td>
+                        <td>{student.studentName}</td>
+                        <td>{formatMobileNumber(student.mobileNumber)}</td>
+                        <td>{student.email}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="mb-0 text-muted">
+                No students with loan applications are currently mapped to this course.
+              </p>
+            )}
           </div>
         </div>
       </div>

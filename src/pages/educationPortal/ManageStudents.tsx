@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
@@ -17,14 +17,17 @@ import {
   IEducationStudentFormData,
 } from "../../interface/educationManagement";
 import { PaginateReqEntity } from "../../interface/pagination";
-import { debounceTimeInMilliseconds, formatMobileNumber } from "../../utils/constants/constant";
+import {
+  debounceTimeInMilliseconds,
+  formatCurrencyAmount,
+  formatMobileNumber,
+} from "../../utils/constants/constant";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import {
   EMAIL_PATTERN,
   INDIAN_MOBILE_NUMBER_PATTERN,
   PAN_NUMBER_PATTERN,
 } from "../../utils/constants/pattern";
-import { getEducationCourses } from "../../utils/demo/demoEducationCourses";
 import {
   createEducationStudent,
   deleteEducationStudent,
@@ -55,13 +58,13 @@ export const defaultStudentForm: IEducationStudentFormData = {
 const ManageStudents = () => {
   const navigate = useNavigate();
 
+  const location = useLocation();
+
   const [loading, setLoading] = useState<boolean>(false);
 
   const [students, setStudents] = useState<IEducationStudent[]>([]);
 
   const [searchText, setSearchText] = useState<string>("");
-
-  const [selectedCourseId, setSelectedCourseId] = useState<string>("");
 
   const [selectedRepaymentStatus, setSelectedRepaymentStatus] = useState<string>("");
 
@@ -89,18 +92,11 @@ const ManageStudents = () => {
 
   const isEditMode = !!selectedStudent;
 
-  const courseOptions = useMemo(
-    () =>
-      getEducationCourses().map((course) => ({
-        label: course.courseName,
-        value: course.id,
-      })),
-    [],
-  );
-
   const repaymentStatusOptions = [
     { label: "On-Time", value: "On-Time" },
     { label: "Delayed", value: "Delayed" },
+    { label: "Overdue", value: "Overdue" },
+    { label: "Closed", value: "Closed" },
     { label: "Pending", value: "Pending" },
   ];
 
@@ -120,14 +116,13 @@ const ManageStudents = () => {
         student.studentCode.toLowerCase().includes(searchValue) ||
         student.courseName.toLowerCase().includes(searchValue);
 
-      const matchesCourse = !selectedCourseId || student.courseId === selectedCourseId;
       const matchesRepaymentStatus =
         !selectedRepaymentStatus ||
         student.loanDetails.repaymentStatus === selectedRepaymentStatus;
 
-      return matchesSearch && matchesCourse && matchesRepaymentStatus;
+      return matchesSearch && matchesRepaymentStatus;
     });
-  }, [filterReq.searchText, selectedCourseId, selectedRepaymentStatus, students]);
+  }, [filterReq.searchText, selectedRepaymentStatus, students]);
 
   const paginatedStudents = useMemo(() => {
     const startIndex = filterReq.pageNumber * filterReq.pageSize;
@@ -287,6 +282,18 @@ const ManageStudents = () => {
   }, []);
 
   useEffect(() => {
+    const repaymentStatusFilter = location.state?.repaymentStatusFilter;
+
+    if (!repaymentStatusFilter) return;
+
+    setSelectedRepaymentStatus(repaymentStatusFilter);
+    setFilterReq((prev) => ({
+      ...prev,
+      pageNumber: 0,
+    }));
+  }, [location.state]);
+
+  useEffect(() => {
     setTotalRecords(filteredStudents.length);
   }, [filteredStudents]);
 
@@ -306,20 +313,6 @@ const ManageStudents = () => {
                   setSearchText={setSearchText}
                   placeholder="Search by student, code, or course"
                 />
-
-                <div className="form-group">
-                  <Dropdown
-                    style={{ width: "220px" }}
-                    value={selectedCourseId}
-                    onChange={(e) => {
-                      setSelectedCourseId(e.value);
-                      setFilterReq((prev) => ({ ...prev, pageNumber: 0 }));
-                    }}
-                    options={courseOptions}
-                    showClear={selectedCourseId !== ""}
-                    placeholder="Filter by Course"
-                  />
-                </div>
 
                 <div className="form-group">
                   <Dropdown
@@ -381,7 +374,19 @@ const ManageStudents = () => {
                     );
                   }} header="Student Name" />
 
-                  <Column field="courseName" header="Course" />
+                  <Column
+                    header="Enrolled Course Count"
+                    body={(rowData: IEducationStudent) =>
+                      rowData.loanDetails.enrolledCourseCount
+                    }
+                  />
+
+                  <Column
+                    header="Applied Loan Amount"
+                    body={(rowData: IEducationStudent) =>
+                      formatCurrencyAmount(rowData.loanDetails.appliedLoanAmount)
+                    }
+                  />
 
                   <Column
                     body={(rowData: IEducationStudent) =>
@@ -511,33 +516,6 @@ const ManageStudents = () => {
             />
             {formErrors.studentPan && <small className="error">{formErrors.studentPan}</small>}
           </div>
-
-          <div className="form-group col-sm-12 col-lg-6">
-            <label className="form-label d-block mb-2">Is Student Minor?</label>
-            <div className="d-flex align-items-center gap-2">
-              <InputSwitch
-                checked={studentForm.isMinor}
-                onChange={(e) => handleFieldChange("isMinor", !!e.value)}
-              />
-              <span>{studentForm.isMinor ? "Yes" : "No"}</span>
-            </div>
-          </div>
-
-          {studentForm.isMinor && (
-            <div className="form-group col-sm-12 col-lg-6">
-              <label className="form-label" htmlFor="parentPan">
-                Parent PAN<sup>*</sup>
-              </label>
-              <InputText
-                id="parentPan"
-                className="form-control"
-                placeholder="Enter parent PAN"
-                value={studentForm.parentPan}
-                onChange={(e) => handleFieldChange("parentPan", e.target.value.toUpperCase())}
-              />
-              {formErrors.parentPan && <small className="error">{formErrors.parentPan}</small>}
-            </div>
-          )}
 
           <div className="form-group col-sm-12 col-lg-6">
             <label className="form-label" htmlFor="studentMobile">

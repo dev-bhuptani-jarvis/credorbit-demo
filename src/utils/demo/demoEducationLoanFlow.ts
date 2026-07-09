@@ -24,6 +24,156 @@ const seedStudentCamReports: IClientDetailList[] = [
   },
 ];
 
+const seedEducationLoanDrafts: IEducationLoanDraft[] = [
+  {
+    id: "edu-loan-seed-001",
+    studentId: "student-001",
+    studentUserId: DEFAULT_STUDENT_USER_ID,
+    instituteName: "Credorbit School of Finance",
+    studentName: "Aarav Shah",
+    studentPan: "AARAV1234S",
+    studentEmail: "aarav.shah@student.demo",
+    studentMobileNumber: "9876501122",
+    parentPan: "",
+    coApplicantName: "Rohit Shah",
+    coApplicantMobileNumber: "9876502211",
+    coApplicantRelation: "Father",
+    courseId: "course-001",
+    courseName: "BBA in Finance and Lending",
+    courseTenure: "3 Years",
+    courseType: "Offline",
+    courseFees: 180000,
+    emiOptionMonths: 24,
+    downpayment: 20000,
+    discountType: "amount",
+    discountValue: 5000,
+    discountAmount: 5000,
+    discountedCourseFee: 175000,
+    loanAmount: 155000,
+    advanceEmi: 6458.33,
+    numberOfEmis: 24,
+    emiAmount: 6458.33,
+    totalAmountToInstitute: 175000,
+    consentAccepted: true,
+    hasCoApplicant: true,
+    loanApplicationStatus: "Sanctioned",
+    sanctionDate: "2026-06-08T11:00:00.000Z",
+    disbursementDate: null,
+    utrNumber: "",
+    transactionReference: "",
+    disbursementRemarks: "",
+    queryRemarks: "",
+    enachEnabled: true,
+    enachRegisteredAt: "2026-06-10T09:30:00.000Z",
+    loanAgreementSentAt: "2026-06-09T12:00:00.000Z",
+    sanctionLetterUrl: "/assets/images/sanction-letter.pdf",
+    loanAgreementUrl: "/assets/images/sanction-letter.pdf",
+    repaymentScheduleUrl: "/assets/images/CAM_Report_Sample_HL.xlsx",
+    disbursementAdviceUrl: null,
+    status: "submitted",
+    createdAt: "2026-06-05T10:00:00.000Z",
+    updatedAt: "2026-06-10T09:30:00.000Z",
+  },
+  {
+    id: "edu-loan-seed-002",
+    studentId: "student-001",
+    studentUserId: DEFAULT_STUDENT_USER_ID,
+    instituteName: "Credorbit School of Finance",
+    studentName: "Aarav Shah",
+    studentPan: "AARAV1234S",
+    studentEmail: "aarav.shah@student.demo",
+    studentMobileNumber: "9876501122",
+    parentPan: "",
+    coApplicantName: "Rohit Shah",
+    coApplicantMobileNumber: "9876502211",
+    coApplicantRelation: "Father",
+    courseId: "course-001",
+    courseName: "BBA in Finance and Lending",
+    courseTenure: "3 Years",
+    courseType: "Offline",
+    courseFees: 95000,
+    emiOptionMonths: 18,
+    downpayment: 10000,
+    discountType: "percentage",
+    discountValue: 10,
+    discountAmount: 9500,
+    discountedCourseFee: 85500,
+    loanAmount: 75500,
+    advanceEmi: 4194.44,
+    numberOfEmis: 18,
+    emiAmount: 4194.44,
+    totalAmountToInstitute: 85500,
+    consentAccepted: true,
+    hasCoApplicant: true,
+    loanApplicationStatus: "Disbursed",
+    sanctionDate: "2026-05-18T10:30:00.000Z",
+    disbursementDate: "2026-05-22T15:00:00.000Z",
+    utrNumber: "UTR20260522001",
+    transactionReference: "TXN-EDU-522001",
+    disbursementRemarks: "First tranche released successfully.",
+    queryRemarks: "",
+    enachEnabled: true,
+    enachRegisteredAt: "2026-05-20T08:45:00.000Z",
+    loanAgreementSentAt: "2026-05-19T11:00:00.000Z",
+    sanctionLetterUrl: "/assets/images/sanction-letter.pdf",
+    loanAgreementUrl: "/assets/images/sanction-letter.pdf",
+    repaymentScheduleUrl: "/assets/images/CAM_Report_Sample_HL.xlsx",
+    disbursementAdviceUrl: "/assets/images/sanction-letter.pdf",
+    status: "submitted",
+    createdAt: "2026-05-14T13:00:00.000Z",
+    updatedAt: "2026-05-22T15:00:00.000Z",
+  },
+  {
+    id: "edu-loan-seed-003",
+    studentId: "student-002",
+    studentUserId: DEFAULT_STUDENT_USER_ID,
+    instituteName: "Credorbit School of Finance",
+    studentName: "Diya Patel",
+    studentPan: "DIYAP1234P",
+    studentEmail: "diya.patel@student.demo",
+    studentMobileNumber: "9876503344",
+    parentPan: "PATEL1234K",
+    coApplicantName: "Nikita Patel",
+    coApplicantMobileNumber: "9876505566",
+    coApplicantRelation: "Mother",
+    courseId: "course-002",
+    courseName: "Diploma in Credit Underwriting",
+    courseTenure: "12 Months",
+    courseType: "Online",
+    courseFees: 110000,
+    emiOptionMonths: 12,
+    downpayment: 15000,
+    discountType: "amount",
+    discountValue: 5000,
+    discountAmount: 5000,
+    discountedCourseFee: 105000,
+    loanAmount: 90000,
+    advanceEmi: 7500,
+    numberOfEmis: 12,
+    emiAmount: 7500,
+    totalAmountToInstitute: 105000,
+    consentAccepted: true,
+    hasCoApplicant: true,
+    loanApplicationStatus: "Pending",
+    sanctionDate: null,
+    disbursementDate: null,
+    utrNumber: "",
+    transactionReference: "",
+    disbursementRemarks: "",
+    queryRemarks: "",
+    enachEnabled: false,
+    enachRegisteredAt: null,
+    loanAgreementSentAt: null,
+    sanctionLetterUrl: null,
+    loanAgreementUrl: null,
+    repaymentScheduleUrl: null,
+    disbursementAdviceUrl: null,
+    status: "submitted",
+    createdAt: "2026-06-18T09:20:00.000Z",
+    updatedAt: "2026-06-18T09:20:00.000Z",
+  },
+];
+
 const canUseStorage = (): boolean =>
   typeof window !== "undefined" && !!window.localStorage;
 
@@ -64,8 +214,31 @@ const parseCourseTenureMonths = (courseTenure: string): number => {
 const toCurrencyNumber = (value: number): number =>
   Number.isFinite(value) ? Number(value.toFixed(2)) : 0;
 
+const normalizeEducationLoanDrafts = (
+  drafts: IEducationLoanDraft[],
+): IEducationLoanDraft[] => {
+  const existingDraftIds = new Set(drafts.map((draft) => draft.id));
+  const missingSeedDrafts = seedEducationLoanDrafts.filter(
+    (draft) => !existingDraftIds.has(draft.id),
+  );
+
+  return [...drafts, ...missingSeedDrafts];
+};
+
 export const getEducationLoanDrafts = (): IEducationLoanDraft[] =>
-  readFromStorage<IEducationLoanDraft[]>(EDUCATION_LOAN_DRAFTS_KEY, []);
+  (() => {
+    const drafts = readFromStorage<IEducationLoanDraft[]>(
+      EDUCATION_LOAN_DRAFTS_KEY,
+      seedEducationLoanDrafts,
+    );
+    const normalizedDrafts = normalizeEducationLoanDrafts(drafts);
+
+    if (canUseStorage() && JSON.stringify(normalizedDrafts) !== JSON.stringify(drafts)) {
+      writeToStorage(EDUCATION_LOAN_DRAFTS_KEY, normalizedDrafts);
+    }
+
+    return normalizedDrafts;
+  })();
 
 const persistEducationLoanDrafts = (drafts: IEducationLoanDraft[]): void => {
   writeToStorage(EDUCATION_LOAN_DRAFTS_KEY, drafts);

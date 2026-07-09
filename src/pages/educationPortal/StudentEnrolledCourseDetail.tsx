@@ -4,6 +4,7 @@ import { Button } from "primereact/button";
 import TableTitle from "../../components/TableTitle";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import { formatCurrencyAmount } from "../../utils/constants/constant";
+import { toastError } from "../../utils/functions/shared";
 import { getStudentEnrollmentById } from "../../utils/demo/demoStudentEnrollments";
 
 const StudentEnrolledCourseDetail = () => {
@@ -11,6 +12,33 @@ const StudentEnrolledCourseDetail = () => {
   const { id = "" } = useParams();
 
   const enrollment = useMemo(() => getStudentEnrollmentById(id), [id]);
+
+  const loanDocuments = useMemo(
+    () => [
+      {
+        title: "Loan Agreement",
+        url: "/assets/images/dummy-loan-aggrement.pdf",
+      },
+      {
+        title: "Sanction Letter",
+        url: "/assets/images/sanction-letter.pdf",
+      },
+      {
+        title: "EMI Repayment Schedule",
+        url: "/assets/images/sanction-letter.pdf",
+      },
+    ],
+    [enrollment],
+  );
+
+  const openDocument = (documentUrl: string | null): void => {
+    if (documentUrl && typeof window !== "undefined") {
+      window.open(documentUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    toastError("Loan document is not available for this enrolled course.");
+  };
 
   if (!enrollment) {
     return (
@@ -102,6 +130,39 @@ const StudentEnrolledCourseDetail = () => {
                 <b>Loan Status</b>
                 <p className="text-break">{enrollment.loanStatus}</p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-12 mt-4">
+          <h5 className="mb-3">Loan Documents</h5>
+          <div className="borderBoxHldr p-24">
+            <div className="table-responsive">
+              <table className="tableMain">
+                <thead>
+                  <tr>
+                    <th>Document Name</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loanDocuments.map((document) => (
+                    <tr key={document.title}>
+                      <td>{document.title}</td>
+                      <td>{document.url ? "Available" : "Pending"}</td>
+                      <td>
+                        <Button
+                          className="btn btn-black-line py-2 px-3"
+                          label="View Document"
+                          onClick={() => openDocument(document.url)}
+                          disabled={!document.url}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

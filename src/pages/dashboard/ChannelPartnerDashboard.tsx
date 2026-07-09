@@ -98,9 +98,12 @@ import { validationMessages } from "../../utils/constants/messages";
 import { environment } from "../../utils/constants/environments";
 import { ISubscriptionListingResponse } from "../../interface/subscription";
 import { getStudentEnrollments } from "../../utils/demo/demoStudentEnrollments";
+import { getNbfcEducationLoanApplications } from "../../utils/demo/demoEducationLoanFlow";
+import { getEducationStudentById } from "../../utils/demo/demoEducationStudents";
 
 const ChannelPartnerDashboard = () => {
   const EDUCATION_INSTITUTE_USER_ID = "edu-inst-001";
+  const NBFC_USER_ID = "nbfc-user-001";
   const STUDENT_USER_ID = "student-role-001";
 
   const [adminInfo, setAdminInfo] = useState<IGetAllLoanApplicationsData>();
@@ -240,6 +243,9 @@ const ChannelPartnerDashboard = () => {
   const isEducationInstituteDashboard =
     userType === CLIENT_ROLE.CHANNEL_PARTNER &&
     userID === EDUCATION_INSTITUTE_USER_ID;
+  const isNbfcDashboard =
+    userType === CLIENT_ROLE.CHANNEL_PARTNER &&
+    userID === NBFC_USER_ID;
   const isStudentDashboard =
     userType === CLIENT_ROLE.CUSTOMER &&
     (userID === STUDENT_USER_ID ||
@@ -258,6 +264,16 @@ const ChannelPartnerDashboard = () => {
     },
     [isStudentDashboard, userID],
   );
+
+  const nbfcApplications = useMemo(() => {
+    if (!isNbfcDashboard) return [];
+
+    return getNbfcEducationLoanApplications().map((application) => ({
+      ...application,
+      repaymentStatus:
+        getEducationStudentById(application.studentId)?.loanDetails.repaymentStatus || "Pending",
+    }));
+  }, [isNbfcDashboard]);
 
   const educationInstituteSummaryMetrics = useMemo(
     () => [
@@ -301,6 +317,52 @@ const ChannelPartnerDashboard = () => {
     [],
   );
 
+  const nbfcSummaryMetrics = useMemo(() => {
+    if (!isNbfcDashboard) return [];
+
+    return [
+      {
+        title: "Total Loan Applications",
+        value: nbfcApplications.length,
+        icon: "bi-journal-text",
+        subtitle: "Applications currently assigned to the NBFC pipeline",
+        loanApplicationStatus: "",
+      },
+      {
+        title: "Total Approved/Sanctioned Applications",
+        value: nbfcApplications.filter(
+          (item) =>
+            item.loanApplicationStatus === "Approved" ||
+            item.loanApplicationStatus === "Sanctioned",
+        ).length,
+        icon: "bi-patch-check-fill",
+        subtitle: "Applications that already moved to approval or sanction",
+        loanApplicationStatus: "Sanctioned",
+      },
+      {
+        title: "Total Disbursed Applications",
+        value: nbfcApplications.filter((item) => item.loanApplicationStatus === "Disbursed").length,
+        icon: "bi-bank2",
+        subtitle: "Applications successfully disbursed by the NBFC",
+        loanApplicationStatus: "Disbursed",
+      },
+      {
+        title: "Total Rejected Applications",
+        value: nbfcApplications.filter((item) => item.loanApplicationStatus === "Rejected").length,
+        icon: "bi-x-circle-fill",
+        subtitle: "Applications declined during underwriting review",
+        loanApplicationStatus: "Rejected",
+      },
+      {
+        title: "Total Pending Applications",
+        value: nbfcApplications.filter((item) => item.loanApplicationStatus === "Pending").length,
+        icon: "bi-hourglass-split",
+        subtitle: "Applications still waiting for the next NBFC action",
+        loanApplicationStatus: "Pending",
+      },
+    ];
+  }, [isNbfcDashboard, nbfcApplications]);
+
   const studentDashboardSummaryMetrics = useMemo(() => {
     if (!isStudentDashboard) return [];
 
@@ -319,12 +381,6 @@ const ChannelPartnerDashboard = () => {
     ).length;
 
     return [
-      {
-        title: "Total Registered Students",
-        value: 1,
-        icon: "bi-mortarboard-fill",
-        subtitle: "Your learner profile currently registered on the platform",
-      },
       {
         title: "Total Loan Applications",
         value: totalLoanApplications,
@@ -388,6 +444,41 @@ const ChannelPartnerDashboard = () => {
     [],
   );
 
+  const nbfcRepaymentMetrics = useMemo(() => {
+    if (!isNbfcDashboard) return [];
+
+    return [
+      {
+        title: "On-Time Repayment Applications",
+        value: nbfcApplications.filter((item) => item.repaymentStatus === "On-Time").length,
+        icon: "bi-check-circle-fill",
+        subtitle: "Borrowers who are repaying their NBFC-linked loans on schedule",
+        repaymentStatus: "On-Time",
+      },
+      {
+        title: "Delayed Repayment Applications",
+        value: nbfcApplications.filter((item) => item.repaymentStatus === "Delayed").length,
+        icon: "bi-clock-history",
+        subtitle: "Borrowers showing delays but still within manageable follow-up",
+        repaymentStatus: "Delayed",
+      },
+      {
+        title: "Overdue Loan Applications",
+        value: nbfcApplications.filter((item) => item.repaymentStatus === "Overdue").length,
+        icon: "bi-exclamation-triangle-fill",
+        subtitle: "Accounts that have crossed the expected repayment schedule",
+        repaymentStatus: "Overdue",
+      },
+      {
+        title: "Closed Applications",
+        value: nbfcApplications.filter((item) => item.repaymentStatus === "Closed").length,
+        icon: "bi-folder-check",
+        subtitle: "NBFC-linked loans that completed their repayment lifecycle",
+        repaymentStatus: "Closed",
+      },
+    ];
+  }, [isNbfcDashboard, nbfcApplications]);
+
   const studentDashboardRepaymentMetrics = useMemo(() => {
     if (!isStudentDashboard) return [];
 
@@ -395,24 +486,28 @@ const ChannelPartnerDashboard = () => {
       {
         title: "On-Time Repayment Applications",
         value: studentEnrollments.filter((item) => item.repaymentStatus === "On-Time").length,
+        repaymentStatus: "On-Time",
         icon: "bi-check-circle-fill",
         subtitle: "Your active loans currently repaying on schedule",
       },
       {
         title: "Delayed Repayment Applications",
         value: studentEnrollments.filter((item) => item.repaymentStatus === "Delayed").length,
+        repaymentStatus: "Delayed",
         icon: "bi-clock-history",
         subtitle: "Your loans with delayed but still manageable repayments",
       },
       {
         title: "Overdue Loan Applications",
         value: studentEnrollments.filter((item) => item.repaymentStatus === "Overdue").length,
+        repaymentStatus: "Overdue",
         icon: "bi-exclamation-triangle-fill",
         subtitle: "Your loans that crossed the expected repayment window",
       },
       {
         title: "Closed Applications",
         value: studentEnrollments.filter((item) => item.repaymentStatus === "Closed").length,
+        repaymentStatus: "Closed",
         icon: "bi-folder-check",
         subtitle: "Loans that have already completed their repayment lifecycle",
       },
@@ -819,27 +914,6 @@ const ChannelPartnerDashboard = () => {
   };
 
   const statusBody = (rowData: ILoanApplicationData) => {
-    const getLoanStatusClassName = (statusID?: number): string => {
-      switch (statusID) {
-        case LoanStatusType.PENDING:
-          return "status-pending";
-        case LoanStatusType.APPLIED:
-          return "status-applied";
-        case LoanStatusType.QUERY_RAISED:
-          return "status-query-raised";
-        case LoanStatusType.SANCTIONED:
-          return "status-sanctioned";
-        case LoanStatusType.PENDING_AT_CREDIT:
-          return "status-pending-at-credit";
-        case LoanStatusType.DISBURSED:
-          return "status-disbursed";
-        case LoanStatusType.REJECTED:
-          return "status-rejected";
-        default:
-          return "status-pending";
-      }
-    };
-
     const isClickable =
       userType === CLIENT_ROLE.CHANNEL_PARTNER ||
       userType === CLIENT_ROLE.USER_MANAGEMENT;
@@ -1449,7 +1523,7 @@ const ChannelPartnerDashboard = () => {
                   className="BtnRightHldr d-flex flex-row"
                   style={{ gap: "10px" }}
                 >
-                  {create && !isStudentDashboard && (
+                  {create && !isStudentDashboard && !isNbfcDashboard && (
                     <div className="form-group">
                       <Button
                         className="btn btn-orange-line"
@@ -1468,6 +1542,7 @@ const ChannelPartnerDashboard = () => {
                   )}
 
                   {!isEducationInstituteDashboard &&
+                    !isNbfcDashboard &&
                     !isStudentDashboard &&
                     (clientMasterRight.create ||
                       sourcingPartnerRight.create) && (
@@ -1498,7 +1573,11 @@ const ChannelPartnerDashboard = () => {
             </div>
           )}
 
-          {!status && channelPartnerInfo && !isEducationInstituteDashboard && !isStudentDashboard && (
+          {!status &&
+            channelPartnerInfo &&
+            !isEducationInstituteDashboard &&
+            !isNbfcDashboard &&
+            !isStudentDashboard && (
             <div className="col-12 ApplicationsBoxWrapper mb-4">
               <div className="row">
                 {channelPartnerInfo.totalLoanApplicationsCountByStatus.map(
@@ -1559,7 +1638,11 @@ const ChannelPartnerDashboard = () => {
           {!status && channelPartnerInfo && isEducationInstituteDashboard && (
             <>
               <div className="col-12 mb-4">
-                <section className="admin-dashboard-hero admin-dashboard-hero--education">
+                <section
+                  className="admin-dashboard-hero admin-dashboard-hero--education"
+                  role="button"
+                  tabIndex={0}
+                >
                   <div className="admin-dashboard-hero__content">
                     <div className="admin-dashboard-eyebrow">
                       <i className="bi bi-mortarboard-fill" />
@@ -1640,6 +1723,174 @@ const ChannelPartnerDashboard = () => {
                   <div className="admin-dashboard-metrics-grid admin-dashboard-metrics-grid--education">
                     {educationInstituteRepaymentMetrics.map((metric) => (
                       <div key={metric.title} className="admin-dashboard-metric-card">
+                        <div className="admin-dashboard-metric-card__icon">
+                          <i className={`bi ${metric.icon}`} />
+                        </div>
+                        <div className="admin-dashboard-metric-card__body">
+                          <div className="admin-dashboard-metric-card__title">{metric.title}</div>
+                          <div className="admin-dashboard-metric-card__value">{metric.value}</div>
+                          <div className="admin-dashboard-metric-card__subtitle">
+                            {metric.subtitle}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            </>
+          )}
+
+          {!status && channelPartnerInfo && isNbfcDashboard && (
+            <>
+              <div className="col-12 mb-4">
+                <section
+                  className="admin-dashboard-hero admin-dashboard-hero--education"
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className="admin-dashboard-hero__content">
+                    <div className="admin-dashboard-eyebrow">
+                      <i className="bi bi-bank2" />
+                      NBFC Dashboard
+                    </div>
+                    <h1 className="admin-dashboard-hero__title">Students Loan Summary</h1>
+                    <p className="admin-dashboard-hero__copy">
+                      Monitor student applications, sanction progress, and repayment behaviour
+                      from one NBFC-focused dashboard.
+                    </p>
+
+                    <div className="admin-dashboard-hero__chips">
+                      <div className="admin-dashboard-pill">
+                        <i className="bi bi-journal-check" />
+                        {nbfcApplications.length} applications in pipeline
+                      </div>
+                      <div className="admin-dashboard-pill">
+                        <i className="bi bi-bank" />
+                        {
+                          nbfcApplications.filter(
+                            (item) => item.loanApplicationStatus === "Disbursed",
+                          ).length
+                        } disbursed applications
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="admin-dashboard-hero__spotlight">
+                    <div className="admin-dashboard-spotlight-card">
+                      <div className="admin-dashboard-spotlight-card__label">
+                        Approved/Sanctioned
+                      </div>
+                      <div className="admin-dashboard-spotlight-card__value">
+                        {
+                          nbfcApplications.filter(
+                            (item) =>
+                              item.loanApplicationStatus === "Approved" ||
+                              item.loanApplicationStatus === "Sanctioned",
+                          ).length
+                        }
+                      </div>
+                      <div className="admin-dashboard-spotlight-card__helper">
+                        Applications successfully moved to approval or sanction.
+                      </div>
+                    </div>
+
+                    <div className="admin-dashboard-spotlight-card">
+                      <div className="admin-dashboard-spotlight-card__label">
+                        Disbursed Applications
+                      </div>
+                      <div className="admin-dashboard-spotlight-card__value">
+                        {
+                          nbfcApplications.filter(
+                            (item) => item.loanApplicationStatus === "Disbursed",
+                          ).length
+                        }
+                      </div>
+                      <div className="admin-dashboard-spotlight-card__helper">
+                        Students who have already received NBFC disbursals.
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <div className="col-12 mb-4">
+                <section className="admin-dashboard-metrics-grid admin-dashboard-metrics-grid--education">
+                  {nbfcSummaryMetrics.map((metric) => (
+                    <div
+                      key={metric.title}
+                      className="admin-dashboard-metric-card"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() =>
+                        navigate(RoutePathConstant.private.educationNbfcStudentApplications, {
+                          state: {
+                            loanApplicationStatusFilter: metric.loanApplicationStatus,
+                          },
+                        })
+                      }
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          navigate(RoutePathConstant.private.educationNbfcStudentApplications, {
+                            state: {
+                              loanApplicationStatusFilter: metric.loanApplicationStatus,
+                            },
+                          });
+                        }
+                      }}
+                    >
+                      <div className="admin-dashboard-metric-card__icon">
+                        <i className={`bi ${metric.icon}`} />
+                      </div>
+                      <div className="admin-dashboard-metric-card__body">
+                        <div className="admin-dashboard-metric-card__title">{metric.title}</div>
+                        <div className="admin-dashboard-metric-card__value">{metric.value}</div>
+                        <div className="admin-dashboard-metric-card__subtitle">
+                          {metric.subtitle}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </section>
+              </div>
+
+              <div className="col-12 mb-4">
+                <section className="admin-dashboard-panel">
+                  <div className="admin-dashboard-section-head">
+                    <div>
+                      <TableTitle title="Students Loan Summary" />
+                      <p className="admin-dashboard-section-copy mb-0">
+                        Current repayment health across NBFC-managed student applications.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="admin-dashboard-metrics-grid admin-dashboard-metrics-grid--education">
+                    {nbfcRepaymentMetrics.map((metric) => (
+                      <div
+                        key={metric.title}
+                        className="admin-dashboard-metric-card"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() =>
+                          navigate(RoutePathConstant.private.educationNbfcStudentApplications, {
+                            state: {
+                              repaymentStatusFilter: metric.repaymentStatus,
+                            },
+                          })
+                        }
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            navigate(RoutePathConstant.private.educationNbfcStudentApplications, {
+                              state: {
+                                repaymentStatusFilter: metric.repaymentStatus,
+                              },
+                            });
+                          }
+                        }}
+                      >
                         <div className="admin-dashboard-metric-card__icon">
                           <i className={`bi ${metric.icon}`} />
                         </div>
@@ -1750,7 +2001,29 @@ const ChannelPartnerDashboard = () => {
 
                   <div className="admin-dashboard-metrics-grid admin-dashboard-metrics-grid--education">
                     {studentDashboardRepaymentMetrics.map((metric) => (
-                      <div key={metric.title} className="admin-dashboard-metric-card">
+                      <div
+                        key={metric.title}
+                        className="admin-dashboard-metric-card"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() =>
+                          navigate(RoutePathConstant.private.studentEnrolledCourses, {
+                            state: {
+                              repaymentStatusFilter: metric.repaymentStatus,
+                            },
+                          })
+                        }
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            navigate(RoutePathConstant.private.studentEnrolledCourses, {
+                              state: {
+                                repaymentStatusFilter: metric.repaymentStatus,
+                              },
+                            });
+                          }
+                        }}
+                      >
                         <div className="admin-dashboard-metric-card__icon">
                           <i className={`bi ${metric.icon}`} />
                         </div>
@@ -1772,6 +2045,7 @@ const ChannelPartnerDashboard = () => {
           {!status &&
             channelPartnerInfo?.loanApplicationStatusGraphList &&
             !isEducationInstituteDashboard &&
+            !isNbfcDashboard &&
             !isStudentDashboard && (
               <div className="col-12">
                 <div className="row">
