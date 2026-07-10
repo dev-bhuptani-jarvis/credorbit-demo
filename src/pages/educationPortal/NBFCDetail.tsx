@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "primereact/button";
 import BackButton from "../../components/BackButton";
@@ -18,23 +18,8 @@ const NBFCDetail = () => {
   const { id } = useParams<RouteParams>();
 
   const [loading, setLoading] = useState<boolean>(false);
+
   const [nbfcDetail, setNbfcDetail] = useState<IEducationInstitute>();
-
-  const loanAgreementDocuments = useMemo(
-    () =>
-      (nbfcDetail?.documents || []).filter(
-        (document) => document.type === "Loan Agreement Document",
-      ),
-    [nbfcDetail],
-  );
-
-  const loanDocumentationDocuments = useMemo(
-    () =>
-      (nbfcDetail?.documents || []).filter(
-        (document) => document.type === "Loan Documentation",
-      ),
-    [nbfcDetail],
-  );
 
   const openDocument = (documentData: IEducationInstituteDocument): void => {
     const documentUrl = getNbfcDocumentUrl(documentData);
@@ -177,11 +162,7 @@ const NBFCDetail = () => {
           </div>
 
           <div className="col-12">
-            {renderDocumentSection("Loan Agreement Document", loanAgreementDocuments)}
-          </div>
-
-          <div className="col-12">
-            {renderDocumentSection("Loan Documentation", loanDocumentationDocuments)}
+            {renderDocumentSection("Loan Document", nbfcDetail?.documents || [])}
           </div>
         </div>
       ) : (
