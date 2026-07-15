@@ -37,6 +37,8 @@ export interface IUserInfo {
   udhyamAadhaar: string | null;
   userConsents: UserConsentData[];
   cpCompanyLogo?: string;
+  constitution?: string | null;
+  website?: string | null;
 }
 
 interface UserConsentData {
@@ -72,7 +74,7 @@ interface CoApplicantData {
   creditScore?: number | null;
 }
 
-interface PartnerData {
+export interface PartnerData {
   id: string;
   name: string;
   firstName: string | null;
@@ -85,9 +87,11 @@ interface PartnerData {
   city: string | null;
   pinCode: string | null;
   mobile: string | null;
+  email?: string | null;
   dateOfBirth: string | null;
   gender: string | null;
   creditScore: string | null;
+  profilePicture?: string | null;
 }
 
 export interface IUserValidation {

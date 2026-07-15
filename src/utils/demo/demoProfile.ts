@@ -7,6 +7,49 @@ const wait = (ms: number) =>
     setTimeout(resolve, ms);
   });
 
+const PROFILE_STORAGE_PREFIX = "credorbit.demo.profile";
+
+const canUseStorage = (): boolean =>
+  typeof window !== "undefined" && !!window.localStorage;
+
+const getProfileStorageKey = (profileId: string): string =>
+  `${PROFILE_STORAGE_PREFIX}.${profileId}`;
+
+const readStoredProfile = (profileId: string): IUserProfileResponse | null => {
+  if (!canUseStorage()) return null;
+
+  try {
+    const storedValue = window.localStorage.getItem(getProfileStorageKey(profileId));
+    return storedValue ? (JSON.parse(storedValue) as IUserProfileResponse) : null;
+  } catch {
+    return null;
+  }
+};
+
+const persistProfile = (profile: IUserProfileResponse): void => {
+  if (!canUseStorage() || !profile?.data?.id) return;
+  window.localStorage.setItem(getProfileStorageKey(profile.data.id), JSON.stringify(profile));
+};
+
+const withStoredProfile = (profile: IUserProfileResponse): IUserProfileResponse => {
+  const storedProfile = readStoredProfile(profile.data.id || "");
+
+  if (!storedProfile) return profile;
+
+  return {
+    ...profile,
+    ...storedProfile,
+    data: {
+      ...profile.data,
+      ...storedProfile.data,
+      partners:
+        storedProfile.data?.partners && storedProfile.data.partners.length > 0
+          ? storedProfile.data.partners
+          : profile.data.partners,
+    },
+  };
+};
+
 const adminProfileResponse = {
   status: true,
 
@@ -51,7 +94,65 @@ const adminProfileResponse = {
 
     coApplicants: [],
 
-    partners: [],
+    partners: [
+      {
+        id: "edu-auth-001",
+        name: "Rhea Desai",
+        firstName: "Rhea",
+        middleName: "",
+        lastName: "Desai",
+        pan: "RHEAD1234K",
+        aadhaarNumber: "XXXX-XXXX-3344",
+        address: "Satellite Campus Road, Ahmedabad",
+        state: "Gujarat",
+        city: "Ahmedabad",
+        pinCode: "380015",
+        mobile: "9876501234",
+        email: "rhea.desai@educationinstituteone.demo",
+        dateOfBirth: "1990-09-14",
+        gender: "F",
+        creditScore: null,
+        profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      },
+      {
+        id: "edu-auth-002",
+        name: "Manav Trivedi",
+        firstName: "Manav",
+        middleName: "",
+        lastName: "Trivedi",
+        pan: "MANAT1234P",
+        aadhaarNumber: "XXXX-XXXX-7788",
+        address: "Commerce Six Roads, Navrangpura",
+        state: "Gujarat",
+        city: "Ahmedabad",
+        pinCode: "380009",
+        mobile: "9876505678",
+        email: "manav.trivedi@educationinstituteone.demo",
+        dateOfBirth: "1988-02-21",
+        gender: "M",
+        creditScore: null,
+        profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      },
+      {
+        id: "edu-auth-003",
+        name: "Sonal Mehta",
+        firstName: "Sonal",
+        middleName: "",
+        lastName: "Mehta",
+        pan: "SONAM1234Q",
+        aadhaarNumber: "XXXX-XXXX-9922",
+        address: "Bodakdev Ring Road, Ahmedabad",
+        state: "Gujarat",
+        city: "Ahmedabad",
+        pinCode: "380054",
+        mobile: "9876508890",
+        email: "sonal.mehta@educationinstituteone.demo",
+        dateOfBirth: "1992-11-08",
+        gender: "F",
+        creditScore: null,
+        profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      },
+    ],
 
     commission: 0,
 
@@ -316,7 +417,65 @@ const educationInstituteProfileResponse: IUserProfileResponse = {
 
     coApplicants: [],
 
-    partners: [],
+    partners: [
+      {
+        id: "edu-auth-001",
+        name: "Rhea Desai",
+        firstName: "Rhea",
+        middleName: "",
+        lastName: "Desai",
+        pan: "RHEAD1234K",
+        aadhaarNumber: "XXXX-XXXX-3344",
+        address: "Satellite Campus Road, Ahmedabad",
+        state: "Gujarat",
+        city: "Ahmedabad",
+        pinCode: "380015",
+        mobile: "9876501234",
+        email: "rhea.desai@educationinstituteone.demo",
+        dateOfBirth: "1990-09-14",
+        gender: "F",
+        creditScore: null,
+        profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      },
+      {
+        id: "edu-auth-002",
+        name: "Manav Trivedi",
+        firstName: "Manav",
+        middleName: "",
+        lastName: "Trivedi",
+        pan: "MANAT1234P",
+        aadhaarNumber: "XXXX-XXXX-7788",
+        address: "Commerce Six Roads, Navrangpura",
+        state: "Gujarat",
+        city: "Ahmedabad",
+        pinCode: "380009",
+        mobile: "9876505678",
+        email: "manav.trivedi@educationinstituteone.demo",
+        dateOfBirth: "1988-02-21",
+        gender: "M",
+        creditScore: null,
+        profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      },
+      {
+        id: "edu-auth-003",
+        name: "Sonal Mehta",
+        firstName: "Sonal",
+        middleName: "",
+        lastName: "Mehta",
+        pan: "SONAM1234Q",
+        aadhaarNumber: "XXXX-XXXX-9922",
+        address: "Bodakdev Ring Road, Ahmedabad",
+        state: "Gujarat",
+        city: "Ahmedabad",
+        pinCode: "380054",
+        mobile: "9876508890",
+        email: "sonal.mehta@educationinstituteone.demo",
+        dateOfBirth: "1992-11-08",
+        gender: "F",
+        creditScore: null,
+        profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      },
+    ],
 
     commission: 2,
 
@@ -342,7 +501,9 @@ const educationInstituteProfileResponse: IUserProfileResponse = {
 
     udhyamAadhaar: "UDYAM-GJ-24-0002211",
 
-    cpCompanyLogo: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+    constitution: "Private Limited Company",
+
+    website: "https://www.educationinstituteone.demo",
 
     userConsents: [
       {
@@ -393,7 +554,27 @@ const nbfcUserProfileResponse: IUserProfileResponse = {
 
     coApplicants: [],
 
-    partners: [],
+    partners: [
+      {
+        id: "edu-auth-001",
+        name: "Rhea Desai",
+        firstName: "Rhea",
+        middleName: "",
+        lastName: "Desai",
+        pan: "RHEAD1234K",
+        aadhaarNumber: "XXXX-XXXX-3344",
+        address: "Satellite Campus Road, Ahmedabad",
+        state: "Gujarat",
+        city: "Ahmedabad",
+        pinCode: "380015",
+        mobile: "9876501234",
+        email: "rhea.desai@educationinstituteone.demo",
+        dateOfBirth: "1990-09-14",
+        gender: "F",
+        creditScore: null,
+        profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+      },
+    ],
 
     commission: 2,
 
@@ -867,7 +1048,7 @@ export const getDemoUserProfileByContext = async (
       userId === "demo-admin-id-001" ||
       email === "info@credorbit.com"
     ) {
-      return adminProfileResponse;
+      return withStoredProfile(adminProfileResponse);
     }
 
     if (
@@ -876,14 +1057,14 @@ export const getDemoUserProfileByContext = async (
       userId === "demo-sp-id-001" ||
       email === "credsp1@yopmail.com"
     ) {
-      return sourcingPartnerProfileResponse;
+      return withStoredProfile(sourcingPartnerProfileResponse);
     }
 
     if (
       userId === "edu-inst-001" ||
       email === "educationinstitute1@yopmail.com"
     ) {
-      return educationInstituteProfileResponse;
+      return withStoredProfile(educationInstituteProfileResponse);
     }
 
     if (
@@ -891,7 +1072,7 @@ export const getDemoUserProfileByContext = async (
       email === "nbfc1@yopmail.com" ||
       roleName === "nbfc user"
     ) {
-      return nbfcUserProfileResponse;
+      return withStoredProfile(nbfcUserProfileResponse);
     }
 
     if (
@@ -899,7 +1080,7 @@ export const getDemoUserProfileByContext = async (
       email === "student1@yopmail.com" ||
       roleName === "student"
     ) {
-      return impersonatedClientProfileResponse;
+      return withStoredProfile(impersonatedClientProfileResponse);
     }
 
     if (
@@ -909,7 +1090,7 @@ export const getDemoUserProfileByContext = async (
       email === "client@yopmail.com" ||
       email === "nexustest@yopmail.com"
     ) {
-      return impersonatedClientProfileResponse;
+      return withStoredProfile(impersonatedClientProfileResponse);
     }
 
     if (
@@ -917,12 +1098,26 @@ export const getDemoUserProfileByContext = async (
       roleName === "channel partner" ||
       userId === "3ac6f9cf-ef3c-44de-a5b6-c2d4d3848ed9"
     ) {
-      return channelPartnerProfileResponse;
+      return withStoredProfile(channelPartnerProfileResponse);
     }
 
   } catch {
-    return channelPartnerProfileResponse;
+    return withStoredProfile(channelPartnerProfileResponse);
   }
 
-  return channelPartnerProfileResponse;
+  return withStoredProfile(channelPartnerProfileResponse);
+};
+
+export const persistDemoProfileById = (
+  profileId: string,
+  profile: IUserProfileResponse,
+): void => {
+  if (!profileId) return;
+  persistProfile({
+    ...profile,
+    data: {
+      ...profile.data,
+      id: profileId,
+    },
+  });
 };

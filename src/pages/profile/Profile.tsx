@@ -40,6 +40,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import Loader from "../../components/Loader";
+import CameraCaptureDialog from "../../components/CameraCaptureDialog";
 import usePermission from "../../hooks/usePermission";
 import { Dialog } from "primereact/dialog";
 import { InputOtp } from "primereact/inputotp";
@@ -73,8 +74,20 @@ import { Tooltip } from "primereact/tooltip";
 import { setProfileUpdated } from "../../store/reducer/profileSlice";
 import { Image } from "primereact/image";
 
+const constitutionOptions = [
+  { label: "Proprietorship", value: "Proprietorship" },
+  { label: "Partnership", value: "Partnership" },
+  { label: "Private Limited Company", value: "Private Limited Company" },
+  { label: "Public Limited Company", value: "Public Limited Company" },
+  { label: "LLP", value: "LLP" },
+  { label: "Society", value: "Society" },
+  { label: "Trust", value: "Trust" },
+];
+
 const Profile = () => {
   const [userFormData, setUserFormData] = useState<IUserInfo>();
+
+  console.log('userFormData', userFormData)
 
   const [formErrors, setFormErrors] = useState<IUserValidation>({
     bankAccountNumber: validationMessages.bankAccountNumberRequired,
@@ -107,6 +120,9 @@ const Profile = () => {
   const [selectedPartnerDraft, setSelectedPartnerDraft] = useState<
     IUserInfo["partners"][number] | null
   >(null);
+
+  const [showAuthorizedPersonCamera, setShowAuthorizedPersonCamera] =
+    useState<boolean>(false);
 
   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
 
@@ -156,11 +172,12 @@ const Profile = () => {
 
   const dispatch = useDispatch();
 
-  const isRestrictedBusinessProfile = [
-    "Educational Institute",
-    "NBFC User",
-    "NBFC",
-  ].includes(userFormData?.role || "");
+  const isEducationInstituteProfile =
+    (userFormData?.role || "") === "Educational Institute";
+
+  const isNbfcRestrictedProfile = ["NBFC User", "NBFC"].includes(
+    userFormData?.role || "",
+  );
 
   const fetchUserInfo = async (): Promise<void> => {
     setLoading(true);
@@ -498,6 +515,15 @@ const Profile = () => {
         break;
       }
 
+      case "constitution":
+      case "website": {
+        setUserFormData({
+          ...userFormData!,
+          [name]: value.trim(),
+        });
+        break;
+      }
+
       case "mobileNumber": {
         const isValid: boolean =
           INDIAN_MOBILE_NUMBER_PATTERN.test(value) && value.length === 10;
@@ -640,6 +666,24 @@ const Profile = () => {
     setLoading(false);
   };
 
+  const handlePartnerPhotoChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    const selectedFile = e.target.files?.[0];
+
+    if (!selectedFile || !selectedPartnerDraft) {
+      e.target.value = "";
+      return;
+    }
+
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      handlePartnerDraftChange("profilePicture", String(fileReader.result || ""));
+    };
+    fileReader.readAsDataURL(selectedFile);
+    e.target.value = "";
+  };
+
   const getEncryptedPartners = (
     partners: IUserInfo["partners"] | undefined,
   ): Record<string, unknown>[] =>
@@ -655,6 +699,7 @@ const Profile = () => {
             "middleName",
             "lastName",
             "gender",
+            "profilePicture",
           ].includes(key)
         ) {
           encryptedPartner[key] = partner[key];
@@ -718,6 +763,9 @@ const Profile = () => {
       "mobileNumber",
       encryptVAPTData(String(userFormData?.mobileNumber)),
     );
+
+    formData.append("constitution", userFormData?.constitution || "");
+    formData.append("website", userFormData?.website || "");
 
     formData.append("userConsents", JSON.stringify(userFormData?.userConsents));
     formData.append(
@@ -844,6 +892,9 @@ const Profile = () => {
       encryptVAPTData(String(userFormData?.mobileNumber)),
     );
 
+    formData.append("constitution", userFormData?.constitution || "");
+    formData.append("website", userFormData?.website || "");
+
     formData.append("userConsents", JSON.stringify(userFormData?.userConsents));
 
     const encryptedPartners =
@@ -859,6 +910,7 @@ const Profile = () => {
               "middleName",
               "lastName",
               "gender",
+              "profilePicture",
             ].includes(key)
           ) {
             encryptedPartner[key] = partner[key];
@@ -1380,7 +1432,8 @@ const Profile = () => {
 
                           {userData.userType ===
                             CLIENT_ROLE.CHANNEL_PARTNER &&
-                            !isRestrictedBusinessProfile && (
+                            !isEducationInstituteProfile &&
+                            !isNbfcRestrictedProfile && (
                               <>
                                 <span
                                   id="registrationLink"
@@ -1767,7 +1820,7 @@ const Profile = () => {
                           placeholder="Select GST number to view address"
                         />
 
-                        {!isRestrictedBusinessProfile &&
+                        {!isNbfcRestrictedProfile &&
                           <>
                             {/* Trade Name */}
                             <ProfileTextField
@@ -1791,7 +1844,7 @@ const Profile = () => {
                       </>
                     )}
 
-                  {!isRestrictedBusinessProfile && (
+                  {!isNbfcRestrictedProfile && (
                     <div className="col-lg-4 col-md-6 col-sm-12 col-12">
                       <div className="form-group mb-4">
                         <label
@@ -1817,8 +1870,60 @@ const Profile = () => {
                     </div>
                   )}
 
+                  {isEducationInstituteProfile && (
+                    <>
+                      <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                        <div className="form-group mb-4">
+                          <label className="form-label small" htmlFor="constitution">
+                            Constitution
+                          </label>
+
+                          <Dropdown
+                            id="constitution"
+                            className="w-100"
+                            value={userFormData?.constitution || ""}
+                            options={constitutionOptions}
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Select constitution"
+                            onChange={(e) =>
+                              setUserFormData((prev) =>
+                                prev
+                                  ? {
+                                    ...prev,
+                                    constitution: e.value,
+                                  }
+                                  : prev,
+                              )
+                            }
+                            disabled={!isEditable}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                        <div className="form-group mb-4">
+                          <label className="form-label small" htmlFor="website">
+                            Website
+                          </label>
+
+                          <InputText
+                            id="website"
+                            className="form-control"
+                            placeholder="Enter institute website"
+                            name="website"
+                            value={userFormData?.website ?? ""}
+                            onChange={handleChange}
+                            disabled={!isEditable}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
                   {/* Company Logo */}
-                  {userData.userType === CLIENT_ROLE.CHANNEL_PARTNER && (
+                  {userData.userType === CLIENT_ROLE.CHANNEL_PARTNER &&
+                    !isEducationInstituteProfile && (
                     <div className="col-lg-4 col-md-6 col-sm-12 col-12 mb-4">
                       <label className="form-label">Company Logo</label>
 
@@ -1900,7 +2005,8 @@ const Profile = () => {
 
           {(userData.userType === CLIENT_ROLE.CHANNEL_PARTNER ||
             userData.userType === CLIENT_ROLE.SOURCING_PARTNER) &&
-            !isRestrictedBusinessProfile && (
+            !isNbfcRestrictedProfile &&
+            !isEducationInstituteProfile && (
               <div className="col-lg-12 mb-2">
                 <div className="titleMainWrapper">
                   <h2 className="txt-24">Bank Details</h2>
@@ -2030,7 +2136,7 @@ const Profile = () => {
             )}
         </div>
 
-        {!isRestrictedBusinessProfile &&
+        {!isNbfcRestrictedProfile &&
           !IsNullOrEmptyArray(userFormData?.userConsents || []) && (
             <div className="col-lg-12 mb-4">
               <div className="titleMainWrapper">
@@ -2069,17 +2175,25 @@ const Profile = () => {
 
         {(userData.userType === CLIENT_ROLE.CUSTOMER ||
           userData.userType === CLIENT_ROLE.CHANNEL_PARTNER) &&
-          !isRestrictedBusinessProfile && (
+          !isNbfcRestrictedProfile && (
             <div className="col-lg-12 mb-4">
               <div className="titleMainWrapper">
-                <h2 className="txt-24">Partners / Directors</h2>
+                <h2 className="txt-24">
+                  {isEducationInstituteProfile
+                    ? "Authorized Persons"
+                    : "Partners / Directors"}
+                </h2>
 
                 {create && isEditable && (
                   <div className="btnGroup">
                     <Button
                       className="btn btn-orange fw-bold"
                       onClick={() => handleChangeTargetUser(CLIENT_ROLE.PARTNER)}
-                      label="Add Partners"
+                      label={
+                        isEducationInstituteProfile
+                          ? "Add Authorized Person"
+                          : "Add Partners"
+                      }
                       iconPos="left"
                       icon="bi bi-plus-circle me-2"
                     />
@@ -2096,8 +2210,18 @@ const Profile = () => {
                       <div key={partner.id} className="profilePersonCard">
                         <div className="profilePersonCardTop">
                           <div className="profilePersonInfo">
+                            {partner.profilePicture && (
+                              <img
+                                src={partner.profilePicture}
+                                alt={partner.name}
+                                className="profilePersonThumb"
+                              />
+                            )}
                             <h3>{partner.name}</h3>
-                            <p>{partner.pan}</p>
+                            <p>
+                              {partner.pan}
+                              {partner.email ? ` • ${partner.email}` : ""}
+                            </p>
                           </div>
 
                           <div className="profilePersonActions">
@@ -2130,7 +2254,9 @@ const Profile = () => {
                                     handleDelete(
                                       partner.id,
                                       CLIENT_ROLE.CHANNEL_PARTNER,
-                                      "Partner/Director",
+                                      isEducationInstituteProfile
+                                        ? "Authorized Person"
+                                        : "Partner/Director",
                                     )
                                   }
                                   aria-label="Delete Partner"
@@ -2206,7 +2332,11 @@ const Profile = () => {
                   })}
 
                 {IsNullOrEmptyArray(userFormData?.partners || []) && (
-                  <p className="small">No Partners Found</p>
+                  <p className="small">
+                    {isEducationInstituteProfile
+                      ? "No Authorized Person Found"
+                      : "No Partners Found"}
+                  </p>
                 )}
               </div>
             </div>
@@ -2421,7 +2551,7 @@ const Profile = () => {
 
       {selectedPartnerIndex !== null && selectedPartnerDraft && (
         <Dialog
-          header={`${selectedPartnerDraft.name || "Partner"} Details`}
+          header={`${selectedPartnerDraft.name || (isEducationInstituteProfile ? "Authorized Person" : "Partner")} Details`}
           visible={selectedPartnerIndex !== null}
           modal
           onHide={handleClosePartnerDetails}
@@ -2435,7 +2565,9 @@ const Profile = () => {
             <>
               {isEditable && (
                 <span className="small text-muted d-flex mt-2">
-                  Note: Partner changes are saved separately from profile edit.
+                  {isEducationInstituteProfile
+                    ? "Note: Authorized person changes are saved separately from profile edit."
+                    : "Note: Partner changes are saved separately from profile edit."}
                 </span>
               )}
               <div className="modal-footer gap-3">
@@ -2455,6 +2587,61 @@ const Profile = () => {
         >
           <div className="row">
             <Loader isLoading={loading} />
+            <div className="col-12 mb-3">
+              <div className="educationAuthorizedPhotoPanel">
+                <div className="educationAuthorizedPhotoPreview">
+                  {selectedPartnerDraft.profilePicture ? (
+                    <img
+                      src={selectedPartnerDraft.profilePicture}
+                      alt={selectedPartnerDraft.name || "Authorized Person"}
+                    />
+                  ) : (
+                    <div className="educationAuthorizedPhotoFallback">
+                      {(selectedPartnerDraft.name || "A").charAt(0)}
+                    </div>
+                  )}
+                </div>
+
+                <div className="educationAuthorizedPhotoActions">
+                  <label
+                    htmlFor="authorizedPersonPhotoUpload"
+                    className="btn btn-orange-line mb-0"
+                  >
+                    Upload Photo
+                  </label>
+                  <button
+                    type="button"
+                    className="btn btn-orange mb-0"
+                    onClick={() => setShowAuthorizedPersonCamera(true)}
+                  >
+                    Capture Photo
+                  </button>
+                </div>
+
+                <input
+                  type="file"
+                  id="authorizedPersonPhotoUpload"
+                  accept="image/*"
+                  onChange={handlePartnerPhotoChange}
+                  className="d-none"
+                />
+              </div>
+            </div>
+
+            <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+              <div className="form-group mb-3">
+                <label className="form-label small">Name</label>
+                <InputText
+                  className="form-control"
+                  value={selectedPartnerDraft.name || ""}
+                  onChange={(e) => handlePartnerDraftChange("name", e.target.value.trimStart())}
+                  placeholder={
+                    isEducationInstituteProfile ? "Authorized person name" : "Partner name"
+                  }
+                />
+              </div>
+            </div>
+
             <div className="col-lg-4 col-md-6 col-sm-12 col-12">
               <div className="form-group mb-3">
                 <label className="form-label small">PAN</label>
@@ -2504,6 +2691,18 @@ const Profile = () => {
                     restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
                   }
                   placeholder="Partner Mobile Number"
+                />
+              </div>
+            </div>
+
+            <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+              <div className="form-group mb-3">
+                <label className="form-label small">Email</label>
+                <InputText
+                  className="form-control"
+                  value={selectedPartnerDraft.email || ""}
+                  onChange={(e) => handlePartnerDraftChange("email", e.target.value.trim())}
+                  placeholder="Authorized person email"
                 />
               </div>
             </div>
@@ -2608,6 +2807,16 @@ const Profile = () => {
           </div>
         </Dialog>
       )}
+
+      <CameraCaptureDialog
+        visible={showAuthorizedPersonCamera}
+        title="Capture Authorized Person Photo"
+        onHide={() => setShowAuthorizedPersonCamera(false)}
+        onCapture={(dataUrl) => {
+          handlePartnerDraftChange("profilePicture", dataUrl);
+          setShowAuthorizedPersonCamera(false);
+        }}
+      />
 
       {deleteModal && (
         <DeleteUserModal

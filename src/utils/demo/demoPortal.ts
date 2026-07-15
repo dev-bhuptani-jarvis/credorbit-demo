@@ -12,7 +12,11 @@ import {
   ISubscriptionPlanListingResponse,
   ISubscriptionUsageResponse,
 } from "../../interface/subscription";
-import { IPincodeFetchDetailsResponse } from "../../interface/userData";
+import {
+  IPincodeFetchDetailsResponse,
+  IUserProfileResponse,
+  PartnerData,
+} from "../../interface/userData";
 import { IAddPanCardResponse } from "../../interface/panCardResponse";
 import { ILogoutResponse } from "../../interface/logout";
 import { IUpdateLoanStatusResponse } from "../../interface/loanDetail";
@@ -24,7 +28,6 @@ import {
   ISourcingPartnerPayOutDetailResponse,
   ISourcingPartnerPayOutsResponse,
 } from "../../interface/payOuts";
-import { IUserProfileResponse } from "../../interface/userData";
 import {
   IGetAddEditRoleUserResponse,
   ISaveUserDetailData,
@@ -45,10 +48,14 @@ import {
   IRefferalListingResponse,
   IWalletListingResponse,
 } from "../../interface/wallet";
-import { encryptVAPTData } from "../functions/encryptDecrypt";
+import { decryptVAPTData, encryptVAPTData } from "../functions/encryptDecrypt";
 import { getDecryptedSessionStorage } from "../functions/sessionStorage";
 import { StorageKeyEnum } from "../constants/enum";
 import { ISourcingPartnerDetailsResponse } from "../../interface/sourcingPartner";
+import {
+  getDemoUserProfileByContext,
+  persistDemoProfileById,
+} from "./demoProfile";
 
 const wait = (ms: number) =>
   new Promise((resolve) => {
@@ -325,7 +332,109 @@ const demoEducationInstituteDashboardResponse: IChannelPartnerDashboardResponse 
   statusCode: 200,
   message: "Dashboard of the education institute fetched successfully!",
   data: {
-    ...demoChannelPartnerDashboardResponse.data,
+    totalLoanApplicationsCountByStatus: [
+      {
+        displayName: "Pending Applications",
+        displayOrder: 1,
+        amount: 11604515241,
+        noOfApplications: 5,
+        formattedAmount: "1160.45 Cr+",
+        statusID: 1,
+      },
+      {
+        displayName: "Login Applications",
+        displayOrder: 2,
+        amount: 2902000,
+        noOfApplications: 4,
+        formattedAmount: "29.02 Lac+",
+        statusID: 2,
+      },
+      {
+        displayName: "Query Raised Applications",
+        displayOrder: 3,
+        amount: 1500000,
+        noOfApplications: 1,
+        formattedAmount: "15.00 Lac+",
+        statusID: 3,
+      },
+      {
+        displayName: "Sanctioned Applications",
+        displayOrder: 4,
+        amount: 3530000,
+        noOfApplications: 4,
+        formattedAmount: "35.30 Lac+",
+        statusID: 4,
+      },
+      {
+        displayName: "Pending at Credit Applications",
+        displayOrder: 5,
+        amount: 1500000,
+        noOfApplications: 1,
+        formattedAmount: "15.00 Lac+",
+        statusID: 5,
+      },
+      {
+        displayName: "Disbursed Applications",
+        displayOrder: 6,
+        amount: 50735281222,
+        noOfApplications: 5,
+        formattedAmount: "5073.53 Cr+",
+        statusID: 6,
+      },
+      {
+        displayName: "Rejected Applications",
+        displayOrder: 7,
+        amount: 1515000,
+        noOfApplications: 2,
+        formattedAmount: "15.15 Lac+",
+        statusID: 7,
+      },
+    ],
+    loanApplicationStatusGraphList: [
+      {
+        statusID: 1,
+        status: "Pending",
+        percentageValue: 54.040405,
+        color: "#FF632C",
+      },
+      {
+        statusID: 2,
+        status: "Applied",
+        percentageValue: 2.020202,
+        color: "#3DA0E7",
+      },
+      {
+        statusID: 3,
+        status: "Query Raised",
+        percentageValue: 0.5050505,
+        color: "#F4A917",
+      },
+      {
+        statusID: 4,
+        status: "Sanctioned",
+        percentageValue: 2.020202,
+        color: "#947CFB",
+      },
+      {
+        statusID: 5,
+        status: "Pending at Credit",
+        percentageValue: 0.5050505,
+        color: "#9AC900",
+      },
+      {
+        statusID: 6,
+        status: "Disbursed",
+        percentageValue: 39.89899,
+        color: "#0BB680",
+      },
+      {
+        statusID: 7,
+        status: "Rejected",
+        percentageValue: 1.010101,
+        color: "#F64F59",
+      },
+    ],
+    isAddApplicationEnabled: true,
     userDetails: {
       contractEnforcementDate: "2025-10-09T00:00:00",
       emailID: "educationinstitute1@yopmail.com",
@@ -2468,7 +2577,7 @@ const demoPanDetailsResponse: IAddPanCardResponse = {
     middleName: "SANJAYKUMAR",
     lastName: "BHUPTANI",
     category: "person",
-    panNumber: "yMxMPliigDtX5/toz6v+xQ==",
+    panNumber: "EZNPB5567B",
     emailID: null as unknown as string,
     mobileNumber: null as unknown as string,
     dob: "DVXrbb2iCMu2YkMP3s4PyQ==",
@@ -2497,7 +2606,7 @@ const demoAddUserWithoutOtpResponse = {
     userType: 4,
     panTypeID: 11,
     roleID: 4,
-    panNumber: "yMxMPliigDtX5/toz6v+xQ==",
+    panNumber: "EZNPB5567B",
     gstNumber: null,
     roleName: "Client",
     profilePicture:
@@ -4777,8 +4886,149 @@ export const getDemoUserProfile = async (): Promise<IUserProfileResponse> => {
   return demoUserProfileResponse;
 };
 
-export const updateDemoUserProfile = async (): Promise<ILogoutResponse> => {
+export const updateDemoUserProfile = async (
+  data?: FormData,
+): Promise<ILogoutResponse> => {
   await wait(DEMO_DELAY_MS);
+
+  if (!data) {
+    return demoUpdateUserResponse;
+  }
+
+  const currentUserData = getDecryptedSessionStorage(
+    StorageKeyEnum.CRED_ORBIT_USER_DATA,
+  );
+  const impersonateUserData = getDecryptedSessionStorage(
+    StorageKeyEnum.CRED_ORBIT_IMPERSONATE_USER_DATA,
+  );
+  const isImpersonate =
+    currentUserData !== impersonateUserData &&
+    Boolean(currentUserData) &&
+    Boolean(impersonateUserData);
+
+  const currentProfile = await getDemoUserProfileByContext(
+    currentUserData,
+    impersonateUserData,
+    isImpersonate,
+  );
+
+  const currentUser =
+    (currentUserData ? JSON.parse(currentUserData) : null) ||
+    (impersonateUserData ? JSON.parse(impersonateUserData) : null);
+  const profileId = currentProfile.data.id || currentUser?.userID || currentUser?.id;
+
+  const readString = (field: string, shouldDecrypt = false): string | null => {
+    const value = data.get(field);
+    if (typeof value !== "string" || value === "") return null;
+
+    if (!shouldDecrypt) return value;
+
+    try {
+      return decryptVAPTData(value);
+    } catch {
+      return value;
+    }
+  };
+
+  const readJson = <T,>(field: string): T | null => {
+    const value = data.get(field);
+    if (typeof value !== "string" || value === "") return null;
+
+    try {
+      return JSON.parse(value) as T;
+    } catch {
+      return null;
+    }
+  };
+
+  const toDataUrl = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+
+  const partners = readJson<Record<string, unknown>[]>("partners");
+  const normalizedPartners: PartnerData[] | undefined = partners?.map((partner) => {
+    const nextPartner: Record<string, unknown> = {};
+
+    Object.entries(partner).forEach(([key, value]) => {
+      if (value === null || value === undefined || value === "") {
+        nextPartner[key] = value;
+        return;
+      }
+
+      if (
+        ["id", "name", "firstName", "middleName", "lastName", "gender", "profilePicture"].includes(
+          key,
+        )
+      ) {
+        nextPartner[key] = value;
+        return;
+      }
+
+      if (typeof value === "string") {
+        try {
+          nextPartner[key] = decryptVAPTData(value);
+        } catch {
+          nextPartner[key] = value;
+        }
+        return;
+      }
+
+      nextPartner[key] = value;
+    });
+
+    return nextPartner as unknown as PartnerData;
+  });
+
+  const nextProfile: IUserProfileResponse = {
+    ...currentProfile,
+    data: {
+      ...currentProfile.data,
+      bankName: readString("bankName") ?? currentProfile.data.bankName,
+      bankAccountNumber:
+        readString("bankAccountNumber", true) ?? currentProfile.data.bankAccountNumber,
+      ifscCode: readString("ifscCode", true) ?? currentProfile.data.ifscCode,
+      aadhaar: readString("aadhaar", true) ?? currentProfile.data.aadhaar,
+      selectedGstNumber:
+        readString("gstNumber", true) ?? currentProfile.data.selectedGstNumber,
+      address: readString("address", true) ?? currentProfile.data.address,
+      city: readString("city", true) ?? currentProfile.data.city,
+      state: readString("state", true) ?? currentProfile.data.state,
+      zipCode: readString("zipCode", true) ?? currentProfile.data.zipCode,
+      udhyamAadhaar:
+        readString("udhyamAadhaar", true) ?? currentProfile.data.udhyamAadhaar,
+      mobileNumber:
+        readString("mobileNumber", true) ?? currentProfile.data.mobileNumber,
+      constitution: readString("constitution") ?? currentProfile.data.constitution ?? null,
+      website: readString("website") ?? currentProfile.data.website ?? null,
+      billingDetails:
+        readString("billingDetails") !== null
+          ? readString("billingDetails") === "true"
+          : currentProfile.data.billingDetails,
+      userConsents:
+        readJson<typeof currentProfile.data.userConsents>("userConsents") ??
+        currentProfile.data.userConsents,
+      partners: normalizedPartners ?? currentProfile.data.partners,
+    },
+  };
+
+  const profilePictureFile = data.get("profilePicture");
+  if (profilePictureFile instanceof File) {
+    nextProfile.data.profilePicture = await toDataUrl(profilePictureFile);
+  }
+
+  const companyLogoFile = data.get("cpCompanyLogo");
+  if (companyLogoFile instanceof File) {
+    nextProfile.data.cpCompanyLogo = await toDataUrl(companyLogoFile);
+  }
+
+  if (profileId) {
+    persistDemoProfileById(profileId, nextProfile);
+  }
+
   return demoUpdateUserResponse;
 };
 

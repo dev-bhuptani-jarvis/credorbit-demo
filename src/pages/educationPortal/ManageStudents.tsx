@@ -5,100 +5,55 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
-import { InputSwitch } from "primereact/inputswitch";
-import { InputText } from "primereact/inputtext";
 import { PaginatorPageChangeEvent } from "primereact/paginator";
+import { Tooltip } from "primereact/tooltip";
 import Loader from "../../components/Loader";
 import PrimePaginator from "../../components/PrimePaginator";
 import SearchButton from "../../components/SearchButton";
+import StudentImpersonateUserModal from "../../components/StudentImpersonateUserModal";
 import TableTitle from "../../components/TableTitle";
-import {
-  IEducationStudent,
-  IEducationStudentFormData,
-} from "../../interface/educationManagement";
+import { IEducationStudent } from "../../interface/educationManagement";
 import { PaginateReqEntity } from "../../interface/pagination";
 import {
   debounceTimeInMilliseconds,
-  formatCurrencyAmount,
   formatMobileNumber,
 } from "../../utils/constants/constant";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import {
-  EMAIL_PATTERN,
-  INDIAN_MOBILE_NUMBER_PATTERN,
-  PAN_NUMBER_PATTERN,
-} from "../../utils/constants/pattern";
-import {
-  createEducationStudent,
   deleteEducationStudent,
-  getEducationStudentById,
   getEducationStudents,
-  updateEducationStudent,
 } from "../../utils/demo/demoEducationStudents";
-import { toastSuccess } from "../../utils/functions/shared";
+import { formatDate, toastSuccess } from "../../utils/functions/shared";
 import useDebouncedEffect from "../../hooks/useDebounce";
-import { IsNullOrEmptyArray } from "../../utils/functions/nullCheck";
-import { Tooltip } from "primereact/tooltip";
-import StudentImpersonateUserModal from "../../components/StudentImpersonateUserModal";
 
-export const defaultStudentForm: IEducationStudentFormData = {
-  studentName: "",
-  courseId: "",
-  studentPan: "",
-  isMinor: false,
-  parentPan: "",
-  mobileNumber: "",
-  email: "",
-  coApplicantName: "",
-  coApplicantMobileNumber: "",
-  coApplicantRelation: "",
-  isActive: true,
-};
+const repaymentStatusOptions = [
+  { label: "On-Time", value: "On-Time" },
+  { label: "Delayed", value: "Delayed" },
+  { label: "Overdue", value: "Overdue" },
+  { label: "Closed", value: "Closed" },
+  { label: "Pending", value: "Pending" },
+];
 
 const ManageStudents = () => {
   const navigate = useNavigate();
-
   const location = useLocation();
 
   const [loading, setLoading] = useState<boolean>(false);
-
   const [students, setStudents] = useState<IEducationStudent[]>([]);
-
   const [searchText, setSearchText] = useState<string>("");
-
-  const [selectedRepaymentStatus, setSelectedRepaymentStatus] = useState<string>("");
-
+  const [selectedRepaymentStatus, setSelectedRepaymentStatus] =
+    useState<string>("");
   const [filterReq, setFilterReq] = useState<PaginateReqEntity>({
     pageNumber: 0,
     pageSize: 10,
     searchText: "",
   });
-
   const [totalRecords, setTotalRecords] = useState<number>(0);
-
-  const [showStudentDialog, setShowStudentDialog] = useState<boolean>(false);
-
-  const [selectedStudent, setSelectedStudent] = useState<IEducationStudent | null>(null);
-
-  const [studentForm, setStudentForm] = useState<IEducationStudentFormData>(defaultStudentForm);
-
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-
-  const [deleteTarget, setDeleteTarget] = useState<IEducationStudent | null>(null);
-
+  const [deleteTarget, setDeleteTarget] = useState<IEducationStudent | null>(
+    null,
+  );
   const [impersonateId, setImpersonateId] = useState<string>("");
-
   const [impersonateModal, setImpersonateModal] = useState<boolean>(false);
-
-  const isEditMode = !!selectedStudent;
-
-  const repaymentStatusOptions = [
-    { label: "On-Time", value: "On-Time" },
-    { label: "Delayed", value: "Delayed" },
-    { label: "Overdue", value: "Overdue" },
-    { label: "Closed", value: "Closed" },
-    { label: "Pending", value: "Pending" },
-  ];
 
   const fetchStudents = (): void => {
     setLoading(true);
@@ -129,123 +84,6 @@ const ManageStudents = () => {
     return filteredStudents.slice(startIndex, startIndex + filterReq.pageSize);
   }, [filterReq.pageNumber, filterReq.pageSize, filteredStudents]);
 
-  const resetForm = (): void => {
-    setStudentForm(defaultStudentForm);
-    setFormErrors({});
-    setSelectedStudent(null);
-  };
-
-  const handleFieldChange = (
-    fieldName: keyof IEducationStudentFormData,
-    value: string | boolean,
-  ): void => {
-    setStudentForm((prev) => ({
-      ...prev,
-      [fieldName]: value,
-      ...(fieldName === "isMinor" && !value ? { parentPan: "" } : {}),
-    }));
-
-    setFormErrors((prev) => ({
-      ...prev,
-      [fieldName]: "",
-      ...(fieldName === "isMinor" && !value ? { parentPan: "" } : {}),
-    }));
-  };
-
-  const validateForm = (): boolean => {
-    const nextErrors: Record<string, string> = {};
-
-    if (!studentForm.studentName.trim()) {
-      nextErrors.studentName = "Student name is required.";
-    }
-
-    if (!studentForm.courseId) {
-      nextErrors.courseId = "Course is required.";
-    }
-
-    if (!PAN_NUMBER_PATTERN.test(studentForm.studentPan.trim().toUpperCase())) {
-      nextErrors.studentPan = "Enter a valid student PAN number.";
-    }
-
-    if (
-      studentForm.isMinor &&
-      !PAN_NUMBER_PATTERN.test(studentForm.parentPan.trim().toUpperCase())
-    ) {
-      nextErrors.parentPan = "Enter a valid parent PAN number.";
-    }
-
-    if (!INDIAN_MOBILE_NUMBER_PATTERN.test(studentForm.mobileNumber.trim())) {
-      nextErrors.mobileNumber = "Enter a valid 10-digit mobile number.";
-    }
-
-    if (!EMAIL_PATTERN.test(studentForm.email.trim())) {
-      nextErrors.email = "Enter a valid email address.";
-    }
-
-    if (
-      studentForm.coApplicantMobileNumber.trim() &&
-      !INDIAN_MOBILE_NUMBER_PATTERN.test(studentForm.coApplicantMobileNumber.trim())
-    ) {
-      nextErrors.coApplicantMobileNumber = "Enter a valid co-applicant mobile number.";
-    }
-
-    setFormErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
-  };
-
-  const openAddDialog = (): void => {
-    resetForm();
-    setShowStudentDialog(true);
-  };
-
-  const openEditDialog = (student: IEducationStudent): void => {
-    const selectedDetail = getEducationStudentById(student.id) || student;
-
-    setSelectedStudent(selectedDetail);
-    setStudentForm({
-      studentName: selectedDetail.studentName,
-      courseId: selectedDetail.courseId,
-      studentPan: selectedDetail.studentPan,
-      isMinor: selectedDetail.isMinor,
-      parentPan: selectedDetail.parentPan,
-      mobileNumber: selectedDetail.mobileNumber,
-      email: selectedDetail.email,
-      coApplicantName: selectedDetail.coApplicantName,
-      coApplicantMobileNumber: selectedDetail.coApplicantMobileNumber,
-      coApplicantRelation: selectedDetail.coApplicantRelation,
-      isActive: selectedDetail.isActive,
-    });
-    setFormErrors({});
-    setShowStudentDialog(true);
-  };
-
-  const handleSaveStudent = (): void => {
-    if (!validateForm()) return;
-
-    setLoading(true);
-
-    if (selectedStudent) {
-      const updatedStudent = updateEducationStudent(selectedStudent.id, studentForm);
-      if (updatedStudent) {
-        toastSuccess(`${updatedStudent.studentName} updated successfully.`);
-      }
-    } else {
-      const createdStudent = createEducationStudent(studentForm);
-      toastSuccess(`${createdStudent.studentName} added successfully.`);
-    }
-
-    setShowStudentDialog(false);
-    resetForm();
-    setFilterReq((prev) => ({ ...prev, pageNumber: 0 }));
-    fetchStudents();
-    setLoading(false);
-  };
-
-  const handleImpersonate = (userId: string): void => {
-    setImpersonateId(userId);
-    setImpersonateModal(true);
-  };
-
   const handleDeleteStudent = (): void => {
     if (!deleteTarget) return;
 
@@ -253,6 +91,11 @@ const ManageStudents = () => {
     toastSuccess(`${deleteTarget.studentName} deleted successfully.`);
     setDeleteTarget(null);
     fetchStudents();
+  };
+
+  const handleImpersonate = (userId: string): void => {
+    setImpersonateId(userId);
+    setImpersonateModal(true);
   };
 
   const onPageChange = (event: PaginatorPageChangeEvent): void => {
@@ -318,8 +161,8 @@ const ManageStudents = () => {
                   <Dropdown
                     style={{ width: "220px" }}
                     value={selectedRepaymentStatus}
-                    onChange={(e) => {
-                      setSelectedRepaymentStatus(e.value);
+                    onChange={(event) => {
+                      setSelectedRepaymentStatus(event.value);
                       setFilterReq((prev) => ({ ...prev, pageNumber: 0 }));
                     }}
                     options={repaymentStatusOptions}
@@ -329,7 +172,12 @@ const ManageStudents = () => {
                 </div>
 
                 <div className="form-group">
-                  <Button onClick={openAddDialog} className="btn btn-orange">
+                  <Button
+                    onClick={() =>
+                      navigate(RoutePathConstant.private.educationAddStudent)
+                    }
+                    className="btn btn-orange"
+                  >
                     <i className="bi bi-plus-circle me-2" />
                     Add Student
                   </Button>
@@ -346,46 +194,28 @@ const ManageStudents = () => {
                 >
                   <Column field="studentCode" header="Student Code" />
 
-                  <Column body={(rowData: IEducationStudent) => {
-                    const tooltipId = `tooltip-${rowData.id}`;
-
-                    const style: React.CSSProperties = {
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    };
-
-                    return (
-                      <>
-                        <span
-                          id={tooltipId}
-                          style={style}
-                          onClick={() => {
-                            handleImpersonate(rowData.id);
-                          }}
-                        >
-                          {rowData.studentName}
-                        </span>
-                        <Tooltip
-                          target={`#${tooltipId}`}
-                          content="Login as Student"
-                          position="top"
-                        />
-                      </>
-                    );
-                  }} header="Student Name" />
-
                   <Column
-                    header="Enrolled Course Count"
-                    body={(rowData: IEducationStudent) =>
-                      rowData.loanDetails.enrolledCourseCount
-                    }
-                  />
+                    body={(rowData: IEducationStudent) => {
+                      const tooltipId = `tooltip-${rowData.id}`;
 
-                  <Column
-                    header="Applied Loan Amount"
-                    body={(rowData: IEducationStudent) =>
-                      formatCurrencyAmount(rowData.loanDetails.appliedLoanAmount)
-                    }
+                      return (
+                        <>
+                          <span
+                            id={tooltipId}
+                            style={{ cursor: "pointer", fontWeight: "bold" }}
+                            onClick={() => handleImpersonate(rowData.id)}
+                          >
+                            {rowData.studentName}
+                          </span>
+                          <Tooltip
+                            target={`#${tooltipId}`}
+                            content="Login as Student"
+                            position="top"
+                          />
+                        </>
+                      );
+                    }}
+                    header="Student Name"
                   />
 
                   <Column
@@ -429,7 +259,14 @@ const ManageStudents = () => {
                         </Button>
                         <Button
                           className="trash-icon p-0"
-                          onClick={() => openEditDialog(rowData)}
+                          onClick={() =>
+                            navigate(
+                              RoutePathConstant.private.educationEditStudent.replace(
+                                ":id",
+                                rowData.id,
+                              ),
+                            )
+                          }
                         >
                           <i className="bi bi-pencil" />
                         </Button>
@@ -445,176 +282,16 @@ const ManageStudents = () => {
                 </DataTable>
               </div>
 
-              {!IsNullOrEmptyArray(paginatedStudents) && (
-                <PrimePaginator
-                  onPageChange={onPageChange}
-                  pageNumber={filterReq.pageNumber}
-                  pageSize={filterReq.pageSize}
-                  totalRecords={totalRecords}
-                />
-              )}
+              <PrimePaginator
+                pageNumber={filterReq.pageNumber}
+                pageSize={filterReq.pageSize}
+                totalRecords={totalRecords}
+                onPageChange={onPageChange}
+              />
             </div>
           </div>
         </div>
       </div>
-
-      <Dialog
-        header={isEditMode ? "Update Student" : "Add Student"}
-        visible={showStudentDialog}
-        className="modalWrapper"
-        onHide={() => {
-          setShowStudentDialog(false);
-          resetForm();
-        }}
-        draggable={false}
-        resizable={false}
-        blockScroll
-        style={{ width: "860px" }}
-        footer={
-          <div className="modal-footer gap-3">
-            <Button
-              className="btn btn-black-line w-100 text-center"
-              onClick={() => {
-                setShowStudentDialog(false);
-                resetForm();
-              }}
-              label="Cancel"
-            />
-            <Button
-              className="btn btn-orange w-100 text-center"
-              onClick={handleSaveStudent}
-              label={isEditMode ? "Update Student" : "Save Student"}
-            />
-          </div>
-        }
-      >
-        <div className="row g-3">
-          <div className="form-group col-sm-12 col-lg-6">
-            <label className="form-label" htmlFor="studentName">
-              Student Name<sup>*</sup>
-            </label>
-            <InputText
-              id="studentName"
-              className="form-control"
-              placeholder="Enter student name"
-              value={studentForm.studentName}
-              onChange={(e) => handleFieldChange("studentName", e.target.value)}
-            />
-            {formErrors.studentName && <small className="error">{formErrors.studentName}</small>}
-          </div>
-
-          <div className="form-group col-sm-12 col-lg-6">
-            <label className="form-label" htmlFor="studentPan">
-              Student PAN<sup>*</sup>
-            </label>
-            <InputText
-              id="studentPan"
-              className="form-control"
-              placeholder="Enter student PAN"
-              value={studentForm.studentPan}
-              onChange={(e) => handleFieldChange("studentPan", e.target.value.toUpperCase())}
-            />
-            {formErrors.studentPan && <small className="error">{formErrors.studentPan}</small>}
-          </div>
-
-          <div className="form-group col-sm-12 col-lg-6">
-            <label className="form-label" htmlFor="studentMobile">
-              Mobile Number<sup>*</sup>
-            </label>
-            <InputText
-              id="studentMobile"
-              className="form-control"
-              placeholder="Enter 10-digit mobile number"
-              value={studentForm.mobileNumber}
-              maxLength={10}
-              onChange={(e) =>
-                handleFieldChange(
-                  "mobileNumber",
-                  e.target.value.replace(/\D/g, "").slice(0, 10),
-                )
-              }
-            />
-            {formErrors.mobileNumber && <small className="error">{formErrors.mobileNumber}</small>}
-          </div>
-
-          <div className="form-group col-sm-12 col-lg-6">
-            <label className="form-label" htmlFor="studentEmail">
-              Email Address<sup>*</sup>
-            </label>
-            <InputText
-              id="studentEmail"
-              className="form-control"
-              placeholder="Enter student email address"
-              value={studentForm.email}
-              onChange={(e) => handleFieldChange("email", e.target.value)}
-            />
-            {formErrors.email && <small className="error">{formErrors.email}</small>}
-          </div>
-
-          <div className="col-12">
-            <h6 className="mb-2">Co-applicant (Optional)</h6>
-          </div>
-
-          <div className="form-group col-sm-12 col-lg-4">
-            <label className="form-label" htmlFor="coApplicantName">
-              Co-applicant Name
-            </label>
-            <InputText
-              id="coApplicantName"
-              className="form-control"
-              placeholder="Enter parent or guardian name"
-              value={studentForm.coApplicantName}
-              onChange={(e) => handleFieldChange("coApplicantName", e.target.value)}
-            />
-          </div>
-
-          <div className="form-group col-sm-12 col-lg-4">
-            <label className="form-label" htmlFor="coApplicantMobile">
-              Co-applicant Mobile
-            </label>
-            <InputText
-              id="coApplicantMobile"
-              className="form-control"
-              placeholder="Enter co-applicant mobile"
-              value={studentForm.coApplicantMobileNumber}
-              maxLength={10}
-              onChange={(e) =>
-                handleFieldChange(
-                  "coApplicantMobileNumber",
-                  e.target.value.replace(/\D/g, "").slice(0, 10),
-                )
-              }
-            />
-            {formErrors.coApplicantMobileNumber && (
-              <small className="error">{formErrors.coApplicantMobileNumber}</small>
-            )}
-          </div>
-
-          <div className="form-group col-sm-12 col-lg-4">
-            <label className="form-label" htmlFor="coApplicantRelation">
-              Co-applicant Relation
-            </label>
-            <InputText
-              id="coApplicantRelation"
-              className="form-control"
-              placeholder="Enter relation"
-              value={studentForm.coApplicantRelation}
-              onChange={(e) => handleFieldChange("coApplicantRelation", e.target.value)}
-            />
-          </div>
-
-          <div className="form-group col-12">
-            <label className="form-label d-block mb-2">Status</label>
-            <div className="d-flex align-items-center gap-2">
-              <InputSwitch
-                checked={studentForm.isActive}
-                onChange={(e) => handleFieldChange("isActive", !!e.value)}
-              />
-              <span>{studentForm.isActive ? "Active" : "Inactive"}</span>
-            </div>
-          </div>
-        </div>
-      </Dialog>
 
       <Dialog
         header="Delete Student"
@@ -641,8 +318,7 @@ const ManageStudents = () => {
         }
       >
         <p className="mb-0">
-          Are you sure you want to delete{" "}
-          <strong>{deleteTarget?.studentName}</strong>?
+          Are you sure you want to delete <strong>{deleteTarget?.studentName}</strong>?
         </p>
       </Dialog>
 

@@ -73,6 +73,7 @@ import {
   LoanStatus,
   LoanStatusType,
   StorageKeyEnum,
+  AdminDateFilterType,
 } from "../../utils/constants/enum";
 import { useDispatch } from "react-redux";
 import { IClientDashboardResponse } from "../../interface/clientDashboard";
@@ -100,6 +101,28 @@ import { ISubscriptionListingResponse } from "../../interface/subscription";
 import { getStudentEnrollments } from "../../utils/demo/demoStudentEnrollments";
 import { getNbfcEducationLoanApplications } from "../../utils/demo/demoEducationLoanFlow";
 import { getEducationStudentById } from "../../utils/demo/demoEducationStudents";
+import { IEducationStudentEnrollment } from "../../interface/educationManagement";
+
+const adminDateFilters = [
+  { label: "Today", value: AdminDateFilterType.TODAY },
+  { label: "Last Week", value: AdminDateFilterType.LAST_WEEK },
+  { label: "Last 30 Days", value: AdminDateFilterType.LAST_30_DAYS },
+  { label: "This Quarter", value: AdminDateFilterType.THIS_QUARTER },
+  { label: "Last 1 Year", value: AdminDateFilterType.LAST_1_YEAR },
+  { label: "Custom Range", value: AdminDateFilterType.CUSTOM_DATE_RANGE },
+  { label: "All", value: AdminDateFilterType.ALL },
+];
+
+const educationDashboardChartColors = [
+  "#ff632c",
+  "#2563eb",
+  "#27ae60",
+  "#fc902c",
+  "#7c3aed",
+  "#4bd184",
+  "#3da0e7",
+  "#ff4d4f",
+];
 
 const ChannelPartnerDashboard = () => {
   const EDUCATION_INSTITUTE_USER_ID = "edu-inst-001";
@@ -200,6 +223,16 @@ const ChannelPartnerDashboard = () => {
 
   const [selectedComments, setSelectedComments] = useState<string>("");
 
+  const [educationDateFilter, setEducationDateFilter] =
+    useState<AdminDateFilterType>(AdminDateFilterType.ALL);
+
+  const [educationStartDate, setEducationStartDate] = useState<Date | null>(null);
+
+  const [educationEndDate, setEducationEndDate] = useState<Date | null>(null);
+
+  const [educationDisbursementView, setEducationDisbursementView] =
+    useState<"monthly" | "yearly">("monthly");
+
   const { search } = useLocation();
 
   const navigate = useNavigate();
@@ -265,6 +298,420 @@ const ChannelPartnerDashboard = () => {
     [isStudentDashboard, userID],
   );
 
+  const educationInstituteEnrollments = useMemo(() => {
+    if (!isEducationInstituteDashboard) return [];
+    return getStudentEnrollments();
+  }, [isEducationInstituteDashboard]);
+
+  const educationInstituteDisbursementEntries = useMemo(
+    () => [
+      {
+        date: "2025-02-18",
+        amount: 50000,
+        courseName: "Certificate in NBFC Operations",
+      },
+      {
+        date: "2025-05-12",
+        amount: 88000,
+        courseName: "Diploma in Credit Underwriting",
+      },
+      {
+        date: "2025-08-25",
+        amount: 120000,
+        courseName: "BBA in Finance and Lending",
+      },
+      {
+        date: "2025-11-10",
+        amount: 76000,
+        courseName: "Advanced Lending Analytics",
+      },
+      {
+        date: "2026-01-16",
+        amount: 68000,
+        courseName: "Diploma in Credit Underwriting",
+      },
+      {
+        date: "2026-03-11",
+        amount: 110000,
+        courseName: "Advanced Lending Analytics",
+      },
+      {
+        date: "2026-04-04",
+        amount: 85000,
+        courseName: "Diploma in Credit Underwriting",
+      },
+      {
+        date: "2026-05-08",
+        amount: 150000,
+        courseName: "BBA in Finance and Lending",
+      },
+      {
+        date: "2026-06-14",
+        amount: 92000,
+        courseName: "BBA in Finance and Lending",
+      },
+      {
+        date: "2026-09-09",
+        amount: 64000,
+        courseName: "Certificate in NBFC Operations",
+      },
+      {
+        date: "2026-10-21",
+        amount: 73000,
+        courseName: "Advanced Lending Analytics",
+      },
+      {
+        date: "2026-12-05",
+        amount: 98000,
+        courseName: "Diploma in Credit Underwriting",
+      },
+    ],
+    [],
+  );
+
+  const educationStatusCountMap = useMemo(() => {
+    return (channelPartnerInfo?.totalLoanApplicationsCountByStatus || []).reduce(
+      (accumulator, item) => {
+        accumulator[item.statusID] = item;
+        return accumulator;
+      },
+      {} as Record<number, ITotalCountByStatus>,
+    );
+  }, [channelPartnerInfo?.totalLoanApplicationsCountByStatus]);
+
+  const educationInstituteApplicationCards = useMemo(() => {
+    if (!isEducationInstituteDashboard) return [];
+
+    const pendingApplications = educationStatusCountMap[LoanStatusType.PENDING] || null;
+    const submittedApplications = educationStatusCountMap[LoanStatusType.APPLIED] || null;
+    const queryRaisedApplications =
+      educationStatusCountMap[LoanStatusType.QUERY_RAISED] || null;
+    const sanctionedApplications =
+      educationStatusCountMap[LoanStatusType.SANCTIONED] || null;
+    const pendingAtCreditApplications =
+      educationStatusCountMap[LoanStatusType.PENDING_AT_CREDIT] || null;
+    const disbursedApplications =
+      educationStatusCountMap[LoanStatusType.DISBURSED] || null;
+    const rejectedApplications = educationStatusCountMap[LoanStatusType.REJECTED] || null;
+
+    const rawCards = [
+      {
+        title: "Total Applications",
+        count: Object.values(educationStatusCountMap).reduce(
+          (sum, item) => sum + item.noOfApplications,
+          0,
+        ),
+        amount: Object.values(educationStatusCountMap).reduce(
+          (sum, item) => sum + item.amount,
+          0,
+        ),
+        routeStatus: "0",
+        color: "#0F172A",
+        icon: "bi-grid-1x2-fill",
+      },
+      {
+        title: "Ongoing Applications",
+        count:
+          (pendingApplications?.noOfApplications || 0) +
+          (submittedApplications?.noOfApplications || 0) +
+          (queryRaisedApplications?.noOfApplications || 0) +
+          (sanctionedApplications?.noOfApplications || 0) +
+          (pendingAtCreditApplications?.noOfApplications || 0),
+        amount:
+          (pendingApplications?.amount || 0) +
+          (submittedApplications?.amount || 0) +
+          (queryRaisedApplications?.amount || 0) +
+          (sanctionedApplications?.amount || 0) +
+          (pendingAtCreditApplications?.amount || 0),
+        routeStatus: "ongoing",
+        color: "#FF632C",
+        icon: "bi-arrow-repeat",
+      },
+      {
+        title: "Submitted Applications",
+        count: submittedApplications?.noOfApplications || 0,
+        amount: submittedApplications?.amount || 0,
+        routeStatus: String(LoanStatusType.APPLIED),
+        color: "#3DA0E7",
+        icon: "bi-file-earmark-check-fill",
+      },
+      {
+        title: "Sanctioned Applications",
+        count: sanctionedApplications?.noOfApplications || 0,
+        amount: sanctionedApplications?.amount || 0,
+        routeStatus: String(LoanStatusType.SANCTIONED),
+        color: "#947CFB",
+        icon: "bi-patch-check-fill",
+      },
+      {
+        title: "Disbursed Applications",
+        count: disbursedApplications?.noOfApplications || 0,
+        amount: disbursedApplications?.amount || 0,
+        routeStatus: String(LoanStatusType.DISBURSED),
+        color: "#0BB680",
+        icon: "bi-bank2",
+      },
+      {
+        title: "Rejected Applications",
+        count: rejectedApplications?.noOfApplications || 0,
+        amount: rejectedApplications?.amount || 0,
+        routeStatus: String(LoanStatusType.REJECTED),
+        color: "#F64F59",
+        icon: "bi-x-circle-fill",
+      },
+      {
+        title: "Query Raised Applications",
+        count: queryRaisedApplications?.noOfApplications || 0,
+        amount: queryRaisedApplications?.amount || 0,
+        routeStatus: String(LoanStatusType.QUERY_RAISED),
+        color: "#F4A917",
+        icon: "bi-question-circle-fill",
+      },
+      {
+        title: "Closed Applications",
+        count:
+          (disbursedApplications?.noOfApplications || 0) +
+          (rejectedApplications?.noOfApplications || 0),
+        amount:
+          (disbursedApplications?.amount || 0) + (rejectedApplications?.amount || 0),
+        routeStatus: "closed",
+        color: "#2563EB",
+        icon: "bi-folder-check",
+      },
+    ];
+
+    const maxCount = rawCards.reduce(
+      (currentMax, item) => Math.max(currentMax, item.count),
+      0,
+    );
+
+    return rawCards.map((item) => ({
+      ...item,
+      widthPercentage:
+        maxCount > 0 ? Math.max((item.count / maxCount) * 100, 36) : 36,
+    }));
+  }, [educationStatusCountMap, isEducationInstituteDashboard]);
+
+  const educationDisbursementTrendConfig = useMemo(() => {
+    if (!isEducationInstituteDashboard) return null;
+
+    const currentYear = Math.max(
+      ...educationInstituteDisbursementEntries.map((entry) =>
+        new Date(entry.date).getFullYear(),
+      ),
+    );
+    const lastYear = currentYear - 1;
+
+    if (educationDisbursementView === "yearly") {
+      const categories = [String(lastYear), String(currentYear)];
+      return {
+        title: "Yearly Disbursement Amount",
+        categories,
+        data: categories.map((yearLabel) =>
+          educationInstituteDisbursementEntries
+            .filter((entry) => new Date(entry.date).getFullYear() === Number(yearLabel))
+            .reduce((sum, entry) => sum + entry.amount, 0),
+        ),
+      };
+    }
+
+    const categories = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    return {
+      title: `Monthly Disbursement Amount (${currentYear})`,
+      categories,
+      data: categories.map((_, monthIndex) =>
+        educationInstituteDisbursementEntries
+          .filter((entry) => {
+            const entryDate = new Date(entry.date);
+            return (
+              entryDate.getFullYear() === currentYear &&
+              entryDate.getMonth() === monthIndex
+            );
+          })
+          .reduce((sum, entry) => sum + entry.amount, 0),
+      ),
+    };
+  }, [
+    educationDisbursementView,
+    educationInstituteDisbursementEntries,
+    isEducationInstituteDashboard,
+  ]);
+
+  const educationCourseDisbursementData = useMemo(() => {
+    if (!isEducationInstituteDashboard) return [];
+
+    return Object.entries(
+      educationInstituteDisbursementEntries.reduce((accumulator, entry) => {
+        accumulator[entry.courseName] = (accumulator[entry.courseName] || 0) + entry.amount;
+        return accumulator;
+      }, {} as Record<string, number>),
+    ).map(([courseName, amount]) => ({
+      name: courseName,
+      y: amount,
+    }));
+  }, [educationInstituteDisbursementEntries, isEducationInstituteDashboard]);
+
+  const educationStatusMixOptions = useMemo(() => {
+    if (!isEducationInstituteDashboard) return null;
+
+    return {
+      chart: {
+        type: "pie",
+        backgroundColor: "transparent",
+        height: 320,
+      },
+      credits: {
+        enabled: false,
+      },
+      title: {
+        text: null,
+      },
+      tooltip: {
+        pointFormat: "<b>{point.y}</b> applications",
+        backgroundColor: "rgba(15, 23, 42, 0.92)",
+        borderWidth: 0,
+        style: {
+          color: "var(--color-white)",
+        },
+      },
+      plotOptions: {
+        pie: {
+          innerSize: "62%",
+          borderWidth: 0,
+          dataLabels: {
+            enabled: true,
+            distance: 10,
+            style: {
+              color: "var(--color-text-black)",
+              textOutline: "none",
+              fontSize: "11px",
+              fontWeight: "600",
+            },
+            formatter: function (this: any) {
+              return this.y ? `${this.point.name}: ${this.y}` : "";
+            },
+          },
+        },
+      },
+      legend: {
+        enabled: false,
+      },
+      series: [
+        {
+          type: "pie" as const,
+          name: "Applications",
+          colorByPoint: true,
+          data: educationInstituteApplicationCards.map((item, index) => ({
+            name: item.title,
+            y: item.count,
+            color:
+              educationDashboardChartColors[index % educationDashboardChartColors.length],
+          })),
+        },
+      ],
+    };
+  }, [educationInstituteApplicationCards, isEducationInstituteDashboard]);
+
+  const parseRemainingEmis = (enrollment: IEducationStudentEnrollment): number => {
+    if (!enrollment.emiAmount || enrollment.outstandingAmount <= 0) return 0;
+    return Math.max(1, Math.ceil(enrollment.outstandingAmount / enrollment.emiAmount));
+  };
+
+  const educationPaymentHistoryCards = useMemo(() => {
+    if (!isEducationInstituteDashboard) return [];
+
+    const cardConfigs = [
+      {
+        title: "Ongoing",
+        statuses: ["On-Time", "Pending"],
+        color: "#0BB680",
+      },
+      {
+        title: "Delayed",
+        statuses: ["Delayed"],
+        color: "#F4A917",
+      },
+      {
+        title: "Overdue",
+        statuses: ["Overdue"],
+        color: "#F64F59",
+      },
+    ];
+
+    return cardConfigs.map((config) => {
+      const matchedEnrollments = educationInstituteEnrollments.filter((enrollment) =>
+        config.statuses.includes(enrollment.repaymentStatus),
+      );
+
+      return {
+        title: config.title,
+        color: config.color,
+        loanCount: matchedEnrollments.length,
+        emiCount: matchedEnrollments.reduce(
+          (sum, enrollment) => sum + parseRemainingEmis(enrollment),
+          0,
+        ),
+        emiAmount: matchedEnrollments.reduce(
+          (sum, enrollment) => sum + enrollment.emiAmount,
+          0,
+        ),
+      };
+    });
+  }, [educationInstituteEnrollments, isEducationInstituteDashboard]);
+
+  const educationPaymentHistoryTrend = useMemo(() => {
+    if (!isEducationInstituteDashboard) return null;
+
+    const categories = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    const ongoingBase =
+      educationPaymentHistoryCards.find((item) => item.title === "Ongoing")?.emiAmount || 0;
+    const delayedBase =
+      educationPaymentHistoryCards.find((item) => item.title === "Delayed")?.emiAmount || 0;
+    const overdueBase =
+      educationPaymentHistoryCards.find((item) => item.title === "Overdue")?.emiAmount || 0;
+
+    return {
+      categories,
+      series: [
+        {
+          name: "Ongoing",
+          color: "#0BB680",
+          data: [0.82, 0.9, 0.94, 1, 1.03, 1.08].map((factor) =>
+            Math.round(ongoingBase * factor),
+          ),
+        },
+        {
+          name: "Delayed",
+          color: "#F4A917",
+          data: [1.22, 1.14, 1.08, 1, 0.95, 0.91].map((factor) =>
+            Math.round(delayedBase * factor),
+          ),
+        },
+        {
+          name: "Overdue",
+          color: "#F64F59",
+          data: [0.88, 0.94, 0.98, 1, 1.09, 1.16].map((factor) =>
+            Math.round(overdueBase * factor),
+          ),
+        },
+      ],
+    };
+  }, [educationPaymentHistoryCards, isEducationInstituteDashboard]);
+
   const nbfcApplications = useMemo(() => {
     if (!isNbfcDashboard) return [];
 
@@ -274,48 +721,6 @@ const ChannelPartnerDashboard = () => {
         getEducationStudentById(application.studentId)?.loanDetails.repaymentStatus || "Pending",
     }));
   }, [isNbfcDashboard]);
-
-  const educationInstituteSummaryMetrics = useMemo(
-    () => [
-      {
-        title: "Total Registered Students",
-        value: 146,
-        icon: "bi-mortarboard-fill",
-        subtitle: "Students onboarded under the current institute cohort",
-      },
-      {
-        title: "Total Loan Applications",
-        value: 22,
-        icon: "bi-journal-text",
-        subtitle: "Applications initiated from institute-led sourcing",
-      },
-      {
-        title: "Total Approved/Sanctioned Applications",
-        value: 4,
-        icon: "bi-patch-check-fill",
-        subtitle: "Applications that moved successfully to sanction",
-      },
-      {
-        title: "Total Disbursed Applications",
-        value: 5,
-        icon: "bi-bank2",
-        subtitle: "Students whose loans have already been disbursed",
-      },
-      {
-        title: "Total Rejected Applications",
-        value: 2,
-        icon: "bi-x-circle-fill",
-        subtitle: "Applications declined in the current lending journey",
-      },
-      {
-        title: "Total Pending Applications",
-        value: 11,
-        icon: "bi-hourglass-split",
-        subtitle: "Applications still progressing through the pipeline",
-      },
-    ],
-    [],
-  );
 
   const nbfcSummaryMetrics = useMemo(() => {
     if (!isNbfcDashboard) return [];
@@ -413,36 +818,6 @@ const ChannelPartnerDashboard = () => {
       },
     ];
   }, [isStudentDashboard, studentEnrollments]);
-
-  const educationInstituteRepaymentMetrics = useMemo(
-    () => [
-      {
-        title: "On-Time Repayment Applications",
-        value: 9,
-        icon: "bi-check-circle-fill",
-        subtitle: "Accounts repaying as scheduled without any delay",
-      },
-      {
-        title: "Delayed Repayment Applications",
-        value: 4,
-        icon: "bi-clock-history",
-        subtitle: "Accounts showing payment delays but still active",
-      },
-      {
-        title: "Overdue Loan Applications",
-        value: 3,
-        icon: "bi-exclamation-triangle-fill",
-        subtitle: "Accounts that crossed the expected repayment window",
-      },
-      {
-        title: "Closed Applications",
-        value: 6,
-        icon: "bi-folder-check",
-        subtitle: "Loans that have completed the repayment lifecycle",
-      },
-    ],
-    [],
-  );
 
   const nbfcRepaymentMetrics = useMemo(() => {
     if (!isNbfcDashboard) return [];
@@ -624,8 +999,106 @@ const ChannelPartnerDashboard = () => {
     },
   };
 
+  const getEducationInstituteListingTitle = (statusValue: string): string => {
+    switch (statusValue) {
+      case "0":
+        return "Total Applications";
+      case "ongoing":
+        return "Ongoing Applications";
+      case "closed":
+        return "Closed Applications";
+      default:
+        return getTitleByStatus(statusValue);
+    }
+  };
+
+  const fetchEducationAggregateApplications = async (
+    statusIds: LoanStatusType[],
+  ): Promise<void> => {
+    setLoading(true);
+
+    const responses = await Promise.all(
+      statusIds.map((statusId) =>
+        getAllLoanApplicationsAPI({
+          userType: CLIENT_ROLE.CHANNEL_PARTNER,
+          page: 1,
+          pageSize: 200,
+          userID,
+          statusFilter: String(statusId),
+        }),
+      ),
+    );
+
+    const combinedApplications = responses
+      .filter((response) => response?.statusCode === 200)
+      .flatMap((response) => response.data.loanApplications);
+
+    const searchValue = filterReq?.searchText?.trim().toLowerCase() || "";
+
+    const filteredApplications =
+      searchValue.length === 0
+        ? combinedApplications
+        : combinedApplications.filter((application) => {
+          const searchableFields = [
+            application.customerName,
+            application.loanApplicationCode,
+            application.loanType || "",
+            application.bankName || "",
+          ];
+
+          return searchableFields.some((field) =>
+            field.toLowerCase().includes(searchValue),
+          );
+        });
+
+    const startIndex = filterReq.pageNumber * filterReq.pageSize;
+    const paginatedApplications = filteredApplications.slice(
+      startIndex,
+      startIndex + filterReq.pageSize,
+    );
+
+    setAdminInfo({
+      totalLoanApplications: filteredApplications.length,
+      loanApplications: paginatedApplications,
+    });
+    setTotalRecords(filteredApplications.length);
+    setLoading(false);
+  };
+
   const fetchDashboardDetail = async (): Promise<void> => {
     if (!status) return;
+
+    if (isEducationInstituteDashboard && status === "0") {
+      await fetchEducationAggregateApplications([
+        LoanStatusType.PENDING,
+        LoanStatusType.APPLIED,
+        LoanStatusType.QUERY_RAISED,
+        LoanStatusType.SANCTIONED,
+        LoanStatusType.PENDING_AT_CREDIT,
+        LoanStatusType.DISBURSED,
+        LoanStatusType.REJECTED,
+      ]);
+      return;
+    }
+
+    if (isEducationInstituteDashboard && status === "ongoing") {
+      await fetchEducationAggregateApplications([
+        LoanStatusType.PENDING,
+        LoanStatusType.APPLIED,
+        LoanStatusType.QUERY_RAISED,
+        LoanStatusType.SANCTIONED,
+        LoanStatusType.PENDING_AT_CREDIT,
+      ]);
+      return;
+    }
+
+    if (isEducationInstituteDashboard && status === "closed") {
+      await fetchEducationAggregateApplications([
+        LoanStatusType.DISBURSED,
+        LoanStatusType.REJECTED,
+      ]);
+      return;
+    }
 
     setLoading(true);
 
@@ -1291,6 +1764,27 @@ const ChannelPartnerDashboard = () => {
     );
   };
 
+  const handleEducationDateFilterChange = (value: AdminDateFilterType): void => {
+    setEducationDateFilter(value);
+
+    if (value !== AdminDateFilterType.CUSTOM_DATE_RANGE) {
+      setEducationStartDate(null);
+      setEducationEndDate(null);
+    }
+  };
+
+  const handleApplyEducationDateRange = (): void => {
+    if (!educationStartDate || !educationEndDate) {
+      toastError("Please select start date and end date.");
+      return;
+    }
+
+    if (educationStartDate > educationEndDate) {
+      toastError("Start date cannot be greater than end date.");
+      return;
+    }
+  };
+
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ): Promise<void> => {
@@ -1523,16 +2017,57 @@ const ChannelPartnerDashboard = () => {
                   className="BtnRightHldr d-flex flex-row"
                   style={{ gap: "10px" }}
                 >
-                  {create && !isStudentDashboard && !isNbfcDashboard && (
+                  {isEducationInstituteDashboard && (
+                    <>
+                      <div className="form-group">
+                        <Button
+                          className="btn btn-orange-line"
+                          onClick={() =>
+                            navigate(
+                              RoutePathConstant.private.educationStudentLoanApplication,
+                            )
+                          }
+                          disabled={!channelPartnerInfo?.isAddApplicationEnabled}
+                        >
+                          Add Applications
+                        </Button>
+                      </div>
+
+                      <div className="form-group">
+                        <Button
+                          className="btn btn-orange-line"
+                          onClick={() =>
+                            navigate(RoutePathConstant.private.educationManageStudents)
+                          }
+                        >
+                          Add Student
+                        </Button>
+                      </div>
+
+                      <div className="form-group">
+                        <Button
+                          className="btn btn-orange"
+                          onClick={() =>
+                            navigate(
+                              `${RoutePathConstant.private.channelPartnerDashboard}?status=ongoing`,
+                            )
+                          }
+                        >
+                          Show Ongoing Applications
+                        </Button>
+                      </div>
+                    </>
+                  )}
+
+                  {create &&
+                    !isStudentDashboard &&
+                    !isNbfcDashboard &&
+                    !isEducationInstituteDashboard && (
                     <div className="form-group">
                       <Button
                         className="btn btn-orange-line"
                         onClick={() =>
-                          isEducationInstituteDashboard
-                            ? navigate(
-                              RoutePathConstant.private.educationStudentLoanApplication
-                            )
-                            : navigate(RoutePathConstant.private.addApplications)
+                          navigate(RoutePathConstant.private.addApplications)
                         }
                         disabled={!channelPartnerInfo?.isAddApplicationEnabled}
                       >
@@ -1638,103 +2173,417 @@ const ChannelPartnerDashboard = () => {
           {!status && channelPartnerInfo && isEducationInstituteDashboard && (
             <>
               <div className="col-12 mb-4">
-                <section
-                  className="admin-dashboard-hero admin-dashboard-hero--education"
-                  role="button"
-                  tabIndex={0}
-                >
-                  <div className="admin-dashboard-hero__content">
-                    <div className="admin-dashboard-eyebrow">
-                      <i className="bi bi-mortarboard-fill" />
-                      Education Institute Dashboard
-                    </div>
-                    <h1 className="admin-dashboard-hero__title">Students Loan Summary</h1>
-                    <p className="admin-dashboard-hero__copy">
-                      Monitor student applications and repayment behaviour from one focused
-                      institute view.
-                    </p>
-
-                    <div className="admin-dashboard-hero__chips">
-                      <div className="admin-dashboard-pill">
-                        <i className="bi bi-people" />
-                        146 registered students
-                      </div>
-                      <div className="admin-dashboard-pill">
-                        <i className="bi bi-journal-check" />
-                        22 active loan applications
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="admin-dashboard-hero__spotlight">
-                    <div className="admin-dashboard-spotlight-card">
-                      <div className="admin-dashboard-spotlight-card__label">
-                        Approved/Sanctioned
-                      </div>
-                      <div className="admin-dashboard-spotlight-card__value">4</div>
-                      <div className="admin-dashboard-spotlight-card__helper">
-                        Applications successfully moved to sanction stage.
-                      </div>
-                    </div>
-
-                    <div className="admin-dashboard-spotlight-card">
-                      <div className="admin-dashboard-spotlight-card__label">
-                        Disbursed Applications
-                      </div>
-                      <div className="admin-dashboard-spotlight-card__value">5</div>
-                      <div className="admin-dashboard-spotlight-card__helper">
-                        Students who have already received disbursals.
-                      </div>
-                    </div>
-                  </div>
-                </section>
-              </div>
-
-              <div className="col-12 mb-4">
-                <section className="admin-dashboard-metrics-grid admin-dashboard-metrics-grid--education">
-                  {educationInstituteSummaryMetrics.map((metric) => (
-                    <div key={metric.title} className="admin-dashboard-metric-card">
-                      <div className="admin-dashboard-metric-card__icon">
-                        <i className={`bi ${metric.icon}`} />
-                      </div>
-                      <div className="admin-dashboard-metric-card__body">
-                        <div className="admin-dashboard-metric-card__title">{metric.title}</div>
-                        <div className="admin-dashboard-metric-card__value">{metric.value}</div>
-                        <div className="admin-dashboard-metric-card__subtitle">
-                          {metric.subtitle}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </section>
-              </div>
-
-              <div className="col-12 mb-4">
-                <section className="admin-dashboard-panel">
+                <section className="admin-dashboard-filter-panel">
                   <div className="admin-dashboard-section-head">
                     <div>
-                      <TableTitle title="Students Loan Summary" />
+                      <TableTitle title="Date Filter" />
                       <p className="admin-dashboard-section-copy mb-0">
-                        Current repayment health across institute-originated loan applications.
+                        Use the same date period shortcuts available on the admin dashboard.
                       </p>
                     </div>
                   </div>
 
-                  <div className="admin-dashboard-metrics-grid admin-dashboard-metrics-grid--education">
-                    {educationInstituteRepaymentMetrics.map((metric) => (
-                      <div key={metric.title} className="admin-dashboard-metric-card">
-                        <div className="admin-dashboard-metric-card__icon">
-                          <i className={`bi ${metric.icon}`} />
-                        </div>
-                        <div className="admin-dashboard-metric-card__body">
-                          <div className="admin-dashboard-metric-card__title">{metric.title}</div>
-                          <div className="admin-dashboard-metric-card__value">{metric.value}</div>
-                          <div className="admin-dashboard-metric-card__subtitle">
-                            {metric.subtitle}
-                          </div>
+                  <div className="admin-dashboard-filter-actions">
+                    {adminDateFilters.map((filterItem) => (
+                      <Button
+                        key={filterItem.value}
+                        className={`btn ${filterItem.value === educationDateFilter ? "btn-orange" : "btn-orange-line"}`}
+                        onClick={() => handleEducationDateFilterChange(filterItem.value)}
+                      >
+                        {filterItem.label}
+                      </Button>
+                    ))}
+                  </div>
+
+                  {educationDateFilter === AdminDateFilterType.CUSTOM_DATE_RANGE && (
+                    <div className="row g-3 mt-1">
+                      <div className="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <label className="form-label small fw-semibold">Start Date</label>
+                        <Calendar
+                          inputId="educationDashboardStartDate"
+                          value={educationStartDate}
+                          placeholder="From Date"
+                          readOnlyInput
+                          maxDate={educationEndDate || new Date()}
+                          showButtonBar
+                          className="w-100"
+                          onChange={(e) => {
+                            const selectedStartDate = e.value as Date | null;
+                            const nextEndDate =
+                              selectedStartDate &&
+                              educationEndDate &&
+                              educationEndDate < selectedStartDate
+                                ? null
+                                : educationEndDate;
+
+                            setEducationStartDate(selectedStartDate);
+                            setEducationEndDate(nextEndDate);
+                          }}
+                        />
+                      </div>
+                      <div className="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <label className="form-label small fw-semibold">End Date</label>
+                        <Calendar
+                          inputId="educationDashboardEndDate"
+                          value={educationEndDate}
+                          placeholder="To Date"
+                          readOnlyInput
+                          minDate={educationStartDate || undefined}
+                          maxDate={new Date()}
+                          showButtonBar
+                          className="w-100"
+                          disabled={!educationStartDate}
+                          onChange={(e) => setEducationEndDate(e.value as Date | null)}
+                        />
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12 d-flex align-items-end">
+                        <Button
+                          label="Apply"
+                          icon="bi bi-funnel"
+                          className="btn btn-orange gap-2"
+                          onClick={handleApplyEducationDateRange}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </section>
+              </div>
+
+              <div className="col-12">
+                <div className="row g-4 align-items-stretch">
+                  <div className="col-xl-7 col-lg-7 col-12">
+                    <section className="admin-dashboard-panel h-100">
+                      <div className="admin-dashboard-section-head">
+                        <div>
+                          <TableTitle title="Application Overview" />
+                          <p className="admin-dashboard-section-copy mb-0">
+                            Amounts and counts by application status.
+                          </p>
                         </div>
                       </div>
-                    ))}
+
+                      <div className="row g-4">
+                        {educationInstituteApplicationCards.map((card) => (
+                          <div key={card.title} className="col-md-6 col-12">
+                            <div
+                              className="admin-dashboard-status-card h-100 education-dashboard-status-card"
+                              role="button"
+                              tabIndex={0}
+                              onClick={() =>
+                                navigate(
+                                  `${RoutePathConstant.private.channelPartnerDashboard}?status=${card.routeStatus}`,
+                                )
+                              }
+                              onKeyDown={(event) => {
+                                if (event.key === "Enter" || event.key === " ") {
+                                  event.preventDefault();
+                                  navigate(
+                                    `${RoutePathConstant.private.channelPartnerDashboard}?status=${card.routeStatus}`,
+                                  );
+                                }
+                              }}
+                            >
+                              <div
+                                className="admin-dashboard-status-card__glow"
+                                style={{ backgroundColor: card.color }}
+                              />
+                              <div className="admin-dashboard-status-card__label">
+                                {card.title}
+                              </div>
+                              <div className="admin-dashboard-status-card__value">
+                                {card.count}
+                              </div>
+                              <div className="admin-dashboard-status-card__amount">
+                                Amount: {formatCurrencyAmount(card.amount)}
+                              </div>
+                              <div className="education-dashboard-status-card__arrow">
+                                <i className="bi bi-arrow-up-right" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  </div>
+
+                  <div className="col-xl-5 col-lg-5 col-12">
+                    <section className="admin-dashboard-panel h-100">
+                      <div className="admin-dashboard-section-head">
+                        <div>
+                          <TableTitle title="Application Funnel" />
+                          <p className="admin-dashboard-section-copy mb-0">
+                            Share of applications by lifecycle stage.
+                          </p>
+                        </div>
+                      </div>
+
+                      {educationStatusMixOptions && (
+                        <HighchartsReact
+                          highcharts={Highcharts}
+                          options={educationStatusMixOptions}
+                        />
+                      )}
+
+                      <div className="admin-dashboard-legend-list">
+                        {educationInstituteApplicationCards.slice(0, 5).map((card, index) => (
+                          <button
+                            key={card.title}
+                            type="button"
+                            className="admin-dashboard-legend-item education-dashboard-legend-item"
+                            onClick={() =>
+                              navigate(
+                                `${RoutePathConstant.private.channelPartnerDashboard}?status=${card.routeStatus}`,
+                              )
+                            }
+                          >
+                            <span
+                              className="admin-dashboard-legend-swatch"
+                              style={{
+                                backgroundColor:
+                                  educationDashboardChartColors[
+                                  index % educationDashboardChartColors.length
+                                  ],
+                              }}
+                            />
+                            <span className="admin-dashboard-legend-label">{card.title}</span>
+                            <span className="admin-dashboard-legend-value">{card.count}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-12 mt-4">
+                <div className="row g-4 align-items-stretch">
+                  <div className="col-xl-7 col-lg-7 col-12">
+                    <section className="admin-dashboard-panel h-100">
+                      <div className="admin-dashboard-section-head">
+                        <div>
+                          <TableTitle title="Disbursement Trend" />
+                          <p className="admin-dashboard-section-copy mb-0">
+                            Compare disbursement amount against month or year.
+                          </p>
+                        </div>
+
+                        <div className="admin-dashboard-filter-actions">
+                          <Button
+                            className={`btn ${educationDisbursementView === "monthly" ? "btn-orange" : "btn-orange-line"}`}
+                            onClick={() => setEducationDisbursementView("monthly")}
+                          >
+                            Monthly
+                          </Button>
+                          <Button
+                            className={`btn ${educationDisbursementView === "yearly" ? "btn-orange" : "btn-orange-line"}`}
+                            onClick={() => setEducationDisbursementView("yearly")}
+                          >
+                            Yearly
+                          </Button>
+                        </div>
+                      </div>
+
+                      {educationDisbursementTrendConfig && (
+                        <HighchartsReact
+                          highcharts={Highcharts}
+                          options={{
+                            chart: {
+                              type: "column",
+                              height: 340,
+                            },
+                            credits: {
+                              enabled: false,
+                            },
+                            title: {
+                              text: educationDisbursementTrendConfig.title,
+                            },
+                            xAxis: {
+                              categories: educationDisbursementTrendConfig.categories,
+                            },
+                            yAxis: {
+                              title: {
+                                text: "Disbursement Amount",
+                              },
+                              labels: {
+                                formatter: function (this: any): string {
+                                  return `₹${Number(this.value).toLocaleString("en-IN")}`;
+                                },
+                              },
+                            },
+                            legend: {
+                              enabled: false,
+                            },
+                            tooltip: {
+                              pointFormatter: function (this: any): string {
+                                return `<span style="color:${this.color}">\u25cf</span> Amount: <b>₹${Number(this.y).toLocaleString("en-IN")}</b>`;
+                              },
+                            },
+                            plotOptions: {
+                              column: {
+                                borderRadius: 8,
+                                color: "#FF632C",
+                              },
+                            },
+                            series: [
+                              {
+                                type: "column",
+                                name: "Disbursement Amount",
+                                data: educationDisbursementTrendConfig.data,
+                              },
+                            ],
+                          }}
+                        />
+                      )}
+                    </section>
+                  </div>
+
+                  <div className="col-xl-5 col-lg-5 col-12">
+                    <section className="admin-dashboard-panel h-100">
+                      <div className="admin-dashboard-section-head">
+                        <div>
+                          <TableTitle title="Course Wise Disbursement" />
+                          <p className="admin-dashboard-section-copy mb-0">
+                            Share of total disbursement completed across institute courses.
+                          </p>
+                        </div>
+                      </div>
+
+                      <HighchartsReact
+                        highcharts={Highcharts}
+                        options={{
+                          chart: {
+                            type: "pie",
+                            height: 340,
+                          },
+                          credits: {
+                            enabled: false,
+                          },
+                          title: {
+                            text: null,
+                          },
+                          tooltip: {
+                            pointFormatter: function (this: any): string {
+                              return `<span style="color:${this.color}">\u25cf</span> <b>${this.name}</b>: ₹${Number(this.y).toLocaleString("en-IN")}`;
+                            },
+                          },
+                          plotOptions: {
+                            pie: {
+                              innerSize: "52%",
+                              dataLabels: {
+                                enabled: true,
+                                formatter: function (this: any): string {
+                                  return `<b>${this.point.name}</b><br/>₹${Number(this.point.y).toLocaleString("en-IN")}`;
+                                },
+                              },
+                            },
+                          },
+                          series: [
+                            {
+                              type: "pie",
+                              name: "Disbursement Amount",
+                              data: educationCourseDisbursementData,
+                            },
+                          ],
+                        }}
+                      />
+                    </section>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-12 mt-4">
+                <section className="admin-dashboard-panel">
+                  <div className="admin-dashboard-section-head">
+                    <div>
+                      <TableTitle title="Payment History" />
+                      <p className="admin-dashboard-section-copy mb-0">
+                        Ongoing, delayed, and overdue repayment visibility with EMI trends.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="row g-4 align-items-stretch">
+                    <div className="col-xl-5 col-lg-5 col-12">
+                      <div className="admin-dashboard-user-grid education-dashboard-user-grid">
+                        {educationPaymentHistoryCards.map((card) => (
+                          <div
+                            key={card.title}
+                            className="admin-dashboard-user-card"
+                          >
+                            <div
+                              className="admin-dashboard-user-card__accent"
+                              style={{ backgroundColor: card.color }}
+                            />
+                            <div className="admin-dashboard-user-card__count">
+                              {card.loanCount}
+                            </div>
+                            <div className="admin-dashboard-user-card__name">
+                              {card.title}
+                            </div>
+                            <div className="admin-dashboard-user-card__meta">
+                              No. of Loans: {card.loanCount}
+                            </div>
+                            <div className="admin-dashboard-user-card__meta">
+                              No. of EMIs: {card.emiCount}
+                            </div>
+                            <div className="admin-dashboard-user-card__meta">
+                              Amt of EMI: {formatCurrencyAmount(card.emiAmount)}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="col-xl-7 col-lg-7 col-12">
+                      {educationPaymentHistoryTrend && (
+                        <HighchartsReact
+                          highcharts={Highcharts}
+                          options={{
+                            chart: {
+                              type: "line",
+                              height: 360,
+                            },
+                            credits: {
+                              enabled: false,
+                            },
+                            title: {
+                              text: "Payment History Trend",
+                            },
+                            xAxis: {
+                              categories: educationPaymentHistoryTrend.categories,
+                            },
+                            yAxis: {
+                              title: {
+                                text: "EMI Amount",
+                              },
+                              labels: {
+                                formatter: function (this: any): string {
+                                  return `₹${Number(this.value).toLocaleString("en-IN")}`;
+                                },
+                              },
+                            },
+                            tooltip: {
+                              shared: true,
+                              valuePrefix: "₹",
+                            },
+                            plotOptions: {
+                              line: {
+                                marker: {
+                                  enabled: true,
+                                  radius: 4,
+                                },
+                              },
+                            },
+                            series: educationPaymentHistoryTrend.series.map((series) => ({
+                              type: "line" as const,
+                              name: series.name,
+                              color: series.color,
+                              data: series.data,
+                            })),
+                          }}
+                        />
+                      )}
+                    </div>
                   </div>
                 </section>
               </div>
@@ -2066,7 +2915,13 @@ const ChannelPartnerDashboard = () => {
           {status && (
             <div className="col-12">
               <div className="titleLinkMain mb-4 d-flex justify-content-between">
-                <TableTitle title={getTitleByStatus(status)} />
+                <TableTitle
+                  title={
+                    isEducationInstituteDashboard
+                      ? getEducationInstituteListingTitle(status)
+                      : getTitleByStatus(status)
+                  }
+                />
                 <div className="BtnRightHldr">
                   <div className="col-12 d-flex gap-3 align-items-center">
                     <SearchButton

@@ -314,6 +314,7 @@ const Sidebar = () => {
         (item) =>
           item.name === "Dashboard" ||
           item.name === "Profile" ||
+          item.name === "UserManagement" ||
           item.name === "Support" ||
           item.name === "TermsAndConditions" ||
           item.name === "Policy",

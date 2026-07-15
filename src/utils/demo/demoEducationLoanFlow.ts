@@ -4,6 +4,7 @@ import {
   EducationDiscountType,
   IEducationCourse,
   IEducationLoanDraft,
+  IEducationStudentApplicant,
   IEducationStudent,
 } from "../../interface/educationManagement";
 import {
@@ -214,6 +215,10 @@ const parseCourseTenureMonths = (courseTenure: string): number => {
 const toCurrencyNumber = (value: number): number =>
   Number.isFinite(value) ? Number(value.toFixed(2)) : 0;
 
+const getPrimaryApplicant = (
+  applicants: IEducationStudentApplicant[] | undefined,
+): IEducationStudentApplicant | undefined => applicants?.[0];
+
 const normalizeEducationLoanDrafts = (
   drafts: IEducationLoanDraft[],
 ): IEducationLoanDraft[] => {
@@ -325,11 +330,17 @@ export const createEducationLoanDraft = ({
     instituteName,
     studentName: student.studentName,
     studentPan: student.studentPan,
+    studentDateOfBirth: student.studentDateOfBirth,
+    studentGender: student.studentGender,
+    studentPhoto: student.studentPhoto,
     studentEmail: student.email,
     studentMobileNumber: student.mobileNumber,
+    applicants: student.applicants,
     parentPan: student.parentPan,
-    coApplicantName: student.coApplicantName,
-    coApplicantMobileNumber: student.coApplicantMobileNumber,
+    coApplicantName: getPrimaryApplicant(student.applicants)?.name || student.coApplicantName,
+    coApplicantMobileNumber:
+      getPrimaryApplicant(student.applicants)?.mobileNumber ||
+      student.coApplicantMobileNumber,
     coApplicantRelation: student.coApplicantRelation,
     courseId: course.id,
     courseName: course.courseName,
@@ -348,7 +359,7 @@ export const createEducationLoanDraft = ({
     emiAmount: summary.emiAmount,
     totalAmountToInstitute: summary.totalAmountToInstitute,
     consentAccepted: true,
-    hasCoApplicant: !!student.coApplicantName.trim(),
+    hasCoApplicant: (student.applicants || []).length > 0,
     loanApplicationStatus: "Pending",
     sanctionDate: null,
     disbursementDate: null,
@@ -546,27 +557,25 @@ export const buildEducationCustomerInfo = (
   student: IEducationStudent,
 ): IClientDashboardData => {
   const currentEnrollments = getStudentEnrollments(DEFAULT_STUDENT_USER_ID);
-  const partnerList: IPartnerScore[] = student.coApplicantName.trim()
-    ? [
-        {
-          aadhaarNumber: "",
-          address: "Education Co-applicant Address",
-          city: "Ahmedabad",
-          creditScore: null,
-          dateOfBirth: "1990-01-01",
-          firstName: student.coApplicantName.split(" ")[0] || student.coApplicantName,
-          gender: "Female",
-          id: `co-applicant-${student.id}`,
-          lastName: student.coApplicantName.split(" ").slice(1).join(" ") || null,
-          middleName: null,
-          mobile: student.coApplicantMobileNumber || null,
-          name: student.coApplicantName,
-          pan: student.parentPan || "COPAN1234Q",
-          pinCode: "380015",
-          state: "Gujarat",
-        },
-      ]
-    : [];
+  const partnerList: IPartnerScore[] = (student.applicants || []).map(
+    (applicant, index) => ({
+      aadhaarNumber: "",
+      address: "Education Applicant Address",
+      city: "Ahmedabad",
+      creditScore: null,
+      dateOfBirth: applicant.dateOfBirth || "1990-01-01",
+      firstName: applicant.name.split(" ")[0] || applicant.name,
+      gender: applicant.gender || "Female",
+      id: applicant.id || `co-applicant-${student.id}-${index + 1}`,
+      lastName: applicant.name.split(" ").slice(1).join(" ") || null,
+      middleName: null,
+      mobile: applicant.mobileNumber || null,
+      name: applicant.name,
+      pan: applicant.pan || student.parentPan || "COPAN1234Q",
+      pinCode: "380015",
+      state: "Gujarat",
+    }),
+  );
 
   return {
     creditScore: student.creditInformation.creditScore || null,

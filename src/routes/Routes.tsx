@@ -112,6 +112,9 @@ const EducationInstituteDetail = lazy(
 const ManageCourses = lazy(() => import("../pages/educationPortal/ManageCourses"));
 const CourseDetail = lazy(() => import("../pages/educationPortal/CourseDetail"));
 const ManageStudents = lazy(() => import("../pages/educationPortal/ManageStudents"));
+const EducationStudentFormPage = lazy(
+  () => import("../pages/educationPortal/EducationStudentFormPage"),
+);
 const StudentDetail = lazy(() => import("../pages/educationPortal/StudentDetail"));
 const EducationLoanApplication = lazy(
   () => import("../pages/educationPortal/EducationLoanApplication"),
@@ -133,6 +136,9 @@ const NbfcStudentApplications = lazy(
 );
 const NbfcStudentApplicationDetail = lazy(
   () => import("../pages/educationPortal/NbfcStudentApplicationDetail"),
+);
+const StudentDetail360View = lazy(
+  () => import("../pages/educationPortal/Student360View"),
 );
 
 export const publicRoutes: RouteObject[] = [
@@ -422,6 +428,14 @@ export const privateRoutes: RouteObject[] = [
         element: <ManageStudents />,
       },
       {
+        path: RoutePathConstant.private.educationAddStudent,
+        element: <EducationStudentFormPage />,
+      },
+      {
+        path: RoutePathConstant.private.educationEditStudent,
+        element: <EducationStudentFormPage />,
+      },
+      {
         path: RoutePathConstant.private.educationStudentDetail,
         element: <StudentDetail />,
       },
@@ -452,6 +466,10 @@ export const privateRoutes: RouteObject[] = [
       {
         path: RoutePathConstant.private.educationNbfcStudentApplicationDetail,
         element: <NbfcStudentApplicationDetail />,
+      },
+      {
+        path: RoutePathConstant.private.educationStudentDetail360View,
+        element: <StudentDetail360View />,
       },
       {
         path: "*",

@@ -367,7 +367,7 @@ export const fetchUserProfile = async (): Promise<IUserProfileResponse> => {
 export const updateUserProfile = async (
   data: FormData
 ): Promise<APIResponseEntity> => {
-  return await updateDemoUserProfile()
+  return await updateDemoUserProfile(data)
 };
 
 export const deleteUser = async (

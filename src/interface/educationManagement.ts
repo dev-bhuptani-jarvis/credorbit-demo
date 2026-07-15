@@ -8,7 +8,6 @@ export interface IEducationCourse {
   courseType: "Online" | "Offline";
   isJobGuaranteed: boolean;
   description: string;
-  numberOfEmi: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -20,7 +19,6 @@ export interface IEducationCourseFormData {
   courseFees: string;
   courseType: "Online" | "Offline" | "";
   isJobGuaranteed: boolean;
-  numberOfEmi: number;
   description: string;
   isActive: boolean;
 }
@@ -40,6 +38,20 @@ export interface IEducationStudentCreditSummary {
   creditBureauSummary: string;
   creditScore: number;
   creditHistory: string;
+  lastDateCreditScore: string;
+}
+
+export type EducationPersonGender = "Male" | "Female" | "Other" | "";
+
+export interface IEducationStudentApplicant {
+  id: string;
+  name: string;
+  pan: string;
+  dateOfBirth: string;
+  gender: EducationPersonGender;
+  mobileNumber: string;
+  email: string;
+  photo: string | null;
 }
 
 export interface IEducationStudent {
@@ -49,10 +61,14 @@ export interface IEducationStudent {
   courseId: string;
   courseName: string;
   studentPan: string;
+  studentDateOfBirth: string;
+  studentGender: EducationPersonGender;
+  studentPhoto: string | null;
   isMinor: boolean;
   parentPan: string;
   mobileNumber: string;
   email: string;
+  applicants: IEducationStudentApplicant[];
   coApplicantName: string;
   coApplicantMobileNumber: string;
   coApplicantRelation: string;
@@ -67,10 +83,14 @@ export interface IEducationStudentFormData {
   studentName: string;
   courseId: string;
   studentPan: string;
+  studentDateOfBirth: string;
+  studentGender: EducationPersonGender;
+  studentPhoto: string | null;
   isMinor: boolean;
   parentPan: string;
   mobileNumber: string;
   email: string;
+  applicants: IEducationStudentApplicant[];
   coApplicantName: string;
   coApplicantMobileNumber: string;
   coApplicantRelation: string;
@@ -118,8 +138,12 @@ export interface IEducationLoanDraft {
   instituteName: string;
   studentName: string;
   studentPan: string;
+  studentDateOfBirth?: string;
+  studentGender?: EducationPersonGender;
+  studentPhoto?: string | null;
   studentEmail: string;
   studentMobileNumber: string;
+  applicants?: IEducationStudentApplicant[];
   parentPan?: string;
   coApplicantName?: string;
   coApplicantMobileNumber?: string;
