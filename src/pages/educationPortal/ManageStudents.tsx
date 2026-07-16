@@ -6,11 +6,9 @@ import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
 import { PaginatorPageChangeEvent } from "primereact/paginator";
-import { Tooltip } from "primereact/tooltip";
 import Loader from "../../components/Loader";
 import PrimePaginator from "../../components/PrimePaginator";
 import SearchButton from "../../components/SearchButton";
-import StudentImpersonateUserModal from "../../components/StudentImpersonateUserModal";
 import TableTitle from "../../components/TableTitle";
 import { IEducationStudent } from "../../interface/educationManagement";
 import { PaginateReqEntity } from "../../interface/pagination";
@@ -23,7 +21,7 @@ import {
   deleteEducationStudent,
   getEducationStudents,
 } from "../../utils/demo/demoEducationStudents";
-import { formatDate, toastSuccess } from "../../utils/functions/shared";
+import { toastSuccess } from "../../utils/functions/shared";
 import useDebouncedEffect from "../../hooks/useDebounce";
 
 const repaymentStatusOptions = [
@@ -39,21 +37,25 @@ const ManageStudents = () => {
   const location = useLocation();
 
   const [loading, setLoading] = useState<boolean>(false);
+
   const [students, setStudents] = useState<IEducationStudent[]>([]);
+
   const [searchText, setSearchText] = useState<string>("");
+
   const [selectedRepaymentStatus, setSelectedRepaymentStatus] =
     useState<string>("");
+
   const [filterReq, setFilterReq] = useState<PaginateReqEntity>({
     pageNumber: 0,
     pageSize: 10,
     searchText: "",
   });
+
   const [totalRecords, setTotalRecords] = useState<number>(0);
+
   const [deleteTarget, setDeleteTarget] = useState<IEducationStudent | null>(
     null,
   );
-  const [impersonateId, setImpersonateId] = useState<string>("");
-  const [impersonateModal, setImpersonateModal] = useState<boolean>(false);
 
   const fetchStudents = (): void => {
     setLoading(true);
@@ -91,11 +93,6 @@ const ManageStudents = () => {
     toastSuccess(`${deleteTarget.studentName} deleted successfully.`);
     setDeleteTarget(null);
     fetchStudents();
-  };
-
-  const handleImpersonate = (userId: string): void => {
-    setImpersonateId(userId);
-    setImpersonateModal(true);
   };
 
   const onPageChange = (event: PaginatorPageChangeEvent): void => {
@@ -195,26 +192,7 @@ const ManageStudents = () => {
                   <Column field="studentCode" header="Student Code" />
 
                   <Column
-                    body={(rowData: IEducationStudent) => {
-                      const tooltipId = `tooltip-${rowData.id}`;
-
-                      return (
-                        <>
-                          <span
-                            id={tooltipId}
-                            style={{ cursor: "pointer", fontWeight: "bold" }}
-                            onClick={() => handleImpersonate(rowData.id)}
-                          >
-                            {rowData.studentName}
-                          </span>
-                          <Tooltip
-                            target={`#${tooltipId}`}
-                            content="Login as Student"
-                            position="top"
-                          />
-                        </>
-                      );
-                    }}
+                    field="studentName"
                     header="Student Name"
                   />
 
@@ -321,12 +299,6 @@ const ManageStudents = () => {
           Are you sure you want to delete <strong>{deleteTarget?.studentName}</strong>?
         </p>
       </Dialog>
-
-      <StudentImpersonateUserModal
-        impersonateModal={impersonateModal}
-        setImpersonateModal={setImpersonateModal}
-        impersonateId={impersonateId}
-      />
     </>
   );
 };

@@ -99,7 +99,10 @@ import { validationMessages } from "../../utils/constants/messages";
 import { environment } from "../../utils/constants/environments";
 import { ISubscriptionListingResponse } from "../../interface/subscription";
 import { getStudentEnrollments } from "../../utils/demo/demoStudentEnrollments";
-import { getNbfcEducationLoanApplications } from "../../utils/demo/demoEducationLoanFlow";
+import {
+  getEducationLoanDrafts,
+  getNbfcEducationLoanApplications,
+} from "../../utils/demo/demoEducationLoanFlow";
 import { getEducationStudentById } from "../../utils/demo/demoEducationStudents";
 import { IEducationStudentEnrollment } from "../../interface/educationManagement";
 
@@ -285,18 +288,19 @@ const ChannelPartnerDashboard = () => {
       roleName === "Student" ||
       Boolean(impersonatedStudentId));
 
-  const studentEnrollments = useMemo(
-    () => {
-      if (!isStudentDashboard) return [];
+  const studentLoanDrafts = useMemo(() => {
+    if (!isStudentDashboard) return [];
 
-      const matchedEnrollments = getStudentEnrollments(userID);
+    const matchedDrafts = getEducationLoanDrafts().filter(
+      (draft) => draft.studentUserId === userID,
+    );
 
-      return matchedEnrollments.length > 0
-        ? matchedEnrollments
-        : getStudentEnrollments(STUDENT_USER_ID);
-    },
-    [isStudentDashboard, userID],
-  );
+    return matchedDrafts.length > 0
+      ? matchedDrafts
+      : getEducationLoanDrafts().filter(
+          (draft) => draft.studentUserId === STUDENT_USER_ID,
+        );
+  }, [isStudentDashboard, userID]);
 
   const educationInstituteEnrollments = useMemo(() => {
     if (!isEducationInstituteDashboard) return [];
@@ -423,7 +427,7 @@ const ChannelPartnerDashboard = () => {
           (queryRaisedApplications?.amount || 0) +
           (sanctionedApplications?.amount || 0) +
           (pendingAtCreditApplications?.amount || 0),
-        routeStatus: "ongoing",
+        routeStatus: String(LoanStatusType.PENDING),
         color: "#FF632C",
         icon: "bi-arrow-repeat",
       },
@@ -768,57 +772,6 @@ const ChannelPartnerDashboard = () => {
     ];
   }, [isNbfcDashboard, nbfcApplications]);
 
-  const studentDashboardSummaryMetrics = useMemo(() => {
-    if (!isStudentDashboard) return [];
-
-    const totalLoanApplications = studentEnrollments.length;
-    const approvedApplications = studentEnrollments.filter(
-      (item) => item.applicationStatus === "Approved" || item.applicationStatus === "Disbursed",
-    ).length;
-    const disbursedApplications = studentEnrollments.filter(
-      (item) => item.applicationStatus === "Disbursed",
-    ).length;
-    const rejectedApplications = studentEnrollments.filter(
-      (item) => item.applicationStatus === "Rejected",
-    ).length;
-    const pendingApplications = studentEnrollments.filter(
-      (item) => item.applicationStatus === "Pending",
-    ).length;
-
-    return [
-      {
-        title: "Total Loan Applications",
-        value: totalLoanApplications,
-        icon: "bi-journal-text",
-        subtitle: "Loan applications linked to your enrolled courses",
-      },
-      {
-        title: "Total Approved/Sanctioned Applications",
-        value: approvedApplications,
-        icon: "bi-patch-check-fill",
-        subtitle: "Applications that progressed to approval or sanction",
-      },
-      {
-        title: "Total Disbursed Applications",
-        value: disbursedApplications,
-        icon: "bi-bank2",
-        subtitle: "Applications where your course loan was already disbursed",
-      },
-      {
-        title: "Total Rejected Applications",
-        value: rejectedApplications,
-        icon: "bi-x-circle-fill",
-        subtitle: "Applications that were not approved in your journey",
-      },
-      {
-        title: "Total Pending Applications",
-        value: pendingApplications,
-        icon: "bi-hourglass-split",
-        subtitle: "Applications still in progress for your records",
-      },
-    ];
-  }, [isStudentDashboard, studentEnrollments]);
-
   const nbfcRepaymentMetrics = useMemo(() => {
     if (!isNbfcDashboard) return [];
 
@@ -853,41 +806,6 @@ const ChannelPartnerDashboard = () => {
       },
     ];
   }, [isNbfcDashboard, nbfcApplications]);
-
-  const studentDashboardRepaymentMetrics = useMemo(() => {
-    if (!isStudentDashboard) return [];
-
-    return [
-      {
-        title: "On-Time Repayment Applications",
-        value: studentEnrollments.filter((item) => item.repaymentStatus === "On-Time").length,
-        repaymentStatus: "On-Time",
-        icon: "bi-check-circle-fill",
-        subtitle: "Your active loans currently repaying on schedule",
-      },
-      {
-        title: "Delayed Repayment Applications",
-        value: studentEnrollments.filter((item) => item.repaymentStatus === "Delayed").length,
-        repaymentStatus: "Delayed",
-        icon: "bi-clock-history",
-        subtitle: "Your loans with delayed but still manageable repayments",
-      },
-      {
-        title: "Overdue Loan Applications",
-        value: studentEnrollments.filter((item) => item.repaymentStatus === "Overdue").length,
-        repaymentStatus: "Overdue",
-        icon: "bi-exclamation-triangle-fill",
-        subtitle: "Your loans that crossed the expected repayment window",
-      },
-      {
-        title: "Closed Applications",
-        value: studentEnrollments.filter((item) => item.repaymentStatus === "Closed").length,
-        repaymentStatus: "Closed",
-        icon: "bi-folder-check",
-        subtitle: "Loans that have already completed their repayment lifecycle",
-      },
-    ];
-  }, [isStudentDashboard, studentEnrollments]);
 
   const headersMap: Record<string, string> = {
     "Loan Application Code": "loanApplicationCode",
@@ -2007,107 +1925,6 @@ const ChannelPartnerDashboard = () => {
 
       <div className="whiteBoxHldr p-30">
         <div className="row">
-          {!status && (
-            <div className="col-lg-12 mb-4">
-              <div className="col-12 titleMainWrapper justify-content-between">
-                <h2 className="fw-bold txt-30">
-                  <span>Welcome,</span> {userName}
-                </h2>
-                <div
-                  className="BtnRightHldr d-flex flex-row"
-                  style={{ gap: "10px" }}
-                >
-                  {isEducationInstituteDashboard && (
-                    <>
-                      <div className="form-group">
-                        <Button
-                          className="btn btn-orange-line"
-                          onClick={() =>
-                            navigate(
-                              RoutePathConstant.private.educationStudentLoanApplication,
-                            )
-                          }
-                          disabled={!channelPartnerInfo?.isAddApplicationEnabled}
-                        >
-                          Add Applications
-                        </Button>
-                      </div>
-
-                      <div className="form-group">
-                        <Button
-                          className="btn btn-orange-line"
-                          onClick={() =>
-                            navigate(RoutePathConstant.private.educationManageStudents)
-                          }
-                        >
-                          Add Student
-                        </Button>
-                      </div>
-
-                      <div className="form-group">
-                        <Button
-                          className="btn btn-orange"
-                          onClick={() =>
-                            navigate(
-                              `${RoutePathConstant.private.channelPartnerDashboard}?status=ongoing`,
-                            )
-                          }
-                        >
-                          Show Ongoing Applications
-                        </Button>
-                      </div>
-                    </>
-                  )}
-
-                  {create &&
-                    !isStudentDashboard &&
-                    !isNbfcDashboard &&
-                    !isEducationInstituteDashboard && (
-                    <div className="form-group">
-                      <Button
-                        className="btn btn-orange-line"
-                        onClick={() =>
-                          navigate(RoutePathConstant.private.addApplications)
-                        }
-                        disabled={!channelPartnerInfo?.isAddApplicationEnabled}
-                      >
-                        Add Application
-                      </Button>
-                    </div>
-                  )}
-
-                  {!isEducationInstituteDashboard &&
-                    !isNbfcDashboard &&
-                    !isStudentDashboard &&
-                    (clientMasterRight.create ||
-                      sourcingPartnerRight.create) && (
-                      <div className="form-group">
-                        <Button
-                          className="btn btn-orange"
-                          icon="bi bi-plus-circle me-2"
-                          iconPos="left"
-                          onClick={() => {
-                            if (
-                              !(userType === CLIENT_ROLE.USER_MANAGEMENT) &&
-                              !isContractSigned &&
-                              !hasSkippedContractAgreement &&
-                              shouldShowContractModal(contractEnforcementDate)
-                            ) {
-                              setShowContractAgreement(true);
-                            } else {
-                              setPanDetailPopUp(true);
-                            }
-                          }}
-                        >
-                          Add Client
-                        </Button>
-                      </div>
-                    )}
-                </div>
-              </div>
-            </div>
-          )}
-
           {!status &&
             channelPartnerInfo &&
             !isEducationInstituteDashboard &&
@@ -2761,130 +2578,71 @@ const ChannelPartnerDashboard = () => {
           {!status && isStudentDashboard && (
             <>
               <div className="col-12 mb-4">
-                <section className="admin-dashboard-hero admin-dashboard-hero--education">
-                  <div className="admin-dashboard-hero__content">
-                    <div className="admin-dashboard-eyebrow">
-                      <i className="bi bi-mortarboard-fill" />
-                      Student Dashboard
-                    </div>
-                    <h1 className="admin-dashboard-hero__title">Students Loan Summary</h1>
-                    <p className="admin-dashboard-hero__copy">
-                      Review your enrolled-course loans, repayment status, and credit posture
-                      from one student-focused dashboard.
-                    </p>
-
-                    <div className="admin-dashboard-hero__chips">
-                      <div className="admin-dashboard-pill">
-                        <i className="bi bi-journal-check" />
-                        {studentEnrollments.length} course-linked loan records
-                      </div>
-                      <div className="admin-dashboard-pill">
-                        <i className="bi bi-bank" />
-                        {studentEnrollments.filter((item) => item.loanStatus === "Active").length} active loans in view
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="admin-dashboard-hero__spotlight">
-                    <div className="admin-dashboard-spotlight-card">
-                      <div className="admin-dashboard-spotlight-card__label">
-                        Outstanding Amount
-                      </div>
-                      <div className="admin-dashboard-spotlight-card__value">
-                        {formatCurrencyAmount(
-                          studentEnrollments.reduce(
-                            (sum, item) => sum + item.outstandingAmount,
-                            0,
-                          ),
-                        )}
-                      </div>
-                      <div className="admin-dashboard-spotlight-card__helper">
-                        Total outstanding across your currently visible loans.
-                      </div>
-                    </div>
-
-                    <div className="admin-dashboard-spotlight-card">
-                      <div className="admin-dashboard-spotlight-card__label">
-                        Current Credit Score
-                      </div>
-                      <div className="admin-dashboard-spotlight-card__value">
-                        {studentEnrollments[0]?.creditScore || 0}
-                      </div>
-                      <div className="admin-dashboard-spotlight-card__helper">
-                        Latest bureau score reflected in your student profile.
-                      </div>
-                    </div>
-                  </div>
-                </section>
-              </div>
-
-              <div className="col-12 mb-4">
                 <section className="admin-dashboard-metrics-grid admin-dashboard-metrics-grid--education">
-                  {studentDashboardSummaryMetrics.map((metric) => (
-                    <div key={metric.title} className="admin-dashboard-metric-card">
-                      <div className="admin-dashboard-metric-card__icon">
-                        <i className={`bi ${metric.icon}`} />
-                      </div>
-                      <div className="admin-dashboard-metric-card__body">
-                        <div className="admin-dashboard-metric-card__title">{metric.title}</div>
-                        <div className="admin-dashboard-metric-card__value">{metric.value}</div>
-                        <div className="admin-dashboard-metric-card__subtitle">
-                          {metric.subtitle}
-                        </div>
-                      </div>
+                  <div
+                    className="admin-dashboard-metric-card"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() =>
+                      navigate(RoutePathConstant.private.studentEnrolledCourses)
+                    }
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        navigate(RoutePathConstant.private.studentEnrolledCourses);
+                      }
+                    }}
+                  >
+                    <div className="admin-dashboard-metric-card__icon">
+                      <i className="bi bi-bank" />
                     </div>
-                  ))}
-                </section>
-              </div>
-
-              <div className="col-12 mb-4">
-                <section className="admin-dashboard-panel">
-                  <div className="admin-dashboard-section-head">
-                    <div>
-                      <TableTitle title="Students Loan Summary" />
-                      <p className="admin-dashboard-section-copy mb-0">
-                        Repayment health and closure status across your enrolled-course loans.
-                      </p>
+                    <div className="admin-dashboard-metric-card__body">
+                      <div className="admin-dashboard-metric-card__title">Loans</div>
+                      <div className="admin-dashboard-metric-card__value">
+                        {
+                          studentLoanDrafts.filter((draft) =>
+                            draft.loanApplicationStatus === "Sanctioned",
+                          ).length
+                        }
+                      </div>
+                      <div className="admin-dashboard-metric-card__subtitle">
+                        View your sanctioned student loan records.
+                      </div>
                     </div>
                   </div>
 
-                  <div className="admin-dashboard-metrics-grid admin-dashboard-metrics-grid--education">
-                    {studentDashboardRepaymentMetrics.map((metric) => (
-                      <div
-                        key={metric.title}
-                        className="admin-dashboard-metric-card"
-                        role="button"
-                        tabIndex={0}
-                        onClick={() =>
-                          navigate(RoutePathConstant.private.studentEnrolledCourses, {
-                            state: {
-                              repaymentStatusFilter: metric.repaymentStatus,
-                            },
-                          })
+                  <div
+                    className="admin-dashboard-metric-card"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() =>
+                      navigate(RoutePathConstant.private.studentOngoingApplications)
+                    }
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        navigate(RoutePathConstant.private.studentOngoingApplications);
+                      }
+                    }}
+                  >
+                    <div className="admin-dashboard-metric-card__icon">
+                      <i className="bi bi-journal-text" />
+                    </div>
+                    <div className="admin-dashboard-metric-card__body">
+                      <div className="admin-dashboard-metric-card__title">Applications</div>
+                      <div className="admin-dashboard-metric-card__value">
+                        {
+                          studentLoanDrafts.filter((draft) =>
+                            ["Pending", "Approved", "Query Raised", "Sanctioned"].includes(
+                              draft.loanApplicationStatus,
+                            ),
+                          ).length
                         }
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter" || event.key === " ") {
-                            event.preventDefault();
-                            navigate(RoutePathConstant.private.studentEnrolledCourses, {
-                              state: {
-                                repaymentStatusFilter: metric.repaymentStatus,
-                              },
-                            });
-                          }
-                        }}
-                      >
-                        <div className="admin-dashboard-metric-card__icon">
-                          <i className={`bi ${metric.icon}`} />
-                        </div>
-                        <div className="admin-dashboard-metric-card__body">
-                          <div className="admin-dashboard-metric-card__title">{metric.title}</div>
-                          <div className="admin-dashboard-metric-card__value">{metric.value}</div>
-                          <div className="admin-dashboard-metric-card__subtitle">
-                            {metric.subtitle}
-                          </div>
-                        </div>
                       </div>
-                    ))}
+                      <div className="admin-dashboard-metric-card__subtitle">
+                        Track all ongoing loan applications and their current status.
+                      </div>
+                    </div>
                   </div>
                 </section>
               </div>

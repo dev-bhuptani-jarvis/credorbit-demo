@@ -45,8 +45,8 @@ const seedEducationLoanDrafts: IEducationLoanDraft[] = [
     courseType: "Offline",
     courseFees: 180000,
     emiOptionMonths: 24,
+    advancedEmiMonths: 10,
     downpayment: 20000,
-    discountType: "amount",
     discountValue: 5000,
     discountAmount: 5000,
     discountedCourseFee: 175000,
@@ -55,6 +55,11 @@ const seedEducationLoanDrafts: IEducationLoanDraft[] = [
     numberOfEmis: 24,
     emiAmount: 6458.33,
     totalAmountToInstitute: 175000,
+    selectedBankId: 1,
+    selectedBankName: "NBFC Bank 1",
+    processingFeeAmount: 1550,
+    processingFeePaid: true,
+    processingFeePaidAt: "2026-06-05T10:15:00.000Z",
     consentAccepted: true,
     hasCoApplicant: true,
     loanApplicationStatus: "Sanctioned",
@@ -95,7 +100,7 @@ const seedEducationLoanDrafts: IEducationLoanDraft[] = [
     courseFees: 95000,
     emiOptionMonths: 18,
     downpayment: 10000,
-    discountType: "percentage",
+    advancedEmiMonths: 10,
     discountValue: 10,
     discountAmount: 9500,
     discountedCourseFee: 85500,
@@ -104,6 +109,11 @@ const seedEducationLoanDrafts: IEducationLoanDraft[] = [
     numberOfEmis: 18,
     emiAmount: 4194.44,
     totalAmountToInstitute: 85500,
+    selectedBankId: 2,
+    selectedBankName: "NBFC Bank 2",
+    processingFeeAmount: 755,
+    processingFeePaid: true,
+    processingFeePaidAt: "2026-05-14T13:15:00.000Z",
     consentAccepted: true,
     hasCoApplicant: true,
     loanApplicationStatus: "Disbursed",
@@ -143,8 +153,8 @@ const seedEducationLoanDrafts: IEducationLoanDraft[] = [
     courseType: "Online",
     courseFees: 110000,
     emiOptionMonths: 12,
+    advancedEmiMonths: 10,
     downpayment: 15000,
-    discountType: "amount",
     discountValue: 5000,
     discountAmount: 5000,
     discountedCourseFee: 105000,
@@ -153,6 +163,11 @@ const seedEducationLoanDrafts: IEducationLoanDraft[] = [
     numberOfEmis: 12,
     emiAmount: 7500,
     totalAmountToInstitute: 105000,
+    selectedBankId: 3,
+    selectedBankName: "NBFC Bank 3",
+    processingFeeAmount: 900,
+    processingFeePaid: true,
+    processingFeePaidAt: "2026-06-18T09:35:00.000Z",
     consentAccepted: true,
     hasCoApplicant: true,
     loanApplicationStatus: "Pending",
@@ -257,37 +272,58 @@ export const getEducationLoanDraftById = (
 export const calculateEducationLoanSummary = ({
   courseFees,
   emiOptionMonths,
+  advancedEmiMonths,
   downpayment,
-  discountType,
   discountValue,
 }: {
   courseFees: number;
   emiOptionMonths: number;
+  advancedEmiMonths: number | null;
   downpayment: number;
-  discountType: EducationDiscountType;
   discountValue: number;
 }) => {
   const safeCourseFees = Math.max(courseFees, 0);
   const safeDownpayment = Math.max(downpayment, 0);
-  const safeDiscountValue = Math.max(discountValue, 0);
-  const discountAmount =
-    discountType === "percentage"
-      ? (safeCourseFees * safeDiscountValue) / 100
-      : safeDiscountValue;
-  const normalizedDiscountAmount = Math.min(safeCourseFees, discountAmount);
+  const safeDiscountAmount = Math.max(discountValue, 0);
+
+  // Discount amount cannot exceed course fee
+  const normalizedDiscountAmount = Math.min(
+    safeCourseFees,
+    safeDiscountAmount,
+  );
+
+  // Fee after discount
   const discountedCourseFee = Math.max(
     safeCourseFees - normalizedDiscountAmount,
     0,
   );
-  const loanAmount = Math.max(discountedCourseFee - safeDownpayment, 0);
-  const numberOfEmis = Math.max(emiOptionMonths, 1);
+
+  // Loan amount after down payment
+  const loanAmount = Math.max(
+    discountedCourseFee - safeDownpayment,
+    0,
+  );
+
+  // Advanced EMI months (optional)
+  const advanceMonths = advancedEmiMonths ?? 0;
+
+  // Remaining EMI count
+  const numberOfEmis = Math.max(
+    emiOptionMonths - advanceMonths,
+    1,
+  );
+
+  // EMI amount
   const emiAmount = loanAmount / numberOfEmis;
+
+  // Total amount paid as Advance EMI
+  const advanceEmi = advanceMonths * emiAmount;
 
   return {
     discountAmount: toCurrencyNumber(normalizedDiscountAmount),
     discountedCourseFee: toCurrencyNumber(discountedCourseFee),
     loanAmount: toCurrencyNumber(loanAmount),
-    advanceEmi: toCurrencyNumber(emiAmount),
+    advanceEmi: toCurrencyNumber(advanceEmi),
     numberOfEmis,
     emiAmount: toCurrencyNumber(emiAmount),
     totalAmountToInstitute: toCurrencyNumber(discountedCourseFee),
@@ -300,8 +336,8 @@ export const createEducationLoanDraft = ({
   instituteName,
   courseFees,
   emiOptionMonths,
+  advancedEmiMonths,
   downpayment,
-  discountType,
   discountValue,
 }: {
   student: IEducationStudent;
@@ -309,17 +345,18 @@ export const createEducationLoanDraft = ({
   instituteName: string;
   courseFees: number;
   emiOptionMonths: number;
+  advancedEmiMonths: number | null;
   downpayment: number;
-  discountType: EducationDiscountType;
   discountValue: number;
 }): IEducationLoanDraft => {
   const drafts = getEducationLoanDrafts();
   const now = new Date().toISOString();
+
   const summary = calculateEducationLoanSummary({
     courseFees,
     emiOptionMonths,
+    advancedEmiMonths,
     downpayment,
-    discountType,
     discountValue,
   });
 
@@ -337,29 +374,44 @@ export const createEducationLoanDraft = ({
     studentMobileNumber: student.mobileNumber,
     applicants: student.applicants,
     parentPan: student.parentPan,
-    coApplicantName: getPrimaryApplicant(student.applicants)?.name || student.coApplicantName,
+    coApplicantName:
+      getPrimaryApplicant(student.applicants)?.name ||
+      student.coApplicantName,
     coApplicantMobileNumber:
       getPrimaryApplicant(student.applicants)?.mobileNumber ||
       student.coApplicantMobileNumber,
     coApplicantRelation: student.coApplicantRelation,
+
     courseId: course.id,
     courseName: course.courseName,
     courseTenure: course.courseTenure,
     courseType: course.courseType,
+
     courseFees,
     emiOptionMonths,
+    advancedEmiMonths,
     downpayment,
-    discountType,
+
+    // Discount
     discountValue,
     discountAmount: summary.discountAmount,
     discountedCourseFee: summary.discountedCourseFee,
+
+    // Loan
     loanAmount: summary.loanAmount,
     advanceEmi: summary.advanceEmi,
     numberOfEmis: summary.numberOfEmis,
     emiAmount: summary.emiAmount,
     totalAmountToInstitute: summary.totalAmountToInstitute,
+    selectedBankId: null,
+    selectedBankName: null,
+    processingFeeAmount: 0,
+    processingFeePaid: false,
+    processingFeePaidAt: null,
+
     consentAccepted: true,
     hasCoApplicant: (student.applicants || []).length > 0,
+
     loanApplicationStatus: "Pending",
     sanctionDate: null,
     disbursementDate: null,
@@ -374,12 +426,14 @@ export const createEducationLoanDraft = ({
     loanAgreementUrl: null,
     repaymentScheduleUrl: null,
     disbursementAdviceUrl: null,
+
     status: "draft",
     createdAt: now,
     updatedAt: now,
   };
 
   persistEducationLoanDrafts([nextDraft, ...drafts]);
+
   return nextDraft;
 };
 
@@ -396,6 +450,48 @@ export const updateEducationLoanDraftStatus = (
     updatedDraft = {
       ...draft,
       status,
+      updatedAt: new Date().toISOString(),
+    };
+
+    return updatedDraft;
+  });
+
+  persistEducationLoanDrafts(nextDrafts);
+  return updatedDraft;
+};
+
+export const getPendingEducationLoanApplicationsByStudent = (
+  studentId: string,
+): IEducationLoanDraft[] =>
+  getEducationLoanDrafts().filter(
+    (draft) =>
+      draft.studentId === studentId &&
+      draft.status === "submitted" &&
+      draft.loanApplicationStatus === "Pending",
+  );
+
+export const updateEducationLoanDraftOfferSelection = (
+  draftId: string,
+  updates: Partial<
+    Pick<
+      IEducationLoanDraft,
+      | "selectedBankId"
+      | "selectedBankName"
+      | "processingFeeAmount"
+      | "processingFeePaid"
+      | "processingFeePaidAt"
+    >
+  >,
+): IEducationLoanDraft | undefined => {
+  const drafts = getEducationLoanDrafts();
+  let updatedDraft: IEducationLoanDraft | undefined;
+
+  const nextDrafts = drafts.map((draft) => {
+    if (draft.id !== draftId) return draft;
+
+    updatedDraft = {
+      ...draft,
+      ...updates,
       updatedAt: new Date().toISOString(),
     };
 

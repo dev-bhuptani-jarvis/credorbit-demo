@@ -412,6 +412,32 @@ const demoClientPermissions: Permission[] = [
   { rightID: 23, parentID: 0, rightName: "UserManagement", create: false, delete: null, view: false, list: false, displayName: "User Management", displayOrder: 3 },
 ];
 
+const demoStudentPermissions: Permission[] = [
+  { rightID: 1, parentID: 0, rightName: "Dashboard", create: null, delete: null, view: null, list: true, displayName: "Dashboard", displayOrder: 1 },
+  { rightID: 2, parentID: 0, rightName: "Profile", create: true, delete: null, view: null, list: true, displayName: "Profile", displayOrder: 2 },
+  { rightID: 3, parentID: 23, rightName: "RoleMaster", create: null, delete: null, view: null, list: null, displayName: "Role Master", displayOrder: 5 },
+  { rightID: 4, parentID: 14, rightName: "ClientMaster", create: null, delete: null, view: null, list: null, displayName: "Client Master", displayOrder: 7 },
+  { rightID: 5, parentID: 14, rightName: "ChannelPartner", create: null, delete: null, view: null, list: null, displayName: "Channel Partner", displayOrder: 8 },
+  { rightID: 6, parentID: 14, rightName: "SourcingPartner", create: null, delete: null, view: null, list: null, displayName: "Sourcing Partner", displayOrder: 9 },
+  { rightID: 7, parentID: 0, rightName: "Reports", create: null, delete: null, view: null, list: null, displayName: "Reports", displayOrder: 10 },
+  { rightID: 8, parentID: 15, rightName: "ContractChannelPartner", create: null, delete: null, view: null, list: null, displayName: "Channel Partner Contract ", displayOrder: 14 },
+  { rightID: 9, parentID: 15, rightName: "ContractSourcingPartner", create: null, delete: null, view: null, list: null, displayName: "Sourcing Partner Contract ", displayOrder: 15 },
+  { rightID: 10, parentID: 15, rightName: "ContractClient", create: null, delete: null, view: null, list: true, displayName: "Client Contract ", displayOrder: 16 },
+  { rightID: 11, parentID: 0, rightName: "Policy", create: null, delete: null, view: null, list: false, displayName: "Policy", displayOrder: 17 },
+  { rightID: 12, parentID: 0, rightName: "Support", create: null, delete: null, view: null, list: true, displayName: "Support", displayOrder: 18 },
+  { rightID: 13, parentID: 0, rightName: "PayOuts", create: null, delete: null, view: null, list: null, displayName: "Payouts", displayOrder: 20 },
+  { rightID: 14, parentID: 0, rightName: "UserMaster", create: null, delete: null, view: null, list: null, displayName: "Master", displayOrder: 6 },
+  { rightID: 15, parentID: 0, rightName: "Contracts", create: null, delete: null, view: null, list: true, displayName: "Contracts", displayOrder: 13 },
+  { rightID: 16, parentID: 0, rightName: "TermsAndConditions", create: null, delete: null, view: null, list: null, displayName: "Terms & Conditions", displayOrder: 19 },
+  { rightID: 17, parentID: 0, rightName: "Subscription", create: null, delete: null, view: null, list: true, displayName: "Subscription", displayOrder: 23 },
+  { rightID: 18, parentID: 23, rightName: "ManageUsers", create: null, delete: null, view: null, list: null, displayName: "Manage Users", displayOrder: 4 },
+  { rightID: 19, parentID: 7, rightName: "ChannelPartnerReport", create: null, delete: null, view: null, list: null, displayName: "Channel Partner Report", displayOrder: 11 },
+  { rightID: 20, parentID: 7, rightName: "GeographicalReport", create: null, delete: null, view: null, list: null, displayName: "Geographical Report", displayOrder: 12 },
+  { rightID: 21, parentID: 13, rightName: "ChannelPartnerPayout", create: null, delete: null, view: null, list: null, displayName: "My Payout", displayOrder: 21 },
+  { rightID: 22, parentID: 13, rightName: "SourcingPartnerPayout", create: null, delete: null, view: null, list: null, displayName: "SP Payout", displayOrder: 22 },
+  { rightID: 23, parentID: 0, rightName: "UserManagement", create: false, delete: null, view: false, list: false, displayName: "User Management", displayOrder: 3 },
+];
+
 const demoLoginResponses = {
   admin: {
     statusCode: 200,
@@ -640,7 +666,7 @@ const demoLoginResponses = {
       contractEnforcementDate: "2025-10-09T00:00:00",
       isDefaultCpClient: false,
       isContractSigned: true,
-      permissions: demoClientPermissions,
+      permissions: demoStudentPermissions,
     },
   },
   nbfcUser: {

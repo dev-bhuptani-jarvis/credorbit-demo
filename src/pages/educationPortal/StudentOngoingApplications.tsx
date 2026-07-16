@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
+import { Dropdown } from "primereact/dropdown";
 import { PaginatorPageChangeEvent } from "primereact/paginator";
 import Loader from "../../components/Loader";
 import PrimePaginator from "../../components/PrimePaginator";
@@ -19,14 +20,27 @@ import useDebouncedEffect from "../../hooks/useDebounce";
 import { IsNullOrEmptyArray } from "../../utils/functions/nullCheck";
 
 const STUDENT_USER_ID = "student-role-001";
+const ongoingStatuses: IEducationLoanDraft["loanApplicationStatus"][] = [
+  "Pending",
+  "Approved",
+  "Query Raised",
+  "Sanctioned",
+];
 
-const StudentEnrolledCourses = () => {
+const statusOptions = ongoingStatuses.map((status) => ({
+  label: status,
+  value: status,
+}));
+
+const StudentOngoingApplications = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { userID } = useSelector((state: RootState) => state.user.user);
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [loans, setLoans] = useState<IEducationLoanDraft[]>([]);
+  const [applications, setApplications] = useState<IEducationLoanDraft[]>([]);
   const [searchText, setSearchText] = useState<string>("");
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [filterReq, setFilterReq] = useState<PaginateReqEntity>({
     pageNumber: 0,
     pageSize: 10,
@@ -34,46 +48,56 @@ const StudentEnrolledCourses = () => {
   });
   const [totalRecords, setTotalRecords] = useState<number>(0);
 
-  const fetchLoans = (): void => {
+  const statusFilterFromNavigation =
+    (location.state as { loanApplicationStatusFilter?: string } | null)
+      ?.loanApplicationStatusFilter || "";
+
+  const effectiveUserId = userID || STUDENT_USER_ID;
+
+  const fetchApplications = (): void => {
     setLoading(true);
 
-    const matchedLoans = getEducationLoanDrafts().filter(
+    const matchedApplications = getEducationLoanDrafts().filter(
       (draft) =>
-        draft.studentUserId === (userID || STUDENT_USER_ID) &&
-        draft.loanApplicationStatus === "Sanctioned",
+        draft.studentUserId === effectiveUserId &&
+        ongoingStatuses.includes(draft.loanApplicationStatus),
     );
 
-    setLoans(
-      matchedLoans.length > 0
-        ? matchedLoans
+    setApplications(
+      matchedApplications.length > 0
+        ? matchedApplications
         : getEducationLoanDrafts().filter(
             (draft) =>
               draft.studentUserId === STUDENT_USER_ID &&
-              draft.loanApplicationStatus === "Sanctioned",
+              ongoingStatuses.includes(draft.loanApplicationStatus),
           ),
     );
 
     setLoading(false);
   };
 
-  const filteredLoans = useMemo(() => {
+  const filteredApplications = useMemo(() => {
     const searchValue = filterReq.searchText?.trim().toLowerCase() || "";
 
-    return loans.filter((item) => {
+    return applications.filter((item) => {
       const matchesSearch =
         !searchValue ||
+        item.studentName.toLowerCase().includes(searchValue) ||
         item.courseName.toLowerCase().includes(searchValue) ||
-        item.instituteName.toLowerCase().includes(searchValue) ||
-        item.studentMobileNumber.includes(searchValue);
+        item.studentMobileNumber.includes(searchValue) ||
+        item.studentEmail.toLowerCase().includes(searchValue);
 
-      return matchesSearch;
+      const matchesStatus =
+        !selectedStatus || item.loanApplicationStatus === selectedStatus;
+
+      return matchesSearch && matchesStatus;
     });
-  }, [filterReq.searchText, loans]);
+  }, [applications, filterReq.searchText, selectedStatus]);
 
-  const paginatedLoans = useMemo(() => {
+  const paginatedApplications = useMemo(() => {
     const startIndex = filterReq.pageNumber * filterReq.pageSize;
-    return filteredLoans.slice(startIndex, startIndex + filterReq.pageSize);
-  }, [filterReq.pageNumber, filterReq.pageSize, filteredLoans]);
+    return filteredApplications.slice(startIndex, startIndex + filterReq.pageSize);
+  }, [filterReq.pageNumber, filterReq.pageSize, filteredApplications]);
 
   const onPageChange = (event: PaginatorPageChangeEvent): void => {
     setFilterReq((prev) => ({
@@ -98,12 +122,22 @@ const StudentEnrolledCourses = () => {
   );
 
   useEffect(() => {
-    fetchLoans();
-  }, [userID]);
+    fetchApplications();
+  }, [effectiveUserId]);
 
   useEffect(() => {
-    setTotalRecords(filteredLoans.length);
-  }, [filteredLoans]);
+    if (!statusFilterFromNavigation) return;
+
+    setSelectedStatus(statusFilterFromNavigation);
+    setFilterReq((prev) => ({
+      ...prev,
+      pageNumber: 0,
+    }));
+  }, [statusFilterFromNavigation]);
+
+  useEffect(() => {
+    setTotalRecords(filteredApplications.length);
+  }, [filteredApplications]);
 
   return (
     <div className="whiteBoxHldr p-24">
@@ -112,14 +146,28 @@ const StudentEnrolledCourses = () => {
       <div className="row">
         <div className="col-lg-12">
           <div className="col-12 mb-4 titleBtnWrapper flex-md-wrap">
-            <TableTitle title="Loans" />
+            <TableTitle title="Ongoing Applications" />
 
             <div className="BtnRightHldr flex-md-wrap">
               <SearchButton
                 searchText={searchText}
                 setSearchText={setSearchText}
-                placeholder="Search by course, institute, or mobile"
+                placeholder="Search by course, email, or mobile"
               />
+
+              <div className="form-group">
+                <Dropdown
+                  style={{ width: "220px" }}
+                  value={selectedStatus}
+                  onChange={(e) => {
+                    setSelectedStatus(e.value);
+                    setFilterReq((prev) => ({ ...prev, pageNumber: 0 }));
+                  }}
+                  options={statusOptions}
+                  showClear={selectedStatus !== ""}
+                  placeholder="Filter by Status"
+                />
+              </div>
             </div>
           </div>
 
@@ -127,24 +175,23 @@ const StudentEnrolledCourses = () => {
             <div className="table-responsive">
               <DataTable
                 className="tableMain"
-                value={paginatedLoans}
-                emptyMessage="No sanctioned loans found."
+                value={paginatedApplications}
+                emptyMessage="No ongoing applications found."
               >
-                <Column field="instituteName" header="Institute Name" />
+                <Column field="studentName" header="Student Name" />
                 <Column field="courseName" header="Course Name" />
+                <Column field="instituteName" header="Institute Name" />
+                <Column field="loanApplicationStatus" header="Application Status" />
                 <Column
+                  header="Loan Amount"
                   body={(rowData: IEducationLoanDraft) =>
                     formatCurrencyAmount(rowData.loanAmount)
                   }
-                  header="Loan Amount"
                 />
-                <Column field="loanApplicationStatus" header="Application Status" />
                 <Column
-                  header="Sanctioned On"
+                  header="Applied On"
                   body={(rowData: IEducationLoanDraft) =>
-                    rowData.sanctionDate
-                      ? new Date(rowData.sanctionDate).toLocaleDateString("en-IN")
-                      : "-"
+                    new Date(rowData.createdAt).toLocaleDateString("en-IN")
                   }
                 />
                 <Column
@@ -166,14 +213,14 @@ const StudentEnrolledCourses = () => {
                         )
                       }
                     >
-                      <img src="/assets/images/eye.svg" alt="view-loan" />
+                      <img src="/assets/images/eye.svg" alt="view-application" />
                     </Button>
                   )}
                 />
               </DataTable>
             </div>
 
-            {!IsNullOrEmptyArray(paginatedLoans) && (
+            {!IsNullOrEmptyArray(paginatedApplications) && (
               <PrimePaginator
                 onPageChange={onPageChange}
                 pageNumber={filterReq.pageNumber}
@@ -188,4 +235,4 @@ const StudentEnrolledCourses = () => {
   );
 };
 
-export default StudentEnrolledCourses;
+export default StudentOngoingApplications;

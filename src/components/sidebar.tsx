@@ -396,45 +396,6 @@ const Sidebar = () => {
           item.name === "TermsAndConditions" ||
           item.name === "Policy",
       );
-
-      FinalSideBarArray.push({
-        id: 100020,
-        parentId: 0,
-        name: "EducationLearning",
-        displayName: "Education Learning",
-        icon: educationPortalIcon,
-        path: null,
-        children: [
-          {
-            id: 100022,
-            parentId: 100020,
-            name: "EnrolledCourses",
-            displayName: "Enrolled Courses",
-            icon: null,
-            path: RoutePathConstant.private.studentEnrolledCourses,
-            children: [],
-            displayOrder: 2,
-          },
-        ],
-        displayOrder: 6,
-      });
-
-      const hasReportsMenu = FinalSideBarArray.some(
-        (item) => item.name === "Reports",
-      );
-
-      if (!hasReportsMenu) {
-        FinalSideBarArray.push({
-          id: 100022,
-          parentId: 0,
-          name: "Reports",
-          displayName: "Reports",
-          icon: "/assets/images/reports.svg",
-          path: RoutePathConstant.private.clientReports,
-          children: [],
-          displayOrder: 7,
-        });
-      }
     }
 
     if (userType === CLIENT_ROLE.CUSTOMER && !isDefaultCpClient) {

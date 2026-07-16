@@ -10,7 +10,7 @@ const AdminDashboard = lazy(() => import("../pages/dashboard/AdminDashboard"));
 const ChannelPartnerManagement = lazy(
   () => import("../pages/userMaster/ChannelPartnerManagement"),
 );
-const UserProfile = lazy(() => import("../pages/profile/Profile"));
+const UserProfile = lazy(() => import("../pages/profile/ProfileEntry"));
 const CongratulationsPage = lazy(() => import("../components/congratulations"));
 const ClientDetail = lazy(() => import("../pages/userMaster/ClientDetail"));
 const LoanDetail = lazy(() => import("../pages/userMaster/LoanDetail"));
@@ -125,11 +125,11 @@ const EducationLoanOffer = lazy(
 const EducationLoanOfferKfs = lazy(
   () => import("../pages/educationPortal/EducationLoanOfferKfs"),
 );
+const StudentOngoingApplications = lazy(
+  () => import("../pages/educationPortal/StudentOngoingApplications"),
+);
 const StudentEnrolledCourses = lazy(
   () => import("../pages/educationPortal/StudentEnrolledCourses"),
-);
-const StudentEnrolledCourseDetail = lazy(
-  () => import("../pages/educationPortal/StudentEnrolledCourseDetail"),
 );
 const NbfcStudentApplications = lazy(
   () => import("../pages/educationPortal/NbfcStudentApplications"),
@@ -456,8 +456,8 @@ export const privateRoutes: RouteObject[] = [
         element: <StudentEnrolledCourses />,
       },
       {
-        path: RoutePathConstant.private.studentEnrolledCourseDetail,
-        element: <StudentEnrolledCourseDetail />,
+        path: RoutePathConstant.private.studentOngoingApplications,
+        element: <StudentOngoingApplications />,
       },
       {
         path: RoutePathConstant.private.educationNbfcStudentApplications,

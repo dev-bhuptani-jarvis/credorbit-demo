@@ -13,11 +13,14 @@ const createApplicant = (
   id: overrides.id || `applicant-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
   name: overrides.name || "",
   pan: overrides.pan || "",
+  panDocument: overrides.panDocument ?? null,
+  aadhaarDocument: overrides.aadhaarDocument ?? null,
   dateOfBirth: overrides.dateOfBirth || "",
   gender: overrides.gender || "",
   mobileNumber: overrides.mobileNumber || "",
   email: overrides.email || "",
   photo: overrides.photo ?? null,
+  address: overrides.address || "",
 });
 
 const createLegacyApplicant = (
@@ -57,6 +60,8 @@ const seedStudents: IEducationStudent[] = [
     courseId: "course-001",
     courseName: "BBA in Finance and Lending",
     studentPan: "",
+    studentPanDocument: null,
+    studentAadhaarDocument: null,
     studentDateOfBirth: "2004-04-18",
     studentGender: "Male",
     studentPhoto: null,
@@ -64,6 +69,7 @@ const seedStudents: IEducationStudent[] = [
     parentPan: "",
     mobileNumber: "9876501122",
     email: "aarav.shah@student.demo",
+    address: "A-402, Shantiniketan Residency, Navrangpura, Ahmedabad, Gujarat",
     applicants: [
       createApplicant({
         id: "applicant-001",
@@ -73,6 +79,7 @@ const seedStudents: IEducationStudent[] = [
         gender: "Male",
         mobileNumber: "9876502211",
         email: "rohit.shah@applicant.demo",
+        address: "A-402, Shantiniketan Residency, Navrangpura, Ahmedabad, Gujarat",
       }),
       createApplicant({
         id: "applicant-001a",
@@ -82,6 +89,7 @@ const seedStudents: IEducationStudent[] = [
         gender: "Female",
         mobileNumber: "9876502244",
         email: "pooja.shah@applicant.demo",
+        address: "A-402, Shantiniketan Residency, Navrangpura, Ahmedabad, Gujarat",
       }),
       createApplicant({
         id: "applicant-002a",
@@ -91,6 +99,7 @@ const seedStudents: IEducationStudent[] = [
         gender: "Male",
         mobileNumber: "9876505588",
         email: "rakesh.patel@applicant.demo",
+        address: "12 Orchid Greens, Satellite, Ahmedabad, Gujarat",
       }),
     ],
     coApplicantName: "Rohit Shah",
@@ -123,6 +132,8 @@ const seedStudents: IEducationStudent[] = [
     courseId: "course-002",
     courseName: "Diploma in Credit Underwriting",
     studentPan: "",
+    studentPanDocument: null,
+    studentAadhaarDocument: null,
     studentDateOfBirth: "2007-09-02",
     studentGender: "Female",
     studentPhoto: null,
@@ -130,6 +141,7 @@ const seedStudents: IEducationStudent[] = [
     parentPan: "PATEL1234K",
     mobileNumber: "9876503344",
     email: "diya.patel@student.demo",
+    address: "19 Tulip Enclave, Maninagar, Ahmedabad, Gujarat",
     applicants: [
       createApplicant({
         id: "applicant-002",
@@ -139,6 +151,7 @@ const seedStudents: IEducationStudent[] = [
         gender: "Female",
         mobileNumber: "9876505566",
         email: "nikita.patel@applicant.demo",
+        address: "19 Tulip Enclave, Maninagar, Ahmedabad, Gujarat",
       }),
       createApplicant({
         id: "applicant-002a",
@@ -148,6 +161,7 @@ const seedStudents: IEducationStudent[] = [
         gender: "Male",
         mobileNumber: "9876505588",
         email: "rakesh.patel@applicant.demo",
+        address: "12 Orchid Greens, Satellite, Ahmedabad, Gujarat",
       }),
     ],
     coApplicantName: "Nikita Patel",
@@ -180,6 +194,8 @@ const seedStudents: IEducationStudent[] = [
     courseId: "COCOU2603",
     courseName: "Certificate in NBFC Operations",
     studentPan: "",
+    studentPanDocument: null,
+    studentAadhaarDocument: null,
     studentDateOfBirth: "2003-12-22",
     studentGender: "Female",
     studentPhoto: null,
@@ -187,6 +203,7 @@ const seedStudents: IEducationStudent[] = [
     parentPan: "",
     mobileNumber: "9876507788",
     email: "kavya.nair@student.demo",
+    address: "8 Seabreeze Apartments, Panampilly Nagar, Kochi, Kerala",
     applicants: [
       createApplicant({
         id: "applicant-003",
@@ -196,6 +213,7 @@ const seedStudents: IEducationStudent[] = [
         gender: "Male",
         mobileNumber: "9876508899",
         email: "suresh.nair@applicant.demo",
+        address: "8 Seabreeze Apartments, Panampilly Nagar, Kochi, Kerala",
       }),
       createApplicant({
         id: "applicant-003a",
@@ -205,6 +223,7 @@ const seedStudents: IEducationStudent[] = [
         gender: "Female",
         mobileNumber: "9876508800",
         email: "latha.nair@applicant.demo",
+        address: "8 Seabreeze Apartments, Panampilly Nagar, Kochi, Kerala",
       }),
     ],
     coApplicantName: "Suresh Nair",
@@ -237,6 +256,8 @@ const seedStudents: IEducationStudent[] = [
     courseId: "COCOU2601",
     courseName: "BBA in Finance and Lending",
     studentPan: "",
+    studentPanDocument: null,
+    studentAadhaarDocument: null,
     studentDateOfBirth: "2002-06-12",
     studentGender: "Male",
     studentPhoto: null,
@@ -244,6 +265,7 @@ const seedStudents: IEducationStudent[] = [
     parentPan: "",
     mobileNumber: "9876509900",
     email: "rohan.mehta@student.demo",
+    address: "22 Sunrise Arcade, Malad West, Mumbai, Maharashtra",
     applicants: [
       createApplicant({
         id: "applicant-004",
@@ -253,6 +275,7 @@ const seedStudents: IEducationStudent[] = [
         gender: "Male",
         mobileNumber: "9876509911",
         email: "milan.mehta@applicant.demo",
+        address: "22 Sunrise Arcade, Malad West, Mumbai, Maharashtra",
       }),
     ],
     coApplicantName: "Milan Mehta",
@@ -285,6 +308,8 @@ const seedStudents: IEducationStudent[] = [
     courseId: "COCOU2602",
     courseName: "Diploma in Credit Underwriting",
     studentPan: "",
+    studentPanDocument: null,
+    studentAadhaarDocument: null,
     studentDateOfBirth: "2004-11-03",
     studentGender: "Male",
     studentPhoto: null,
@@ -292,6 +317,7 @@ const seedStudents: IEducationStudent[] = [
     parentPan: "",
     mobileNumber: "9876506677",
     email: "mihir.joshi@student.demo",
+    address: "7 Riverfront Heights, Vastrapur, Ahmedabad, Gujarat",
     applicants: [
       createApplicant({
         id: "applicant-005",
@@ -301,6 +327,7 @@ const seedStudents: IEducationStudent[] = [
         gender: "Female",
         mobileNumber: "9876507766",
         email: "rupal.joshi@applicant.demo",
+        address: "7 Riverfront Heights, Vastrapur, Ahmedabad, Gujarat",
       }),
     ],
     coApplicantName: "Rupal Joshi",
@@ -359,9 +386,12 @@ const withLegacyApplicantFields = (student: IEducationStudent): IEducationStuden
 
   return normalizeStudentLoanDetails({
     ...student,
+    studentPanDocument: student.studentPanDocument ?? null,
+    studentAadhaarDocument: student.studentAadhaarDocument ?? null,
     studentDateOfBirth: student.studentDateOfBirth || "",
     studentGender: student.studentGender || "",
     studentPhoto: student.studentPhoto ?? null,
+    address: student.address || "",
     applicants,
     coApplicantName: primaryApplicant?.name || "",
     coApplicantMobileNumber: primaryApplicant?.mobileNumber || "",
@@ -440,11 +470,14 @@ const buildStudentRecord = (
       id: applicant.id || `applicant-${Date.now()}-${index + 1}`,
       name: applicant.name.trim(),
       pan: applicant.pan.trim().toUpperCase(),
+      panDocument: applicant.panDocument ?? null,
+      aadhaarDocument: applicant.aadhaarDocument ?? null,
       dateOfBirth: applicant.dateOfBirth,
       gender: applicant.gender,
       mobileNumber: applicant.mobileNumber.trim(),
       email: applicant.email.trim().toLowerCase(),
       photo: applicant.photo ?? null,
+      address: applicant.address?.trim() || "",
     }),
   );
   const primaryApplicant = applicants[0];
@@ -455,7 +488,9 @@ const buildStudentRecord = (
     studentName: studentData.studentName.trim(),
     courseId: studentData.courseId,
     courseName: matchedCourse?.courseName || "Unassigned Course",
-    studentPan: "",
+    studentPan: studentData.studentPan.trim().toUpperCase(),
+    studentPanDocument: studentData.studentPanDocument ?? null,
+    studentAadhaarDocument: studentData.studentAadhaarDocument ?? null,
     studentDateOfBirth: studentData.studentDateOfBirth,
     studentGender: studentData.studentGender,
     studentPhoto: studentData.studentPhoto ?? null,
@@ -463,6 +498,7 @@ const buildStudentRecord = (
     parentPan: studentData.parentPan.trim().toUpperCase(),
     mobileNumber: studentData.mobileNumber.trim(),
     email: studentData.email.trim().toLowerCase(),
+    address: studentData.address.trim(),
     applicants,
     coApplicantName: primaryApplicant?.name || "",
     coApplicantMobileNumber: primaryApplicant?.mobileNumber || "",

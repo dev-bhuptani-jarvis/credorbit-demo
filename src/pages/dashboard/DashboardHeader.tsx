@@ -24,8 +24,12 @@ import Loader from "../../components/Loader";
 import { validationMessages } from "../../utils/constants/messages";
 import { NotificationList } from "../../interface/notifications";
 import NotificationModalNew from "../../components/notifcationmodel/notifcation-model-new";
+import { CLIENT_ROLE } from "../../utils/constants/constant";
 
 const DashboardHeader = () => {
+  const EDUCATION_INSTITUTE_USER_ID = "edu-inst-001";
+  const STUDENT_USER_ID = "student-role-001";
+
   const [showLogoutDialog, setShowLogoutDialog] = useState<boolean>(false);
 
   const [showNotificationMenu, setShowNotificationMenu] =
@@ -53,6 +57,15 @@ const DashboardHeader = () => {
 
   const [unReadNotificationCount, setUnReadNotificationCount] =
     useState<number>(0);
+
+  const isEducationInstituteDashboard =
+    userData.userType === CLIENT_ROLE.CHANNEL_PARTNER &&
+    userData.userID === EDUCATION_INSTITUTE_USER_ID;
+  const isStudentDashboard =
+    userData.userType === CLIENT_ROLE.CUSTOMER &&
+    (userData.userID === STUDENT_USER_ID || userData.roleName === "Student");
+  const isManagedEducationHeader =
+    isEducationInstituteDashboard || isStudentDashboard;
 
   useEffect(() => {
     getUserNotificationList();
@@ -116,9 +129,8 @@ const DashboardHeader = () => {
         onClick={handleLogout}
         label={loading ? "Loading..." : "Logout"}
         disabled={loading}
-        className={`btn ${
-          loading ? "btn-orange-disabled" : "btn-orange"
-        } w-100 ms-2 text-center`}
+        className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+          } w-100 ms-2 text-center`}
       />
     </div>
   );
@@ -157,11 +169,130 @@ const DashboardHeader = () => {
     <>
       <Loader isLoading={loading} />
 
-      <header className="header whiteBoxHldr p-30">
+      <header
+        className={`header whiteBoxHldr p-30 ${
+          isManagedEducationHeader ? "education-dashboard-header" : ""
+        } ${
+          isStudentDashboard ? "student-dashboard-header" : ""
+        }`}
+      >
         <Link className="menuHldr" id="menuHldr" to="#">
           <i className="bi bi-list" />
         </Link>
-        <ul className="rightSide">
+
+        <div
+          className={`col-12 titleMainWrapper justify-content-between ${
+            isManagedEducationHeader ? "education-dashboard-header__content" : ""
+          } ${
+            isStudentDashboard ? "student-dashboard-header__content" : ""
+          }`}
+        >
+          <h2
+            className={`fw-bold txt-30 ${
+              isManagedEducationHeader ? "education-dashboard-header__title" : ""
+            } ${
+              isStudentDashboard ? "student-dashboard-header__title" : ""
+            }`}
+          >
+            <span>Welcome,</span> {userData.userName}
+          </h2>
+          <div
+            className={`BtnRightHldr d-flex flex-row ${
+              isManagedEducationHeader ? "education-dashboard-header__actions" : ""
+            } ${
+              isStudentDashboard ? "student-dashboard-header__actions" : ""
+            }`}
+            style={{ gap: "10px" }}
+          >
+            {isEducationInstituteDashboard && (
+              <>
+                <div className="form-group education-dashboard-header__action">
+                  <Button
+                    className="btn btn-orange-line"
+                    onClick={() =>
+                      navigate(
+                        RoutePathConstant.private.educationStudentLoanApplication,
+                      )
+                    }
+                  >
+                    Add Applications
+                  </Button>
+                </div>
+
+                <div className="form-group education-dashboard-header__action">
+                  <Button
+                    className="btn btn-orange-line"
+                    onClick={() =>
+                      navigate(RoutePathConstant.private.educationAddStudent)
+                    }
+                  >
+                    Add Student
+                  </Button>
+                </div>
+
+                <div className="form-group education-dashboard-header__action">
+                  <Button
+                    className="btn btn-orange"
+                    onClick={() =>
+                      navigate(
+                        `${RoutePathConstant.private.channelPartnerDashboard}?status=1`,
+                      )
+                    }
+                  >
+                    Show Ongoing Applications
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {isStudentDashboard && (
+              <div className="form-group education-dashboard-header__action">
+                <Button
+                  className="btn btn-orange student-dashboard-header__button"
+                  onClick={() =>
+                    navigate(RoutePathConstant.private.studentOngoingApplications)
+                  }
+                >
+                  Show Ongoing Applications
+                </Button>
+              </div>
+            )}
+
+            {!isEducationInstituteDashboard && !isStudentDashboard && (
+              <div className="form-group">
+                <Button
+                  className="btn btn-orange-line"
+                  onClick={() =>
+                    navigate(RoutePathConstant.private.addApplications)
+                  }
+                >
+                  Add Application
+                </Button>
+              </div>
+            )}
+
+            {!isEducationInstituteDashboard &&
+              !isStudentDashboard &&
+              <div className="form-group">
+                <Button
+                  className="btn btn-orange"
+                  icon="bi bi-plus-circle me-2"
+                  iconPos="left"
+                >
+                  Add Client
+                </Button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <ul
+          className={`rightSide ${
+            isManagedEducationHeader ? "education-dashboard-header__utility" : ""
+          } ${
+            isStudentDashboard ? "student-dashboard-header__utility" : ""
+          }`}
+        >
           <li>
             <Link
               to="#"

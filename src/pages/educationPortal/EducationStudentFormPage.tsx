@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
-import { InputSwitch } from "primereact/inputswitch";
 import { InputText } from "primereact/inputtext";
 import Loader from "../../components/Loader";
 import CameraCaptureDialog from "../../components/CameraCaptureDialog";
@@ -86,6 +85,8 @@ const EducationStudentFormPage = () => {
       studentName: student.studentName,
       courseId: student.courseId,
       studentPan: student.studentPan,
+      studentPanDocument: student.studentPanDocument ?? null,
+      studentAadhaarDocument: student.studentAadhaarDocument ?? null,
       studentDateOfBirth: student.studentDateOfBirth || "",
       studentGender: student.studentGender || "",
       studentPhoto: student.studentPhoto ?? null,
@@ -93,6 +94,7 @@ const EducationStudentFormPage = () => {
       parentPan: student.parentPan,
       mobileNumber: student.mobileNumber,
       email: student.email,
+      address: student.address || "",
       applicants:
         student.applicants?.length > 0
           ? student.applicants
@@ -166,6 +168,7 @@ const EducationStudentFormPage = () => {
             mobileNumber: prev.mobileNumber,
             email: prev.email,
             photo: prev.studentPhoto,
+            address: prev.address,
           }
           : applicant,
       ),
@@ -182,6 +185,17 @@ const EducationStudentFormPage = () => {
     event.target.value = "";
   };
 
+  const handleStudentDocumentChange = async (
+    fieldName: "studentPanDocument" | "studentAadhaarDocument",
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) return;
+    const documentValue = await convertFileToDataUrl(selectedFile);
+    handleFieldChange(fieldName, documentValue);
+    event.target.value = "";
+  };
+
   const handleApplicantPhotoChange = async (
     index: number,
     event: React.ChangeEvent<HTMLInputElement>,
@@ -190,6 +204,18 @@ const EducationStudentFormPage = () => {
     if (!selectedFile) return;
     const photo = await convertFileToDataUrl(selectedFile);
     handleApplicantChange(index, "photo", photo);
+    event.target.value = "";
+  };
+
+  const handleApplicantDocumentChange = async (
+    index: number,
+    fieldName: "panDocument" | "aadhaarDocument",
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) return;
+    const documentValue = await convertFileToDataUrl(selectedFile);
+    handleApplicantChange(index, fieldName, documentValue);
     event.target.value = "";
   };
 
@@ -205,6 +231,15 @@ const EducationStudentFormPage = () => {
 
     if (!PAN_NUMBER_PATTERN.test(applicant.pan.trim().toUpperCase())) {
       nextErrors[`applicants.${index}.pan`] = `Enter a valid ${label.toLowerCase()} PAN number.`;
+    }
+
+    if (!applicant.panDocument) {
+      nextErrors[`applicants.${index}.panDocument`] = `${label} PAN upload is required.`;
+    }
+
+    if (!applicant.aadhaarDocument) {
+      nextErrors[`applicants.${index}.aadhaarDocument`] =
+        `${label} Aadhaar upload is required.`;
     }
 
     if (!applicant.dateOfBirth) {
@@ -223,6 +258,10 @@ const EducationStudentFormPage = () => {
     if (!EMAIL_PATTERN.test(applicant.email.trim())) {
       nextErrors[`applicants.${index}.email`] = `Enter a valid ${label.toLowerCase()} email address.`;
     }
+
+    if (!applicant.address?.trim()) {
+      nextErrors[`applicants.${index}.address`] = `${label} address is required.`;
+    }
   };
 
   const validateForm = (): boolean => {
@@ -238,6 +277,10 @@ const EducationStudentFormPage = () => {
 
     if (!studentForm.studentDateOfBirth) {
       nextErrors.studentDateOfBirth = "Student date of birth is required.";
+    }
+
+    if (!studentForm.studentAadhaarDocument) {
+      nextErrors.studentAadhaarDocument = "Student Aadhaar upload is required.";
     }
 
     if (!studentForm.studentGender) {
@@ -257,6 +300,10 @@ const EducationStudentFormPage = () => {
 
     if (!EMAIL_PATTERN.test(studentForm.email.trim())) {
       nextErrors.email = "Enter a valid email address.";
+    }
+
+    if (!studentForm.address.trim()) {
+      nextErrors.address = "Address is required.";
     }
 
     validateApplicant(primaryApplicant, 0, "Applicant", nextErrors);
@@ -418,6 +465,64 @@ const EducationStudentFormPage = () => {
             </div>
 
             <div className="form-group col-sm-12 col-lg-6">
+              <label className="form-label d-block">PAN Upload<sup>*</sup></label>
+              <label
+                htmlFor={`applicantPanDocumentUpload-${index}`}
+                className="borderBoxHldr p-15 d-block cursor-pointer"
+              >
+                <b className="d-block mb-1">Upload PAN</b>
+                <small className="text-muted">
+                  {applicant.panDocument
+                    ? "PAN document uploaded"
+                    : "Required: upload PAN document"}
+                </small>
+              </label>
+              <input
+                id={`applicantPanDocumentUpload-${index}`}
+                type="file"
+                accept=".pdf,image/*"
+                onChange={(event) =>
+                  void handleApplicantDocumentChange(index, "panDocument", event)
+                }
+                className="d-none"
+              />
+              {formErrors[`applicants.${index}.panDocument`] && (
+                <small className="error">
+                  {formErrors[`applicants.${index}.panDocument`]}
+                </small>
+              )}
+            </div>
+
+            <div className="form-group col-sm-12 col-lg-6">
+              <label className="form-label d-block">Aadhaar Upload<sup>*</sup></label>
+              <label
+                htmlFor={`applicantAadhaarDocumentUpload-${index}`}
+                className="borderBoxHldr p-15 d-block cursor-pointer"
+              >
+                <b className="d-block mb-1">Upload Aadhaar</b>
+                <small className="text-muted">
+                  {applicant.aadhaarDocument
+                    ? "Aadhaar document uploaded"
+                    : "Required: upload Aadhaar document"}
+                </small>
+              </label>
+              <input
+                id={`applicantAadhaarDocumentUpload-${index}`}
+                type="file"
+                accept=".pdf,image/*"
+                onChange={(event) =>
+                  void handleApplicantDocumentChange(index, "aadhaarDocument", event)
+                }
+                className="d-none"
+              />
+              {formErrors[`applicants.${index}.aadhaarDocument`] && (
+                <small className="error">
+                  {formErrors[`applicants.${index}.aadhaarDocument`]}
+                </small>
+              )}
+            </div>
+
+            <div className="form-group col-sm-12 col-lg-6">
               <label className="form-label">Date of Birth<sup>*</sup></label>
               <InputText
                 className="form-control"
@@ -490,6 +595,22 @@ const EducationStudentFormPage = () => {
                 <small className="error">{formErrors[`applicants.${index}.email`]}</small>
               )}
             </div>
+
+            <div className="form-group col-sm-12">
+              <label className="form-label">Address<sup>*</sup></label>
+              <textarea
+                className="form-control"
+                rows={3}
+                placeholder={`Enter ${title.toLowerCase()} address`}
+                value={applicant.address || ""}
+                onChange={(event) =>
+                  handleApplicantChange(index, "address", event.target.value)
+                }
+              />
+              {formErrors[`applicants.${index}.address`] && (
+                <small className="error">{formErrors[`applicants.${index}.address`]}</small>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -501,31 +622,14 @@ const EducationStudentFormPage = () => {
       <Loader isLoading={loading} />
 
       <div className="whiteBoxHldr p-24 education-student-page">
-        <div className="education-student-page__hero">
-          <div>
-            <TableTitle title={isEditMode ? "Edit Student" : "Add Student"} />
-          </div>
-          <div className="education-student-page__hero-actions">
-            <Button
-              className="btn btn-black-line"
-              onClick={goBack}
-            >
-              Cancel
-            </Button>
-            <Button
-              className="btn btn-orange"
-              onClick={handleSave}
-            >
-              {isEditMode ? "Save Changes" : "Save Student"}
-            </Button>
-          </div>
-        </div>
+        <TableTitle title={isEditMode ? "Edit Student" : "Add Student"} />
+
         <div className="education-student-form-shell">
           <section className="education-student-form-section">
             <div className="education-student-form-section__head">
               <div>
                 <h4>Student Details</h4>
-                <p>Keep the student profile simple and PAN-free.</p>
+                <p>Capture the student profile with required Aadhaar and optional PAN uploads.</p>
               </div>
             </div>
 
@@ -645,6 +749,38 @@ const EducationStudentFormPage = () => {
                     )}
                   </div>
 
+                  <div className="form-group col-sm-12">
+                    <label className="form-label" htmlFor="studentAddress">
+                      Address<sup>*</sup>
+                    </label>
+                    <textarea
+                      id="studentAddress"
+                      className="form-control"
+                      rows={3}
+                      placeholder="Enter full student address"
+                      value={studentForm.address}
+                      onChange={(event) => handleFieldChange("address", event.target.value)}
+                    />
+                    {formErrors.address && (
+                      <small className="error">{formErrors.address}</small>
+                    )}
+                  </div>
+
+                  <div className="form-group col-sm-12 col-lg-6">
+                    <label className="form-label" htmlFor="studentPan">
+                      Student PAN
+                    </label>
+                    <InputText
+                      id="studentPan"
+                      className="form-control"
+                      placeholder="Enter student PAN"
+                      value={studentForm.studentPan}
+                      onChange={(event) =>
+                        handleFieldChange("studentPan", event.target.value.toUpperCase())
+                      }
+                    />
+                  </div>
+
                   <div className="form-group col-sm-12 col-lg-6">
                     <label className="form-label" htmlFor="studentDob">
                       Date of Birth<sup>*</sup>
@@ -682,6 +818,59 @@ const EducationStudentFormPage = () => {
                     />
                     {formErrors.studentGender && (
                       <small className="error">{formErrors.studentGender}</small>
+                    )}
+                  </div>
+
+                  <div className="form-group col-sm-12 col-lg-6">
+                    <label className="form-label d-block">Student PAN Upload</label>
+                    <label
+                      htmlFor="studentPanDocumentUpload"
+                      className="borderBoxHldr p-15 d-block cursor-pointer"
+                    >
+                      <b className="d-block mb-1">Upload Student PAN</b>
+                      <small className="text-muted">
+                        {studentForm.studentPanDocument
+                          ? "PAN document uploaded"
+                          : "Optional: upload PAN document"}
+                      </small>
+                    </label>
+                    <input
+                      id="studentPanDocumentUpload"
+                      type="file"
+                      accept=".pdf,image/*"
+                      onChange={(event) =>
+                        void handleStudentDocumentChange("studentPanDocument", event)
+                      }
+                      className="d-none"
+                    />
+                  </div>
+
+                  <div className="form-group col-sm-12 col-lg-6">
+                    <label className="form-label d-block">
+                      Student Aadhaar Upload<sup>*</sup>
+                    </label>
+                    <label
+                      htmlFor="studentAadhaarDocumentUpload"
+                      className="borderBoxHldr p-15 d-block cursor-pointer"
+                    >
+                      <b className="d-block mb-1">Upload Student Aadhaar</b>
+                      <small className="text-muted">
+                        {studentForm.studentAadhaarDocument
+                          ? "Aadhaar document uploaded"
+                          : "Required: upload Aadhaar document"}
+                      </small>
+                    </label>
+                    <input
+                      id="studentAadhaarDocumentUpload"
+                      type="file"
+                      accept=".pdf,image/*"
+                      onChange={(event) =>
+                        void handleStudentDocumentChange("studentAadhaarDocument", event)
+                      }
+                      className="d-none"
+                    />
+                    {formErrors.studentAadhaarDocument && (
+                      <small className="error">{formErrors.studentAadhaarDocument}</small>
                     )}
                   </div>
                 </div>

@@ -47,11 +47,14 @@ export interface IEducationStudentApplicant {
   id: string;
   name: string;
   pan: string;
+  panDocument: string | null;
+  aadhaarDocument: string | null;
   dateOfBirth: string;
   gender: EducationPersonGender;
   mobileNumber: string;
   email: string;
   photo: string | null;
+  address?: string;
 }
 
 export interface IEducationStudent {
@@ -61,6 +64,8 @@ export interface IEducationStudent {
   courseId: string;
   courseName: string;
   studentPan: string;
+  studentPanDocument: string | null;
+  studentAadhaarDocument: string | null;
   studentDateOfBirth: string;
   studentGender: EducationPersonGender;
   studentPhoto: string | null;
@@ -68,6 +73,7 @@ export interface IEducationStudent {
   parentPan: string;
   mobileNumber: string;
   email: string;
+  address: string;
   applicants: IEducationStudentApplicant[];
   coApplicantName: string;
   coApplicantMobileNumber: string;
@@ -83,6 +89,8 @@ export interface IEducationStudentFormData {
   studentName: string;
   courseId: string;
   studentPan: string;
+  studentPanDocument: string | null;
+  studentAadhaarDocument: string | null;
   studentDateOfBirth: string;
   studentGender: EducationPersonGender;
   studentPhoto: string | null;
@@ -90,6 +98,7 @@ export interface IEducationStudentFormData {
   parentPan: string;
   mobileNumber: string;
   email: string;
+  address: string;
   applicants: IEducationStudentApplicant[];
   coApplicantName: string;
   coApplicantMobileNumber: string;
@@ -114,12 +123,12 @@ export interface IEducationStudentEnrollment {
   repaymentStatus: "On-Time" | "Delayed" | "Overdue" | "Closed" | "Pending";
   loanStatus: "Active" | "Closed";
   applicationStatus:
-    | "Pending"
-    | "Approved"
-    | "Sanctioned"
-    | "Disbursed"
-    | "Rejected"
-    | "Query Raised";
+  | "Pending"
+  | "Approved"
+  | "Sanctioned"
+  | "Disbursed"
+  | "Rejected"
+  | "Query Raised";
   sanctionLetterUrl?: string | null;
   loanAgreementUrl?: string | null;
   repaymentScheduleUrl?: string | null;
@@ -154,8 +163,8 @@ export interface IEducationLoanDraft {
   courseType: "Online" | "Offline";
   courseFees: number;
   emiOptionMonths: number;
+  advancedEmiMonths: number | null;
   downpayment: number;
-  discountType: EducationDiscountType;
   discountValue: number;
   discountAmount: number;
   discountedCourseFee: number;
@@ -164,15 +173,20 @@ export interface IEducationLoanDraft {
   numberOfEmis: number;
   emiAmount: number;
   totalAmountToInstitute: number;
+  selectedBankId?: number | null;
+  selectedBankName?: string | null;
+  processingFeeAmount?: number;
+  processingFeePaid?: boolean;
+  processingFeePaidAt?: string | null;
   consentAccepted: boolean;
   hasCoApplicant: boolean;
   loanApplicationStatus:
-    | "Pending"
-    | "Approved"
-    | "Sanctioned"
-    | "Disbursed"
-    | "Rejected"
-    | "Query Raised";
+  | "Pending"
+  | "Approved"
+  | "Sanctioned"
+  | "Disbursed"
+  | "Rejected"
+  | "Query Raised";
   sanctionDate: string | null;
   disbursementDate: string | null;
   utrNumber: string;
@@ -197,8 +211,8 @@ export interface ICreateEducationLoanDraftBody {
   instituteName: string;
   courseFees: number;
   emiOptionMonths: number;
+  advancedEmiMonths: number | null;
   downpayment: number;
-  discountType: EducationDiscountType;
   discountValue: number;
 }
 
