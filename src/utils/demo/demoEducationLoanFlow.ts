@@ -35,7 +35,7 @@ const seedStudentCamReports: IClientDetailList[] = [
 
 const seedEducationLoanDrafts: IEducationLoanDraft[] = [
   {
-    id: "edu-loan-seed-001",
+    id: "COEDU2601",
     studentId: "student-001",
     studentUserId: DEFAULT_STUDENT_USER_ID,
     instituteName: "Credorbit School of Finance",
@@ -89,7 +89,7 @@ const seedEducationLoanDrafts: IEducationLoanDraft[] = [
     updatedAt: "2026-06-10T09:30:00.000Z",
   },
   {
-    id: "edu-loan-seed-002",
+    id: "COEDU2602",
     studentId: "student-001",
     studentUserId: DEFAULT_STUDENT_USER_ID,
     instituteName: "Pioneer Institute of Business Studies",
@@ -143,7 +143,7 @@ const seedEducationLoanDrafts: IEducationLoanDraft[] = [
     updatedAt: "2026-05-22T15:00:00.000Z",
   },
   {
-    id: "edu-loan-seed-003",
+    id: "COEDU2603",
     studentId: "student-002",
     studentUserId: DEFAULT_STUDENT_USER_ID,
     instituteName: "Global Academy of Finance & Management",

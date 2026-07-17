@@ -28,6 +28,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import Highcharts from "highcharts";
+import "highcharts/modules/funnel";
 import HighchartsReact from "highcharts-react-official";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
@@ -126,6 +127,26 @@ const educationDashboardChartColors = [
   "#3da0e7",
   "#ff4d4f",
 ];
+
+const distributeTrendAcrossMonths = (total: number, monthCount: number): number[] => {
+  if (total <= 0 || monthCount <= 0) return Array.from({ length: monthCount }, () => 0);
+
+  const weights = [0.12, 0.18, 0.14, 0.2, 0.15, 0.21].slice(0, monthCount);
+  const normalizedWeights =
+    weights.length === monthCount
+      ? weights
+      : Array.from({ length: monthCount }, () => 1 / monthCount);
+
+  const roundedValues = normalizedWeights.map((weight) =>
+    Math.round((total * weight) / 50) * 50,
+  );
+  const roundedTotal = roundedValues.reduce((sum, value) => sum + value, 0);
+  const difference = total - roundedTotal;
+
+  roundedValues[roundedValues.length - 1] += difference;
+
+  return roundedValues;
+};
 
 const ChannelPartnerDashboard = () => {
   const EDUCATION_INSTITUTE_USER_ID = "edu-inst-001";
@@ -235,6 +256,9 @@ const ChannelPartnerDashboard = () => {
 
   const [educationDisbursementView, setEducationDisbursementView] =
     useState<"monthly" | "yearly">("monthly");
+
+  const [educationDisbursementYear, setEducationDisbursementYear] =
+    useState<number | null>(null);
 
   const { search } = useLocation();
 
@@ -373,6 +397,23 @@ const ChannelPartnerDashboard = () => {
     [],
   );
 
+  const educationDisbursementYearOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          educationInstituteDisbursementEntries.map((entry) =>
+            new Date(entry.date).getFullYear(),
+          ),
+        ),
+      )
+        .sort((firstYear, secondYear) => secondYear - firstYear)
+        .map((year) => ({
+          label: String(year),
+          value: year,
+        })),
+    [educationInstituteDisbursementEntries],
+  );
+
   const educationStatusCountMap = useMemo(() => {
     return (channelPartnerInfo?.totalLoanApplicationsCountByStatus || []).reduce(
       (accumulator, item) => {
@@ -498,23 +539,29 @@ const ChannelPartnerDashboard = () => {
 
   const educationDisbursementTrendConfig = useMemo(() => {
     if (!isEducationInstituteDashboard) return null;
+    if (educationDisbursementYearOptions.length === 0) return null;
 
-    const currentYear = Math.max(
-      ...educationInstituteDisbursementEntries.map((entry) =>
-        new Date(entry.date).getFullYear(),
-      ),
-    );
-    const lastYear = currentYear - 1;
+    const selectedYear =
+      educationDisbursementYear ?? educationDisbursementYearOptions[0].value;
 
     if (educationDisbursementView === "yearly") {
-      const categories = [String(lastYear), String(currentYear)];
+      const categories = [...educationDisbursementYearOptions]
+        .reverse()
+        .map((option) => String(option.value));
+
       return {
-        title: "Yearly Disbursement Amount",
+        title: "",
         categories,
-        data: categories.map((yearLabel) =>
+        amountData: categories.map((yearLabel) =>
           educationInstituteDisbursementEntries
             .filter((entry) => new Date(entry.date).getFullYear() === Number(yearLabel))
             .reduce((sum, entry) => sum + entry.amount, 0),
+        ),
+        applicationCountData: categories.map(
+          (yearLabel) =>
+            educationInstituteDisbursementEntries.filter(
+              (entry) => new Date(entry.date).getFullYear() === Number(yearLabel),
+            ).length,
         ),
       };
     }
@@ -535,25 +582,53 @@ const ChannelPartnerDashboard = () => {
     ];
 
     return {
-      title: `Monthly Disbursement Amount (${currentYear})`,
+      title: `Monthly Disbursement Trend (${selectedYear})`,
       categories,
-      data: categories.map((_, monthIndex) =>
+      amountData: categories.map((_, monthIndex) =>
         educationInstituteDisbursementEntries
           .filter((entry) => {
             const entryDate = new Date(entry.date);
             return (
-              entryDate.getFullYear() === currentYear &&
+              entryDate.getFullYear() === selectedYear &&
               entryDate.getMonth() === monthIndex
             );
           })
           .reduce((sum, entry) => sum + entry.amount, 0),
       ),
+      applicationCountData: categories.map(
+        (_, monthIndex) =>
+          educationInstituteDisbursementEntries.filter((entry) => {
+            const entryDate = new Date(entry.date);
+            return (
+              entryDate.getFullYear() === selectedYear &&
+              entryDate.getMonth() === monthIndex
+            );
+          }).length,
+      ),
     };
   }, [
+    educationDisbursementYear,
+    educationDisbursementYearOptions,
     educationDisbursementView,
     educationInstituteDisbursementEntries,
     isEducationInstituteDashboard,
   ]);
+
+  useEffect(() => {
+    if (educationDisbursementYearOptions.length === 0) {
+      setEducationDisbursementYear(null);
+      return;
+    }
+
+    setEducationDisbursementYear((currentYear) =>
+      currentYear &&
+      educationDisbursementYearOptions.some(
+        (option) => option.value === currentYear,
+      )
+        ? currentYear
+        : educationDisbursementYearOptions[0].value,
+    );
+  }, [educationDisbursementYearOptions]);
 
   const educationCourseDisbursementData = useMemo(() => {
     if (!isEducationInstituteDashboard) return [];
@@ -569,65 +644,40 @@ const ChannelPartnerDashboard = () => {
     }));
   }, [educationInstituteDisbursementEntries, isEducationInstituteDashboard]);
 
-  const educationStatusMixOptions = useMemo(() => {
-    if (!isEducationInstituteDashboard) return null;
+  const educationApplicationFunnelSteps = useMemo(() => {
+    if (!isEducationInstituteDashboard) return [];
 
-    return {
-      chart: {
-        type: "pie",
-        backgroundColor: "transparent",
-        height: 320,
-      },
-      credits: {
-        enabled: false,
-      },
-      title: {
-        text: null,
-      },
-      tooltip: {
-        pointFormat: "<b>{point.y}</b> applications",
-        backgroundColor: "rgba(15, 23, 42, 0.92)",
-        borderWidth: 0,
-        style: {
-          color: "var(--color-white)",
-        },
-      },
-      plotOptions: {
-        pie: {
-          innerSize: "62%",
-          borderWidth: 0,
-          dataLabels: {
-            enabled: true,
-            distance: 10,
-            style: {
-              color: "var(--color-text-black)",
-              textOutline: "none",
-              fontSize: "11px",
-              fontWeight: "600",
-            },
-            formatter: function (this: any) {
-              return this.y ? `${this.point.name}: ${this.y}` : "";
-            },
-          },
-        },
-      },
-      legend: {
-        enabled: false,
-      },
-      series: [
-        {
-          type: "pie" as const,
-          name: "Applications",
-          colorByPoint: true,
-          data: educationInstituteApplicationCards.map((item, index) => ({
-            name: item.title,
-            y: item.count,
-            color:
-              educationDashboardChartColors[index % educationDashboardChartColors.length],
-          })),
-        },
-      ],
-    };
+    const steps = educationInstituteApplicationCards.slice(0, 5);
+    const maxCount = Math.max(...steps.map((step) => step.count), 0);
+
+    const normalizedSteps = steps.map((step, index) => ({
+      ...step,
+      widthPercentage: maxCount > 0 ? Math.max((step.count / maxCount) * 100, 28) : 28,
+      color: educationDashboardChartColors[index % educationDashboardChartColors.length],
+    }));
+
+    return normalizedSteps.map((step, index) => {
+      const nextWidthPercentage =
+        normalizedSteps[index + 1]?.widthPercentage ?? 0;
+      const bottomInsetPercentage =
+        step.widthPercentage > 0
+          ? Math.max(
+              0,
+              Math.min(
+                50,
+                ((step.widthPercentage - nextWidthPercentage) /
+                  step.widthPercentage /
+                  2) *
+                  100,
+              ),
+            )
+          : 50;
+
+      return {
+        ...step,
+        bottomInsetPercentage,
+      };
+    });
   }, [educationInstituteApplicationCards, isEducationInstituteDashboard]);
 
   const parseRemainingEmis = (enrollment: IEducationStudentEnrollment): number => {
@@ -680,41 +730,41 @@ const ChannelPartnerDashboard = () => {
   const educationPaymentHistoryTrend = useMemo(() => {
     if (!isEducationInstituteDashboard) return null;
 
-    const categories = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-    const ongoingBase =
-      educationPaymentHistoryCards.find((item) => item.title === "Ongoing")?.emiAmount || 0;
-    const delayedBase =
-      educationPaymentHistoryCards.find((item) => item.title === "Delayed")?.emiAmount || 0;
-    const overdueBase =
-      educationPaymentHistoryCards.find((item) => item.title === "Overdue")?.emiAmount || 0;
+    const monthKeys = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    const statusSeries = [
+      {
+        name: "Ongoing",
+        color: "#0BB680",
+        statuses: ["On-Time", "Pending"],
+      },
+      {
+        name: "Delayed",
+        color: "#F4A917",
+        statuses: ["Delayed"],
+      },
+      {
+        name: "Overdue",
+        color: "#F64F59",
+        statuses: ["Overdue"],
+      },
+    ];
 
     return {
-      categories,
-      series: [
-        {
-          name: "Ongoing",
-          color: "#0BB680",
-          data: [0.82, 0.9, 0.94, 1, 1.03, 1.08].map((factor) =>
-            Math.round(ongoingBase * factor),
-          ),
-        },
-        {
-          name: "Delayed",
-          color: "#F4A917",
-          data: [1.22, 1.14, 1.08, 1, 0.95, 0.91].map((factor) =>
-            Math.round(delayedBase * factor),
-          ),
-        },
-        {
-          name: "Overdue",
-          color: "#F64F59",
-          data: [0.88, 0.94, 0.98, 1, 1.09, 1.16].map((factor) =>
-            Math.round(overdueBase * factor),
-          ),
-        },
-      ],
+      categories: monthKeys,
+      amountLabel: "Total scheduled EMI amount",
+      series: statusSeries.map((series) => {
+        const totalAmount = educationInstituteEnrollments
+          .filter((enrollment) => series.statuses.includes(enrollment.repaymentStatus))
+          .reduce((sum, enrollment) => sum + enrollment.emiAmount, 0);
+
+        return {
+          name: series.name,
+          color: series.color,
+          data: distributeTrendAcrossMonths(totalAmount, monthKeys.length),
+        };
+      }),
     };
-  }, [educationPaymentHistoryCards, isEducationInstituteDashboard]);
+  }, [educationInstituteEnrollments, isEducationInstituteDashboard]);
 
   const nbfcApplications = useMemo(() => {
     if (!isNbfcDashboard) return [];
@@ -2134,39 +2184,68 @@ const ChannelPartnerDashboard = () => {
                         </div>
                       </div>
 
-                      {educationStatusMixOptions && (
-                        <HighchartsReact
-                          highcharts={Highcharts}
-                          options={educationStatusMixOptions}
-                        />
-                      )}
-
-                      <div className="admin-dashboard-legend-list">
-                        {educationInstituteApplicationCards.slice(0, 5).map((card, index) => (
-                          <button
-                            key={card.title}
-                            type="button"
-                            className="admin-dashboard-legend-item education-dashboard-legend-item"
-                            onClick={() =>
-                              navigate(
-                                `${RoutePathConstant.private.channelPartnerDashboard}?status=${card.routeStatus}`,
-                              )
-                            }
-                          >
-                            <span
-                              className="admin-dashboard-legend-swatch"
-                              style={{
-                                backgroundColor:
-                                  educationDashboardChartColors[
-                                  index % educationDashboardChartColors.length
-                                  ],
-                              }}
-                            />
-                            <span className="admin-dashboard-legend-label">{card.title}</span>
-                            <span className="admin-dashboard-legend-value">{card.count}</span>
-                          </button>
-                        ))}
-                      </div>
+                      <HighchartsReact
+                        highcharts={Highcharts}
+                        options={{
+                          chart: {
+                            type: "funnel",
+                            height: 360,
+                            backgroundColor: "transparent",
+                          },
+                          title: {
+                            text: null,
+                          },
+                          credits: {
+                            enabled: false,
+                          },
+                          tooltip: {
+                            pointFormatter: function (this: any): string {
+                              return `<span style="color:${this.color}">●</span> <b>${this.name}</b>: ${this.y} applications`;
+                            },
+                          },
+                          plotOptions: {
+                            series: {
+                              dataLabels: {
+                                enabled: true,
+                                softConnector: true,
+                                format: "<b>{point.name}</b>: {point.y}",
+                                style: {
+                                  textOutline: "none",
+                                  fontWeight: "600",
+                                },
+                              },
+                              neckWidth: "0%",
+                              neckHeight: "0%",
+                              width: "84%",
+                              cursor: "pointer",
+                              point: {
+                                events: {
+                                  click: function (this: any) {
+                                    navigate(
+                                      `${RoutePathConstant.private.channelPartnerDashboard}?status=${this.options.routeStatus}`,
+                                    );
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          legend: {
+                            enabled: false,
+                          },
+                          series: [
+                            {
+                              type: "funnel",
+                              name: "Applications",
+                              data: educationApplicationFunnelSteps.map((step) => ({
+                                name: step.title,
+                                y: step.count,
+                                color: step.color,
+                                routeStatus: step.routeStatus,
+                              })),
+                            },
+                          ],
+                        }}
+                      />
                     </section>
                   </div>
                 </div>
@@ -2180,11 +2259,23 @@ const ChannelPartnerDashboard = () => {
                         <div>
                           <TableTitle title="Disbursement Trend" />
                           <p className="admin-dashboard-section-copy mb-0">
-                            Compare disbursement amount against month or year.
+                            Compare disbursement amount and application count against month or year.
                           </p>
                         </div>
 
-                        <div className="admin-dashboard-filter-actions">
+                        <div className="admin-dashboard-filter-actions form-group">
+                          {educationDisbursementView === "monthly" &&
+                            educationDisbursementYearOptions.length > 0 && (
+                              <Dropdown
+                                value={educationDisbursementYear}
+                                options={educationDisbursementYearOptions}
+                                onChange={(event) =>
+                                  setEducationDisbursementYear(event.value as number)
+                                }
+                                placeholder="Select Year"
+                                className="admin-dashboard-filter-dropdown"
+                              />
+                            )}
                           <Button
                             className={`btn ${educationDisbursementView === "monthly" ? "btn-orange" : "btn-orange-line"}`}
                             onClick={() => setEducationDisbursementView("monthly")}
@@ -2217,35 +2308,56 @@ const ChannelPartnerDashboard = () => {
                             xAxis: {
                               categories: educationDisbursementTrendConfig.categories,
                             },
-                            yAxis: {
-                              title: {
-                                text: "Disbursement Amount",
-                              },
-                              labels: {
-                                formatter: function (this: any): string {
-                                  return `₹${Number(this.value).toLocaleString("en-IN")}`;
+                            yAxis: [
+                              {
+                                title: {
+                                  text: "Disbursement Amount",
+                                },
+                                labels: {
+                                  formatter: function (this: any): string {
+                                    return `\u20B9${Number(this.value).toLocaleString("en-IN")}`;
+                                  },
                                 },
                               },
-                            },
+                              {
+                                title: {
+                                  text: "No. of Applications",
+                                },
+                                allowDecimals: false,
+                                opposite: true,
+                              },
+                            ],
                             legend: {
-                              enabled: false,
+                              enabled: true,
                             },
                             tooltip: {
-                              pointFormatter: function (this: any): string {
-                                return `<span style="color:${this.color}">\u25cf</span> Amount: <b>₹${Number(this.y).toLocaleString("en-IN")}</b>`;
-                              },
+                              shared: true,
                             },
                             plotOptions: {
                               column: {
                                 borderRadius: 8,
-                                color: "#FF632C",
+                                grouping: true,
                               },
                             },
                             series: [
                               {
                                 type: "column",
                                 name: "Disbursement Amount",
-                                data: educationDisbursementTrendConfig.data,
+                                color: "#FF632C",
+                                data: educationDisbursementTrendConfig.amountData,
+                                tooltip: {
+                                  valuePrefix: "\u20B9",
+                                },
+                              },
+                              {
+                                type: "column",
+                                name: "No. of Applications",
+                                yAxis: 1,
+                                color: "#2563EB",
+                                data: educationDisbursementTrendConfig.applicationCountData,
+                                tooltip: {
+                                  valueSuffix: " applications",
+                                },
                               },
                             ],
                           }}
@@ -2344,7 +2456,7 @@ const ChannelPartnerDashboard = () => {
                               No. of EMIs: {card.emiCount}
                             </div>
                             <div className="admin-dashboard-user-card__meta">
-                              Amt of EMI: {formatCurrencyAmount(card.emiAmount)}
+                              Total Scheduled EMI: {formatCurrencyAmount(card.emiAmount)}
                             </div>
                           </div>
                         ))}
@@ -2359,6 +2471,7 @@ const ChannelPartnerDashboard = () => {
                             chart: {
                               type: "line",
                               height: 360,
+                              backgroundColor: "transparent",
                             },
                             credits: {
                               enabled: false,
@@ -2368,28 +2481,57 @@ const ChannelPartnerDashboard = () => {
                             },
                             xAxis: {
                               categories: educationPaymentHistoryTrend.categories,
+                              lineColor: "#d8e1ec",
                             },
                             yAxis: {
                               title: {
-                                text: "EMI Amount",
+                                text: educationPaymentHistoryTrend.amountLabel,
                               },
                               labels: {
                                 formatter: function (this: any): string {
-                                  return `₹${Number(this.value).toLocaleString("en-IN")}`;
+                                  return `\u20B9${Number(this.value).toLocaleString("en-IN")}`;
                                 },
                               },
                             },
                             tooltip: {
                               shared: true,
-                              valuePrefix: "₹",
+                              useHTML: true,
+                              formatter: function (this: any): string {
+                                const rows = this.points
+                                  .map(
+                                    (point: any) =>
+                                      `<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:${point.color}">${point.series.name}</span><b>\u20B9${Number(point.y).toLocaleString("en-IN")}</b></div>`,
+                                  )
+                                  .join("");
+
+                                return `<div><div style="font-weight:700;margin-bottom:8px;">${this.x}</div>${rows}</div>`;
+                              },
                             },
                             plotOptions: {
                               line: {
+                                lineWidth: 3,
                                 marker: {
                                   enabled: true,
                                   radius: 4,
                                 },
+                                dataLabels: {
+                                  enabled: true,
+                                  formatter: function (this: any): string {
+                                    return this.y
+                                      ? `\u20B9${Number(this.y).toLocaleString("en-IN")}`
+                                      : "";
+                                  },
+                                  style: {
+                                    textOutline: "none",
+                                    fontSize: "10px",
+                                    fontWeight: "600",
+                                  },
+                                },
                               },
+                            },
+                            legend: {
+                              align: "center",
+                              verticalAlign: "bottom",
                             },
                             series: educationPaymentHistoryTrend.series.map((series) => ({
                               type: "line" as const,
@@ -3410,3 +3552,4 @@ const ChannelPartnerDashboard = () => {
 };
 
 export default ChannelPartnerDashboard;
+

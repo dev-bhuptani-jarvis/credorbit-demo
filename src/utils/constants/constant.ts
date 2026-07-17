@@ -81,7 +81,7 @@ export const paymentStatusList = [
 export const getTitleByStatus = (status: string): string => {
   switch (status) {
     case LoanStatusType.PENDING.toString():
-      return "Pending Applications";
+      return "Ongoing Applications";
     case LoanStatusType.APPLIED.toString():
       return "Login Applications";
     case LoanStatusType.QUERY_RAISED.toString():

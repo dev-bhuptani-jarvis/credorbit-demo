@@ -87,7 +87,6 @@ export interface IEducationStudent {
 
 export interface IEducationStudentFormData {
   studentName: string;
-  courseId: string;
   studentPan: string;
   studentPanDocument: string | null;
   studentAadhaarDocument: string | null;

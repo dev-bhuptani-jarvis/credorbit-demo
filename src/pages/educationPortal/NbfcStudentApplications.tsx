@@ -5,16 +5,22 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
 import { PaginatorPageChangeEvent } from "primereact/paginator";
+import { Tooltip } from "primereact/tooltip";
 import Loader from "../../components/Loader";
 import PrimePaginator from "../../components/PrimePaginator";
 import SearchButton from "../../components/SearchButton";
 import TableTitle from "../../components/TableTitle";
-import { IEducationLoanDraft } from "../../interface/educationManagement";
+import {
+  IEducationLoanDraft,
+  IEducationStudentEnrollment,
+} from "../../interface/educationManagement";
 import { PaginateReqEntity } from "../../interface/pagination";
 import { debounceTimeInMilliseconds, formatCurrencyAmount } from "../../utils/constants/constant";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import { getNbfcEducationLoanApplications } from "../../utils/demo/demoEducationLoanFlow";
 import { getEducationStudentById } from "../../utils/demo/demoEducationStudents";
+import { getStudentEnrollments } from "../../utils/demo/demoStudentEnrollments";
+import { formatDate } from "../../utils/functions/shared";
 import useDebouncedEffect from "../../hooks/useDebounce";
 import { IsNullOrEmptyArray } from "../../utils/functions/nullCheck";
 
@@ -36,7 +42,43 @@ const repaymentStatusOptions = [
 ];
 
 type INbfcStudentApplicationRow = IEducationLoanDraft & {
+  loanApplicationId: string;
+  linkedEnrollment?: IEducationStudentEnrollment;
   repaymentStatus: string;
+  nextDue: string;
+  dpd: number;
+};
+
+const getRepaymentMeta = (
+  repaymentStatus: string,
+): { dpd: number; nextDue: string } => {
+  const today = new Date("2026-07-17T00:00:00");
+
+  if (repaymentStatus === "Overdue") {
+    return {
+      dpd: 32,
+      nextDue: formatDate(new Date(today.getFullYear(), today.getMonth(), 5).toISOString(), "DD MMM YYYY"),
+    };
+  }
+
+  if (repaymentStatus === "Delayed") {
+    return {
+      dpd: 7,
+      nextDue: formatDate(new Date(today.getFullYear(), today.getMonth(), 10).toISOString(), "DD MMM YYYY"),
+    };
+  }
+
+  if (repaymentStatus === "Closed") {
+    return {
+      dpd: 0,
+      nextDue: "-",
+    };
+  }
+
+  return {
+    dpd: 0,
+    nextDue: formatDate(new Date(today.getFullYear(), today.getMonth(), 25).toISOString(), "DD MMM YYYY"),
+  };
 };
 
 const NbfcStudentApplications = () => {
@@ -68,11 +110,21 @@ const NbfcStudentApplications = () => {
 
   const fetchApplications = (): void => {
     setLoading(true);
+    const enrollments = getStudentEnrollments();
     setApplications(
       getNbfcEducationLoanApplications().map((application) => ({
         ...application,
+        loanApplicationId: application.id,
+        linkedEnrollment: enrollments.find((enrollment) => enrollment.draftId === application.id),
         repaymentStatus:
-          getEducationStudentById(application.studentId)?.loanDetails.repaymentStatus || "Pending",
+          enrollments.find((enrollment) => enrollment.draftId === application.id)?.repaymentStatus ||
+          getEducationStudentById(application.studentId)?.loanDetails.repaymentStatus ||
+          "Pending",
+        ...getRepaymentMeta(
+          enrollments.find((enrollment) => enrollment.draftId === application.id)?.repaymentStatus ||
+          getEducationStudentById(application.studentId)?.loanDetails.repaymentStatus ||
+          "Pending",
+        ),
       })),
     );
     setLoading(false);
@@ -197,11 +249,9 @@ const NbfcStudentApplications = () => {
                 value={paginatedApplications}
                 emptyMessage="No student loan applications found."
               >
+                <Column field="loanApplicationId" header="Loan Application ID" />
                 <Column field="studentName" header="Student Name" />
-                <Column field="studentMobileNumber" header="Mobile Number" />
-                <Column field="courseName" header="Course Name" />
-                <Column field="instituteName" header="Institute Name" />
-                <Column field="repaymentStatus" header="Repayment Status" />
+                <Column field="instituteName" header="Institute" />
                 <Column
                   header="Loan Amount"
                   body={(rowData: INbfcStudentApplicationRow) =>
@@ -209,17 +259,25 @@ const NbfcStudentApplications = () => {
                   }
                 />
                 <Column
-                  header="Applied On"
+                  header="EMI"
                   body={(rowData: INbfcStudentApplicationRow) =>
-                    new Date(rowData.createdAt).toLocaleDateString("en-IN")
+                    formatCurrencyAmount(
+                      rowData.linkedEnrollment?.emiAmount || rowData.emiAmount,
+                    )
                   }
                 />
+                <Column field="nextDue" header="Next Due" />
+                <Column field="dpd" header="DPD" />
+                <Column field="loanApplicationStatus" header="Status" />
                 <Column
                   header="Action"
                   body={(rowData: INbfcStudentApplicationRow) => (
                     <div className="d-flex gap-3">
+                      <Tooltip target={`#nbfc-app-view-${rowData.id}`} position="top" />
                       <Button
+                        id={`nbfc-app-view-${rowData.id}`}
                         className="trash-icon p-0"
+                        data-pr-tooltip="View Application"
                         onClick={() =>
                           navigate(
                             RoutePathConstant.private.educationNbfcStudentApplicationDetail.replace(

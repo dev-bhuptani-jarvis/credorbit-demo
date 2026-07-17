@@ -26,6 +26,7 @@ export interface IEducationInstituteBranch {
   branchCode: string;
   branchName: string;
   contactPerson: string;
+  authorizedPersons: IEducationInstituteAuthorizedPerson[];
   mobileNumber: string;
   email: string;
   state: string;
@@ -87,6 +88,7 @@ export interface IEducationInstituteFormData {
 export interface IEducationInstituteBranchFormData {
   branchName: string;
   contactPerson: string;
+  authorizedPersons: IEducationInstituteAuthorizedPerson[];
   mobileNumber: string;
   email: string;
   state: string;

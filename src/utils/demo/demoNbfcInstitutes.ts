@@ -1,25 +1,63 @@
 import {
   IEducationInstitute,
+  IEducationInstituteAuthorizedPerson,
+  IEducationInstituteFormData,
   IEducationInstituteDocument,
 } from "../../interface/educationInstitute";
 
 const STORAGE_KEY = "credorbit.nbfcInstitutes";
 
-interface INbfcFormData {
-  instituteName: string;
-  contactPerson: string;
-  mobileNumber: string;
-  email: string;
-  state: string;
-  city: string;
-  address: string;
-  gstNumber: string;
-  panNumber: string;
-  registrationNumber: string;
-  isActive: boolean;
-}
-
 const documentUrlMap = new Map<string, string>();
+
+const nbfcPanPreviewMap: Record<
+  string,
+  {
+    instituteName: string;
+    email: string;
+    category: string;
+    mobileNumber: string;
+    gstNumber: string;
+  }
+> = {
+  AATCA1234A: {
+    instituteName: "Astra Finance Limited",
+    email: "operations@astrafinance.in",
+    category: "NBFC",
+    mobileNumber: "9876600001",
+    gstNumber: "24AATCA1234A1Z5",
+  },
+  AACCV5678B: {
+    instituteName: "Vertex Capital Finance",
+    email: "support@vertexcapital.in",
+    category: "NBFC",
+    mobileNumber: "9876600002",
+    gstNumber: "27AACCV5678B1Z6",
+  },
+};
+
+const authorizedPersonPreviewMap: Record<
+  string,
+  Omit<IEducationInstituteAuthorizedPerson, "id" | "panNumber">
+> = {
+  DDDDD4444D: {
+    fullName: "Mehul Shah",
+    constitution: "Director",
+    dateOfBirth: "1987-08-11",
+    gender: "Male",
+    gstNumber: "24AATCA1234A1Z5",
+    mobileNumber: "9876600101",
+    email: "mehul.shah@astrafinance.in",
+  },
+  EEEEE5555E: {
+    fullName: "Priya Desai",
+    constitution: "Authorized Signatory",
+    dateOfBirth: "1991-03-27",
+    gender: "Female",
+    gstNumber: "27AACCV5678B1Z6",
+    mobileNumber: "9876600102",
+    email: "priya.desai@vertexcapital.in",
+  },
+};
 
 const seedNbfcDocuments: IEducationInstituteDocument[] = [
   {
@@ -200,7 +238,7 @@ export const getNbfcInstituteById = (
   getNbfcInstitutes().find((institute) => institute.id === instituteId);
 
 export const createNbfcInstitute = (
-  instituteData: INbfcFormData,
+  instituteData: IEducationInstituteFormData,
 ): IEducationInstitute => {
   const institutes = getNbfcInstitutes();
   const now = new Date().toISOString();
@@ -211,27 +249,68 @@ export const createNbfcInstitute = (
     instituteCode: `CONBFC26-${nextNumber}`,
     instituteName: instituteData.instituteName.trim(),
     category: "NBFC",
-    contactPerson: instituteData.contactPerson.trim(),
+    contactPerson:
+      instituteData.authorizedPersons[0]?.fullName?.trim() ||
+      instituteData.contactPerson.trim(),
     mobileNumber: instituteData.mobileNumber.trim(),
     email: instituteData.email.trim(),
     state: instituteData.state,
     city: instituteData.city.trim(),
     address: instituteData.address.trim(),
     gstNumber: instituteData.gstNumber.trim(),
-    panNumber: instituteData.panNumber.trim().toUpperCase(),
+    panNumber: instituteData.institutePanNumber.trim().toUpperCase(),
     registrationNumber: instituteData.registrationNumber.trim(),
     isActive: instituteData.isActive,
     createdAt: now,
     updatedAt: now,
     documents: [],
     totalStudents: 0,
-    authorizedPersons: [],
+    authorizedPersons: instituteData.authorizedPersons.map((person, index) => ({
+      ...person,
+      id: person.id || `nbfc-auth-${Date.now()}-${index + 1}`,
+      panNumber: person.panNumber.trim().toUpperCase(),
+      fullName: person.fullName.trim(),
+      constitution: person.constitution.trim(),
+      gstNumber: person.gstNumber.trim().toUpperCase(),
+      mobileNumber: person.mobileNumber.trim(),
+      email: person.email.trim(),
+    })),
     branches: [],
   };
 
   persistNbfcInstitutes([nextInstitute, ...institutes]);
 
   return nextInstitute;
+};
+
+export const getNbfcInstitutePanPreview = (panNumber: string) => {
+  const normalizedPanNumber = panNumber.trim().toUpperCase();
+
+  return (
+    nbfcPanPreviewMap[normalizedPanNumber] || {
+      instituteName: `NBFC ${normalizedPanNumber.slice(0, 5)}`,
+      email: `${normalizedPanNumber.toLowerCase()}@nbfc.demo`,
+      category: "NBFC",
+      mobileNumber: "9876600200",
+      gstNumber: `24${normalizedPanNumber}1Z5`,
+    }
+  );
+};
+
+export const getNbfcAuthorizedPersonPanPreview = (panNumber: string) => {
+  const normalizedPanNumber = panNumber.trim().toUpperCase();
+
+  return (
+    authorizedPersonPreviewMap[normalizedPanNumber] || {
+      fullName: `Authorized ${normalizedPanNumber.slice(0, 4)}`,
+      constitution: "Authorized Signatory",
+      dateOfBirth: "1992-01-01",
+      gender: "Male" as const,
+      gstNumber: `24${normalizedPanNumber}1Z5`,
+      mobileNumber: "9876600999",
+      email: `${normalizedPanNumber.toLowerCase()}@nbfc.demo`,
+    }
+  );
 };
 
 export const updateNbfcInstitute = (
@@ -280,4 +359,39 @@ export const getNbfcDocumentUrl = (
   }
 
   return undefined;
+};
+
+const createDocumentRecord = (file: File, type: string): IEducationInstituteDocument => {
+  const nextDocument: IEducationInstituteDocument = {
+    id: `nbfc-doc-${Date.now()}`,
+    type,
+    fileName: file.name,
+    mimeType: file.type || "application/pdf",
+    fileSize: file.size,
+    uploadedAt: new Date().toISOString(),
+  };
+
+  if (typeof window !== "undefined") {
+    documentUrlMap.set(nextDocument.id, URL.createObjectURL(file));
+  }
+
+  return nextDocument;
+};
+
+export const addNbfcInstituteDocument = (
+  instituteId: string,
+  documentType: string,
+  file: File,
+): IEducationInstituteDocument | undefined => {
+  const institute = getNbfcInstituteById(instituteId);
+
+  if (!institute) return undefined;
+
+  const nextDocument = createDocumentRecord(file, documentType);
+
+  updateNbfcInstitute(instituteId, {
+    documents: [nextDocument, ...(institute.documents || [])],
+  });
+
+  return nextDocument;
 };

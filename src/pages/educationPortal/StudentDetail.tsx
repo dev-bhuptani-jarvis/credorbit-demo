@@ -166,6 +166,14 @@ const StudentDetail = () => {
                     <p className="text-break">{student.studentGender || "-"}</p>
                   </div>
                   <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                    <b>Mobile Number</b>
+                    <p className="text-break">{formatMobileNumber(student.mobileNumber)}</p>
+                  </div>
+                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                    <b>Email Address</b>
+                    <p className="text-break">{student.email}</p>
+                  </div>
+                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                     <b>Credit Score</b>
                     <p className="text-break">{student.creditInformation.creditScore}</p>
                   </div>
@@ -217,78 +225,6 @@ const StudentDetail = () => {
         </div>
 
         <div className="col-12 mt-4">
-          <h5 className="mb-3">Contact Details</h5>
-          <div className="borderBoxHldr p-24">
-            <div className="row">
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Mobile Number</b>
-                <p className="text-break">{formatMobileNumber(student.mobileNumber)}</p>
-              </div>
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Email Address</b>
-                <p className="text-break">{student.email}</p>
-              </div>
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Co-applicant Name</b>
-                <p className="text-break">{student.coApplicantName || "-"}</p>
-              </div>
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Co-applicant Relation</b>
-                <p className="text-break">{student.coApplicantRelation || "-"}</p>
-              </div>
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Co-applicant Mobile</b>
-                <p className="text-break">
-                  {student.coApplicantMobileNumber
-                    ? formatMobileNumber(student.coApplicantMobileNumber)
-                    : "-"}
-                </p>
-              </div>
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Registered On</b>
-                <p className="text-break">{formatDate(student.createdAt, "DD MMM, YYYY")}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-12 mt-4">
-          <h5 className="mb-3">Loan Details</h5>
-          <div className="borderBoxHldr p-24">
-            <div className="row">
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Total Loans Applied</b>
-                <p className="text-break">{student.loanDetails.totalLoansAvailed}</p>
-              </div>
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Active Loans</b>
-                <p className="text-break">{student.loanDetails.activeLoans}</p>
-              </div>
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Closed Loans</b>
-                <p className="text-break">{student.loanDetails.closedLoans}</p>
-              </div>
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Enrolled Course Count</b>
-                <p className="text-break">
-                  {student.loanDetails.enrolledCourseCount}
-                </p>
-              </div>
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>Applied Loan Amount</b>
-                <p className="text-break">
-                  {formatCurrencyAmount(student.loanDetails.appliedLoanAmount)}
-                </p>
-              </div>
-              <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                <b>EMI Information</b>
-                <p className="text-break">{student.loanDetails.emiInformation}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-12 mt-4">
           <h5 className="mb-3">Applied Loan Applications</h5>
           <div className="borderBoxHldr p-24">
             <div className="table-responsive">
@@ -297,6 +233,7 @@ const StudentDetail = () => {
                 value={appliedLoanApplications}
                 emptyMessage="No applied loan applications found for this student."
               >
+                <Column field="id" header="Loan Application Id" />
                 <Column field="courseName" header="Course Name" />
                 <Column
                   header="Loan Amount"

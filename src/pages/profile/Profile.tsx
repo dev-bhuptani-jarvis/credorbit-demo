@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   convertPartnersToCoApplicantsAPI,
   fetchUserProfile,
@@ -22,11 +22,13 @@ import {
 } from "../../utils/functions/nullCheck";
 import {
   CLIENT_ROLE,
+  formatCurrencyAmount,
   formatMobileNumber,
 } from "../../utils/constants/constant";
 import { useSelector, useDispatch } from "react-redux";
 import {
   formatAadhaarNumber,
+  formatDate,
   formatTime,
   IsFormValid,
   maskAadhaarNumber,
@@ -57,7 +59,10 @@ import {
 } from "../../utils/constants/pattern";
 import AddPanModal from "../../components/AddPanModal";
 import { updateShowPanDetailPopUp } from "../../store/reducer/userSlice";
-import { setEncryptedSessionStorage } from "../../utils/functions/sessionStorage";
+import {
+  getDecryptedSessionStorage,
+  setEncryptedSessionStorage,
+} from "../../utils/functions/sessionStorage";
 import { OTPType, StorageKeyEnum } from "../../utils/constants/enum";
 import DeleteUserModal from "../../components/DeleteUserModal";
 import { ProfileTextField } from "./ProfileTextField";
@@ -73,6 +78,12 @@ import {
 import { Tooltip } from "primereact/tooltip";
 import { setProfileUpdated } from "../../store/reducer/profileSlice";
 import { Image } from "primereact/image";
+import { IEducationStudentApplicant } from "../../interface/educationManagement";
+import { getEducationLoanDrafts } from "../../utils/demo/demoEducationLoanFlow";
+import {
+  getEducationStudentById,
+  getEducationStudents,
+} from "../../utils/demo/demoEducationStudents";
 
 const constitutionOptions = [
   { label: "Proprietorship", value: "Proprietorship" },
@@ -83,6 +94,8 @@ const constitutionOptions = [
   { label: "Society", value: "Society" },
   { label: "Trust", value: "Trust" },
 ];
+
+const DEFAULT_STUDENT_USER_ID = "student-role-001";
 
 const Profile = () => {
   const [userFormData, setUserFormData] = useState<IUserInfo>();
@@ -171,6 +184,9 @@ const Profile = () => {
   );
 
   const dispatch = useDispatch();
+  const impersonatedStudentId = getDecryptedSessionStorage(
+    StorageKeyEnum.CRED_ORBIT_IMPERSONATE_STUDENT_ID,
+  );
 
   const isEducationInstituteProfile =
     (userFormData?.role || "") === "Educational Institute";
@@ -178,6 +194,74 @@ const Profile = () => {
   const isNbfcRestrictedProfile = ["NBFC User", "NBFC"].includes(
     userFormData?.role || "",
   );
+
+  const isStudentPortalProfile =
+    userData.userID === DEFAULT_STUDENT_USER_ID ||
+    userData.roleName === "Student" ||
+    Boolean(impersonatedStudentId);
+
+  const studentContext = useMemo(() => {
+    if (!isStudentPortalProfile) return null;
+
+    const directStudentId = impersonatedStudentId || userData.userID;
+
+    if (directStudentId) {
+      const matchedStudent = getEducationStudentById(directStudentId);
+      if (matchedStudent) {
+        return {
+          student: matchedStudent,
+          studentUserId: impersonatedStudentId
+            ? directStudentId
+            : userData.userID || DEFAULT_STUDENT_USER_ID,
+        };
+      }
+    }
+
+    const draftCandidates = getEducationLoanDrafts().filter(
+      (draft) =>
+        draft.studentUserId === (userData.userID || DEFAULT_STUDENT_USER_ID),
+    );
+
+    if (draftCandidates.length > 0) {
+      const matchedStudent = getEducationStudentById(draftCandidates[0].studentId);
+
+      if (matchedStudent) {
+        return {
+          student: matchedStudent,
+          studentUserId: draftCandidates[0].studentUserId,
+        };
+      }
+    }
+
+    return {
+      student: getEducationStudents()[0],
+      studentUserId: userData.userID || DEFAULT_STUDENT_USER_ID,
+    };
+  }, [
+    impersonatedStudentId,
+    isStudentPortalProfile,
+    userData.userID,
+  ]);
+
+  const studentApplications = useMemo(() => {
+    if (!studentContext?.student) return [];
+
+    const matchedByStudentId = getEducationLoanDrafts().filter(
+      (draft) => draft.studentId === studentContext.student.id,
+    );
+
+    const matchedDrafts =
+      matchedByStudentId.length > 0
+        ? matchedByStudentId
+        : getEducationLoanDrafts().filter(
+            (draft) => draft.studentUserId === studentContext.studentUserId,
+          );
+
+    return matchedDrafts.sort(
+      (left, right) =>
+        new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
+    );
+  }, [studentContext]);
 
   const fetchUserInfo = async (): Promise<void> => {
     setLoading(true);
@@ -1297,6 +1381,54 @@ const Profile = () => {
     }
   }, [otpValues]);
 
+  const renderStudentProfileField = (
+    label: string,
+    value?: string | null,
+  ): JSX.Element => (
+    <div className="col-lg-4 col-md-6 col-sm-12 col-12" key={label}>
+      <div className="form-group mb-4">
+        <label className="form-label small">{label}</label>
+        <InputText className="form-control" value={value || "-"} disabled />
+      </div>
+    </div>
+  );
+
+  const renderEducationApplicantFields = (
+    applicant: IEducationStudentApplicant | undefined,
+    relationLabel?: string,
+  ): JSX.Element[] => {
+    if (!applicant) {
+      return [renderStudentProfileField("Status", "No details available")];
+    }
+
+    return [
+      renderStudentProfileField("Name", applicant.name || "-"),
+      renderStudentProfileField("PAN", applicant.pan || "-"),
+      renderStudentProfileField(
+        "Date of Birth",
+        applicant.dateOfBirth
+          ? formatDate(applicant.dateOfBirth, "DD MMM, YYYY")
+          : "-",
+      ),
+      renderStudentProfileField(
+        "Mobile Number",
+        applicant.mobileNumber
+          ? formatMobileNumber(applicant.mobileNumber)
+          : "-",
+      ),
+      renderStudentProfileField("Email Address", applicant.email || "-"),
+      renderStudentProfileField("Gender", applicant.gender || "-"),
+      renderStudentProfileField("Address", applicant.address || "-"),
+      renderStudentProfileField(
+        "Photo",
+        applicant.photo ? "Uploaded" : "Not uploaded",
+      ),
+      ...(relationLabel
+        ? [renderStudentProfileField("Relation", relationLabel)]
+        : []),
+    ];
+  };
+
   return (
     <>
       <div className="whiteBoxHldr p-30">
@@ -1427,7 +1559,7 @@ const Profile = () => {
                             className="form-label mb-0"
                             htmlFor="customerID"
                           >
-                            Code
+                            {isStudentPortalProfile ? "Student Code" : "Code"}
                           </label>
 
                           {userData.userType ===
@@ -1454,9 +1586,17 @@ const Profile = () => {
 
                         <InputText
                           className="form-control"
-                          placeholder="Channel Partner Code"
+                          placeholder={
+                            isStudentPortalProfile
+                              ? "Student Code"
+                              : "Channel Partner Code"
+                          }
                           name="customerID"
-                          value={userFormData?.customerID!}
+                          value={
+                            isStudentPortalProfile
+                              ? studentContext?.student?.studentCode || ""
+                              : userFormData?.customerID || ""
+                          }
                           disabled
                         // onPaste={(e) => e.preventDefault()}
                         // onCopy={(e) => e.preventDefault()}
@@ -1755,6 +1895,128 @@ const Profile = () => {
                     </div>
                   </div>
 
+                  {isStudentPortalProfile && studentContext?.student && (
+                    <>
+                      <div className="col-12">
+                        <div className="profileSectionHeader">
+                          Student Academic Details
+                        </div>
+                      </div>
+
+                      {renderStudentProfileField(
+                        "Course",
+                        studentContext.student.courseName || "-",
+                      )}
+                      {renderStudentProfileField(
+                        "Institute Name",
+                        studentApplications[0]?.instituteName || "-",
+                      )}
+                      {renderStudentProfileField(
+                        "Gender",
+                        studentContext.student.studentGender || "-",
+                      )}
+                      {renderStudentProfileField(
+                        "Parent PAN",
+                        studentContext.student.parentPan || "-",
+                      )}
+                      {renderStudentProfileField(
+                        "Registered On",
+                        studentContext.student.createdAt
+                          ? formatDate(
+                            studentContext.student.createdAt,
+                            "DD MMM, YYYY",
+                          )
+                          : "-",
+                      )}
+                      {renderStudentProfileField(
+                        "Photo",
+                        studentContext.student.studentPhoto
+                          ? "Uploaded"
+                          : "Not uploaded",
+                      )}
+
+                      <div className="col-12">
+                        <div className="profileSectionHeader">Loan Summary</div>
+                      </div>
+
+                      {renderStudentProfileField(
+                        "Latest Application",
+                        studentApplications[0]?.courseName || "-",
+                      )}
+                      {renderStudentProfileField(
+                        "Application Status",
+                        studentApplications[0]?.loanApplicationStatus || "-",
+                      )}
+                      {renderStudentProfileField(
+                        "Loan Amount",
+                        studentApplications[0]
+                          ? formatCurrencyAmount(studentApplications[0].loanAmount)
+                          : "-",
+                      )}
+                      {renderStudentProfileField(
+                        "Outstanding Amount",
+                        formatCurrencyAmount(
+                          studentContext.student.loanDetails.outstandingAmount || 0,
+                        ),
+                      )}
+                      {renderStudentProfileField(
+                        "Credit Score",
+                        String(
+                          studentContext.student.creditInformation.creditScore ||
+                            "-",
+                        ),
+                      )}
+                      {renderStudentProfileField(
+                        "Course Fee",
+                        studentApplications[0]
+                          ? formatCurrencyAmount(studentApplications[0].courseFees)
+                          : "-",
+                      )}
+
+                      <div className="col-12">
+                        <div className="profileSectionHeader">
+                          Applicant Details
+                        </div>
+                      </div>
+
+                      {renderEducationApplicantFields(
+                        studentContext.student.applicants?.[0],
+                      )}
+
+                      <div className="col-12">
+                        <div className="profileSectionHeader">
+                          Co-applicant Details
+                        </div>
+                      </div>
+
+                      {studentContext.student.applicants?.slice(1).length ? (
+                        studentContext.student.applicants
+                          .slice(1)
+                          .flatMap((applicant, index) => [
+                            <div
+                              className="col-12"
+                              key={`student-co-applicant-heading-${applicant.id || index}`}
+                            >
+                              <h6 className="mb-3">
+                                {studentContext.student.coApplicantRelation ||
+                                  `Co-applicant ${index + 1}`}
+                              </h6>
+                            </div>,
+                            ...renderEducationApplicantFields(
+                              applicant,
+                              studentContext.student.coApplicantRelation ||
+                                `Co-applicant ${index + 1}`,
+                            ),
+                          ])
+                      ) : (
+                        renderStudentProfileField(
+                          "Status",
+                          "No co-applicant details available",
+                        )
+                      )}
+                    </>
+                  )}
+
                   {(userFormData?.isCompany ||
                     (userFormData?.gstList &&
                       userFormData?.gstList?.length > 0)) && (
@@ -2003,7 +2265,7 @@ const Profile = () => {
             </div>
           </div>
 
-          {(userData.userType === CLIENT_ROLE.CHANNEL_PARTNER ||
+        {(userData.userType === CLIENT_ROLE.CHANNEL_PARTNER ||
             userData.userType === CLIENT_ROLE.SOURCING_PARTNER) &&
             !isNbfcRestrictedProfile &&
             !isEducationInstituteProfile && (
@@ -2175,7 +2437,8 @@ const Profile = () => {
 
         {(userData.userType === CLIENT_ROLE.CUSTOMER ||
           userData.userType === CLIENT_ROLE.CHANNEL_PARTNER) &&
-          !isNbfcRestrictedProfile && (
+          !isNbfcRestrictedProfile &&
+          !isStudentPortalProfile && (
             <div className="col-lg-12 mb-4">
               <div className="titleMainWrapper">
                 <h2 className="txt-24">
@@ -2342,7 +2605,8 @@ const Profile = () => {
             </div>
           )}
 
-        {userData.userType === CLIENT_ROLE.CUSTOMER && (
+        {userData.userType === CLIENT_ROLE.CUSTOMER &&
+          !isStudentPortalProfile && (
           <div className="col-lg-12 mb-4">
             <div className="titleMainWrapper">
               <h2>Co-Applicants</h2>

@@ -104,6 +104,11 @@ interface IVerificationStatus {
   mobileNumber: string;
 }
 
+type CoApplicantPanPreview = {
+  applicant: IEducationStudentApplicant;
+  relation: string;
+};
+
 const canUseLocalStorage = (): boolean =>
   typeof window !== "undefined" && !!window.localStorage;
 
@@ -168,6 +173,40 @@ const convertFileToDataUrl = (file: File): Promise<string> =>
     reader.readAsDataURL(file);
   });
 
+const buildCoApplicantPreviewFromPan = (
+  panNumber: string,
+  relation: string,
+  studentAddress: string,
+): CoApplicantPanPreview => {
+  const normalizedPan = panNumber.trim().toUpperCase();
+  const alphabetSeed = normalizedPan.replace(/[^A-Z]/g, "").padEnd(5, "X");
+  const numericSeed = normalizedPan.replace(/\D/g, "").padEnd(4, "0");
+  const name = `${alphabetSeed.slice(0, 3)} ${alphabetSeed.slice(3, 5)} Kumar`;
+  const month = (Number(numericSeed.slice(0, 2)) % 12) + 1;
+  const day = (Number(numericSeed.slice(2, 4)) % 28) + 1;
+  const year = 1985 + (alphabetSeed.charCodeAt(0) % 12);
+  const mobileSuffix = `${numericSeed}${numericSeed}`.slice(0, 8);
+  const genderOptionsByPan: Array<"Male" | "Female" | "Other"> = ["Male", "Female", "Other"];
+  const gender = genderOptionsByPan[alphabetSeed.charCodeAt(1) % 3];
+
+  return {
+    relation,
+    applicant: {
+      id: `applicant-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name,
+      pan: normalizedPan,
+      panDocument: null,
+      aadhaarDocument: null,
+      dateOfBirth: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+      gender,
+      mobileNumber: `98${mobileSuffix}`,
+      email: `${alphabetSeed.toLowerCase()}${numericSeed}@mail.com`,
+      photo: null,
+      address: studentAddress,
+    },
+  };
+};
+
 const EducationLoanApplication = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -194,6 +233,12 @@ const EducationLoanApplication = () => {
   const [otpTimer, setOtpTimer] = useState<number>(0);
   const [demoOtpCode, setDemoOtpCode] = useState<string>("");
   const [showReapplyDialog, setShowReapplyDialog] = useState<boolean>(false);
+  const [showCoApplicantDialog, setShowCoApplicantDialog] = useState<boolean>(false);
+  const [coApplicantPanNumber, setCoApplicantPanNumber] = useState<string>("");
+  const [coApplicantRelationInput, setCoApplicantRelationInput] = useState<string>("");
+  const [coApplicantPanError, setCoApplicantPanError] = useState<string>("");
+  const [coApplicantPreview, setCoApplicantPreview] =
+    useState<CoApplicantPanPreview | null>(null);
 
   const [students, setStudents] = useState<IEducationStudent[]>([]);
 
@@ -321,12 +366,6 @@ const EducationLoanApplication = () => {
     const coApplicants = selectedStudent.applicants?.slice(1) || [];
 
     return [
-      {
-        id: selectedStudent.id,
-        type: "student",
-        name: selectedStudent.studentName,
-        mobileNumber: selectedStudent.mobileNumber,
-      },
       ...(primaryApplicant
         ? [
           {
@@ -384,9 +423,8 @@ const EducationLoanApplication = () => {
           <b>Verification Status</b>
           <p className="text-break mb-0">
             <span
-              className={`education-verification-badge ${
-                isVerified ? "is-verified" : "is-pending"
-              }`}
+              className={`education-verification-badge ${isVerified ? "is-verified" : "is-pending"
+                }`}
             >
               {isVerified ? "Verified" : "Pending Verification"}
             </span>
@@ -429,6 +467,10 @@ const EducationLoanApplication = () => {
         <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
           <b>Email Address</b>
           <p className="text-break">{applicant.email || "-"}</p>
+        </div>
+        <div className="col-lg-6 col-md-7 col-sm-12 col-12 mb-0">
+          <b>Address</b>
+          <p className="text-break">{applicant.address || "-"}</p>
         </div>
       </div>
     </div>
@@ -485,6 +527,14 @@ const EducationLoanApplication = () => {
     setVerificationStepIndex(0);
     resetVerificationStepState(pendingVerificationQueue[0].mobileNumber);
     setShowVerificationDialog(true);
+  };
+
+  const resetCoApplicantPanFlow = (): void => {
+    setShowCoApplicantDialog(false);
+    setCoApplicantPanNumber("");
+    setCoApplicantRelationInput("");
+    setCoApplicantPanError("");
+    setCoApplicantPreview(null);
   };
 
   const closeVerificationFlow = (): void => {
@@ -573,10 +623,10 @@ const EducationLoanApplication = () => {
             setDiscountPercentage(
               resumeDraft.courseFees
                 ? Number(
-                    ((resumeDraft.discountAmount / resumeDraft.courseFees) * 100).toFixed(2),
-                  )
-                    .toString()
-                    .replace(/\.00$/, "")
+                  ((resumeDraft.discountAmount / resumeDraft.courseFees) * 100).toFixed(2),
+                )
+                  .toString()
+                  .replace(/\.00$/, "")
                 : "",
             );
             setConsentState(consentChecklist.map(() => resumeDraft.consentAccepted));
@@ -702,15 +752,56 @@ const EducationLoanApplication = () => {
           ? {
             ...applicant,
             name: previous.studentName,
+            pan: previous.studentPan,
             dateOfBirth: previous.studentDateOfBirth,
             gender: previous.studentGender,
             mobileNumber: previous.mobileNumber,
             email: previous.email,
             photo: previous.studentPhoto,
+            address: previous.address,
           }
           : applicant,
       ),
     }));
+  };
+
+  const handleFetchCoApplicantPanDetails = (): void => {
+    const normalizedPanNumber = coApplicantPanNumber.trim().toUpperCase();
+
+    if (!PAN_NUMBER_PATTERN.test(normalizedPanNumber)) {
+      setCoApplicantPanError("Enter a valid PAN number.");
+      setCoApplicantPreview(null);
+      return;
+    }
+
+    if (!coApplicantRelationInput.trim()) {
+      setCoApplicantPanError("Enter co-applicant relation.");
+      setCoApplicantPreview(null);
+      return;
+    }
+
+    setCoApplicantPanError("");
+    setCoApplicantPreview(
+      buildCoApplicantPreviewFromPan(
+        normalizedPanNumber,
+        coApplicantRelationInput.trim(),
+        selectedStudent?.address || "",
+      ),
+    );
+  };
+
+  const handleAddCoApplicantFromPan = (): void => {
+    if (!selectedStudent || !coApplicantPreview) return;
+
+    setSelectedStudent({
+      ...selectedStudent,
+      applicants: [...(selectedStudent.applicants || []), coApplicantPreview.applicant],
+      coApplicantName: coApplicantPreview.applicant.name,
+      coApplicantMobileNumber: coApplicantPreview.applicant.mobileNumber,
+      coApplicantRelation: coApplicantPreview.relation,
+    });
+    toastSuccess("Co-applicant added successfully.");
+    resetCoApplicantPanFlow();
   };
 
   const handleStudentPhotoChange = async (
@@ -762,10 +853,6 @@ const EducationLoanApplication = () => {
 
     if (!studentForm.studentName.trim()) {
       nextErrors.studentName = "Student name is required.";
-    }
-
-    if (!studentForm.courseId) {
-      nextErrors.courseId = "Course is required.";
     }
 
     if (!studentForm.studentDateOfBirth) {
@@ -1109,6 +1196,8 @@ const EducationLoanApplication = () => {
 
                   <Column field="studentName" header="Student Name" />
 
+                  <Column field="email" header="Student Email" />
+
                   <Column field="courseName" header="Current Course" />
 
                   <Column
@@ -1263,7 +1352,7 @@ const EducationLoanApplication = () => {
                         </div>
 
                         <div className="form-group col-md-6 col-12">
-                          <label className="form-label">Discount in Percentage(%)</label>
+                          <label className="form-label">Discount (%)</label>
                           <InputText
                             className="form-control"
                             value={discountPercentage}
@@ -1329,14 +1418,7 @@ const EducationLoanApplication = () => {
                             </tr>
 
                             <tr>
-                              <td className="fw-semibold">Discount (%)</td>
-                              <td className="text-end">
-                                {discountPercentage || 0}%
-                              </td>
-                            </tr>
-
-                            <tr>
-                              <td className="fw-semibold">Discount Amount</td>
+                              <td className="fw-semibold">Discount</td>
                               <td className="text-end">
                                 {formatCurrencyAmount(summary.discountAmount)}
                               </td>
@@ -1411,6 +1493,13 @@ const EducationLoanApplication = () => {
         {activeIndex === 2 && selectedStudent && selectedCourse && (
           <div className="row g-4">
             <div className="col-12">
+              <div className="d-flex justify-content-end align-items-center flex-wrap gap-3 mb-3">
+                <Button className="btn btn-orange" onClick={() => setShowCoApplicantDialog(true)}>
+                  <i className="bi bi-plus-circle me-2" />
+                  Add Co-applicant
+                </Button>
+              </div>
+
               <TabView
                 className="custom-tabview"
                 activeIndex={reviewTabIndex}
@@ -1419,24 +1508,6 @@ const EducationLoanApplication = () => {
                 <TabPanel header="Personal Details">
                   <div className="borderBoxHldr p-24 mt-3">
                     <div className="row">
-                      <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                        <b>Verification Status</b>
-                        <p className="text-break mb-0">
-                          <span
-                            className={`education-verification-badge ${
-                              verificationQueueItems[0] &&
-                              isQueueItemVerified(verificationQueueItems[0])
-                                ? "is-verified"
-                                : "is-pending"
-                            }`}
-                          >
-                            {verificationQueueItems[0] &&
-                            isQueueItemVerified(verificationQueueItems[0])
-                              ? "Verified"
-                              : "Pending Verification"}
-                          </span>
-                        </p>
-                      </div>
                       <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                         <b>Student Information</b>
                         <p className="text-break">{selectedStudent.studentName}</p>
@@ -1467,11 +1538,31 @@ const EducationLoanApplication = () => {
                           {selectedStudent.creditInformation.creditScore || "-"}
                         </p>
                       </div>
-                      <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-0">
+                      <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                         <b>Last Time Credit Score Fetch Date</b>
                         <p className="text-break">
                           {selectedStudent.creditInformation.lastDateCreditScore || "-"}
                         </p>
+                      </div>
+                      <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                        <b>PAN</b>
+                        <p className="text-break">{selectedStudent.studentPan || "-"}</p>
+                      </div>
+                      <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                        <b>Mobile Number</b>
+                        <p className="text-break">
+                          {selectedStudent.mobileNumber
+                            ? formatMobileNumber(selectedStudent.mobileNumber)
+                            : "-"}
+                        </p>
+                      </div>
+                      <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                        <b>Email Address</b>
+                        <p className="text-break">{selectedStudent.email || "-"}</p>
+                      </div>
+                      <div className="col-lg-6 col-md-7 col-sm-12 col-12 mb-0">
+                        <b>Address</b>
+                        <p className="text-break">{selectedStudent.address || "-"}</p>
                       </div>
                     </div>
                   </div>
@@ -1485,8 +1576,8 @@ const EducationLoanApplication = () => {
                         "Applicant",
                         undefined,
                         Boolean(
-                          verificationQueueItems[1] &&
-                          isQueueItemVerified(verificationQueueItems[1]),
+                          verificationQueueItems[0] &&
+                          isQueueItemVerified(verificationQueueItems[0]),
                         ),
                       )
                     ) : (
@@ -1509,10 +1600,10 @@ const EducationLoanApplication = () => {
                             applicant,
                             `Co-applicant ${index + 1}`,
                             selectedStudent.coApplicantRelation ||
-                              `Co-applicant ${index + 1}`,
+                            `Co-applicant ${index + 1}`,
                             Boolean(
-                              verificationQueueItems[index + 2] &&
-                              isQueueItemVerified(verificationQueueItems[index + 2]),
+                              verificationQueueItems[index + 1] &&
+                              isQueueItemVerified(verificationQueueItems[index + 1]),
                             ),
                           )}
                         </div>
@@ -1528,137 +1619,143 @@ const EducationLoanApplication = () => {
             </div>
 
             <div className="col-12">
-              <h5 className="mb-3">Contact Details</h5>
-              <div className="borderBoxHldr p-24">
-                <div className="row">
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Mobile Number</b>
-                    <p className="text-break">
-                      {formatMobileNumber(selectedStudent.mobileNumber)}
-                    </p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Email Address</b>
-                    <p className="text-break">{selectedStudent.email}</p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Co-applicant Name</b>
-                    <p className="text-break">{selectedStudent.coApplicantName || "-"}</p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Co-applicant Relation</b>
-                    <p className="text-break">
-                      {selectedStudent.coApplicantRelation || "-"}
-                    </p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Co-applicant Mobile</b>
-                    <p className="text-break">
-                      {selectedStudent.coApplicantMobileNumber
-                        ? formatMobileNumber(selectedStudent.coApplicantMobileNumber)
-                        : "-"}
-                    </p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-0">
-                    <b>Registered On</b>
-                    <p className="text-break">
-                      {formatDate(selectedStudent.createdAt, "DD MMM, YYYY")}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-12">
               <h5 className="mb-3">Loan Structure</h5>
               <div className="borderBoxHldr p-24 h-100">
-                <div className="row">
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Course</b>
-                    <p className="text-break">{selectedCourse.courseName}</p>
+                <div className="row g-4 align-items-stretch">
+                  <div className="col-lg-7 col-12">
+                    <div
+                      className="table-responsive h-100"
+                      style={{
+                        border: "1px solid #f1d4c8",
+                        borderRadius: "18px",
+                        overflow: "hidden",
+                        padding: "10px",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <table className="table mb-0 align-middle">
+                        <tbody>
+                          <tr>
+                            <td className="fw-semibold">Course</td>
+                            <td className="text-end">{selectedCourse.courseName}</td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">Tenure</td>
+                            <td className="text-end">{selectedCourse.courseTenure}</td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">Agreed Fee</td>
+                            <td className="text-end">
+                              {formatCurrencyAmount(parseAmount(courseFees))}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">Discount Rate</td>
+                            <td className="text-end">{discountPercentage || 0}%</td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">Discount</td>
+                            <td className="text-end">
+                              {formatCurrencyAmount(summary.discountAmount)}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">Net Agreed Fee</td>
+                            <td className="text-end">
+                              {formatCurrencyAmount(summary.discountedCourseFee)}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">Down Payment</td>
+                            <td className="text-end">
+                              {formatCurrencyAmount(parseAmount(downpayment))}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">EMI Plan</td>
+                            <td className="text-end">
+                              {emiOptionMonths ? `${emiOptionMonths} Months` : "-"}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">Advanced EMI Months</td>
+                            <td className="text-end">{advancedEmiMonths ?? 0}</td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">Advanced EMI Amount</td>
+                            <td className="text-end">
+                              {formatCurrencyAmount(summary.advanceEmi)}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">Remaining EMIs</td>
+                            <td className="text-end">
+                              {summary.numberOfEmis}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">Disbursement to Institute</td>
+                            <td className="text-end">
+                              {formatCurrencyAmount(summary.totalAmountToInstitute)}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">Net Loan Amount</td>
+                            <td className="text-end">
+                              {formatCurrencyAmount(summary.loanAmount)}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fw-semibold">EMI Amount</td>
+                            <td className="text-end">
+                              {formatCurrencyAmount(summary.emiAmount)} for {summary.numberOfEmis} instalments
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Tenure</b>
-                    <p className="text-break">{selectedCourse.courseTenure}</p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Course Fees</b>
-                    <p className="text-break">{formatCurrencyAmount(parseAmount(courseFees))}</p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Discount Rate</b>
-                    <p className="text-break">{discountPercentage || 0}%</p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Discount Amount</b>
-                    <p className="text-break">{formatCurrencyAmount(summary.discountAmount)}</p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Down Payment</b>
-                    <p className="text-break">
-                      {formatCurrencyAmount(parseAmount(downpayment))}
-                    </p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>EMI Plan</b>
-                    <p className="text-break">
-                      {emiOptionMonths ? `${emiOptionMonths} Months` : "-"}
-                    </p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Advanced EMI Months</b>
-                    <p className="text-break">{advancedEmiMonths ?? 0}</p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Advanced EMI Amount</b>
-                    <p className="text-break">{formatCurrencyAmount(summary.advanceEmi)}</p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Disbursement Amount to Institute</b>
-                    <p className="text-break">
-                      {formatCurrencyAmount(summary.totalAmountToInstitute)}
-                    </p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                    <b>Net Loan Amount</b>
-                    <p className="text-break">{formatCurrencyAmount(summary.loanAmount)}</p>
-                  </div>
-                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-0">
-                    <b>EMI Amount</b>
-                    <p className="text-break">
-                      {formatCurrencyAmount(summary.emiAmount)} for {summary.numberOfEmis}{" "}
-                      instalments
-                    </p>
+
+                  <div className="col-lg-5 col-12">
+                    <div
+                      className="borderBoxHldr p-24 h-100"
+                      style={{
+                        borderColor: "#f1d4c8",
+                        background:
+                          "linear-gradient(135deg, rgba(255, 99, 44, 0.05), rgba(255, 247, 242, 0.92))",
+                      }}
+                    >
+                      <h4 className="mb-3">Consent</h4>
+                      <p className="text-muted mb-3">
+                        Confirm each declaration before proceeding to applicant verification.
+                      </p>
+
+                      {consentChecklist.map((consent, index) => (
+                        <div
+                          className="d-flex align-items-start gap-3 mb-3 form-check"
+                          key={consent}
+                        >
+                          <Checkbox
+                            inputId={`consent-${index}`}
+                            checked={consentState[index]}
+                            onChange={(event) => {
+                              const nextState = [...consentState];
+                              nextState[index] = !!event.checked;
+                              setConsentState(nextState);
+                              setConsentError("");
+                            }}
+                          />
+                          <label htmlFor={`consent-${index}`} className="form-check-label mb-0">
+                            {consent}
+                          </label>
+                        </div>
+                      ))}
+
+                      {consentError && <small className="error">{consentError}</small>}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="col-12">
-              <div className="borderBoxHldr p-24 h-100">
-                <h4 className="mb-3">Consent</h4>
-                {consentChecklist.map((consent, index) => (
-                  <div
-                    className="d-flex align-items-start gap-3 mb-3 form-check"
-                    key={consent}
-                  >
-                    <Checkbox
-                      inputId={`consent-${index}`}
-                      checked={consentState[index]}
-                      onChange={(event) => {
-                        const nextState = [...consentState];
-                        nextState[index] = !!event.checked;
-                        setConsentState(nextState);
-                        setConsentError("");
-                      }}
-                    />
-                    <label htmlFor={`consent-${index}`} className="form-check-label mb-0">
-                      {consent}
-                    </label>
-                  </div>
-                ))}
-
-                {consentError && <small className="error">{consentError}</small>}
               </div>
             </div>
           </div>
@@ -1784,21 +1881,6 @@ const EducationLoanApplication = () => {
                       onChange={(event) => handleFieldChange("studentName", event.target.value)}
                     />
                     {formErrors.studentName && <small className="error">{formErrors.studentName}</small>}
-                  </div>
-
-                  <div className="form-group col-sm-12 col-lg-6">
-                    <label className="form-label" htmlFor="studentCourse">
-                      Course<sup>*</sup>
-                    </label>
-                    <Dropdown
-                      id="studentCourse"
-                      className="w-100"
-                      value={studentForm.courseId}
-                      options={courseOptions}
-                      onChange={(event) => handleFieldChange("courseId", event.value)}
-                      placeholder="Select course"
-                    />
-                    {formErrors.courseId && <small className="error">{formErrors.courseId}</small>}
                   </div>
 
                   <div className="form-group col-sm-12 col-lg-6">
@@ -2015,7 +2097,7 @@ const EducationLoanApplication = () => {
                         className="btn btn-orange-line"
                         onClick={() => copyApplicantFromStudent(index)}
                       >
-                        Copy as above
+                        Same as Student
                       </Button>
                       {studentForm.applicants.length > 1 && (
                         <Button
@@ -2285,6 +2367,121 @@ const EducationLoanApplication = () => {
       />
 
       <Dialog
+        header="Add Co-applicant"
+        visible={showCoApplicantDialog}
+        className="modalWrapper responsive-dialog"
+        draggable={false}
+        resizable={false}
+        modal
+        blockScroll
+        style={{ width: "680px", maxWidth: "95vw" }}
+        onHide={resetCoApplicantPanFlow}
+      >
+        <div className="education-verification-dialog">
+          <div className="row g-3">
+            <div className="form-group col-md-6 col-12">
+              <label className="form-label" htmlFor="coApplicantPanNumber">
+                PAN Number<sup>*</sup>
+              </label>
+              <InputText
+                id="coApplicantPanNumber"
+                className="form-control"
+                placeholder="Enter PAN number"
+                value={coApplicantPanNumber}
+                onChange={(event) => {
+                  setCoApplicantPanNumber(event.target.value.toUpperCase());
+                  setCoApplicantPanError("");
+                }}
+              />
+            </div>
+
+            <div className="form-group col-md-6 col-12">
+              <label className="form-label" htmlFor="coApplicantRelationInput">
+                Relation<sup>*</sup>
+              </label>
+              <InputText
+                id="coApplicantRelationInput"
+                className="form-control"
+                placeholder="Enter relation"
+                value={coApplicantRelationInput}
+                onChange={(event) => {
+                  setCoApplicantRelationInput(event.target.value);
+                  setCoApplicantPanError("");
+                }}
+              />
+            </div>
+          </div>
+
+          {coApplicantPanError ? <small className="error">{coApplicantPanError}</small> : null}
+
+          <div className="d-flex justify-content-end">
+            <Button
+              className="btn btn-orange-line"
+              onClick={handleFetchCoApplicantPanDetails}
+            >
+              Fetch PAN Details
+            </Button>
+          </div>
+
+          {coApplicantPreview ? (
+            <div className="borderBoxHldr p-24">
+              <div className="row">
+                <div className="col-lg-4 col-md-6 col-12 mb-4">
+                  <b>Name</b>
+                  <p className="text-break">{coApplicantPreview.applicant.name}</p>
+                </div>
+                <div className="col-lg-4 col-md-6 col-12 mb-4">
+                  <b>PAN</b>
+                  <p className="text-break">{coApplicantPreview.applicant.pan}</p>
+                </div>
+                <div className="col-lg-4 col-md-6 col-12 mb-4">
+                  <b>Relation</b>
+                  <p className="text-break">{coApplicantPreview.relation}</p>
+                </div>
+                <div className="col-lg-4 col-md-6 col-12 mb-4">
+                  <b>Date of Birth</b>
+                  <p className="text-break">
+                    {formatDate(coApplicantPreview.applicant.dateOfBirth, "DD MMM, YYYY")}
+                  </p>
+                </div>
+                <div className="col-lg-4 col-md-6 col-12 mb-4">
+                  <b>Gender</b>
+                  <p className="text-break">{coApplicantPreview.applicant.gender}</p>
+                </div>
+                <div className="col-lg-4 col-md-6 col-12 mb-4">
+                  <b>Mobile Number</b>
+                  <p className="text-break">
+                    {formatMobileNumber(coApplicantPreview.applicant.mobileNumber)}
+                  </p>
+                </div>
+                <div className="col-lg-6 col-md-6 col-12 mb-4">
+                  <b>Email Address</b>
+                  <p className="text-break">{coApplicantPreview.applicant.email}</p>
+                </div>
+                <div className="col-lg-6 col-md-6 col-12 mb-4">
+                  <b>Address</b>
+                  <p className="text-break">{coApplicantPreview.applicant.address || "-"}</p>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="d-flex justify-content-end gap-3 flex-wrap">
+            <Button className="btn btn-black-line" onClick={resetCoApplicantPanFlow}>
+              Cancel
+            </Button>
+            <Button
+              className="btn btn-orange"
+              onClick={handleAddCoApplicantFromPan}
+              disabled={!coApplicantPreview}
+            >
+              Add Co-applicant
+            </Button>
+          </div>
+        </div>
+      </Dialog>
+
+      <Dialog
         header="OTP Verification"
         visible={showVerificationDialog}
         className="modalWrapper responsive-dialog"
@@ -2316,12 +2513,11 @@ const EducationLoanApplication = () => {
               {verificationQueueItems.map((item) => (
                 <div
                   key={`${item.type}-${item.id}`}
-                  className={`education-verification-dialog__person ${
-                    currentVerificationItem.id === item.id &&
-                    currentVerificationItem.type === item.type
+                  className={`education-verification-dialog__person ${currentVerificationItem.id === item.id &&
+                      currentVerificationItem.type === item.type
                       ? "is-current"
                       : ""
-                  }`}
+                    }`}
                 >
                   <div className="fw-semibold">{item.name}</div>
                   <small>

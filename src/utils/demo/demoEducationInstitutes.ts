@@ -104,6 +104,7 @@ const createSeedBranch = (
   branchCode: `COBR26${suffix}`,
   branchName,
   contactPerson: "Operations Desk",
+  authorizedPersons: [],
   mobileNumber: "9876511111",
   email: `${branchName.toLowerCase().replace(/\s+/g, "")}@credorbit.demo`,
   state,
@@ -488,12 +489,14 @@ const normalizeEducationInstitutes = (
       if (branch.id === "branch-1001" && (!branch.documents || branch.documents.length === 0)) {
         return {
           ...branch,
+          authorizedPersons: branch.authorizedPersons || [],
           documents: getSeedBranchDocuments(),
         };
       }
 
       return {
         ...branch,
+        authorizedPersons: branch.authorizedPersons || [],
         documents: branch.documents || [],
       };
     }),
@@ -704,13 +707,25 @@ export const createEducationInstituteBranch = (
   if (!institute) return undefined;
 
   const now = new Date().toISOString();
+  const normalizedAuthorizedPersons = branchData.authorizedPersons.map((person, index) => ({
+    ...person,
+    id: person.id || `branch-auth-${Date.now()}-${index + 1}`,
+    panNumber: person.panNumber.trim().toUpperCase(),
+    fullName: person.fullName.trim(),
+    constitution: person.constitution.trim(),
+    gstNumber: person.gstNumber.trim().toUpperCase(),
+    mobileNumber: person.mobileNumber.trim(),
+    email: person.email.trim(),
+  }));
+  const primaryAuthorizedPerson = normalizedAuthorizedPersons[0];
   const nextBranch: IEducationInstituteBranch = {
     id: `branch-${Date.now()}`,
     branchCode: getNextBranchCode(institutes),
     branchName: branchData.branchName.trim(),
-    contactPerson: branchData.contactPerson.trim(),
-    mobileNumber: branchData.mobileNumber.trim(),
-    email: branchData.email.trim(),
+    contactPerson: primaryAuthorizedPerson?.fullName || branchData.contactPerson.trim(),
+    authorizedPersons: normalizedAuthorizedPersons,
+    mobileNumber: primaryAuthorizedPerson?.mobileNumber || branchData.mobileNumber.trim(),
+    email: primaryAuthorizedPerson?.email || branchData.email.trim(),
     state: branchData.state,
     city: branchData.city.trim(),
     address: branchData.address.trim(),

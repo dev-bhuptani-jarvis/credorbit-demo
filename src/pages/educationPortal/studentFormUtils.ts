@@ -25,7 +25,6 @@ export const createEmptyApplicant = (): IEducationStudentApplicant => ({
 
 export const defaultStudentForm: IEducationStudentFormData = {
   studentName: "",
-  courseId: "",
   studentPan: "",
   studentPanDocument: null,
   studentAadhaarDocument: null,

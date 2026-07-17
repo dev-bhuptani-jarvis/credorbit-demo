@@ -47,10 +47,10 @@ const StudentEnrolledCourses = () => {
       matchedLoans.length > 0
         ? matchedLoans
         : getEducationLoanDrafts().filter(
-            (draft) =>
-              draft.studentUserId === STUDENT_USER_ID &&
-              draft.loanApplicationStatus === "Sanctioned",
-          ),
+          (draft) =>
+            draft.studentUserId === STUDENT_USER_ID &&
+            draft.loanApplicationStatus === "Sanctioned",
+        ),
     );
 
     setLoading(false);
@@ -130,15 +130,23 @@ const StudentEnrolledCourses = () => {
                 value={paginatedLoans}
                 emptyMessage="No sanctioned loans found."
               >
-                <Column field="instituteName" header="Institute Name" />
                 <Column field="courseName" header="Course Name" />
+
+                <Column
+                  header="Course Fees"
+                  body={(rowData: IEducationLoanDraft) =>
+                    formatCurrencyAmount(rowData.courseFees)}
+                />
+
                 <Column
                   body={(rowData: IEducationLoanDraft) =>
                     formatCurrencyAmount(rowData.loanAmount)
                   }
                   header="Loan Amount"
                 />
+
                 <Column field="loanApplicationStatus" header="Application Status" />
+
                 <Column
                   header="Sanctioned On"
                   body={(rowData: IEducationLoanDraft) =>

@@ -204,7 +204,7 @@ const DashboardHeader = () => {
                           )
                         }
                       >
-                        Add Applications
+                        Add Application
                       </Button>
                     </div>
 

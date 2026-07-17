@@ -5,6 +5,7 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
+import { Dropdown } from "primereact/dropdown";
 import Loader from "../../components/Loader";
 import TableTitle from "../../components/TableTitle";
 import { RootState } from "../../store";
@@ -59,6 +60,26 @@ const chartColors = [
   "#3da0e7",
   "#ff4d4f",
 ];
+
+const distributeTrendAcrossMonths = (total: number, monthCount: number): number[] => {
+  if (total <= 0 || monthCount <= 0) return Array.from({ length: monthCount }, () => 0);
+
+  const weights = [0.12, 0.18, 0.14, 0.2, 0.15, 0.21].slice(0, monthCount);
+  const normalizedWeights =
+    weights.length === monthCount
+      ? weights
+      : Array.from({ length: monthCount }, () => 1 / monthCount);
+
+  const roundedValues = normalizedWeights.map((weight) =>
+    Math.round((total * weight) / 50) * 50,
+  );
+  const roundedTotal = roundedValues.reduce((sum, value) => sum + value, 0);
+  const difference = total - roundedTotal;
+
+  roundedValues[roundedValues.length - 1] += difference;
+
+  return roundedValues;
+};
 
 const isDateWithinEducationFilter = (
   value: string | null | undefined,
@@ -141,6 +162,9 @@ const AdminDashboard = () => {
 
   const [educationDisbursementView, setEducationDisbursementView] =
     useState<"monthly" | "yearly">("monthly");
+
+  const [educationDisbursementYear, setEducationDisbursementYear] =
+    useState<number | null>(null);
 
   const navigate = useNavigate();
 
@@ -372,6 +396,23 @@ const AdminDashboard = () => {
         ),
     [educationDateFilter, educationDrafts, educationEndDate, educationStartDate],
   );
+  const educationDisbursementYearOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          educationFilteredDisbursementEntries.map((entry) =>
+            new Date(entry.date).getFullYear(),
+          ),
+        ),
+      )
+        .sort((firstYear, secondYear) => secondYear - firstYear)
+        .map((year) => ({
+          label: String(year),
+          value: year,
+        })),
+    [educationFilteredDisbursementEntries],
+  );
+
 
   const educationRepaymentRecords = useMemo(
     () =>
@@ -427,46 +468,95 @@ const AdminDashboard = () => {
 
   const educationDisbursementTrendConfig = useMemo(() => {
     if (educationFilteredDisbursementEntries.length === 0) return null;
+    if (educationDisbursementYearOptions.length === 0) return null;
 
-    const currentYear = Math.max(
-      ...educationFilteredDisbursementEntries.map((entry) =>
-        new Date(entry.date).getFullYear(),
-      ),
-    );
-    const lastYear = currentYear - 1;
+    const selectedYear =
+      educationDisbursementYear ?? educationDisbursementYearOptions[0].value;
 
     if (educationDisbursementView === "yearly") {
-      const categories = [String(lastYear), String(currentYear)];
+      const categories = [...educationDisbursementYearOptions]
+        .reverse()
+        .map((option) => String(option.value));
 
       return {
-        title: "Yearly Disbursement Amount",
+        title: "Yearly Disbursement Trend",
         categories,
-        data: categories.map((yearLabel) =>
+        amountData: categories.map((yearLabel) =>
           educationFilteredDisbursementEntries
             .filter((entry) => new Date(entry.date).getFullYear() === Number(yearLabel))
             .reduce((sum, entry) => sum + entry.amount, 0),
         ),
+        applicationCountData: categories.map(
+          (yearLabel) =>
+            educationFilteredDisbursementEntries.filter(
+              (entry) => new Date(entry.date).getFullYear() === Number(yearLabel),
+            ).length,
+        ),
       };
     }
 
-    const categories = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const categories = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
 
     return {
-      title: `Monthly Disbursement Amount (${currentYear})`,
+      title: `Monthly Disbursement Trend (${selectedYear})`,
       categories,
-      data: categories.map((_, monthIndex) =>
+      amountData: categories.map((_, monthIndex) =>
         educationFilteredDisbursementEntries
           .filter((entry) => {
             const entryDate = new Date(entry.date);
             return (
-              entryDate.getFullYear() === currentYear &&
+              entryDate.getFullYear() === selectedYear &&
               entryDate.getMonth() === monthIndex
             );
           })
           .reduce((sum, entry) => sum + entry.amount, 0),
       ),
+      applicationCountData: categories.map(
+        (_, monthIndex) =>
+          educationFilteredDisbursementEntries.filter((entry) => {
+            const entryDate = new Date(entry.date);
+            return (
+              entryDate.getFullYear() === selectedYear &&
+              entryDate.getMonth() === monthIndex
+            );
+          }).length,
+      ),
     };
-  }, [educationDisbursementView, educationFilteredDisbursementEntries]);
+  }, [
+    educationDisbursementYear,
+    educationDisbursementYearOptions,
+    educationDisbursementView,
+    educationFilteredDisbursementEntries,
+  ]);
+
+  useEffect(() => {
+    if (educationDisbursementYearOptions.length === 0) {
+      setEducationDisbursementYear(null);
+      return;
+    }
+
+    setEducationDisbursementYear((currentYear) =>
+      currentYear &&
+      educationDisbursementYearOptions.some(
+        (option) => option.value === currentYear,
+      )
+        ? currentYear
+        : educationDisbursementYearOptions[0].value,
+    );
+  }, [educationDisbursementYearOptions]);
 
   const educationInstituteWiseDisbursementData = useMemo(
     () =>
@@ -529,41 +619,41 @@ const AdminDashboard = () => {
   }, [educationRepaymentRecords, parseRemainingEmis]);
 
   const educationPaymentHistoryTrend = useMemo(() => {
-    const categories = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-    const ongoingBase =
-      educationPaymentHistoryCards.find((item) => item.title === "Ongoing")?.emiAmount || 0;
-    const delayedBase =
-      educationPaymentHistoryCards.find((item) => item.title === "Delayed")?.emiAmount || 0;
-    const overdueBase =
-      educationPaymentHistoryCards.find((item) => item.title === "Overdue")?.emiAmount || 0;
+    const monthKeys = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    const statusSeries = [
+      {
+        name: "Ongoing",
+        color: "#0BB680",
+        statuses: ["On-Time", "Pending"],
+      },
+      {
+        name: "Delayed",
+        color: "#F4A917",
+        statuses: ["Delayed"],
+      },
+      {
+        name: "Overdue",
+        color: "#F64F59",
+        statuses: ["Overdue"],
+      },
+    ];
 
     return {
-      categories,
-      series: [
-        {
-          name: "Ongoing",
-          color: "#0BB680",
-          data: [0.82, 0.9, 0.94, 1, 1.03, 1.08].map((factor) =>
-            Math.round(ongoingBase * factor),
-          ),
-        },
-        {
-          name: "Delayed",
-          color: "#F4A917",
-          data: [1.22, 1.14, 1.08, 1, 0.95, 0.91].map((factor) =>
-            Math.round(delayedBase * factor),
-          ),
-        },
-        {
-          name: "Overdue",
-          color: "#F64F59",
-          data: [0.88, 0.94, 0.98, 1, 1.09, 1.16].map((factor) =>
-            Math.round(overdueBase * factor),
-          ),
-        },
-      ],
+      categories: monthKeys,
+      amountLabel: "Total scheduled EMI amount",
+      series: statusSeries.map((series) => {
+        const totalAmount = educationRepaymentRecords
+          .filter((record) => series.statuses.includes(record.repaymentStatus))
+          .reduce((sum, record) => sum + record.emiAmount, 0);
+
+        return {
+          name: series.name,
+          color: series.color,
+          data: distributeTrendAcrossMonths(totalAmount, monthKeys.length),
+        };
+      }),
     };
-  }, [educationPaymentHistoryCards]);
+  }, [educationRepaymentRecords]);
 
   const spotlightMetrics: Array<{
     title: string;
@@ -1319,31 +1409,6 @@ const AdminDashboard = () => {
           </>
         ) : (
           <>
-            <section className="admin-dashboard-hero admin-dashboard-hero--education">
-              <div className="admin-dashboard-hero__content">
-                <div className="admin-dashboard-eyebrow">
-                  <i className="bi bi-mortarboard-fill" />
-                  Education Lending View
-                </div>
-                <h1 className="admin-dashboard-hero__title">Education Loan Summary Dashboard</h1>
-                <p className="admin-dashboard-hero__copy">
-                  Track student onboarding, education loan movement, NBFC disbursals, and
-                  institute footprint from one focused admin view.
-                </p>
-
-                <div className="admin-dashboard-hero__chips">
-                  <div className="admin-dashboard-pill">
-                    <i className="bi bi-people" />
-                    {totalApplications} students in active education journey
-                  </div>
-                  <div className="admin-dashboard-pill">
-                    <i className="bi bi-building" />
-                    {registeredInstituteCount} institutes currently registered
-                  </div>
-                </div>
-              </div>
-            </section>
-
             <section className="admin-dashboard-filter-panel">
               <div className="admin-dashboard-section-head">
                 <div>
@@ -1441,11 +1506,23 @@ const AdminDashboard = () => {
                     <div>
                       <TableTitle title="Disbursement Trend" />
                       <p className="admin-dashboard-section-copy mb-0">
-                        Compare disbursement amount across all institutes by month or year.
+                        Compare disbursement amount and application count across all institutes by month or year.
                       </p>
                     </div>
 
-                    <div className="admin-dashboard-filter-actions">
+                    <div className="admin-dashboard-filter-actions form-group">
+                      {educationDisbursementView === "monthly" &&
+                        educationDisbursementYearOptions.length > 0 && (
+                          <Dropdown
+                            value={educationDisbursementYear}
+                            options={educationDisbursementYearOptions}
+                            onChange={(event) =>
+                              setEducationDisbursementYear(event.value as number)
+                            }
+                            placeholder="Select Year"
+                            className="admin-dashboard-filter-dropdown"
+                          />
+                        )}
                       <Button
                         className={`btn ${educationDisbursementView === "monthly" ? "btn-orange" : "btn-orange-line"}`}
                         onClick={() => setEducationDisbursementView("monthly")}
@@ -1478,35 +1555,56 @@ const AdminDashboard = () => {
                         xAxis: {
                           categories: educationDisbursementTrendConfig.categories,
                         },
-                        yAxis: {
-                          title: {
-                            text: "Disbursement Amount",
-                          },
-                          labels: {
-                            formatter: function (this: any): string {
-                              return `₹${Number(this.value).toLocaleString("en-IN")}`;
+                        yAxis: [
+                          {
+                            title: {
+                              text: "Disbursement Amount",
+                            },
+                            labels: {
+                              formatter: function (this: any): string {
+                                return `\u20B9${Number(this.value).toLocaleString("en-IN")}`;
+                              },
                             },
                           },
-                        },
+                          {
+                            title: {
+                              text: "No. of Applications",
+                            },
+                            allowDecimals: false,
+                            opposite: true,
+                          },
+                        ],
                         legend: {
-                          enabled: false,
+                          enabled: true,
                         },
                         tooltip: {
-                          pointFormatter: function (this: any): string {
-                            return `<span style="color:${this.color}">\u25cf</span> Amount: <b>₹${Number(this.y).toLocaleString("en-IN")}</b>`;
-                          },
+                          shared: true,
                         },
                         plotOptions: {
                           column: {
                             borderRadius: 8,
-                            color: "#FF632C",
+                            grouping: true,
                           },
                         },
                         series: [
                           {
                             type: "column",
                             name: "Disbursement Amount",
-                            data: educationDisbursementTrendConfig.data,
+                            color: "#FF632C",
+                            data: educationDisbursementTrendConfig.amountData,
+                            tooltip: {
+                              valuePrefix: "\u20B9",
+                            },
+                          },
+                          {
+                            type: "column",
+                            name: "No. of Applications",
+                            yAxis: 1,
+                            color: "#2563EB",
+                            data: educationDisbursementTrendConfig.applicationCountData,
+                            tooltip: {
+                              valueSuffix: " applications",
+                            },
                           },
                         ],
                       }}
@@ -1606,7 +1704,7 @@ const AdminDashboard = () => {
                           No. of EMIs: {card.emiCount}
                         </div>
                         <div className="admin-dashboard-user-card__meta">
-                          Amt of EMI: {formatCurrencyAmount(card.emiAmount)}
+                          Total Scheduled EMI: {formatCurrencyAmount(card.emiAmount)}
                         </div>
                       </div>
                     ))}
@@ -1620,6 +1718,7 @@ const AdminDashboard = () => {
                       chart: {
                         type: "line",
                         height: 360,
+                        backgroundColor: "transparent",
                       },
                       credits: {
                         enabled: false,
@@ -1629,28 +1728,57 @@ const AdminDashboard = () => {
                       },
                       xAxis: {
                         categories: educationPaymentHistoryTrend.categories,
+                        lineColor: "#d8e1ec",
                       },
                       yAxis: {
                         title: {
-                          text: "EMI Amount",
+                          text: educationPaymentHistoryTrend.amountLabel,
                         },
                         labels: {
                           formatter: function (this: any): string {
-                            return `₹${Number(this.value).toLocaleString("en-IN")}`;
+                            return `\u20B9${Number(this.value).toLocaleString("en-IN")}`;
                           },
                         },
                       },
                       tooltip: {
                         shared: true,
-                        valuePrefix: "₹",
+                        useHTML: true,
+                        formatter: function (this: any): string {
+                          const rows = this.points
+                            .map(
+                              (point: any) =>
+                                `<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:${point.color}">${point.series.name}</span><b>\u20B9${Number(point.y).toLocaleString("en-IN")}</b></div>`,
+                            )
+                            .join("");
+
+                          return `<div><div style="font-weight:700;margin-bottom:8px;">${this.x}</div>${rows}</div>`;
+                        },
                       },
                       plotOptions: {
                         line: {
+                          lineWidth: 3,
                           marker: {
                             enabled: true,
                             radius: 4,
                           },
+                          dataLabels: {
+                            enabled: true,
+                            formatter: function (this: any): string {
+                              return this.y
+                                ? `\u20B9${Number(this.y).toLocaleString("en-IN")}`
+                                : "";
+                            },
+                            style: {
+                              textOutline: "none",
+                              fontSize: "10px",
+                              fontWeight: "600",
+                            },
+                          },
                         },
+                      },
+                      legend: {
+                        align: "center",
+                        verticalAlign: "bottom",
                       },
                       series: educationPaymentHistoryTrend.series.map((series) => ({
                         type: "line" as const,
@@ -1671,3 +1799,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+

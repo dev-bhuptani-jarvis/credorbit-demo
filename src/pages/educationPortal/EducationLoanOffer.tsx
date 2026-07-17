@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Button } from "primereact/button";
+import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
 import { TabPanel, TabView } from "primereact/tabview";
 import Loader from "../../components/Loader";
@@ -36,6 +38,7 @@ const EducationLoanOffer = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
   const [activeAccordionIndex, setActiveAccordionIndex] = useState<number | null>(0);
+  const [showLenderDialog, setShowLenderDialog] = useState<boolean>(false);
   const [lenders, setLenders] = useState<ILoanMarketBankDetails[]>([]);
   const [showPaymentDialog, setShowPaymentDialog] = useState<boolean>(false);
   const [showThankYouDialog, setShowThankYouDialog] = useState<boolean>(false);
@@ -183,6 +186,12 @@ const EducationLoanOffer = () => {
     setSelectedLender(lender);
     window.open(RAZORPAY_TEST_LINK, "_blank", "noopener,noreferrer");
     setShowPaymentDialog(true);
+  };
+
+  const handleOpenLenderDialog = (lender: ILoanMarketBankDetails): void => {
+    setSelectedLender(lender);
+    setActiveAccordionIndex(0);
+    setShowLenderDialog(true);
   };
 
   const handleApply = (lender: ILoanMarketBankDetails): void => {
@@ -335,8 +344,9 @@ const EducationLoanOffer = () => {
                 <div>
                   <h5 className="mb-1">Eligible NBFC List</h5>
                   <p className="mb-0 text-muted">
-                    Expand an NBFC to review KFS details, pay the processing fee,
-                    and apply from the institute portal.
+                    Review eligible NBFCs in the table below, then click Check to
+                    view offer details, pay the processing fee, and continue the
+                    application flow.
                   </p>
                 </div>
                 <span className="education-offer-count">
@@ -345,112 +355,46 @@ const EducationLoanOffer = () => {
               </div>
 
               {lenders.length > 0 ? (
-                <Accordion
-                  activeIndex={activeAccordionIndex}
-                  onTabChange={(event) =>
-                    setActiveAccordionIndex(
-                      typeof event.index === "number" ? event.index : null,
-                    )
-                  }
+                <DataTable
+                  removableSort
+                  className="tableMain"
+                  value={lenders}
+                  emptyMessage="No NBFC matched this application right now."
                 >
-                  {lenders.map((lender) => {
-                    const { processingFeeAmount, interestAmount } =
-                      buildOfferMetrics(lender);
-                    const isProcessingFeePaid =
-                      draft.processingFeePaid && draft.selectedBankId === lender.bankID;
-
-                    return (
-                      <AccordionTab
-                        key={lender.bankID}
-                        header={
-                          <div className="education-offer-header">
-                            <div>
-                              <h6 className="mb-1">{lender.bankName}</h6>
-                              <small className="text-muted">
-                                {formatCurrencyAmount(lender.loanAmount)} sanctioned
-                                potential
-                              </small>
-                            </div>
-                            <div className="education-offer-header__stats">
-                              <span>{formatCurrencyAmount(Number(lender.emi.toFixed(2)))}</span>
-                              <small className="text-muted">EMI</small>
-                            </div>
-                          </div>
-                        }
-                      >
-                        <div className="row">
-                          <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                            <b>Loan Amount</b>
-                            <p className="text-break">
-                              {formatCurrencyAmount(lender.loanAmount)}
-                            </p>
-                          </div>
-                          <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                            <b>Tenure</b>
-                            <p className="text-break">
-                              {lender.tenure} {lender.tenure === 1 ? "Year" : "Years"}
-                            </p>
-                          </div>
-                          <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                            <b>EMI</b>
-                            <p className="text-break">
-                              {formatCurrencyAmount(Number(lender.emi.toFixed(2)))}
-                            </p>
-                          </div>
-                          <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                            <b>Advanced EMI</b>
-                            <p className="text-break">
-                              {formatCurrencyAmount(draft.advanceEmi)}
-                            </p>
-                          </div>
-                          <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                            <b>Remaining EMI</b>
-                            <p className="text-break">{draft.numberOfEmis} Months</p>
-                          </div>
-                          <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                            <b>Interest Amount (Born by institute)</b>
-                            <p className="text-break">
-                              {formatCurrencyAmount(interestAmount)}
-                            </p>
-                          </div>
-                          <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                            <b>Disbursement to Institute</b>
-                            <p className="text-break">
-                              {formatCurrencyAmount(draft.totalAmountToInstitute)}
-                            </p>
-                          </div>
-                          <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                            <b>Processing Fees Amount</b>
-                            <p className="text-break">
-                              {formatCurrencyAmount(processingFeeAmount)}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="d-flex justify-content-end gap-3 flex-wrap mt-2">
-                          {isProcessingFeePaid ? (
-                            <>
-                              <span className="education-processing-status">
-                                Processing fee paid
-                              </span>
-                              <Button
-                                className="btn btn-orange"
-                                label="Apply"
-                                onClick={() => handleApply(lender)}
-                              />
-                            </>
-                          ) : (
-                            <Button
-                              className="btn btn-orange-line"
-                              label="Pay Processing Fee"
-                              onClick={() => handleProcessingFeeClick(lender)}
-                            />
-                          )}
-                        </div>
-                      </AccordionTab>
-                    );
-                  })}
-                </Accordion>
+                  <Column field="bankName" header="NBFC Name" sortable />
+                  <Column
+                    field="loanAmount"
+                    header="Loan Amount"
+                    sortable
+                    body={(rowData: ILoanMarketBankDetails) =>
+                      formatCurrencyAmount(rowData.loanAmount)
+                    }
+                  />
+                  <Column
+                    field="tenure"
+                    header="Tenure"
+                    sortable
+                    body={(rowData: ILoanMarketBankDetails) =>
+                      `${rowData.tenure} ${rowData.tenure === 1 ? "Year" : "Years"}`
+                    }
+                  />
+                  <Column
+                    header="EMI"
+                    body={(rowData: ILoanMarketBankDetails) =>
+                      formatCurrencyAmount(Number(rowData.emi.toFixed(2)))
+                    }
+                  />
+                  <Column
+                    header="Action"
+                    body={(rowData: ILoanMarketBankDetails) => (
+                      <Button
+                        className="btn btn-orange-line"
+                        label="Check"
+                        onClick={() => handleOpenLenderDialog(rowData)}
+                      />
+                    )}
+                  />
+                </DataTable>
               ) : (
                 <p className="mb-0">No NBFC matched this application right now.</p>
               )}
@@ -458,6 +402,140 @@ const EducationLoanOffer = () => {
           </div>
         </div>
       </div>
+
+      <Dialog
+        visible={showLenderDialog}
+        onHide={() => setShowLenderDialog(false)}
+        header={selectedLender ? `${selectedLender.bankName} Offer Details` : "Offer Details"}
+        className="modalWrapper"
+        draggable={false}
+        resizable={false}
+        modal
+        blockScroll
+        style={{ width: "900px" }}
+      >
+        {selectedLender && (
+          <>
+            <Accordion
+              activeIndex={activeAccordionIndex}
+              onTabChange={(event) =>
+                setActiveAccordionIndex(
+                  typeof event.index === "number" ? event.index : null,
+                )
+              }
+            >
+              <AccordionTab
+                header={
+                  <div className="education-offer-header">
+                    <div>
+                      <h6 className="mb-1">{selectedLender.bankName}</h6>
+                      <small className="text-muted">
+                        {formatCurrencyAmount(selectedLender.loanAmount)} sanctioned potential
+                      </small>
+                    </div>
+                    <div className="education-offer-header__stats">
+                      <span>
+                        {formatCurrencyAmount(Number(selectedLender.emi.toFixed(2)))}
+                      </span>
+                      <small className="text-muted">EMI</small>
+                    </div>
+                  </div>
+                }
+              >
+                {(() => {
+                  const { processingFeeAmount, interestAmount } =
+                    buildOfferMetrics(selectedLender);
+                  const isProcessingFeePaid =
+                    draft.processingFeePaid &&
+                    draft.selectedBankId === selectedLender.bankID;
+
+                  return (
+                    <>
+                      <div className="row">
+                        <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                          <b>Loan Amount</b>
+                          <p className="text-break">
+                            {formatCurrencyAmount(selectedLender.loanAmount)}
+                          </p>
+                        </div>
+                        <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                          <b>Tenure</b>
+                          <p className="text-break">
+                            {selectedLender.tenure} {selectedLender.tenure === 1 ? "Year" : "Years"}
+                          </p>
+                        </div>
+                        <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                          <b>EMI</b>
+                          <p className="text-break">
+                            {formatCurrencyAmount(Number(selectedLender.emi.toFixed(2)))}
+                          </p>
+                        </div>
+                        <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                          <b>Advanced EMI</b>
+                          <p className="text-break">
+                            {formatCurrencyAmount(draft.advanceEmi)}
+                          </p>
+                        </div>
+                        <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                          <b>Remaining EMI</b>
+                          <p className="text-break">{draft.numberOfEmis} Months</p>
+                        </div>
+                        <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                          <b>Interest Amount (Born by institute)</b>
+                          <p className="text-break">
+                            {formatCurrencyAmount(interestAmount)}
+                          </p>
+                        </div>
+                        <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                          <b>Disbursement to Institute</b>
+                          <p className="text-break">
+                            {formatCurrencyAmount(draft.totalAmountToInstitute)}
+                          </p>
+                        </div>
+                        <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                          <b>Processing Fees Amount</b>
+                          <p className="text-break">
+                            {formatCurrencyAmount(processingFeeAmount)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="d-flex justify-content-end gap-3 flex-wrap mt-2">
+                        {isProcessingFeePaid ? (
+                          <>
+                            <span className="education-processing-status">
+                              Processing fee paid
+                            </span>
+                            <Button
+                              className="btn btn-orange"
+                              label="Apply"
+                              onClick={() => handleApply(selectedLender)}
+                            />
+                          </>
+                        ) : (
+                          <Button
+                            className="btn btn-orange-line"
+                            label="Pay Processing Fee"
+                            onClick={() => handleProcessingFeeClick(selectedLender)}
+                          />
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
+              </AccordionTab>
+            </Accordion>
+
+            <div className="d-flex justify-content-end mt-4">
+              <Button
+                className="btn btn-black-line"
+                label="Close"
+                onClick={() => setShowLenderDialog(false)}
+              />
+            </div>
+          </>
+        )}
+      </Dialog>
 
       <Dialog
         visible={showPaymentDialog}

@@ -1,22 +1,23 @@
-import { useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
+import { InputText } from "primereact/inputtext";
 import TableTitle from "../../components/TableTitle";
-import {
-  IEducationLoanDraft,
-  IEducationStudentApplicant,
-} from "../../interface/educationManagement";
+import { IEducationLoanDraft } from "../../interface/educationManagement";
 import { RootState } from "../../store";
+import { setCustomerInfo } from "../../store/reducer/customerSlice";
 import { StorageKeyEnum } from "../../utils/constants/enum";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import {
   formatCurrencyAmount,
   formatMobileNumber,
 } from "../../utils/constants/constant";
-import { formatDate } from "../../utils/functions/shared";
+import { formatDate, toastInfo, toastSuccess } from "../../utils/functions/shared";
 import { getEducationStudentById } from "../../utils/demo/demoEducationStudents";
 import {
+  buildEducationCustomerInfo,
   getEducationLoanDraftById,
   getEducationLoanDrafts,
 } from "../../utils/demo/demoEducationLoanFlow";
@@ -26,28 +27,14 @@ const RAZORPAY_TEST_LINK =
   "https://razorpay.com/payment-link/plink_SokyWAJOOqGcI2/test";
 
 const timelineStages = [
-  {
-    label: "Application Started",
-    matches: ["Pending", "Query Raised", "Approved", "Sanctioned", "Disbursed"],
-  },
-  {
-    label: "Credit Check",
-    matches: ["Pending", "Query Raised", "Approved", "Sanctioned", "Disbursed"],
-  },
-  {
-    label: "Eligibility Generated",
-    matches: ["Pending", "Query Raised", "Approved", "Sanctioned", "Disbursed"],
-  },
-  {
-    label: "Offer Received",
-    matches: ["Approved", "Sanctioned", "Disbursed"],
-  },
-  {
-    label: "Approved",
-    matches: ["Approved", "Sanctioned", "Disbursed"],
-  },
-  { label: "Disbursed", matches: ["Disbursed"] },
-];
+  "Application Started",
+  "Credit Check",
+  "Banking Check",
+  "Eligibility Generated",
+  "Offer Received",
+  "Approved",
+  "Disbursed",
+] as const;
 
 const getInitials = (value: string): string =>
   value
@@ -64,19 +51,22 @@ const renderField = (label: string, value: string) => (
   </div>
 );
 
-const buildDocumentList = (drafts: IEducationLoanDraft[]) =>
-  drafts.flatMap((draft, index) => [
-    {
-      id: `${draft.id}-passport`,
-      title: "Credit Passport",
-      subtitle: `${draft.courseName} · Updated ${formatDate(draft.updatedAt, "DD MMM, YYYY")}`,
-      href: draft.repaymentScheduleUrl || "/assets/images/CAM_Report_Sample_HL.xlsx",
-    },
+type StudentDocumentItem = {
+  id: string;
+  title: string;
+  subtitle: string;
+  href: string;
+};
+
+const buildDocumentList = (draft: IEducationLoanDraft | undefined): StudentDocumentItem[] => {
+  if (!draft) return [];
+
+  return [
     {
       id: `${draft.id}-sanction`,
       title: "Sanction Letter",
       subtitle: draft.sanctionDate
-        ? `Issued ${formatDate(draft.sanctionDate, "DD MMM, YYYY")}`
+        ? `Issued · ${formatDate(draft.sanctionDate, "DD MMM, YYYY")}`
         : "Awaiting sanction",
       href: draft.sanctionLetterUrl || "/assets/images/sanction-letter.pdf",
     },
@@ -84,66 +74,34 @@ const buildDocumentList = (drafts: IEducationLoanDraft[]) =>
       id: `${draft.id}-agreement`,
       title: "Loan Agreement",
       subtitle: draft.loanAgreementSentAt
-        ? `Shared ${formatDate(draft.loanAgreementSentAt, "DD MMM, YYYY")}`
+        ? `Shared · ${formatDate(draft.loanAgreementSentAt, "DD MMM, YYYY")}`
         : "Pending release",
       href: draft.loanAgreementUrl || "/assets/images/sanction-letter.pdf",
     },
     {
-      id: `${draft.id}-advice-${index}`,
+      id: `${draft.id}-passport`,
+      title: "Credorbit Credit Passport",
+      subtitle: `Updated · ${formatDate(draft.updatedAt, "DD MMM, YYYY")}`,
+      href: draft.repaymentScheduleUrl || "/assets/images/CAM_Report_Sample_HL.xlsx",
+    },
+    {
+      id: `${draft.id}-advice`,
       title: "Disbursement Advice",
       subtitle: draft.disbursementDate
-        ? `Disbursed ${formatDate(draft.disbursementDate, "DD MMM, YYYY")}`
+        ? `Disbursed · ${formatDate(draft.disbursementDate, "DD MMM, YYYY")}`
         : "Available after disbursement",
       href: draft.disbursementAdviceUrl || "/assets/images/sanction-letter.pdf",
     },
-  ]);
+  ];
+};
 
-const renderApplicantCard = (
-  applicant: IEducationStudentApplicant,
-  title: string,
-  relation?: string,
-) => (
-  <div className="education-360-applicant">
-    <div className="education-360-applicant__avatar">
-      {applicant.photo ? (
-        <img src={applicant.photo} alt={applicant.name || title} />
-      ) : (
-        <span>{getInitials(applicant.name || title)}</span>
-      )}
-    </div>
-
-    <div className="education-360-applicant__meta">
-      <h4>{applicant.name || title}</h4>
-      <p>{relation || title}</p>
-      <div className="education-360-field-grid education-360-field-grid--compact">
-        {renderField("Name", applicant.name || "-")}
-        {renderField("PAN", applicant.pan || "-")}
-        {renderField(
-          "DOB",
-          applicant.dateOfBirth
-            ? formatDate(applicant.dateOfBirth, "DD MMM, YYYY")
-            : "-",
-        )}
-        {renderField("Gender", applicant.gender || "-")}
-        {renderField(
-          "Mobile",
-          applicant.mobileNumber
-            ? formatMobileNumber(applicant.mobileNumber)
-            : "-",
-        )}
-        {renderField("Email", applicant.email || "-")}
-        {renderField("Photo", applicant.photo ? "Uploaded" : "Not Uploaded")}
-        {renderField("Address", applicant.address || "-")}
-      </div>
-    </div>
-  </div>
-);
-
-const addMonthsToDate = (value: string | null | undefined, months: number): Date | null => {
+const addMonthsToDate = (
+  value: string | null | undefined,
+  months: number,
+): Date | null => {
   if (!value) return null;
 
   const parsedDate = new Date(value);
-
   if (Number.isNaN(parsedDate.getTime())) return null;
 
   const updatedDate = new Date(parsedDate);
@@ -153,15 +111,22 @@ const addMonthsToDate = (value: string | null | undefined, months: number): Date
 
 const Student360View = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
   const { id = "" } = useParams();
   const [showRepaymentDetails, setShowRepaymentDetails] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadedDocuments, setUploadedDocuments] = useState<StudentDocumentItem[]>([]);
+  const [documentTitle, setDocumentTitle] = useState("");
+  const [selectedDocumentFile, setSelectedDocumentFile] = useState<File | null>(null);
+
   const { userID, roleName } = useSelector((state: RootState) => state.user.user);
   const impersonatedStudentId = getDecryptedSessionStorage(
     StorageKeyEnum.CRED_ORBIT_IMPERSONATE_STUDENT_ID,
   );
   const selectedDraftId = (location.state as { selectedDraftId?: string } | null)
     ?.selectedDraftId;
+
   const isStudentPortalUser =
     userID === "student-role-001" ||
     roleName === "Student" ||
@@ -173,6 +138,7 @@ const Student360View = () => {
     () => getEducationStudentById(resolvedStudentId),
     [resolvedStudentId],
   );
+
   const studentDrafts = useMemo(
     () =>
       getEducationLoanDrafts()
@@ -183,6 +149,22 @@ const Student360View = () => {
         ),
     [resolvedStudentId],
   );
+
+  const activeDraft =
+    studentDrafts.find((draft) => draft.id === selectedDraftId) ||
+    fallbackDraft ||
+    studentDrafts[0];
+
+  const baseDocuments = useMemo(() => buildDocumentList(activeDraft), [activeDraft]);
+  const documents = useMemo(
+    () => [...baseDocuments, ...uploadedDocuments],
+    [baseDocuments, uploadedDocuments],
+  );
+  const stageStatus = activeDraft?.loanApplicationStatus || "Pending";
+
+  useEffect(() => {
+    setUploadedDocuments([]);
+  }, [activeDraft?.id]);
 
   if (!student) {
     return (
@@ -199,59 +181,94 @@ const Student360View = () => {
     );
   }
 
-  const activeDraft =
-    studentDrafts.find((draft) => draft.id === selectedDraftId) ||
-    fallbackDraft ||
-    studentDrafts[0];
-  const stageStatus = activeDraft?.loanApplicationStatus || "Pending";
-  const documents = buildDocumentList(studentDrafts).slice(0, 6);
-  const primaryApplicant = student.applicants?.[0];
-  const coApplicants = student.applicants?.slice(1) || [];
   const openRazorpayLink = (): void => {
     if (typeof window !== "undefined") {
       window.open(RAZORPAY_TEST_LINK, "_blank", "noopener,noreferrer");
     }
   };
-  const studentDetailFields = [
-    { label: "Name", value: student.studentName },
-    { label: "PAN", value: student.studentPan || "-" },
+
+  const headerMetrics = [
     {
-      label: "DOB",
-      value: student.studentDateOfBirth
-        ? formatDate(student.studentDateOfBirth, "DD MMM, YYYY")
+      label: "Credit",
+      value: String(student.creditInformation.creditScore || "-"),
+    }
+  ];
+
+  const courseDetailFields = [
+    {
+      label: "Course",
+      value: student.courseName,
+    },
+    {
+      label: "Institute",
+      value: activeDraft?.instituteName || "-",
+    },
+    {
+      label: "Fee",
+      value: activeDraft ? formatCurrencyAmount(activeDraft.courseFees) : "-",
+    },
+    {
+      label: "Down payment",
+      value: activeDraft ? formatCurrencyAmount(activeDraft.downpayment) : "-",
+    },
+    {
+      label: "Loan amount",
+      value: activeDraft ? formatCurrencyAmount(activeDraft.loanAmount) : "-",
+    },
+    {
+      label: "Tenure",
+      value: activeDraft?.courseTenure || "-",
+    },
+  ];
+
+  const loanJourneyFields = [
+    {
+      label: "Application Status",
+      value: stageStatus,
+    },
+    {
+      label: "Selected NBFC",
+      value: activeDraft?.selectedBankName || "-",
+    },
+    {
+      label: "Processing Fee",
+      value: activeDraft?.processingFeeAmount
+        ? formatCurrencyAmount(activeDraft.processingFeeAmount)
         : "-",
     },
-    { label: "Gender", value: student.studentGender || "-" },
-    { label: "Mobile", value: formatMobileNumber(student.mobileNumber) },
-    { label: "Email", value: student.email },
-    { label: "Photo", value: student.studentPhoto ? "Uploaded" : "Not Uploaded" },
-    { label: "Address", value: student.address || "-" },
-  ];
-  const profileSummaryFields = [
-    { label: "Course", value: student.courseName },
     {
-      label: "Registered On",
-      value: formatDate(student.createdAt, "DD MMM, YYYY"),
-    },
-    { label: "Parent PAN", value: student.parentPan || "-" },
-    {
-      label: "Outstanding Amount",
-      value: formatCurrencyAmount(student.loanDetails.outstandingAmount),
-    },
-    { label: "EMI Information", value: student.loanDetails.emiInformation },
-    {
-      label: "Applied Loan Amount",
-      value: formatCurrencyAmount(student.loanDetails.appliedLoanAmount),
+      label: "E-NACH",
+      value: activeDraft?.enachEnabled ? "Enabled" : "Pending",
     },
     {
-      label: "Last Credit Score Fetch",
-      value: student.creditInformation.lastDateCreditScore || "-",
+      label: "Sanction Date",
+      value: activeDraft?.sanctionDate
+        ? formatDate(activeDraft.sanctionDate, "DD MMM, YYYY")
+        : "-",
     },
     {
-      label: "Primary Co-applicant",
-      value: student.coApplicantName || "-",
+      label: "Disbursement Date",
+      value: activeDraft?.disbursementDate
+        ? formatDate(activeDraft.disbursementDate, "DD MMM, YYYY")
+        : "-",
     },
   ];
+
+  const completedTimelineCount = (() => {
+    switch (stageStatus) {
+      case "Disbursed":
+        return 7;
+      case "Sanctioned":
+      case "Approved":
+        return 6;
+      case "Query Raised":
+      case "Pending":
+        return 4;
+      default:
+        return 1;
+    }
+  })();
+
   const loanStartDate =
     activeDraft?.disbursementDate || activeDraft?.sanctionDate || activeDraft?.createdAt || null;
   const totalEmis = activeDraft?.numberOfEmis || activeDraft?.emiOptionMonths || 0;
@@ -264,6 +281,7 @@ const Student360View = () => {
   const nextEmiPaidDate =
     totalEmis > paidEmis ? addMonthsToDate(loanStartDate, paidEmis + 1) : null;
   const loanMatureDate = totalEmis > 0 ? addMonthsToDate(loanStartDate, totalEmis) : null;
+
   const repaymentDetailFields = [
     {
       label: "Last EMI Paid Date",
@@ -299,10 +317,68 @@ const Student360View = () => {
     },
   ];
 
+  const handleTimelineClick = (stage: (typeof timelineStages)[number]): void => {
+    if (!activeDraft) return;
+
+    if (stage === "Credit Check") {
+      dispatch(setCustomerInfo(buildEducationCustomerInfo(student)));
+      navigate(RoutePathConstant.private.checkEligibility, {
+        state: {
+          educationFlow: true,
+          educationLoanApplicationId: activeDraft.id,
+          loanApp: activeDraft.id,
+          loanType: 0,
+          resumeStep: "credit-score",
+        },
+      });
+      return;
+    }
+
+    if (stage === "Banking Check") {
+      dispatch(setCustomerInfo(buildEducationCustomerInfo(student)));
+      navigate(RoutePathConstant.private.bankingAnalyticsReport);
+      return;
+    }
+
+    toastInfo(`Loan application status updated: ${stage}`);
+  };
+
+  const handleDocumentFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    const file = event.target.files?.[0] || null;
+    setSelectedDocumentFile(file);
+    event.target.value = "";
+  };
+
+  const closeUploadModal = (): void => {
+    setShowUploadModal(false);
+    setDocumentTitle("");
+    setSelectedDocumentFile(null);
+  };
+
+  const handleSaveDocument = (): void => {
+    if (!documentTitle.trim() || !selectedDocumentFile) return;
+
+    const sizeInKb = Math.max(Math.round(selectedDocumentFile.size / 1024), 1);
+
+    setUploadedDocuments((prev) => [
+      ...prev,
+      {
+        id: `${activeDraft?.id || student.id}-${Date.now()}`,
+        title: documentTitle.trim(),
+        subtitle: `Uploaded · ${sizeInKb} KB`,
+        href: URL.createObjectURL(selectedDocumentFile),
+      },
+    ]);
+
+    toastSuccess("Document uploaded successfully.");
+    closeUploadModal();
+  };
+
   return (
+    <>
     <div className="education-360-page">
       <div className="education-360-page__header">
-        <TableTitle title={student.studentName} />
+        <TableTitle title="Student 360 View" />
         <div className="education-360-page__actions">
           <Button
             className="btn btn-black-line"
@@ -333,28 +409,28 @@ const Student360View = () => {
               <div className="education-360-hero__meta">
                 <div className="education-360-hero__name">
                   <h2>{student.studentName}</h2>
-                  <span className="education-360-chip">Student</span>
+                  <span className="education-360-chip">
+                    {stageStatus === "Pending" ? "Eligibility Generated" : stageStatus}
+                  </span>
                 </div>
                 <p>
-                  {student.studentCode} · {student.courseName}
+                  {student.studentCode} · {student.courseName} · {formatMobileNumber(student.mobileNumber)}
                 </p>
-                <p>{formatMobileNumber(student.mobileNumber)}</p>
               </div>
             </div>
 
             <div className="education-360-hero__stats">
-              <div className="education-360-stat-card">
-                <span>Credit Score</span>
-                <strong>{student.creditInformation.creditScore}</strong>
-              </div>
-              <div className="education-360-stat-card">
-                <span>Applications</span>
-                <strong>{studentDrafts.length}</strong>
-              </div>
-              <div className="education-360-stat-card">
-                <span>Active Loans</span>
-                <strong>{student.loanDetails.activeLoans}</strong>
-              </div>
+              {headerMetrics.map((metric, index) => (
+                <div
+                  key={metric.label}
+                  className={`education-360-stat-card ${
+                    index === 1 ? "education-360-stat-card--highlight" : ""
+                  }`}
+                >
+                  <span>{metric.label}</span>
+                  <strong>{metric.value}</strong>
+                </div>
+              ))}
             </div>
           </section>
 
@@ -362,27 +438,15 @@ const Student360View = () => {
             <section className="education-360-card">
               <div className="education-360-card__head">
                 <div>
-                  <h3>Student Details</h3>
+                  <h3>Course Details</h3>
                   <p className="education-360-card__hint">
-                    Saved profile fields from student onboarding.
+                    Course, institute, fee breakup, sanctioned amount, and tenure.
                   </p>
                 </div>
               </div>
-              <div className="education-360-profile-banner">
-                <div className="education-360-profile-banner__avatar">
-                  {student.studentPhoto ? (
-                    <img src={student.studentPhoto} alt={student.studentName} />
-                  ) : (
-                    <span>{getInitials(student.studentName)}</span>
-                  )}
-                </div>
-                <div>
-                  <h4>{student.studentName}</h4>
-                  <p>{student.address || "Address not available"}</p>
-                </div>
-              </div>
+
               <div className="education-360-field-grid">
-                {studentDetailFields.map((field) => (
+                {courseDetailFields.map((field) => (
                   <div key={field.label}>{renderField(field.label, field.value)}</div>
                 ))}
               </div>
@@ -391,105 +455,35 @@ const Student360View = () => {
             <section className="education-360-card">
               <div className="education-360-card__head">
                 <div>
-                  <h3>Profile Summary</h3>
+                  <h3>Loan Journey</h3>
                   <p className="education-360-card__hint">
-                    Reference details used across applicant and loan workflows.
+                    Current lending progress, fee details, and readiness status.
                   </p>
                 </div>
+                {isStudentPortalUser && (
+                  <div className="education-360-page__actions">
+                    <Button
+                      className="btn btn-orange-line"
+                      onClick={() => setShowRepaymentDetails(true)}
+                    >
+                      Repay EMI Overdue
+                    </Button>
+                    <Button className="btn btn-orange" onClick={openRazorpayLink}>
+                      Force Close Loan
+                    </Button>
+                  </div>
+                )}
               </div>
+
               <div className="education-360-field-grid">
-                {profileSummaryFields.map((field) => (
+                {loanJourneyFields.map((field) => (
                   <div key={field.label}>{renderField(field.label, field.value)}</div>
                 ))}
               </div>
             </section>
           </div>
 
-          <section className="education-360-card">
-            <div className="education-360-card__head">
-              <h3>Applicant Details</h3>
-              <p className="education-360-card__hint">
-                Applicant and co-applicant information saved with the student profile.
-              </p>
-            </div>
-            <div className="education-360-applicant-list">
-              {primaryApplicant ? (
-                renderApplicantCard(primaryApplicant, "Applicant")
-              ) : (
-                <div className="education-360-document education-360-document--empty">
-                  No applicant details available.
-                </div>
-              )}
-
-              {coApplicants.map((applicant, index) => (
-                <div key={applicant.id || `${applicant.name}-${index}`}>
-                  {renderApplicantCard(
-                    applicant,
-                    `Co-applicant ${index + 1}`,
-                    student.coApplicantRelation || `Co-applicant ${index + 1}`,
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="education-360-card">
-            <div className="education-360-card__head">
-              <div>
-                <h3>Loan Journey</h3>
-                <p className="education-360-card__hint">
-                  Latest application activity and current progress of the selected journey.
-                </p>
-              </div>
-              {isStudentPortalUser && (
-                <div className="education-360-page__actions">
-                  <Button
-                    className="btn btn-orange-line"
-                    onClick={() => setShowRepaymentDetails(true)}
-                  >
-                    Repay EMI Overdue
-                  </Button>
-                  <Button
-                    className="btn btn-orange"
-                    onClick={openRazorpayLink}
-                  >
-                    Force Close Loan
-                  </Button>
-                </div>
-              )}
-            </div>
-            <div className="education-360-field-grid">
-              {renderField(
-                "Application Status",
-                activeDraft?.loanApplicationStatus || "Pending",
-              )}
-              {renderField("Selected NBFC", activeDraft?.selectedBankName || "-")}
-              {renderField(
-                "Loan Amount",
-                activeDraft ? formatCurrencyAmount(activeDraft.loanAmount) : "-",
-              )}
-              {renderField(
-                "Sanction Date",
-                activeDraft?.sanctionDate
-                  ? formatDate(activeDraft.sanctionDate, "DD MMM, YYYY")
-                  : "-",
-              )}
-              {renderField(
-                "Disbursement Date",
-                activeDraft?.disbursementDate
-                  ? formatDate(activeDraft.disbursementDate, "DD MMM, YYYY")
-                  : "-",
-              )}
-              {renderField(
-                "Processing Fee",
-                activeDraft?.processingFeeAmount
-                  ? formatCurrencyAmount(activeDraft.processingFeeAmount)
-                  : "-",
-              )}
-            </div>
-          </section>
-
-          {isStudentPortalUser && showRepaymentDetails && (
+          {isStudentPortalUser && showRepaymentDetails ? (
             <section className="education-360-card">
               <div className="education-360-card__head">
                 <div>
@@ -502,28 +496,28 @@ const Student360View = () => {
                   Pay Now
                 </Button>
               </div>
+
               <div className="education-360-field-grid">
                 {repaymentDetailFields.map((field) => (
                   <div key={field.label}>{renderField(field.label, field.value)}</div>
                 ))}
               </div>
             </section>
-          )}
+          ) : null}
 
           <section className="education-360-card education-360-documents">
             <div className="education-360-card__head">
-              <h3>Documents & Reports</h3>
-              <Button
-                className="btn btn-link"
-                onClick={() =>
-                  navigate(RoutePathConstant.private.educationStudentLoanApplication, {
-                    state: { preselectedStudentId: student.id },
-                  })
-                }
-              >
+              <div>
+                <h3>Documents & Reports</h3>
+                <p className="education-360-card__hint">
+                  Loan paperwork and generated lending reports for this student.
+                </p>
+              </div>
+              <Button className="btn btn-link" onClick={() => setShowUploadModal(true)}>
                 Upload
               </Button>
             </div>
+
             <div className="education-360-documents__grid">
               {documents.map((document) => (
                 <a
@@ -543,11 +537,12 @@ const Student360View = () => {
                   <i className="bi bi-download" />
                 </a>
               ))}
-              {documents.length === 0 && (
+
+              {documents.length === 0 ? (
                 <div className="education-360-document education-360-document--empty">
                   No documents available yet.
                 </div>
-              )}
+              ) : null}
             </div>
           </section>
         </div>
@@ -556,22 +551,27 @@ const Student360View = () => {
           <div className="education-360-card education-360-card--sticky">
             <h3>Journey Timeline</h3>
             <p className="education-360-card__hint">Click a stage to jump</p>
+
             <div className="education-360-timeline__list">
-              {timelineStages.map((stage) => {
-                const isComplete = stage.matches.includes(stageStatus);
+              {timelineStages.map((stage, index) => {
+                const isActive = index < completedTimelineCount;
+                const isCurrent =
+                  (stage === "Eligibility Generated" && stageStatus === "Pending") ||
+                  (stage === "Approved" &&
+                    (stageStatus === "Approved" || stageStatus === "Sanctioned")) ||
+                  (stage === "Disbursed" && stageStatus === "Disbursed");
+
                 return (
                   <button
-                    key={stage.label}
+                    key={stage}
                     type="button"
-                    className={`education-360-timeline__item ${isComplete ? "is-active" : ""}`}
-                    onClick={() =>
-                      navigate(RoutePathConstant.private.educationStudentLoanApplication, {
-                        state: { preselectedStudentId: student.id },
-                      })
-                    }
+                    className={`education-360-timeline__item ${
+                      isActive ? "is-active" : ""
+                    } ${isCurrent ? "is-current" : ""}`}
+                    onClick={() => handleTimelineClick(stage)}
                   >
                     <span className="education-360-timeline__dot" />
-                    <span>{stage.label}</span>
+                    <span>{stage}</span>
                   </button>
                 );
               })}
@@ -580,6 +580,75 @@ const Student360View = () => {
         </aside>
       </div>
     </div>
+
+    <Dialog
+      header="Upload Document"
+      visible={showUploadModal}
+      onHide={closeUploadModal}
+      modal
+      draggable={false}
+      resizable={false}
+      blockScroll
+      className="modalWrapper"
+      style={{ width: "560px", maxWidth: "95vw" }}
+      footer={
+        <div className="modal-footer gap-3">
+          <Button
+            className="btn btn-black-line w-100 text-center"
+            onClick={closeUploadModal}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="btn btn-orange w-100 text-center"
+            onClick={handleSaveDocument}
+            disabled={!documentTitle.trim() || !selectedDocumentFile}
+          >
+            Upload Document
+          </Button>
+        </div>
+      }
+    >
+      <div className="education-360-upload-dialog">
+        <div className="form-group">
+          <label className="form-label" htmlFor="student360DocumentTitle">
+            Document Name
+          </label>
+          <InputText
+            id="student360DocumentTitle"
+            className="form-control"
+            placeholder="Enter document name"
+            value={documentTitle}
+            onChange={(event) => setDocumentTitle(event.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label d-block" htmlFor="student360DocumentUpload">
+            Upload File
+          </label>
+          <label
+            htmlFor="student360DocumentUpload"
+            className="borderBoxHldr p-15 d-block cursor-pointer education-360-upload-trigger"
+          >
+            <b className="d-block mb-1">
+              {selectedDocumentFile ? selectedDocumentFile.name : "Choose a file"}
+            </b>
+            <small className="text-muted">
+              Supports PDF, images, Word, and Excel files.
+            </small>
+          </label>
+          <input
+            id="student360DocumentUpload"
+            type="file"
+            accept=".pdf,.doc,.docx,.xls,.xlsx,image/*"
+            className="d-none"
+            onChange={handleDocumentFileChange}
+          />
+        </div>
+      </div>
+    </Dialog>
+    </>
   );
 };
 

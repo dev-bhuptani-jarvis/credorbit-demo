@@ -460,10 +460,18 @@ const buildStudentRecord = (
   updatedAt: string,
   existingLoanDetails?: IEducationStudent["loanDetails"],
   existingCreditInfo?: IEducationStudent["creditInformation"],
+  existingCourseId?: string,
+  existingCourseName?: string,
 ): IEducationStudent => {
+  const fallbackCourse =
+    (existingCourseId && getEducationCourseById(existingCourseId)) ||
+    getEducationCourses().find((course) => course.courseName === existingCourseName) ||
+    getEducationCourses()[0];
   const matchedCourse =
-    getEducationCourses().find((course) => course.id === studentData.courseId) ||
-    getEducationCourseById(studentData.courseId);
+    fallbackCourse || {
+      id: existingCourseId || "course-unassigned",
+      courseName: existingCourseName || "Unassigned Course",
+    };
   const applicants = (studentData.applicants || []).map((applicant, index) =>
     createApplicant({
       ...applicant,
@@ -486,8 +494,8 @@ const buildStudentRecord = (
     id: "",
     studentCode,
     studentName: studentData.studentName.trim(),
-    courseId: studentData.courseId,
-    courseName: matchedCourse?.courseName || "Unassigned Course",
+    courseId: matchedCourse.id,
+    courseName: matchedCourse.courseName || existingCourseName || "Unassigned Course",
     studentPan: studentData.studentPan.trim().toUpperCase(),
     studentPanDocument: studentData.studentPanDocument ?? null,
     studentAadhaarDocument: studentData.studentAadhaarDocument ?? null,
@@ -540,6 +548,10 @@ export const createEducationStudent = (
     `COSTU20${nextNumber}`,
     now,
     now,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
   );
   nextStudent.id = `student-${Date.now()}`;
 
@@ -564,6 +576,8 @@ export const updateEducationStudent = (
       new Date().toISOString(),
       student.loanDetails,
       student.creditInformation,
+      student.courseId,
+      student.courseName,
     );
     updatedStudent.id = student.id;
 

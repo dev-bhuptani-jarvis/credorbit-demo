@@ -19,7 +19,9 @@ import {
   PAN_NUMBER_PATTERN,
 } from "../../utils/constants/pattern";
 import {
+  EducationInstitutePersonGender,
   IEducationInstitute,
+  IEducationInstituteAuthorizedPerson,
   IEducationInstituteBranch,
   IEducationInstituteBranchFormData,
   IEducationInstituteDocument,
@@ -29,6 +31,7 @@ import {
   addEducationInstituteBranchDocument,
   createEducationInstituteBranch,
   deleteEducationInstituteBranch,
+  getEducationAuthorizedPersonPanPreview,
   getEducationInstituteById,
   getEducationInstituteDocumentUrl,
   setEducationInstitutePaymentBranch,
@@ -48,6 +51,12 @@ const stateOptions = [
   value: state,
 }));
 
+const genderOptions: { label: string; value: EducationInstitutePersonGender }[] = [
+  { label: "Male", value: "Male" },
+  { label: "Female", value: "Female" },
+  { label: "Other", value: "Other" },
+];
+
 const branchDocumentTypeOptions = [
   { label: "PAN", value: "PAN" },
   { label: "Aadhar Card", value: "Aadhar Card" },
@@ -65,9 +74,32 @@ const instituteDocumentTypeOptions = [
   { label: "Other", value: "Other" },
 ];
 
+const createEmptyAuthorizedPerson = (): IEducationInstituteAuthorizedPerson => ({
+  id: `branch-auth-person-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+  panNumber: "",
+  fullName: "",
+  constitution: "",
+  dateOfBirth: "",
+  gender: "",
+  gstNumber: "",
+  mobileNumber: "",
+  email: "",
+});
+
+const isAuthorizedPersonVerified = (
+  person: IEducationInstituteAuthorizedPerson,
+): boolean =>
+  !!(
+    person.fullName.trim() &&
+    person.constitution.trim() &&
+    person.dateOfBirth &&
+    person.gender
+  );
+
 const defaultBranchForm: IEducationInstituteBranchFormData = {
   branchName: "",
   contactPerson: "",
+  authorizedPersons: [createEmptyAuthorizedPerson()],
   mobileNumber: "",
   email: "",
   state: "",
@@ -145,6 +177,10 @@ const EducationInstituteDetail = () => {
         ? {
           branchName: branch.branchName,
           contactPerson: branch.contactPerson,
+          authorizedPersons:
+            branch.authorizedPersons?.length > 0
+              ? branch.authorizedPersons.map((person) => ({ ...person }))
+              : [createEmptyAuthorizedPerson()],
           mobileNumber: branch.mobileNumber,
           email: branch.email,
           state: branch.state,
@@ -206,6 +242,105 @@ const EducationInstituteDetail = () => {
     }));
   };
 
+  const handleBranchAuthorizedPersonChange = (
+    index: number,
+    fieldName: keyof IEducationInstituteAuthorizedPerson,
+    value: string,
+  ): void => {
+    const nextAuthorizedPersons = [...branchForm.authorizedPersons];
+    nextAuthorizedPersons[index] = {
+      ...nextAuthorizedPersons[index],
+      [fieldName]: value,
+    };
+
+    setBranchForm((prev) => ({
+      ...prev,
+      contactPerson: index === 0 && fieldName === "fullName" ? value : prev.contactPerson,
+      mobileNumber: index === 0 && fieldName === "mobileNumber" ? value : prev.mobileNumber,
+      email: index === 0 && fieldName === "email" ? value : prev.email,
+      authorizedPersons: nextAuthorizedPersons,
+    }));
+
+    setBranchFormErrors((prev) => ({
+      ...prev,
+      [`authorizedPersons.${index}.${fieldName}`]: "",
+      ...(index === 0 && fieldName === "fullName" ? { contactPerson: "" } : {}),
+      ...(index === 0 && fieldName === "mobileNumber" ? { mobileNumber: "" } : {}),
+      ...(index === 0 && fieldName === "email" ? { email: "" } : {}),
+    }));
+  };
+
+  const handleVerifyBranchAuthorizedPersonPan = (index: number): void => {
+    const authorizedPerson = branchForm.authorizedPersons[index];
+    const normalizedPanNumber = authorizedPerson.panNumber.trim().toUpperCase();
+
+    if (!PAN_NUMBER_PATTERN.test(normalizedPanNumber)) {
+      setBranchFormErrors((prev) => ({
+        ...prev,
+        [`authorizedPersons.${index}.panNumber`]:
+          "Enter a valid PAN number before verification.",
+      }));
+      return;
+    }
+
+    const personPreview = getEducationAuthorizedPersonPanPreview(normalizedPanNumber);
+    const nextAuthorizedPersons = [...branchForm.authorizedPersons];
+    nextAuthorizedPersons[index] = {
+      ...nextAuthorizedPersons[index],
+      panNumber: normalizedPanNumber,
+      fullName: personPreview.fullName,
+      constitution: personPreview.constitution,
+      dateOfBirth: personPreview.dateOfBirth,
+      gender: personPreview.gender,
+      gstNumber: personPreview.gstNumber,
+      mobileNumber: personPreview.mobileNumber,
+      email: personPreview.email,
+    };
+
+    setBranchForm((prev) => ({
+      ...prev,
+      contactPerson: index === 0 ? personPreview.fullName : prev.contactPerson,
+      mobileNumber: index === 0 ? personPreview.mobileNumber : prev.mobileNumber,
+      email: index === 0 ? personPreview.email : prev.email,
+      authorizedPersons: nextAuthorizedPersons,
+    }));
+    setBranchFormErrors((prev) => ({
+      ...prev,
+      [`authorizedPersons.${index}.panNumber`]: "",
+      ...(index === 0 ? { contactPerson: "", mobileNumber: "", email: "" } : {}),
+    }));
+    toastSuccess("Authorized person PAN verified successfully.");
+  };
+
+  const addBranchAuthorizedPerson = (): void => {
+    if (branchForm.authorizedPersons.length >= 3) {
+      toastError("You can add up to 3 authorized persons only.");
+      return;
+    }
+
+    setBranchForm((prev) => ({
+      ...prev,
+      authorizedPersons: [...prev.authorizedPersons, createEmptyAuthorizedPerson()],
+    }));
+  };
+
+  const removeBranchAuthorizedPerson = (index: number): void => {
+    if (branchForm.authorizedPersons.length === 1) return;
+
+    const nextAuthorizedPersons = branchForm.authorizedPersons.filter(
+      (_, personIndex) => personIndex !== index,
+    );
+    const primaryAuthorizedPerson = nextAuthorizedPersons[0];
+
+    setBranchForm((prev) => ({
+      ...prev,
+      contactPerson: primaryAuthorizedPerson?.fullName || "",
+      mobileNumber: primaryAuthorizedPerson?.mobileNumber || "",
+      email: primaryAuthorizedPerson?.email || "",
+      authorizedPersons: nextAuthorizedPersons,
+    }));
+  };
+
   const validateBranchForm = (): boolean => {
     const nextErrors: Record<string, string> = {};
 
@@ -213,17 +348,43 @@ const EducationInstituteDetail = () => {
       nextErrors.branchName = "Branch name is required.";
     }
 
-    if (!branchForm.contactPerson.trim()) {
-      nextErrors.contactPerson = "Contact person is required.";
-    }
+    branchForm.authorizedPersons.forEach((person, index) => {
+      if (!PAN_NUMBER_PATTERN.test(person.panNumber.trim().toUpperCase())) {
+        nextErrors[`authorizedPersons.${index}.panNumber`] = "PAN number is required.";
+      }
 
-    if (!INDIAN_MOBILE_NUMBER_PATTERN.test(branchForm.mobileNumber.trim())) {
-      nextErrors.mobileNumber = "Enter a valid 10-digit mobile number.";
-    }
+      if (!person.fullName.trim()) {
+        nextErrors[`authorizedPersons.${index}.fullName`] = "Name is required.";
+      }
 
-    if (!EMAIL_PATTERN.test(branchForm.email.trim())) {
-      nextErrors.email = "Enter a valid email address.";
-    }
+      if (!person.constitution.trim()) {
+        nextErrors[`authorizedPersons.${index}.constitution`] = "Constitution is required.";
+      }
+
+      if (!person.dateOfBirth) {
+        nextErrors[`authorizedPersons.${index}.dateOfBirth`] = "DOB is required.";
+      }
+
+      if (!person.gender) {
+        nextErrors[`authorizedPersons.${index}.gender`] = "Gender is required.";
+      }
+
+      if (
+        person.gstNumber.trim() &&
+        !GST_NUMBER_PATTERN.test(person.gstNumber.trim().toUpperCase())
+      ) {
+        nextErrors[`authorizedPersons.${index}.gstNumber`] = "Enter a valid GST number.";
+      }
+
+      if (!INDIAN_MOBILE_NUMBER_PATTERN.test(person.mobileNumber.trim())) {
+        nextErrors[`authorizedPersons.${index}.mobileNumber`] =
+          "Enter a valid 10-digit mobile number.";
+      }
+
+      if (!EMAIL_PATTERN.test(person.email.trim())) {
+        nextErrors[`authorizedPersons.${index}.email`] = "Enter a valid email address.";
+      }
+    });
 
     if (!branchForm.state) {
       nextErrors.state = "State is required.";
@@ -279,6 +440,20 @@ const EducationInstituteDetail = () => {
 
     const normalizedData: IEducationInstituteBranchFormData = {
       ...branchForm,
+      contactPerson:
+        branchForm.authorizedPersons[0]?.fullName.trim() || branchForm.contactPerson.trim(),
+      authorizedPersons: branchForm.authorizedPersons.map((person) => ({
+        ...person,
+        panNumber: person.panNumber.trim().toUpperCase(),
+        fullName: person.fullName.trim(),
+        constitution: person.constitution.trim(),
+        gstNumber: person.gstNumber.trim().toUpperCase(),
+        mobileNumber: person.mobileNumber.trim(),
+        email: person.email.trim(),
+      })),
+      mobileNumber:
+        branchForm.authorizedPersons[0]?.mobileNumber.trim() || branchForm.mobileNumber.trim(),
+      email: branchForm.authorizedPersons[0]?.email.trim() || branchForm.email.trim(),
       panNumber: branchForm.panNumber.trim().toUpperCase(),
       aadharNumber: branchForm.aadharNumber.trim(),
       gstNumber: branchForm.gstNumber.trim().toUpperCase(),
@@ -879,63 +1054,6 @@ const EducationInstituteDetail = () => {
             </div>
 
             <div className="form-group col-sm-12 col-lg-6">
-              <label className="form-label" htmlFor="branchContactPerson">
-                Contact Person<sup>*</sup>
-              </label>
-              <InputText
-                id="branchContactPerson"
-                className="form-control"
-                placeholder="Enter branch contact person"
-                value={branchForm.contactPerson}
-                onChange={(e) => handleBranchFormFieldChange("contactPerson", e.target.value)}
-                disabled={isViewMode}
-              />
-              {branchFormErrors.contactPerson && (
-                <small className="error">{branchFormErrors.contactPerson}</small>
-              )}
-            </div>
-
-            <div className="form-group col-sm-12 col-lg-6">
-              <label className="form-label" htmlFor="branchMobileNumber">
-                Mobile Number<sup>*</sup>
-              </label>
-              <InputText
-                id="branchMobileNumber"
-                className="form-control"
-                placeholder="Enter 10-digit mobile number"
-                value={branchForm.mobileNumber}
-                maxLength={10}
-                onChange={(e) =>
-                  handleBranchFormFieldChange(
-                    "mobileNumber",
-                    e.target.value.replace(/\D/g, "").slice(0, 10),
-                  )
-                }
-                disabled={isViewMode}
-              />
-              {branchFormErrors.mobileNumber && (
-                <small className="error">{branchFormErrors.mobileNumber}</small>
-              )}
-            </div>
-
-            <div className="form-group col-sm-12 col-lg-6">
-              <label className="form-label" htmlFor="branchEmail">
-                Email<sup>*</sup>
-              </label>
-              <InputText
-                id="branchEmail"
-                className="form-control"
-                placeholder="Enter branch email"
-                value={branchForm.email}
-                onChange={(e) => handleBranchFormFieldChange("email", e.target.value)}
-                disabled={isViewMode}
-              />
-              {branchFormErrors.email && (
-                <small className="error">{branchFormErrors.email}</small>
-              )}
-            </div>
-
-            <div className="form-group col-sm-12 col-lg-6">
               <label className="form-label" htmlFor="branchState">
                 State<sup>*</sup>
               </label>
@@ -1025,6 +1143,244 @@ const EducationInstituteDetail = () => {
               {branchFormErrors.gstNumber && (
                 <small className="error">{branchFormErrors.gstNumber}</small>
               )}
+            </div>
+
+            <div className="col-12 mt-2">
+              <div className="borderBoxHldr p-24 education-authorized-persons">
+                <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                  <div>
+                    <h5 className="mb-1">Branch Authorized Person Details</h5>
+                    <p className="mb-0 text-muted">You can add up to 3 authorized persons.</p>
+                  </div>
+                  {!isViewMode && (
+                    <Button className="btn btn-orange-line" onClick={addBranchAuthorizedPerson}>
+                      Add Authorized Person
+                    </Button>
+                  )}
+                </div>
+
+                <div className="education-authorized-persons__list">
+                  {branchForm.authorizedPersons.map((person, index) => (
+                    <div key={person.id} className="education-authorized-person-card">
+                      {(() => {
+                        const isVerified = isAuthorizedPersonVerified(person);
+
+                        return (
+                          <>
+                            <div className="education-authorized-person-card__header">
+                              <div>
+                                <span className="education-authorized-person-card__badge">
+                                  Authorized Person {index + 1}
+                                </span>
+                                <h6 className="education-authorized-person-card__title">
+                                  {isVerified ? "Confirmed authorized person details" : "PAN Details"}
+                                </h6>
+                              </div>
+
+                              {!isViewMode && branchForm.authorizedPersons.length > 1 && (
+                                <Button
+                                  className="btn btn-black-line"
+                                  onClick={() => removeBranchAuthorizedPerson(index)}
+                                >
+                                  Remove
+                                </Button>
+                              )}
+                            </div>
+
+                            <div className="education-authorized-person-card__pan-step">
+                              <p className="education-authorized-person-card__intro">
+                                Enter the PAN Card number to authenticate the authorized person
+                                and continue with their profile details.
+                              </p>
+
+                              <div className="row g-3 align-items-end">
+                                <div className="form-group col-sm-12 col-lg-4">
+                                  <label className="form-label">PAN Number<sup>*</sup></label>
+                                  <InputText
+                                    className="form-control"
+                                    placeholder="Enter PAN number"
+                                    value={person.panNumber}
+                                    onChange={(e) =>
+                                      handleBranchAuthorizedPersonChange(
+                                        index,
+                                        "panNumber",
+                                        e.target.value.toUpperCase(),
+                                      )
+                                    }
+                                    disabled={isViewMode}
+                                  />
+                                  {branchFormErrors[`authorizedPersons.${index}.panNumber`] && (
+                                    <small className="error">
+                                      {branchFormErrors[`authorizedPersons.${index}.panNumber`]}
+                                    </small>
+                                  )}
+                                </div>
+
+                                {!isViewMode && (
+                                  <div className="form-group col-sm-12 col-lg-3">
+                                    <Button
+                                      className="btn btn-orange w-100"
+                                      onClick={() => handleVerifyBranchAuthorizedPersonPan(index)}
+                                    >
+                                      Verify PAN
+                                    </Button>
+                                  </div>
+                                )}
+
+                                <div className="form-group col-sm-12 col-lg-5">
+                                  {!isVerified && (
+                                    <div className="education-authorized-person-card__pending-chip">
+                                      Verify PAN to continue with person details.
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {isVerified && (
+                              <div className="education-authorized-person-card__details">
+                                <div className="row g-3">
+                                  <div className="form-group col-sm-12 col-lg-6">
+                                    <label className="form-label">Name<sup>*</sup></label>
+                                    <InputText
+                                      className="form-control"
+                                      placeholder="Authorized person name"
+                                      value={person.fullName}
+                                      onChange={(e) =>
+                                        handleBranchAuthorizedPersonChange(index, "fullName", e.target.value)
+                                      }
+                                      disabled
+                                    />
+                                    {branchFormErrors[`authorizedPersons.${index}.fullName`] && (
+                                      <small className="error">
+                                        {branchFormErrors[`authorizedPersons.${index}.fullName`]}
+                                      </small>
+                                    )}
+                                  </div>
+
+                                  <div className="form-group col-sm-12 col-lg-6">
+                                    <label className="form-label">Constitution<sup>*</sup></label>
+                                    <InputText
+                                      className="form-control"
+                                      placeholder="Enter constitution"
+                                      value={person.constitution}
+                                      onChange={(e) =>
+                                        handleBranchAuthorizedPersonChange(index, "constitution", e.target.value)
+                                      }
+                                      disabled
+                                    />
+                                    {branchFormErrors[`authorizedPersons.${index}.constitution`] && (
+                                      <small className="error">
+                                        {branchFormErrors[`authorizedPersons.${index}.constitution`]}
+                                      </small>
+                                    )}
+                                  </div>
+
+                                  <div className="form-group col-sm-12 col-lg-4">
+                                    <label className="form-label">DOB<sup>*</sup></label>
+                                    <InputText
+                                      value={person.dateOfBirth}
+                                      className="form-control"
+                                      disabled
+                                    />
+                                    {branchFormErrors[`authorizedPersons.${index}.dateOfBirth`] && (
+                                      <small className="error">
+                                        {branchFormErrors[`authorizedPersons.${index}.dateOfBirth`]}
+                                      </small>
+                                    )}
+                                  </div>
+
+                                  <div className="form-group col-sm-12 col-lg-4">
+                                    <label className="form-label">Gender<sup>*</sup></label>
+                                    <Dropdown
+                                      className="w-100"
+                                      value={person.gender}
+                                      options={genderOptions}
+                                      onChange={(e) =>
+                                        handleBranchAuthorizedPersonChange(index, "gender", e.value)
+                                      }
+                                      placeholder="Select gender"
+                                      disabled
+                                    />
+                                    {branchFormErrors[`authorizedPersons.${index}.gender`] && (
+                                      <small className="error">
+                                        {branchFormErrors[`authorizedPersons.${index}.gender`]}
+                                      </small>
+                                    )}
+                                  </div>
+
+                                  <div className="form-group col-sm-12 col-lg-4">
+                                    <label className="form-label">GST Details</label>
+                                    <InputText
+                                      className="form-control"
+                                      placeholder="Enter GST details"
+                                      value={person.gstNumber}
+                                      onChange={(e) =>
+                                        handleBranchAuthorizedPersonChange(
+                                          index,
+                                          "gstNumber",
+                                          e.target.value.toUpperCase(),
+                                        )
+                                      }
+                                      disabled
+                                    />
+                                    {branchFormErrors[`authorizedPersons.${index}.gstNumber`] && (
+                                      <small className="error">
+                                        {branchFormErrors[`authorizedPersons.${index}.gstNumber`]}
+                                      </small>
+                                    )}
+                                  </div>
+
+                                  <div className="form-group col-sm-12 col-lg-4">
+                                    <label className="form-label">Mobile Number<sup>*</sup></label>
+                                    <InputText
+                                      className="form-control"
+                                      maxLength={10}
+                                      placeholder="Enter mobile number"
+                                      value={person.mobileNumber}
+                                      onChange={(e) =>
+                                        handleBranchAuthorizedPersonChange(
+                                          index,
+                                          "mobileNumber",
+                                          e.target.value.replace(/\D/g, "").slice(0, 10),
+                                        )
+                                      }
+                                      disabled={isViewMode}
+                                    />
+                                    {branchFormErrors[`authorizedPersons.${index}.mobileNumber`] && (
+                                      <small className="error">
+                                        {branchFormErrors[`authorizedPersons.${index}.mobileNumber`]}
+                                      </small>
+                                    )}
+                                  </div>
+
+                                  <div className="form-group col-sm-12 col-lg-4">
+                                    <label className="form-label">Email<sup>*</sup></label>
+                                    <InputText
+                                      className="form-control"
+                                      placeholder="Enter email address"
+                                      value={person.email}
+                                      onChange={(e) =>
+                                        handleBranchAuthorizedPersonChange(index, "email", e.target.value)
+                                      }
+                                      disabled={isViewMode}
+                                    />
+                                    {branchFormErrors[`authorizedPersons.${index}.email`] && (
+                                      <small className="error">
+                                        {branchFormErrors[`authorizedPersons.${index}.email`]}
+                                      </small>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* -------------------- Bank Account Details -------------------- */}

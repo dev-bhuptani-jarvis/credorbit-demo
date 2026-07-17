@@ -1013,6 +1013,273 @@ const impersonatedClientProfileResponse = {
   },
 } as IUserProfileResponse;
 
+const studentProfileResponse = {
+  status: true,
+
+  statusCode: 200,
+
+  message: "User fetched successfully!",
+
+  data: {
+    id: "08de0598-4bee-48ca-8a7c-005b36583e79",
+
+    name:
+      "STUDENT 1",
+
+    panNumber: "ABLPK3592Q",
+
+    emailID: "student@yopmail.com",
+
+    mobileNumber: "4444444444",
+
+    profilePicture:
+      "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+
+    selectedGstNumber:
+      "27ABLPK3592Q1Z5",
+
+    gstList: [],
+
+    billingDetails: true,
+
+    role: "Student",
+
+    customerID: "COCU251003",
+
+    isCompany: true,
+
+    coApplicants: [
+      {
+        id:
+          "08de90a0-d788-4ff6-82ce-25c363c59baf",
+
+        name: "DEMO USER ONE",
+
+        firstName: null,
+        middleName: null,
+        lastName: null,
+
+        pan: "ASSOC5678K",
+
+        aadhaarNumber:
+          "XXXX-XXXX-1023",
+
+        address: null,
+        state: null,
+        city: null,
+        pinCode: null,
+        mobile: null,
+        dateOfBirth: null,
+        gender: null,
+        creditScore: null,
+      },
+
+      {
+        id:
+          "08de90a0-dfd7-4f41-8d66-883df7bdb523",
+
+        name: "DEMO PARTNER ONE",
+
+        firstName: null,
+        middleName: null,
+        lastName: null,
+
+        pan: "PARTN4321P",
+
+        aadhaarNumber:
+          "XXXX-XXXX-2045",
+
+        address: null,
+        state: null,
+        city: null,
+        pinCode: null,
+        mobile: null,
+        dateOfBirth: null,
+        gender: null,
+        creditScore: null,
+      },
+
+      {
+        id:
+          "08de9956-ff7d-4dbe-88ee-0167cfd2bca4",
+
+        name: "DEMO USER SIX",
+
+        firstName: null,
+        middleName: null,
+        lastName: null,
+
+        pan: "COAPP7654T",
+
+        aadhaarNumber:
+          "XXXX-XXXX-9087",
+
+        address: null,
+        state: null,
+        city: null,
+        pinCode: null,
+        mobile: null,
+        dateOfBirth: null,
+        gender: null,
+        creditScore: null,
+      },
+
+      {
+        id:
+          "08de99e5-5265-4696-85d7-129fd8a235c0",
+
+        name: "DEMO USER FOUR",
+
+        firstName: null,
+        middleName: null,
+        lastName: null,
+
+        pan: "COAPP8765L",
+
+        aadhaarNumber:
+          "XXXX-XXXX-6754",
+
+        address: null,
+        state: null,
+        city: null,
+        pinCode: null,
+        mobile: null,
+        dateOfBirth: null,
+        gender: null,
+        creditScore: null,
+      },
+    ],
+
+    partners: [
+      {
+        id:
+          "08de8f1c-36df-44e4-86a5-73ebfe34f5ac",
+
+        name: "DEMO USER ONE",
+
+        firstName: "AARAV",
+        middleName: "",
+        lastName: "SHARMA",
+
+        pan: "ASSOC5678K",
+
+        aadhaarNumber:
+          "XXXX-XXXX-1023",
+
+        address:
+          "Demo Road, Ahmedabad",
+
+        state: "Gujarat",
+
+        city: "Ahmedabad",
+
+        pinCode: "380015",
+
+        mobile: "9000000001",
+
+        dateOfBirth: "1992-04-12",
+
+        gender: "M",
+
+        creditScore: null,
+      },
+
+      {
+        id:
+          "08de8f1c-a869-4822-8f52-cea2d9323470",
+
+        name: "DEMO USER TWO",
+
+        firstName: "RIYA",
+        middleName: "",
+        lastName: "MEHTA",
+
+        pan: "REFER6543N",
+
+        aadhaarNumber:
+          "XXXX-XXXX-4567",
+
+        address:
+          "Demo Area, Ahmedabad",
+
+        state: "Gujarat",
+
+        city: "Ahmedabad",
+
+        pinCode: "380051",
+
+        mobile: "9000000002",
+
+        dateOfBirth: "1994-09-21",
+
+        gender: "F",
+
+        creditScore: null,
+      },
+
+    ],
+
+    commission: 2,
+
+    bankAccountNumber:
+      "XXXXXX4521",
+
+    bankName:
+      "HDFC Bank",
+
+    ifscCode:
+      "HDFC0001023",
+
+    dateOfBirth: "1990-01-01",
+
+    address:
+      "Corporate House, SG Highway, Ahmedabad, Gujarat",
+
+    city: "Ahmedabad",
+
+    state: "Gujarat",
+
+    country: "INDIA",
+
+    zipCode: "380015",
+
+    aadhaar:
+      "XXXX-XXXX-4521",
+
+    udhyamAadhaar:
+      "UDYAM-GJ-01-0000001",
+
+    cpCompanyLogo:
+      "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
+
+    userConsents: [
+      {
+        userConsentID: 984,
+        consentName: "Email",
+        isConsented: true,
+      },
+
+      {
+        userConsentID: 986,
+        consentName: "SMS",
+        isConsented: true,
+      },
+
+      {
+        userConsentID: 988,
+        consentName: "WhatsApp",
+        isConsented: true,
+      },
+
+      {
+        userConsentID: 990,
+        consentName: "Call",
+        isConsented: true,
+      },
+    ],
+  },
+} as IUserProfileResponse;
+
 export const getDemoUserProfileByContext = async (
   currentUserData: string | null,
   impersonateUserData: string | null,
@@ -1080,7 +1347,7 @@ export const getDemoUserProfileByContext = async (
       email === "student1@yopmail.com" ||
       roleName === "student"
     ) {
-      return withStoredProfile(impersonatedClientProfileResponse);
+      return withStoredProfile(studentProfileResponse);
     }
 
     if (
