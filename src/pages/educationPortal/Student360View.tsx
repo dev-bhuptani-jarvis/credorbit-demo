@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button } from "primereact/button";
@@ -139,10 +139,23 @@ const renderApplicantCard = (
   </div>
 );
 
+const addMonthsToDate = (value: string | null | undefined, months: number): Date | null => {
+  if (!value) return null;
+
+  const parsedDate = new Date(value);
+
+  if (Number.isNaN(parsedDate.getTime())) return null;
+
+  const updatedDate = new Date(parsedDate);
+  updatedDate.setMonth(updatedDate.getMonth() + months);
+  return updatedDate;
+};
+
 const Student360View = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id = "" } = useParams();
+  const [showRepaymentDetails, setShowRepaymentDetails] = useState(false);
   const { userID, roleName } = useSelector((state: RootState) => state.user.user);
   const impersonatedStudentId = getDecryptedSessionStorage(
     StorageKeyEnum.CRED_ORBIT_IMPERSONATE_STUDENT_ID,
@@ -237,6 +250,52 @@ const Student360View = () => {
     {
       label: "Primary Co-applicant",
       value: student.coApplicantName || "-",
+    },
+  ];
+  const loanStartDate =
+    activeDraft?.disbursementDate || activeDraft?.sanctionDate || activeDraft?.createdAt || null;
+  const totalEmis = activeDraft?.numberOfEmis || activeDraft?.emiOptionMonths || 0;
+  const emiAmount = activeDraft?.emiAmount || 0;
+  const outstandingAmount = student.loanDetails.outstandingAmount || 0;
+  const remainingEmis =
+    emiAmount > 0 ? Math.max(Math.ceil(outstandingAmount / emiAmount), 0) : 0;
+  const paidEmis = Math.max(totalEmis - remainingEmis, 0);
+  const lastEmiPaidDate = paidEmis > 0 ? addMonthsToDate(loanStartDate, paidEmis) : null;
+  const nextEmiPaidDate =
+    totalEmis > paidEmis ? addMonthsToDate(loanStartDate, paidEmis + 1) : null;
+  const loanMatureDate = totalEmis > 0 ? addMonthsToDate(loanStartDate, totalEmis) : null;
+  const repaymentDetailFields = [
+    {
+      label: "Last EMI Paid Date",
+      value: lastEmiPaidDate ? formatDate(lastEmiPaidDate, "DD MMM, YYYY") : "-",
+    },
+    {
+      label: "Last EMI Paid Amount",
+      value: paidEmis > 0 && emiAmount > 0 ? formatCurrencyAmount(emiAmount) : "-",
+    },
+    {
+      label: "Next EMI Paid Date",
+      value: nextEmiPaidDate ? formatDate(nextEmiPaidDate, "DD MMM, YYYY") : "-",
+    },
+    {
+      label: "Next EMI Paid Amount",
+      value: nextEmiPaidDate && emiAmount > 0 ? formatCurrencyAmount(emiAmount) : "-",
+    },
+    {
+      label: "Loan Mature Date",
+      value: loanMatureDate ? formatDate(loanMatureDate, "DD MMM, YYYY") : "-",
+    },
+    {
+      label: "Loan Start Date",
+      value: loanStartDate ? formatDate(loanStartDate, "DD MMM, YYYY") : "-",
+    },
+    {
+      label: "Loan Sanctioned Amount",
+      value: activeDraft ? formatCurrencyAmount(activeDraft.loanAmount) : "-",
+    },
+    {
+      label: "Loan Current Outstanding",
+      value: formatCurrencyAmount(outstandingAmount),
     },
   ];
 
@@ -386,7 +445,7 @@ const Student360View = () => {
                 <div className="education-360-page__actions">
                   <Button
                     className="btn btn-orange-line"
-                    onClick={openRazorpayLink}
+                    onClick={() => setShowRepaymentDetails(true)}
                   >
                     Repay EMI Overdue
                   </Button>
@@ -429,6 +488,27 @@ const Student360View = () => {
               )}
             </div>
           </section>
+
+          {isStudentPortalUser && showRepaymentDetails && (
+            <section className="education-360-card">
+              <div className="education-360-card__head">
+                <div>
+                  <h3>Repayment Details</h3>
+                  <p className="education-360-card__hint">
+                    EMI repayment summary for the selected student loan.
+                  </p>
+                </div>
+                <Button className="btn btn-orange" onClick={openRazorpayLink}>
+                  Pay Now
+                </Button>
+              </div>
+              <div className="education-360-field-grid">
+                {repaymentDetailFields.map((field) => (
+                  <div key={field.label}>{renderField(field.label, field.value)}</div>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section className="education-360-card education-360-documents">
             <div className="education-360-card__head">

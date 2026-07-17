@@ -61,9 +61,13 @@ const DashboardHeader = () => {
   const isEducationInstituteDashboard =
     userData.userType === CLIENT_ROLE.CHANNEL_PARTNER &&
     userData.userID === EDUCATION_INSTITUTE_USER_ID;
+
   const isStudentDashboard =
     userData.userType === CLIENT_ROLE.CUSTOMER &&
     (userData.userID === STUDENT_USER_ID || userData.roleName === "Student");
+
+  const isAdminWelcomeOnly = userData.userType === CLIENT_ROLE.SUPER_ADMIN;
+
   const isManagedEducationHeader =
     isEducationInstituteDashboard || isStudentDashboard;
 
@@ -170,175 +174,171 @@ const DashboardHeader = () => {
       <Loader isLoading={loading} />
 
       <header
-        className={`header whiteBoxHldr p-30 ${
-          isManagedEducationHeader ? "education-dashboard-header" : ""
-        } ${
-          isStudentDashboard ? "student-dashboard-header" : ""
-        }`}
+        className={`header whiteBoxHldr p-30 ${isManagedEducationHeader ? "education-dashboard-header" : ""
+          } ${isStudentDashboard ? "student-dashboard-header" : ""
+          }`}
       >
-        <Link className="menuHldr" id="menuHldr" to="#">
-          <i className="bi bi-list" />
-        </Link>
+        {!isAdminWelcomeOnly && (
+          <Link className="menuHldr" id="menuHldr" to="#">
+            <i className="bi bi-list" />
+          </Link>
+        )}
 
         <div
-          className={`col-12 titleMainWrapper justify-content-between ${
-            isManagedEducationHeader ? "education-dashboard-header__content" : ""
-          } ${
-            isStudentDashboard ? "student-dashboard-header__content" : ""
-          }`}
+          className={`col-12 titleMainWrapper justify-content-between ${isManagedEducationHeader ? "education-dashboard-header__content" : ""
+            } ${isStudentDashboard ? "student-dashboard-header__content" : ""
+            }`}
         >
           <h2
-            className={`fw-bold txt-30 ${
-              isManagedEducationHeader ? "education-dashboard-header__title" : ""
-            } ${
-              isStudentDashboard ? "student-dashboard-header__title" : ""
-            }`}
+            className={`fw-bold txt-30 ${isManagedEducationHeader ? "education-dashboard-header__title" : ""
+              } ${isStudentDashboard ? "student-dashboard-header__title" : ""
+              }`}
           >
             <span>Welcome,</span> {userData.userName}
           </h2>
-          <div
-            className={`BtnRightHldr d-flex flex-row ${
-              isManagedEducationHeader ? "education-dashboard-header__actions" : ""
-            } ${
-              isStudentDashboard ? "student-dashboard-header__actions" : ""
-            }`}
-            style={{ gap: "10px" }}
-          >
-            {isEducationInstituteDashboard && (
-              <>
-                <div className="form-group education-dashboard-header__action">
-                  <Button
-                    className="btn btn-orange-line"
-                    onClick={() =>
-                      navigate(
-                        RoutePathConstant.private.educationStudentLoanApplication,
-                      )
-                    }
-                  >
-                    Add Applications
-                  </Button>
-                </div>
+          {!isAdminWelcomeOnly && (
+            <div
+              className={`BtnRightHldr d-flex flex-row ${isManagedEducationHeader ? "education-dashboard-header__actions" : ""
+                } ${isStudentDashboard ? "student-dashboard-header__actions" : ""
+                }`}
+              style={{ gap: "10px" }}
+            >
+              {isEducationInstituteDashboard && (
+                <>
+                  <div className="form-group education-dashboard-header__action">
+                    <Button
+                      className="btn btn-orange-line"
+                      onClick={() =>
+                        navigate(
+                          RoutePathConstant.private.educationStudentLoanApplication,
+                        )
+                      }
+                    >
+                      Add Applications
+                    </Button>
+                  </div>
 
-                <div className="form-group education-dashboard-header__action">
-                  <Button
-                    className="btn btn-orange-line"
-                    onClick={() =>
-                      navigate(RoutePathConstant.private.educationAddStudent)
-                    }
-                  >
-                    Add Student
-                  </Button>
-                </div>
+                  <div className="form-group education-dashboard-header__action">
+                    <Button
+                      className="btn btn-orange-line"
+                      onClick={() =>
+                        navigate(RoutePathConstant.private.educationAddStudent)
+                      }
+                    >
+                      Add Student
+                    </Button>
+                  </div>
 
+                  <div className="form-group education-dashboard-header__action">
+                    <Button
+                      className="btn btn-orange"
+                      onClick={() =>
+                        navigate(
+                          `${RoutePathConstant.private.channelPartnerDashboard}?status=1`,
+                        )
+                      }
+                    >
+                      Show Ongoing Applications
+                    </Button>
+                  </div>
+                </>
+              )}
+
+              {isStudentDashboard && (
                 <div className="form-group education-dashboard-header__action">
                   <Button
-                    className="btn btn-orange"
+                    className="btn btn-orange student-dashboard-header__button"
                     onClick={() =>
-                      navigate(
-                        `${RoutePathConstant.private.channelPartnerDashboard}?status=1`,
-                      )
+                      navigate(RoutePathConstant.private.studentOngoingApplications)
                     }
                   >
                     Show Ongoing Applications
                   </Button>
                 </div>
-              </>
-            )}
+              )}
 
-            {isStudentDashboard && (
-              <div className="form-group education-dashboard-header__action">
-                <Button
-                  className="btn btn-orange student-dashboard-header__button"
-                  onClick={() =>
-                    navigate(RoutePathConstant.private.studentOngoingApplications)
-                  }
-                >
-                  Show Ongoing Applications
-                </Button>
-              </div>
-            )}
+              {!isEducationInstituteDashboard && !isStudentDashboard && (
+                <div className="form-group">
+                  <Button
+                    className="btn btn-orange-line"
+                    onClick={() =>
+                      navigate(RoutePathConstant.private.addApplications)
+                    }
+                  >
+                    Add Application
+                  </Button>
+                </div>
+              )}
 
-            {!isEducationInstituteDashboard && !isStudentDashboard && (
-              <div className="form-group">
-                <Button
-                  className="btn btn-orange-line"
-                  onClick={() =>
-                    navigate(RoutePathConstant.private.addApplications)
-                  }
-                >
-                  Add Application
-                </Button>
-              </div>
-            )}
-
-            {!isEducationInstituteDashboard &&
-              !isStudentDashboard &&
-              <div className="form-group">
-                <Button
-                  className="btn btn-orange"
-                  icon="bi bi-plus-circle me-2"
-                  iconPos="left"
-                >
-                  Add Client
-                </Button>
-              </div>
-            }
-          </div>
+              {!isEducationInstituteDashboard &&
+                !isStudentDashboard &&
+                <div className="form-group">
+                  <Button
+                    className="btn btn-orange"
+                    icon="bi bi-plus-circle me-2"
+                    iconPos="left"
+                  >
+                    Add Client
+                  </Button>
+                </div>
+              }
+            </div>
+          )}
         </div>
 
-        <ul
-          className={`rightSide ${
-            isManagedEducationHeader ? "education-dashboard-header__utility" : ""
-          } ${
-            isStudentDashboard ? "student-dashboard-header__utility" : ""
-          }`}
-        >
-          <li>
-            <Link
-              to="#"
-              className="dropdown notiWrapper"
-              onClick={() => setShowNotificationMenu(!showNotificationMenu)}
-            >
-              <div className="bell-wrapper">
-                <i className="icon-notification" />
+        {!isAdminWelcomeOnly && (
+          <ul
+            className={`rightSide ${isManagedEducationHeader ? "education-dashboard-header__utility" : ""
+              } ${isStudentDashboard ? "student-dashboard-header__utility" : ""
+              }`}
+          >
+            <li>
+              <Link
+                to="#"
+                className="dropdown notiWrapper"
+                onClick={() => setShowNotificationMenu(!showNotificationMenu)}
+              >
+                <div className="bell-wrapper">
+                  <i className="icon-notification" />
 
-                {unReadNotificationList.length > 0 && (
-                  <span className="bell-badge">
-                    {unReadNotificationList.length}
-                  </span>
+                  {unReadNotificationList.length > 0 && (
+                    <span className="bell-badge">
+                      {unReadNotificationList.length}
+                    </span>
+                  )}
+                </div>
+
+                {showNotificationMenu && (
+                  <NotificationModalNew
+                    showNotificationMenu={showNotificationMenu}
+                    notificationList={notificationList}
+                    unReadNotificationList={unReadNotificationList}
+                    updateNotificationLists={updateNotificationLists}
+                    onClose={() => setShowNotificationMenu(false)}
+                    unReadNotificationCount={unReadNotificationCount}
+                    getUserNotificationList={getUserNotificationList}
+                  />
                 )}
-              </div>
+              </Link>
+            </li>
 
-              {showNotificationMenu && (
-                <NotificationModalNew
-                  showNotificationMenu={showNotificationMenu}
-                  notificationList={notificationList}
-                  unReadNotificationList={unReadNotificationList}
-                  updateNotificationLists={updateNotificationLists}
-                  onClose={() => setShowNotificationMenu(false)}
-                  unReadNotificationCount={unReadNotificationCount}
-                  getUserNotificationList={getUserNotificationList}
+            <li>
+              <Link to={RoutePathConstant.private.profile}>
+                <img
+                  src={userData.profilePicture}
+                  alt="user-profile"
+                  className="userMain"
                 />
-              )}
-            </Link>
-          </li>
+              </Link>
+            </li>
 
-          <li>
-            <Link to={RoutePathConstant.private.profile}>
-              <img
-                src={userData.profilePicture}
-                alt="user-profile"
-                className="userMain"
-              />
-            </Link>
-          </li>
-
-          <li>
-            <Link to="#" onClick={() => setShowLogoutDialog(true)}>
-              <i className="bi bi-box-arrow-right" />
-            </Link>
-          </li>
-        </ul>
+            <li>
+              <Link to="#" onClick={() => setShowLogoutDialog(true)}>
+                <i className="bi bi-box-arrow-right" />
+              </Link>
+            </li>
+          </ul>
+        )}
       </header>
 
       <Dialog

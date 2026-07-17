@@ -66,6 +66,7 @@ import { Tooltip } from "primereact/tooltip";
 import {
   addStudentCamReport,
   getEducationLoanDraftById,
+  setEducationLoanResumeStep,
   updateEducationLoanDraftStatus,
 } from "../../../utils/demo/demoEducationLoanFlow";
 
@@ -155,6 +156,15 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
   const isEducationFlow = !!state?.educationFlow;
 
+  useEffect(() => {
+    if (!isEducationFlow || !state?.educationLoanApplicationId) return;
+
+    setEducationLoanResumeStep(
+      state.educationLoanApplicationId,
+      "banking-details",
+    );
+  }, [isEducationFlow, state]);
+
   const continueEducationLoanFlow = () => {
     if (!state?.educationLoanApplicationId) return;
 
@@ -167,6 +177,7 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
       courseName: draft.courseName,
     });
     updateEducationLoanDraftStatus(draft.id, "cam_generated");
+    setEducationLoanResumeStep(draft.id, "loan-offer");
 
     navigate(
       RoutePathConstant.private.educationStudentLoanOffer.replace(

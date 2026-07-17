@@ -1,5 +1,6 @@
 import {
   IEducationInstitute,
+  IEducationInstituteAuthorizedPerson,
   IEducationInstituteBranch,
   IEducationInstituteBranchFormData,
   IEducationInstituteDocument,
@@ -9,6 +10,65 @@ import {
 const STORAGE_KEY = "credorbit.educationInstitutes";
 
 const documentUrlMap = new Map<string, string>();
+
+const institutePanPreviewMap: Record<
+  string,
+  {
+    instituteName: string;
+    email: string;
+    category: string;
+    mobileNumber: string;
+    gstNumber: string;
+  }
+> = {
+  AACCA1234A: {
+    instituteName: "Ahmedabad School of Finance",
+    email: "admissions@asf.edu.in",
+    category: "Finance Institute",
+    mobileNumber: "9876500001",
+    gstNumber: "24AACCA1234A1Z5",
+  },
+  AACCV5678B: {
+    instituteName: "Vadodara Institute of Analytics",
+    email: "admin@via.edu.in",
+    category: "Analytics Institute",
+    mobileNumber: "9876500002",
+    gstNumber: "24AACCV5678B1Z6",
+  },
+};
+
+const authorizedPersonPreviewMap: Record<
+  string,
+  Omit<IEducationInstituteAuthorizedPerson, "id" | "panNumber">
+> = {
+  AAAAA1111A: {
+    fullName: "Riya Mehta",
+    constitution: "Director",
+    dateOfBirth: "1990-04-15",
+    gender: "Female",
+    gstNumber: "24AACCA1234A1Z5",
+    mobileNumber: "9876500101",
+    email: "riya.mehta@asf.edu.in",
+  },
+  BBBBB2222B: {
+    fullName: "Kunal Shah",
+    constitution: "Authorized Signatory",
+    dateOfBirth: "1988-09-22",
+    gender: "Male",
+    gstNumber: "24AACCV5678B1Z6",
+    mobileNumber: "9876500102",
+    email: "kunal.shah@via.edu.in",
+  },
+  CCCCC3333C: {
+    fullName: "Neha Patel",
+    constitution: "Director",
+    dateOfBirth: "1991-01-09",
+    gender: "Female",
+    gstNumber: "24AACCS1122C1Z7",
+    mobileNumber: "9876500103",
+    email: "neha.patel@sba.edu.in",
+  },
+};
 
 const seedBranchDocuments: IEducationInstituteDocument[] = [
   {
@@ -63,11 +123,34 @@ const createSeedBranch = (
   documents,
 });
 
+const createAuthorizedPerson = (
+  id: string,
+  panNumber: string,
+  fullName: string,
+  constitution: string,
+  dateOfBirth: string,
+  gender: "Male" | "Female" | "Other",
+  gstNumber: string,
+  mobileNumber: string,
+  email: string,
+): IEducationInstituteAuthorizedPerson => ({
+  id,
+  panNumber,
+  fullName,
+  constitution,
+  dateOfBirth,
+  gender,
+  gstNumber,
+  mobileNumber,
+  email,
+});
+
 const seedInstitutes: IEducationInstitute[] = [
   {
     id: "edu-001",
     instituteCode: "COEDU2601",
     instituteName: "Ahmedabad School of Finance",
+    category: "Finance Institute",
     contactPerson: "Riya Mehta",
     mobileNumber: "9876500001",
     email: "admissions@asf.edu.in",
@@ -99,6 +182,19 @@ const seedInstitutes: IEducationInstitute[] = [
       }
     ],
     totalStudents: 1500,
+    authorizedPersons: [
+      createAuthorizedPerson(
+        "auth-edu-001-1",
+        "AAAAA1111A",
+        "Riya Mehta",
+        "Director",
+        "1990-04-15",
+        "Female",
+        "24AACCA1234A1Z5",
+        "9876500101",
+        "riya.mehta@asf.edu.in",
+      ),
+    ],
     branches: [
       createSeedBranch(
         "1001",
@@ -115,6 +211,7 @@ const seedInstitutes: IEducationInstitute[] = [
     id: "edu-002",
     instituteCode: "COEDU2602",
     instituteName: "Vadodara Institute of Analytics",
+    category: "Analytics Institute",
     contactPerson: "Kunal Shah",
     mobileNumber: "9876500002",
     email: "admin@via.edu.in",
@@ -129,12 +226,26 @@ const seedInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-01-14T09:15:00.000Z",
     documents: [],
     totalStudents: 800,
+    authorizedPersons: [
+      createAuthorizedPerson(
+        "auth-edu-002-1",
+        "BBBBB2222B",
+        "Kunal Shah",
+        "Authorized Signatory",
+        "1988-09-22",
+        "Male",
+        "24AACCV5678B1Z6",
+        "9876500102",
+        "kunal.shah@via.edu.in",
+      ),
+    ],
     branches: [createSeedBranch("1003", "Vadodara Main Branch", "Vadodara", "Gujarat", true)],
   },
   {
     id: "edu-003",
     instituteCode: "COEDU2603",
     instituteName: "Surat Business Academy",
+    category: "Business Academy",
     contactPerson: "Neha Patel",
     mobileNumber: "9876500003",
     email: "registrar@sba.edu.in",
@@ -149,12 +260,26 @@ const seedInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-02-02T12:00:00.000Z",
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [
+      createAuthorizedPerson(
+        "auth-edu-003-1",
+        "CCCCC3333C",
+        "Neha Patel",
+        "Director",
+        "1991-01-09",
+        "Female",
+        "24AACCS1122C1Z7",
+        "9876500103",
+        "neha.patel@sba.edu.in",
+      ),
+    ],
     branches: [],
   },
   {
     id: "edu-004",
     instituteCode: "COEDU2604",
     instituteName: "Mumbai School of Management",
+    category: "Management Institute",
     contactPerson: "Ananya Joshi",
     mobileNumber: "9876500004",
     email: "office@msm.edu.in",
@@ -169,12 +294,14 @@ const seedInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-02-04T08:00:00.000Z",
     documents: [],
     totalStudents: 2200,
+    authorizedPersons: [],
     branches: [createSeedBranch("1004", "Mumbai Main Branch", "Mumbai", "Maharashtra", true)],
   },
   {
     id: "edu-005",
     instituteCode: "COEDU2605",
     instituteName: "Pune Tech and Commerce Institute",
+    category: "Commerce Institute",
     contactPerson: "Aditya Kulkarni",
     mobileNumber: "9876500005",
     email: "contact@ptci.edu.in",
@@ -189,12 +316,14 @@ const seedInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-02-12T14:20:00.000Z",
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   },
   {
     id: "edu-006",
     instituteCode: "COEDU2606",
     instituteName: "Nagpur Education Hub",
+    category: "Education Hub",
     contactPerson: "Sonal Verma",
     mobileNumber: "9876500006",
     email: "info@neh.edu.in",
@@ -209,12 +338,14 @@ const seedInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-03-10T10:05:00.000Z",
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   },
   {
     id: "edu-007",
     instituteCode: "COEDU2607",
     instituteName: "Jaipur Career Institute",
+    category: "Career Institute",
     contactPerson: "Mohit Jain",
     mobileNumber: "9876500007",
     email: "hello@jci.edu.in",
@@ -229,12 +360,14 @@ const seedInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-03-06T10:10:00.000Z",
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   },
   {
     id: "edu-008",
     instituteCode: "COEDU2608",
     instituteName: "Udaipur Learning Centre",
+    category: "Learning Centre",
     contactPerson: "Isha Soni",
     mobileNumber: "9876500008",
     email: "support@ulc.edu.in",
@@ -249,12 +382,14 @@ const seedInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-03-15T12:40:00.000Z",
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   },
   {
     id: "edu-009",
     instituteCode: "COEDU2609",
     instituteName: "Bengaluru Skills Academy",
+    category: "Skills Academy",
     contactPerson: "Varun Rao",
     mobileNumber: "9876500009",
     email: "admin@bsa.edu.in",
@@ -269,12 +404,14 @@ const seedInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-03-21T09:05:00.000Z",
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   },
   {
     id: "edu-010",
     instituteCode: "COEDU2610",
     instituteName: "Mysuru Commerce College",
+    category: "Commerce College",
     contactPerson: "Pooja Nair",
     mobileNumber: "9876500010",
     email: "contact@mcc.edu.in",
@@ -289,12 +426,14 @@ const seedInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-04-06T08:25:00.000Z",
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   },
   {
     id: "edu-011",
     instituteCode: "COEDU2611",
     instituteName: "Hyderabad Global Institute",
+    category: "Global Institute",
     contactPerson: "Rahul Reddy",
     mobileNumber: "9876500011",
     email: "admissions@hgi.edu.in",
@@ -309,12 +448,14 @@ const seedInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-04-18T11:55:00.000Z",
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   },
   {
     id: "edu-012",
     instituteCode: "COEDU2612",
     instituteName: "Warangal FinTech School",
+    category: "FinTech School",
     contactPerson: "Sneha Gupta",
     mobileNumber: "9876500012",
     email: "team@wfs.edu.in",
@@ -329,6 +470,7 @@ const seedInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-04-26T13:30:00.000Z",
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   },
 ];
@@ -340,6 +482,8 @@ const normalizeEducationInstitutes = (
 ): IEducationInstitute[] =>
   institutes.map((institute) => ({
     ...institute,
+    category: institute.category || "Educational Institute",
+    authorizedPersons: institute.authorizedPersons || [],
     branches: (institute.branches || []).map((branch) => {
       if (branch.id === "branch-1001" && (!branch.documents || branch.documents.length === 0)) {
         return {
@@ -417,20 +561,33 @@ export const createEducationInstitute = (
     id: `edu-${Date.now()}`,
     instituteCode: `COEDU26${instituteNumber}`,
     instituteName: instituteData.instituteName.trim(),
-    contactPerson: instituteData.contactPerson.trim(),
+    category: instituteData.category.trim(),
+    contactPerson:
+      instituteData.authorizedPersons[0]?.fullName?.trim() ||
+      instituteData.contactPerson.trim(),
     mobileNumber: instituteData.mobileNumber.trim(),
     email: instituteData.email.trim(),
     state: instituteData.state,
     city: instituteData.city.trim(),
     address: instituteData.address.trim(),
     gstNumber: instituteData.gstNumber.trim(),
-    panNumber: instituteData.panNumber.trim().toUpperCase(),
+    panNumber: instituteData.institutePanNumber.trim().toUpperCase(),
     registrationNumber: instituteData.registrationNumber.trim(),
     isActive: instituteData.isActive,
     createdAt: now,
     updatedAt: now,
     documents: [],
     totalStudents: 0,
+    authorizedPersons: instituteData.authorizedPersons.map((person, index) => ({
+      ...person,
+      id: person.id || `auth-${Date.now()}-${index + 1}`,
+      panNumber: person.panNumber.trim().toUpperCase(),
+      fullName: person.fullName.trim(),
+      constitution: person.constitution.trim(),
+      gstNumber: person.gstNumber.trim().toUpperCase(),
+      mobileNumber: person.mobileNumber.trim(),
+      email: person.email.trim(),
+    })),
     branches: [],
   };
 
@@ -438,6 +595,36 @@ export const createEducationInstitute = (
   persistInstitutes(nextInstitutes);
 
   return nextInstitute;
+};
+
+export const getEducationInstitutePanPreview = (panNumber: string) => {
+  const normalizedPanNumber = panNumber.trim().toUpperCase();
+
+  return (
+    institutePanPreviewMap[normalizedPanNumber] || {
+      instituteName: `Institute ${normalizedPanNumber.slice(0, 5)}`,
+      email: `${normalizedPanNumber.toLowerCase()}@institute.demo`,
+      category: "Educational Institute",
+      mobileNumber: "9876500200",
+      gstNumber: `24${normalizedPanNumber}1Z5`,
+    }
+  );
+};
+
+export const getEducationAuthorizedPersonPanPreview = (panNumber: string) => {
+  const normalizedPanNumber = panNumber.trim().toUpperCase();
+
+  return (
+    authorizedPersonPreviewMap[normalizedPanNumber] || {
+      fullName: `Authorized ${normalizedPanNumber.slice(0, 4)}`,
+      constitution: "Authorized Signatory",
+      dateOfBirth: "1992-01-01",
+      gender: "Male" as const,
+      gstNumber: `24${normalizedPanNumber}1Z5`,
+      mobileNumber: "9876500999",
+      email: `${normalizedPanNumber.toLowerCase()}@institute.demo`,
+    }
+  );
 };
 
 export const updateEducationInstitute = (

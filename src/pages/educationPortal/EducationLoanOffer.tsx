@@ -20,6 +20,7 @@ import { RoutePathConstant } from "../../utils/constants/routePaths";
 import {
   completeEducationLoanApplication,
   getEducationLoanDraftById,
+  setEducationLoanResumeStep,
   updateEducationLoanDraftOfferSelection,
 } from "../../utils/demo/demoEducationLoanFlow";
 import { formatDate, toastError, toastSuccess } from "../../utils/functions/shared";
@@ -48,6 +49,11 @@ const EducationLoanOffer = () => {
 
   useEffect(() => {
     setDraft(getEducationLoanDraftById(id) || null);
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    setEducationLoanResumeStep(id, "loan-offer");
   }, [id]);
 
   useEffect(() => {
@@ -203,6 +209,7 @@ const EducationLoanOffer = () => {
       return;
     }
 
+    setEducationLoanResumeStep(completedDraft.id, "submitted");
     setDraft(completedDraft);
     setShowThankYouDialog(true);
   };

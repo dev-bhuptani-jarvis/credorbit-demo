@@ -9,6 +9,7 @@ import { RoutePathConstant } from "../../../utils/constants/routePaths";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { useLocation } from "react-router-dom";
+import { setEducationLoanResumeStep } from "../../../utils/demo/demoEducationLoanFlow";
 
 const CheckEligibility = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -21,6 +22,7 @@ const CheckEligibility = () => {
   const { userName } = useSelector((state: RootState) => state.user.user);
 
   const isEducationFlow = !!state?.educationFlow;
+  const resumeStep = state?.resumeStep as string | undefined;
 
   const items = isEducationFlow
     ? [{ label: "Credit Bureau Fetch" }, { label: "Bank Statement Upload" }]
@@ -65,6 +67,26 @@ const CheckEligibility = () => {
       navigate(RoutePathConstant.private.clientDashboard);
     }
   }, [customerInfo]);
+
+  useEffect(() => {
+    if (!isEducationFlow) return;
+
+    if (resumeStep === "banking-details") {
+      setActiveIndex(1);
+      return;
+    }
+
+    setActiveIndex(0);
+  }, [isEducationFlow, resumeStep]);
+
+  useEffect(() => {
+    if (!isEducationFlow || !state?.educationLoanApplicationId) return;
+
+    setEducationLoanResumeStep(
+      state.educationLoanApplicationId,
+      activeIndex === 0 ? "credit-score" : "banking-details",
+    );
+  }, [activeIndex, isEducationFlow, state]);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {

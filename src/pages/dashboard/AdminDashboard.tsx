@@ -32,6 +32,8 @@ import {
   formatDate,
   toastError,
 } from "../../utils/functions/shared";
+import { getEducationLoanDrafts } from "../../utils/demo/demoEducationLoanFlow";
+import { getEducationStudentById } from "../../utils/demo/demoEducationStudents";
 import {
   IsEmptyObject,
   IsNullOrEmptyArray,
@@ -58,6 +60,63 @@ const chartColors = [
   "#ff4d4f",
 ];
 
+const isDateWithinEducationFilter = (
+  value: string | null | undefined,
+  filterType: AdminDateFilterType,
+  customStartDate: Date | null,
+  customEndDate: Date | null,
+): boolean => {
+  if (!value) return false;
+
+  const currentDate = new Date(value);
+
+  if (Number.isNaN(currentDate.getTime())) return false;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  switch (filterType) {
+    case AdminDateFilterType.TODAY: {
+      const filterDate = new Date(today);
+      return currentDate >= filterDate;
+    }
+    case AdminDateFilterType.LAST_WEEK: {
+      const filterDate = new Date(today);
+      filterDate.setDate(filterDate.getDate() - 7);
+      return currentDate >= filterDate;
+    }
+    case AdminDateFilterType.LAST_30_DAYS: {
+      const filterDate = new Date(today);
+      filterDate.setDate(filterDate.getDate() - 30);
+      return currentDate >= filterDate;
+    }
+    case AdminDateFilterType.THIS_QUARTER: {
+      const quarterStartMonth = Math.floor(today.getMonth() / 3) * 3;
+      const filterDate = new Date(today.getFullYear(), quarterStartMonth, 1);
+      return currentDate >= filterDate;
+    }
+    case AdminDateFilterType.LAST_1_YEAR: {
+      const filterDate = new Date(today);
+      filterDate.setFullYear(filterDate.getFullYear() - 1);
+      return currentDate >= filterDate;
+    }
+    case AdminDateFilterType.CUSTOM_DATE_RANGE: {
+      if (!customStartDate || !customEndDate) return true;
+
+      const normalizedStartDate = new Date(customStartDate);
+      normalizedStartDate.setHours(0, 0, 0, 0);
+
+      const normalizedEndDate = new Date(customEndDate);
+      normalizedEndDate.setHours(23, 59, 59, 999);
+
+      return currentDate >= normalizedStartDate && currentDate <= normalizedEndDate;
+    }
+    case AdminDateFilterType.ALL:
+    default:
+      return true;
+  }
+};
+
 const AdminDashboard = () => {
   const [adminInfo, setAdminInfo] = useState<IAdminDashboardData>();
 
@@ -72,6 +131,16 @@ const AdminDashboard = () => {
   const [endDate, setEndDate] = useState<Date | null>(null);
 
   const [activeTab, setActiveTab] = useState<"channelPartner" | "education">("channelPartner");
+
+  const [educationDateFilter, setEducationDateFilter] =
+    useState<AdminDateFilterType>(AdminDateFilterType.ALL);
+
+  const [educationStartDate, setEducationStartDate] = useState<Date | null>(null);
+
+  const [educationEndDate, setEducationEndDate] = useState<Date | null>(null);
+
+  const [educationDisbursementView, setEducationDisbursementView] =
+    useState<"monthly" | "yearly">("monthly");
 
   const navigate = useNavigate();
 
@@ -152,6 +221,27 @@ const AdminDashboard = () => {
       navigate(RoutePathConstant.private.channelPartnerDashboard);
     }
   }, [navigate, userType]);
+
+  const handleEducationDateFilterChange = (value: AdminDateFilterType): void => {
+    setEducationDateFilter(value);
+
+    if (value !== AdminDateFilterType.CUSTOM_DATE_RANGE) {
+      setEducationStartDate(null);
+      setEducationEndDate(null);
+    }
+  };
+
+  const handleEducationApplyCustomRange = (): void => {
+    if (!educationStartDate || !educationEndDate) {
+      toastError("Please select start date and end date.");
+      return;
+    }
+
+    if (educationStartDate > educationEndDate) {
+      toastError("Start date cannot be greater than end date.");
+      return;
+    }
+  };
 
   const totalUsers = useMemo(
     () => (adminAllData?.usersInfo || []).reduce((sum, item) => sum + item.count, 0),
@@ -247,119 +337,233 @@ const AdminDashboard = () => {
     [adminInfo?.totalCountByStatus],
   );
 
-  const disbursedStatus = useMemo(
-    () =>
-      adminInfo?.totalCountByStatus?.find((item) =>
-        item.displayName?.toLowerCase().includes("disburs"),
-      ),
-    [adminInfo?.totalCountByStatus],
-  );
-
   const registeredInstituteCount = useMemo(
     () =>
       adminAllData?.usersInfo?.find((item) => item.userType === CLIENT_ROLE.CUSTOMER)?.count || 0,
     [adminAllData?.usersInfo],
   );
 
+  const educationDrafts = useMemo(() => getEducationLoanDrafts(), []);
+
+  const educationFilteredDisbursementEntries = useMemo(
+    () =>
+      educationDrafts
+        .filter((draft) =>
+          ["Sanctioned", "Disbursed"].includes(draft.loanApplicationStatus),
+        )
+        .map((draft) => ({
+          id: draft.id,
+          instituteName: draft.instituteName || "Unknown Institute",
+          courseName: draft.courseName || "Unknown Course",
+          amount: draft.loanAmount || 0,
+          date:
+            draft.disbursementDate ||
+            draft.sanctionDate ||
+            draft.updatedAt ||
+            draft.createdAt,
+        }))
+        .filter((entry) =>
+          isDateWithinEducationFilter(
+            entry.date,
+            educationDateFilter,
+            educationStartDate,
+            educationEndDate,
+          ),
+        ),
+    [educationDateFilter, educationDrafts, educationEndDate, educationStartDate],
+  );
+
+  const educationRepaymentRecords = useMemo(
+    () =>
+      educationDrafts
+        .filter((draft) =>
+          ["Sanctioned", "Disbursed"].includes(draft.loanApplicationStatus),
+        )
+        .map((draft) => ({
+          draftId: draft.id,
+          instituteName: draft.instituteName || "Unknown Institute",
+          emiAmount: draft.emiAmount || 0,
+          outstandingAmount:
+            getEducationStudentById(draft.studentId)?.loanDetails.outstandingAmount || 0,
+          repaymentStatus:
+            getEducationStudentById(draft.studentId)?.loanDetails.repaymentStatus || "Pending",
+          date:
+            draft.disbursementDate ||
+            draft.sanctionDate ||
+            draft.updatedAt ||
+            draft.createdAt,
+        }))
+        .filter((entry) =>
+          isDateWithinEducationFilter(
+            entry.date,
+            educationDateFilter,
+            educationStartDate,
+            educationEndDate,
+          ),
+        ),
+    [educationDateFilter, educationDrafts, educationEndDate, educationStartDate],
+  );
+
   const educationMetrics = [
-    {
-      title: "Total Registered Students",
-      value: totalDisbursedApplications,
-      icon: "bi-mortarboard",
-      subtitle: "Current student applications tracked on the platform",
-    },
-    {
-      title: "Total Applied Loans",
-      value: totalApplications,
-      icon: "bi-journal-check",
-      subtitle: "Loans initiated through the education journey",
-    },
-    {
-      title: "Total Sanctioned Loans",
-      value: sanctionedStatus?.noOfApplications || 0,
-      icon: "bi-patch-check",
-      subtitle: "Education loans that reached sanction stage",
-    },
-    {
-      title: "Total Loan Amount Disbursed by NBFCs",
-      value: formatCurrencyAmount(disbursedStatus?.amount || 0),
-      icon: "bi-bank",
-      subtitle: "Cumulative disbursal value visible in the current dataset",
-    },
     {
       title: "Total Registered Educational Institutes",
       value: registeredInstituteCount,
       icon: "bi-buildings",
       subtitle: "Initial institute footprint derived from current master data",
     },
+    {
+      title: "Total Registered Lender",
+      value: sanctionedStatus?.noOfApplications || 0,
+      icon: "bi-patch-check",
+      subtitle: "NBFC Lender registered in our portal",
+    },
+    {
+      title: "Total Registered Students",
+      value: totalDisbursedApplications,
+      icon: "bi-mortarboard",
+      subtitle: "Current student applications tracked on the platform",
+    }
   ];
 
-  const educationReportSections = [
-    {
-      title: "NBFC Loan Distribution",
-      copy: "Funding and approval momentum using the current loan pipeline.",
-      rows: [
+  const educationDisbursementTrendConfig = useMemo(() => {
+    if (educationFilteredDisbursementEntries.length === 0) return null;
+
+    const currentYear = Math.max(
+      ...educationFilteredDisbursementEntries.map((entry) =>
+        new Date(entry.date).getFullYear(),
+      ),
+    );
+    const lastYear = currentYear - 1;
+
+    if (educationDisbursementView === "yearly") {
+      const categories = [String(lastYear), String(currentYear)];
+
+      return {
+        title: "Yearly Disbursement Amount",
+        categories,
+        data: categories.map((yearLabel) =>
+          educationFilteredDisbursementEntries
+            .filter((entry) => new Date(entry.date).getFullYear() === Number(yearLabel))
+            .reduce((sum, entry) => sum + entry.amount, 0),
+        ),
+      };
+    }
+
+    const categories = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    return {
+      title: `Monthly Disbursement Amount (${currentYear})`,
+      categories,
+      data: categories.map((_, monthIndex) =>
+        educationFilteredDisbursementEntries
+          .filter((entry) => {
+            const entryDate = new Date(entry.date);
+            return (
+              entryDate.getFullYear() === currentYear &&
+              entryDate.getMonth() === monthIndex
+            );
+          })
+          .reduce((sum, entry) => sum + entry.amount, 0),
+      ),
+    };
+  }, [educationDisbursementView, educationFilteredDisbursementEntries]);
+
+  const educationInstituteWiseDisbursementData = useMemo(
+    () =>
+      Object.entries(
+        educationFilteredDisbursementEntries.reduce((accumulator, entry) => {
+          accumulator[entry.instituteName] =
+            (accumulator[entry.instituteName] || 0) + entry.amount;
+          return accumulator;
+        }, {} as Record<string, number>),
+      ).map(([instituteName, amount]) => ({
+        name: instituteName,
+        y: amount,
+      })),
+    [educationFilteredDisbursementEntries],
+  );
+
+  const parseRemainingEmis = useCallback(
+    (emiAmount: number, outstandingAmount: number): number => {
+      if (!emiAmount || outstandingAmount <= 0) return 0;
+      return Math.max(1, Math.ceil(outstandingAmount / emiAmount));
+    },
+    [],
+  );
+
+  const educationPaymentHistoryCards = useMemo(() => {
+    const cardConfigs = [
+      {
+        title: "Ongoing",
+        statuses: ["On-Time", "Pending"],
+        color: "#0BB680",
+      },
+      {
+        title: "Delayed",
+        statuses: ["Delayed"],
+        color: "#F4A917",
+      },
+      {
+        title: "Overdue",
+        statuses: ["Overdue"],
+        color: "#F64F59",
+      },
+    ];
+
+    return cardConfigs.map((config) => {
+      const matchedRecords = educationRepaymentRecords.filter((record) =>
+        config.statuses.includes(record.repaymentStatus),
+      );
+
+      return {
+        title: config.title,
+        color: config.color,
+        loanCount: matchedRecords.length,
+        emiCount: matchedRecords.reduce(
+          (sum, record) => sum + parseRemainingEmis(record.emiAmount, record.outstandingAmount),
+          0,
+        ),
+        emiAmount: matchedRecords.reduce((sum, record) => sum + record.emiAmount, 0),
+      };
+    });
+  }, [educationRepaymentRecords, parseRemainingEmis]);
+
+  const educationPaymentHistoryTrend = useMemo(() => {
+    const categories = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    const ongoingBase =
+      educationPaymentHistoryCards.find((item) => item.title === "Ongoing")?.emiAmount || 0;
+    const delayedBase =
+      educationPaymentHistoryCards.find((item) => item.title === "Delayed")?.emiAmount || 0;
+    const overdueBase =
+      educationPaymentHistoryCards.find((item) => item.title === "Overdue")?.emiAmount || 0;
+
+    return {
+      categories,
+      series: [
         {
-          label: disbursedStatus?.displayName || "Disbursed",
-          value: formatCurrencyAmount(disbursedStatus?.amount || 0),
-          helper: `${disbursedStatus?.noOfApplications || 0} loans`,
-        },
-        {
-          label: sanctionedStatus?.displayName || "Sanctioned",
-          value: formatCurrencyAmount(sanctionedStatus?.amount || 0),
-          helper: `${sanctionedStatus?.noOfApplications || 0} loans`,
-        },
-        {
-          label: "Active Loan Pipeline",
-          value: formatCurrencyAmount(
-            (disbursedStatus?.amount || 0) + (sanctionedStatus?.amount || 0),
+          name: "Ongoing",
+          color: "#0BB680",
+          data: [0.82, 0.9, 0.94, 1, 1.03, 1.08].map((factor) =>
+            Math.round(ongoingBase * factor),
           ),
-          helper: `${(disbursedStatus?.noOfApplications || 0) +
-            (sanctionedStatus?.noOfApplications || 0)
-            } loans`,
+        },
+        {
+          name: "Delayed",
+          color: "#F4A917",
+          data: [1.22, 1.14, 1.08, 1, 0.95, 0.91].map((factor) =>
+            Math.round(delayedBase * factor),
+          ),
+        },
+        {
+          name: "Overdue",
+          color: "#F64F59",
+          data: [0.88, 0.94, 0.98, 1, 1.09, 1.16].map((factor) =>
+            Math.round(overdueBase * factor),
+          ),
         },
       ],
-    },
-    {
-      title: "Student Loan Distribution",
-      copy: "Student demand distribution using current application activity.",
-      rows: [
-        {
-          label: "Registered Students",
-          value: totalDisbursedApplications,
-          helper: "Current application volume",
-        },
-        {
-          label: "Availed Loans",
-          value: totalApplications,
-          helper: "Loans initiated in this dashboard view",
-        },
-        {
-          label: "Sanctioned Loans",
-          value: sanctionedStatus?.noOfApplications || 0,
-          helper: "Students who progressed to sanction",
-        },
-      ],
-    },
-    {
-      title: "Institute-wise Loan Distribution",
-      copy: "Institute onboarding and education lending concentration snapshot.",
-      rows: [
-        {
-          label: "Ahmedabad School of Finance",
-          value: registeredInstituteCount,
-        },
-        {
-          label: "Surat Business Academy",
-          value: sanctionedStatus?.noOfApplications || 0,
-        },
-        {
-          label: "Nagpur Education Hub",
-          value: disbursedStatus?.noOfApplications || 0,
-        },
-      ],
-    },
-  ];
+    };
+  }, [educationPaymentHistoryCards]);
 
   const spotlightMetrics: Array<{
     title: string;
@@ -1138,30 +1342,81 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </div>
+            </section>
 
-              <div className="admin-dashboard-hero__spotlight">
-                <div className="admin-dashboard-spotlight-card">
-                  <div className="admin-dashboard-spotlight-card__label">Sanctioned Loans</div>
-                  <div className="admin-dashboard-spotlight-card__value">
-                    {sanctionedStatus?.noOfApplications || 0}
-                  </div>
-                  <div className="admin-dashboard-spotlight-card__helper">
-                    Education loans progressed to sanction stage.
-                  </div>
-                </div>
-
-                <div className="admin-dashboard-spotlight-card">
-                  <div className="admin-dashboard-spotlight-card__label">
-                    NBFC Disbursed Amount
-                  </div>
-                  <div className="admin-dashboard-spotlight-card__value">
-                    {formatCurrencyAmount(disbursedStatus?.amount || 0)}
-                  </div>
-                  <div className="admin-dashboard-spotlight-card__helper">
-                    Current disbursal amount derived from the available admin dataset.
-                  </div>
+            <section className="admin-dashboard-filter-panel">
+              <div className="admin-dashboard-section-head">
+                <div>
+                  <TableTitle title="Date Filter" />
+                  <p className="admin-dashboard-section-copy mb-0">
+                    Filter all education portal disbursement and repayment views by period.
+                  </p>
                 </div>
               </div>
+
+              <div className="admin-dashboard-filter-actions">
+                {dateFilters.map((filterItem) => (
+                  <Button
+                    key={filterItem.value}
+                    className={`btn ${filterItem.value === educationDateFilter ? "btn-orange" : "btn-orange-line"}`}
+                    onClick={() => handleEducationDateFilterChange(filterItem.value)}
+                  >
+                    {filterItem.label}
+                  </Button>
+                ))}
+              </div>
+
+              {educationDateFilter === AdminDateFilterType.CUSTOM_DATE_RANGE && (
+                <div className="row g-3 mt-1">
+                  <div className="col-lg-3 col-md-4 col-sm-6 col-12">
+                    <label className="form-label small fw-semibold">Start Date</label>
+                    <Calendar
+                      inputId="adminEducationDashboardStartDate"
+                      value={educationStartDate}
+                      placeholder="From Date"
+                      readOnlyInput
+                      maxDate={educationEndDate || new Date()}
+                      showButtonBar
+                      className="w-100"
+                      onChange={(e) => {
+                        const selectedStartDate = e.value as Date | null;
+                        const nextEndDate =
+                          selectedStartDate &&
+                          educationEndDate &&
+                          educationEndDate < selectedStartDate
+                            ? null
+                            : educationEndDate;
+
+                        setEducationStartDate(selectedStartDate);
+                        setEducationEndDate(nextEndDate);
+                      }}
+                    />
+                  </div>
+                  <div className="col-lg-3 col-md-4 col-sm-6 col-12">
+                    <label className="form-label small fw-semibold">End Date</label>
+                    <Calendar
+                      inputId="adminEducationDashboardEndDate"
+                      value={educationEndDate}
+                      placeholder="To Date"
+                      readOnlyInput
+                      minDate={educationStartDate || undefined}
+                      maxDate={new Date()}
+                      showButtonBar
+                      className="w-100"
+                      disabled={!educationStartDate}
+                      onChange={(e) => setEducationEndDate(e.value as Date | null)}
+                    />
+                  </div>
+                  <div className="col-lg-2 col-md-4 col-sm-6 col-12 d-flex align-items-end">
+                    <Button
+                      label="Apply"
+                      icon="bi bi-funnel"
+                      className="btn btn-orange gap-2"
+                      onClick={handleEducationApplyCustomRange}
+                    />
+                  </div>
+                </div>
+              )}
             </section>
 
             <section className="admin-dashboard-metrics-grid admin-dashboard-metrics-grid--education">
@@ -1179,45 +1434,233 @@ const AdminDashboard = () => {
               ))}
             </section>
 
-            <section className="admin-dashboard-panel">
+            <section className="row g-4 mt-1">
+              <div className="col-xl-7 col-lg-7 col-12">
+                <section className="admin-dashboard-panel h-100">
+                  <div className="admin-dashboard-section-head">
+                    <div>
+                      <TableTitle title="Disbursement Trend" />
+                      <p className="admin-dashboard-section-copy mb-0">
+                        Compare disbursement amount across all institutes by month or year.
+                      </p>
+                    </div>
+
+                    <div className="admin-dashboard-filter-actions">
+                      <Button
+                        className={`btn ${educationDisbursementView === "monthly" ? "btn-orange" : "btn-orange-line"}`}
+                        onClick={() => setEducationDisbursementView("monthly")}
+                      >
+                        Monthly
+                      </Button>
+                      <Button
+                        className={`btn ${educationDisbursementView === "yearly" ? "btn-orange" : "btn-orange-line"}`}
+                        onClick={() => setEducationDisbursementView("yearly")}
+                      >
+                        Yearly
+                      </Button>
+                    </div>
+                  </div>
+
+                  {educationDisbursementTrendConfig ? (
+                    <HighchartsReact
+                      highcharts={Highcharts}
+                      options={{
+                        chart: {
+                          type: "column",
+                          height: 340,
+                        },
+                        credits: {
+                          enabled: false,
+                        },
+                        title: {
+                          text: educationDisbursementTrendConfig.title,
+                        },
+                        xAxis: {
+                          categories: educationDisbursementTrendConfig.categories,
+                        },
+                        yAxis: {
+                          title: {
+                            text: "Disbursement Amount",
+                          },
+                          labels: {
+                            formatter: function (this: any): string {
+                              return `₹${Number(this.value).toLocaleString("en-IN")}`;
+                            },
+                          },
+                        },
+                        legend: {
+                          enabled: false,
+                        },
+                        tooltip: {
+                          pointFormatter: function (this: any): string {
+                            return `<span style="color:${this.color}">\u25cf</span> Amount: <b>₹${Number(this.y).toLocaleString("en-IN")}</b>`;
+                          },
+                        },
+                        plotOptions: {
+                          column: {
+                            borderRadius: 8,
+                            color: "#FF632C",
+                          },
+                        },
+                        series: [
+                          {
+                            type: "column",
+                            name: "Disbursement Amount",
+                            data: educationDisbursementTrendConfig.data,
+                          },
+                        ],
+                      }}
+                    />
+                  ) : (
+                    <p className="admin-dashboard-section-copy mb-0">
+                      No disbursement records found for the selected date range.
+                    </p>
+                  )}
+                </section>
+              </div>
+
+              <div className="col-xl-5 col-lg-5 col-12">
+                <section className="admin-dashboard-panel h-100">
+                  <div className="admin-dashboard-section-head">
+                    <div>
+                      <TableTitle title="Institute Wise Disbursement" />
+                      <p className="admin-dashboard-section-copy mb-0">
+                        Share of total disbursement completed across all institutes.
+                      </p>
+                    </div>
+                  </div>
+
+                  {!IsNullOrEmptyArray(educationInstituteWiseDisbursementData) ? (
+                    <HighchartsReact
+                      highcharts={Highcharts}
+                      options={{
+                        chart: {
+                          type: "pie",
+                          height: 340,
+                        },
+                        credits: {
+                          enabled: false,
+                        },
+                        title: {
+                          text: null,
+                        },
+                        tooltip: {
+                          pointFormatter: function (this: any): string {
+                            return `<span style="color:${this.color}">\u25cf</span> <b>${this.name}</b>: ₹${Number(this.y).toLocaleString("en-IN")}`;
+                          },
+                        },
+                        plotOptions: {
+                          pie: {
+                            innerSize: "52%",
+                            dataLabels: {
+                              enabled: true,
+                              formatter: function (this: any): string {
+                                return `<b>${this.point.name}</b><br/>₹${Number(this.point.y).toLocaleString("en-IN")}`;
+                              },
+                            },
+                          },
+                        },
+                        series: [
+                          {
+                            type: "pie",
+                            name: "Disbursement Amount",
+                            data: educationInstituteWiseDisbursementData,
+                          },
+                        ],
+                      }}
+                    />
+                  ) : (
+                    <p className="admin-dashboard-section-copy mb-0">
+                      No institute disbursement data found for the selected date range.
+                    </p>
+                  )}
+                </section>
+              </div>
+            </section>
+
+            <section className="admin-dashboard-panel mt-4">
               <div className="admin-dashboard-section-head">
                 <div>
-                  <TableTitle title="Loan Reports" />
+                  <TableTitle title="Payment History" />
                   <p className="admin-dashboard-section-copy mb-0">
-                    Detailed report blocks for NBFC funding, student distribution, and institute
-                    distribution.
+                    Ongoing, delayed, and overdue repayment visibility with EMI trends across all institutes.
                   </p>
                 </div>
               </div>
 
-              <div className="row g-4">
-                {educationReportSections.map((section) => (
-                  <div key={section.title} className="col-12 col-xl-4">
-                    <div className="admin-dashboard-education-report h-100">
-                      <div className="admin-dashboard-education-report__title">
-                        {section.title}
+              <div className="row g-4 align-items-stretch">
+                <div className="col-xl-5 col-lg-5 col-12">
+                  <div className="admin-dashboard-user-grid education-dashboard-user-grid">
+                    {educationPaymentHistoryCards.map((card) => (
+                      <div key={card.title} className="admin-dashboard-user-card">
+                        <div
+                          className="admin-dashboard-user-card__accent"
+                          style={{ backgroundColor: card.color }}
+                        />
+                        <div className="admin-dashboard-user-card__count">{card.loanCount}</div>
+                        <div className="admin-dashboard-user-card__name">{card.title}</div>
+                        <div className="admin-dashboard-user-card__meta">
+                          No. of Loans: {card.loanCount}
+                        </div>
+                        <div className="admin-dashboard-user-card__meta">
+                          No. of EMIs: {card.emiCount}
+                        </div>
+                        <div className="admin-dashboard-user-card__meta">
+                          Amt of EMI: {formatCurrencyAmount(card.emiAmount)}
+                        </div>
                       </div>
-                      <p className="admin-dashboard-education-report__copy mb-0">
-                        {section.copy}
-                      </p>
-
-                      <div className="admin-dashboard-education-report__list">
-                        {section.rows.map((row) => (
-                          <div key={row.label} className="admin-dashboard-education-report__item">
-                            <div>
-                              <div className="admin-dashboard-education-report__label">
-                                {row.label}
-                              </div>
-                            </div>
-                            <div className="admin-dashboard-education-report__value">
-                              {row.value}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+
+                <div className="col-xl-7 col-lg-7 col-12">
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={{
+                      chart: {
+                        type: "line",
+                        height: 360,
+                      },
+                      credits: {
+                        enabled: false,
+                      },
+                      title: {
+                        text: "Payment History Trend",
+                      },
+                      xAxis: {
+                        categories: educationPaymentHistoryTrend.categories,
+                      },
+                      yAxis: {
+                        title: {
+                          text: "EMI Amount",
+                        },
+                        labels: {
+                          formatter: function (this: any): string {
+                            return `₹${Number(this.value).toLocaleString("en-IN")}`;
+                          },
+                        },
+                      },
+                      tooltip: {
+                        shared: true,
+                        valuePrefix: "₹",
+                      },
+                      plotOptions: {
+                        line: {
+                          marker: {
+                            enabled: true,
+                            radius: 4,
+                          },
+                        },
+                      },
+                      series: educationPaymentHistoryTrend.series.map((series) => ({
+                        type: "line" as const,
+                        name: series.name,
+                        color: series.color,
+                        data: series.data,
+                      })),
+                    }}
+                  />
+                </div>
               </div>
             </section>
           </>

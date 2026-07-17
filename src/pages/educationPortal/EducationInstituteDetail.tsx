@@ -25,6 +25,7 @@ import {
   IEducationInstituteDocument,
 } from "../../interface/educationInstitute";
 import {
+  addEducationInstituteDocument,
   addEducationInstituteBranchDocument,
   createEducationInstituteBranch,
   deleteEducationInstituteBranch,
@@ -53,6 +54,14 @@ const branchDocumentTypeOptions = [
   { label: "GST Certificate", value: "GST Certificate" },
   { label: "Cancelled Cheque", value: "Cancelled Cheque" },
   { label: "Bank Proof", value: "Bank Proof" },
+  { label: "Other", value: "Other" },
+];
+
+const instituteDocumentTypeOptions = [
+  { label: "Agreement", value: "Agreement" },
+  { label: "Registration Document", value: "Registration Document" },
+  { label: "GST Certificate", value: "GST Certificate" },
+  { label: "PAN", value: "PAN" },
   { label: "Other", value: "Other" },
 ];
 
@@ -94,6 +103,12 @@ const EducationInstituteDetail = () => {
   const [branchFormErrors, setBranchFormErrors] = useState<Record<string, string>>({});
 
   const [uploadBranch, setUploadBranch] = useState<IEducationInstituteBranch | null>(null);
+  const [showInstituteDocumentDialog, setShowInstituteDocumentDialog] =
+    useState<boolean>(false);
+  const [instituteDocumentType, setInstituteDocumentType] = useState<string>("");
+  const [selectedInstituteDocument, setSelectedInstituteDocument] =
+    useState<File | null>(null);
+  const [instituteDocumentError, setInstituteDocumentError] = useState<string>("");
 
   const [branchDocumentType, setBranchDocumentType] = useState<string>("");
 
@@ -312,6 +327,57 @@ const EducationInstituteDetail = () => {
     setBranchDocumentError("");
   };
 
+  const handleInstituteFileSelection = (event: ChangeEvent<HTMLInputElement>): void => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    const isPdf =
+      file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+
+    if (!isPdf) {
+      toastError("Only PDF documents are allowed.");
+      event.target.value = "";
+      return;
+    }
+
+    setSelectedInstituteDocument(file);
+    setInstituteDocumentError("");
+  };
+
+  const handleUploadInstituteDocument = (): void => {
+    if (!id) return;
+
+    if (!instituteDocumentType) {
+      setInstituteDocumentError("Document type is required.");
+      return;
+    }
+
+    if (!selectedInstituteDocument) {
+      toastError("Please select a PDF file.");
+      return;
+    }
+
+    setLoading(true);
+
+    const documentData = addEducationInstituteDocument(
+      id,
+      instituteDocumentType,
+      selectedInstituteDocument,
+    );
+
+    if (documentData) {
+      toastSuccess(`${instituteDocumentType} uploaded successfully.`);
+    }
+
+    refreshInstituteDetail();
+    setShowInstituteDocumentDialog(false);
+    setInstituteDocumentType("");
+    setSelectedInstituteDocument(null);
+    setInstituteDocumentError("");
+    setLoading(false);
+  };
+
   const handleUploadBranchDocument = (): void => {
     if (!id || !uploadBranch) {
       toastError("Please choose a branch first.");
@@ -476,9 +542,19 @@ const EducationInstituteDetail = () => {
               <div className="whiteBoxHldr">
                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                   <h3 className="txt-20 mb-0">Uploaded Documents</h3>
-                  <span className="text-muted small">
-                    {instituteDetail.documents.length} document(s) available
-                  </span>
+                  <div className="d-flex align-items-center gap-3 flex-wrap">
+                    <span className="text-muted small">
+                      {instituteDetail.documents.length} document(s) available
+                    </span>
+
+                    <Button
+                      className="btn btn-orange"
+                      onClick={() => setShowInstituteDocumentDialog(true)}
+                    >
+                      <i className="bi bi-upload me-2" />
+                      Upload Document
+                    </Button>
+                  </div>
                 </div>
 
                 {instituteDetail.documents.length > 0 ? (
@@ -631,6 +707,112 @@ const EducationInstituteDetail = () => {
           </div>
         )}
       </div>
+
+      <Dialog
+        header="Upload Institute Document"
+        visible={showInstituteDocumentDialog}
+        className="modalWrapper"
+        onHide={() => {
+          setShowInstituteDocumentDialog(false);
+          setInstituteDocumentType("");
+          setSelectedInstituteDocument(null);
+          setInstituteDocumentError("");
+        }}
+        draggable={false}
+        resizable={false}
+        blockScroll
+        style={{ width: "620px" }}
+        footer={
+          <div className="modal-footer gap-3">
+            <Button
+              className="btn btn-black-line text-center w-100"
+              label="Cancel"
+              onClick={() => {
+                setShowInstituteDocumentDialog(false);
+                setInstituteDocumentType("");
+                setSelectedInstituteDocument(null);
+                setInstituteDocumentError("");
+              }}
+            />
+
+            <Button
+              className="btn btn-orange text-center w-100"
+              label="Upload"
+              onClick={handleUploadInstituteDocument}
+              disabled={!selectedInstituteDocument}
+            />
+          </div>
+        }
+      >
+        <div className="row g-3">
+          <div className="form-group col-12">
+            <label className="form-label" htmlFor="instituteDocumentType">
+              Document Type<sup>*</sup>
+            </label>
+            <Dropdown
+              id="instituteDocumentType"
+              className="w-100"
+              value={instituteDocumentType}
+              options={instituteDocumentTypeOptions}
+              onChange={(e) => {
+                setInstituteDocumentType(e.value);
+                setInstituteDocumentError("");
+              }}
+              placeholder="Select document type"
+            />
+            {instituteDocumentError && (
+              <small className="error">{instituteDocumentError}</small>
+            )}
+          </div>
+
+          <div className="form-group col-12">
+            <label className="form-label" htmlFor="educationInstituteDocumentUpload">
+              Upload PDF<sup>*</sup>
+            </label>
+            <div className="uploadFileWrapper">
+              <img src="/assets/images/upload-cloud.svg" alt="upload-icon" loading="lazy" />
+              <p>Upload institute document in PDF format only</p>
+              <label className="btn btn-black-line" htmlFor="educationInstituteDocumentUpload">
+                Upload PDF
+              </label>
+              <InputText
+                type="file"
+                id="educationInstituteDocumentUpload"
+                accept=".pdf,application/pdf"
+                onChange={handleInstituteFileSelection}
+                className="d-none"
+              />
+            </div>
+            {selectedInstituteDocument && (
+              <span className="text-muted mt-2 d-block">
+                Selected File: {selectedInstituteDocument.name}
+              </span>
+            )}
+          </div>
+
+          {instituteDetail && instituteDetail.documents.length > 0 && (
+            <div className="col-12 mt-0">
+              <div className="education-document-list">
+                <h6 className="mb-3">Uploaded Documents</h6>
+                {instituteDetail.documents.map((documentData) => (
+                  <div key={documentData.id} className="education-document-item">
+                    <div>
+                      <div className="education-document-item__title">{documentData.type}</div>
+                      <div className="education-document-item__meta">
+                        {documentData.fileName} |{" "}
+                        {formatDate(documentData.uploadedAt, "DD MMM, YYYY h:mm A")}
+                      </div>
+                    </div>
+                    <span className="education-document-item__size">
+                      {(documentData.fileSize / 1024 / 1024).toFixed(2)} MB
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Dialog>
 
       <Dialog
         header={

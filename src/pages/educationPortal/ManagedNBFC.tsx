@@ -14,10 +14,7 @@ import PrimePaginator from "../../components/PrimePaginator";
 import SearchButton from "../../components/SearchButton";
 import TableTitle from "../../components/TableTitle";
 import { Tooltip } from "primereact/tooltip";
-import {
-  IEducationInstitute,
-  IEducationInstituteFormData,
-} from "../../interface/educationInstitute";
+import { IEducationInstitute } from "../../interface/educationInstitute";
 import { PaginateReqEntity } from "../../interface/pagination";
 import { debounceTimeInMilliseconds, formatMobileNumber } from "../../utils/constants/constant";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
@@ -47,7 +44,21 @@ const stateOptions = [
   value: state,
 }));
 
-const defaultNbfcForm: IEducationInstituteFormData = {
+interface INbfcFormData {
+  instituteName: string;
+  contactPerson: string;
+  mobileNumber: string;
+  email: string;
+  state: string;
+  city: string;
+  address: string;
+  gstNumber: string;
+  panNumber: string;
+  registrationNumber: string;
+  isActive: boolean;
+}
+
+const defaultNbfcForm: INbfcFormData = {
   instituteName: "",
   contactPerson: "",
   mobileNumber: "",
@@ -84,7 +95,7 @@ const ManagedNBFC = () => {
 
   const [selectedNbfc, setSelectedNbfc] = useState<IEducationInstitute | null>(null);
 
-  const [nbfcForm, setNbfcForm] = useState<IEducationInstituteFormData>(defaultNbfcForm);
+  const [nbfcForm, setNbfcForm] = useState<INbfcFormData>(defaultNbfcForm);
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
@@ -119,7 +130,7 @@ const ManagedNBFC = () => {
   }, [filterReq.pageNumber, filterReq.pageSize, filteredNbfcList]);
 
   const handleFormFieldChange = (
-    fieldName: keyof IEducationInstituteFormData,
+    fieldName: keyof INbfcFormData,
     value: string | boolean,
   ): void => {
     setNbfcForm((prev) => ({
@@ -222,7 +233,7 @@ const ManagedNBFC = () => {
 
     setLoading(true);
 
-    const payload: IEducationInstituteFormData = {
+    const payload: INbfcFormData = {
       ...nbfcForm,
       gstNumber: nbfcForm.gstNumber.trim().toUpperCase(),
       panNumber: nbfcForm.panNumber.trim().toUpperCase(),

@@ -15,7 +15,15 @@ import {
 
 const STUDENT_CAM_REPORTS_KEY = "credorbit.studentCamReports";
 const EDUCATION_LOAN_DRAFTS_KEY = "credorbit.educationLoanDrafts";
+const EDUCATION_LOAN_RESUME_STEP_KEY = "credorbit.educationLoanResumeStep";
 const DEFAULT_STUDENT_USER_ID = "student-role-001";
+
+export type EducationLoanResumeStep =
+  | "consent"
+  | "credit-score"
+  | "banking-details"
+  | "loan-offer"
+  | "submitted";
 
 const seedStudentCamReports: IClientDetailList[] = [
   {
@@ -84,7 +92,7 @@ const seedEducationLoanDrafts: IEducationLoanDraft[] = [
     id: "edu-loan-seed-002",
     studentId: "student-001",
     studentUserId: DEFAULT_STUDENT_USER_ID,
-    instituteName: "Credorbit School of Finance",
+    instituteName: "Pioneer Institute of Business Studies",
     studentName: "Aarav Shah",
     studentPan: "AARAV1234S",
     studentEmail: "aarav.shah@student.demo",
@@ -138,7 +146,7 @@ const seedEducationLoanDrafts: IEducationLoanDraft[] = [
     id: "edu-loan-seed-003",
     studentId: "student-002",
     studentUserId: DEFAULT_STUDENT_USER_ID,
-    instituteName: "Credorbit School of Finance",
+    instituteName: "Global Academy of Finance & Management",
     studentName: "Diya Patel",
     studentPan: "DIYAP1234P",
     studentEmail: "diya.patel@student.demo",
@@ -262,6 +270,32 @@ export const getEducationLoanDrafts = (): IEducationLoanDraft[] =>
 
 const persistEducationLoanDrafts = (drafts: IEducationLoanDraft[]): void => {
   writeToStorage(EDUCATION_LOAN_DRAFTS_KEY, drafts);
+};
+
+export const getEducationLoanResumeStep = (
+  draftId: string,
+): EducationLoanResumeStep | undefined => {
+  const stepMap = readFromStorage<Record<string, EducationLoanResumeStep>>(
+    EDUCATION_LOAN_RESUME_STEP_KEY,
+    {},
+  );
+
+  return stepMap[draftId];
+};
+
+export const setEducationLoanResumeStep = (
+  draftId: string,
+  step: EducationLoanResumeStep,
+): void => {
+  const stepMap = readFromStorage<Record<string, EducationLoanResumeStep>>(
+    EDUCATION_LOAN_RESUME_STEP_KEY,
+    {},
+  );
+
+  writeToStorage(EDUCATION_LOAN_RESUME_STEP_KEY, {
+    ...stepMap,
+    [draftId]: step,
+  });
 };
 
 export const getEducationLoanDraftById = (

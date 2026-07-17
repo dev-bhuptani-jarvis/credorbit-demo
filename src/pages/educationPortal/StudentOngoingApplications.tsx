@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
@@ -12,19 +12,23 @@ import SearchButton from "../../components/SearchButton";
 import TableTitle from "../../components/TableTitle";
 import { IEducationLoanDraft } from "../../interface/educationManagement";
 import { PaginateReqEntity } from "../../interface/pagination";
+import { setCustomerInfo } from "../../store/reducer/customerSlice";
 import { RootState } from "../../store";
 import { debounceTimeInMilliseconds, formatCurrencyAmount } from "../../utils/constants/constant";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
-import { getEducationLoanDrafts } from "../../utils/demo/demoEducationLoanFlow";
+import {
+  buildEducationCustomerInfo,
+  getEducationLoanDrafts,
+  getEducationLoanResumeStep,
+} from "../../utils/demo/demoEducationLoanFlow";
+import { getEducationStudentById } from "../../utils/demo/demoEducationStudents";
 import useDebouncedEffect from "../../hooks/useDebounce";
 import { IsNullOrEmptyArray } from "../../utils/functions/nullCheck";
 
 const STUDENT_USER_ID = "student-role-001";
+
 const ongoingStatuses: IEducationLoanDraft["loanApplicationStatus"][] = [
   "Pending",
-  "Approved",
-  "Query Raised",
-  "Sanctioned",
 ];
 
 const statusOptions = ongoingStatuses.map((status) => ({
@@ -35,17 +39,24 @@ const statusOptions = ongoingStatuses.map((status) => ({
 const StudentOngoingApplications = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
+
   const { userID } = useSelector((state: RootState) => state.user.user);
 
   const [loading, setLoading] = useState<boolean>(false);
+  
   const [applications, setApplications] = useState<IEducationLoanDraft[]>([]);
+  
   const [searchText, setSearchText] = useState<string>("");
+  
   const [selectedStatus, setSelectedStatus] = useState<string>("");
+  
   const [filterReq, setFilterReq] = useState<PaginateReqEntity>({
     pageNumber: 0,
     pageSize: 10,
     searchText: "",
   });
+
   const [totalRecords, setTotalRecords] = useState<number>(0);
 
   const statusFilterFromNavigation =
@@ -67,10 +78,10 @@ const StudentOngoingApplications = () => {
       matchedApplications.length > 0
         ? matchedApplications
         : getEducationLoanDrafts().filter(
-            (draft) =>
-              draft.studentUserId === STUDENT_USER_ID &&
-              ongoingStatuses.includes(draft.loanApplicationStatus),
-          ),
+          (draft) =>
+            draft.studentUserId === STUDENT_USER_ID &&
+            ongoingStatuses.includes(draft.loanApplicationStatus),
+        ),
     );
 
     setLoading(false);
@@ -139,6 +150,54 @@ const StudentOngoingApplications = () => {
     setTotalRecords(filteredApplications.length);
   }, [filteredApplications]);
 
+  const handleResumeApplication = (draft: IEducationLoanDraft): void => {
+    const resumeStep = getEducationLoanResumeStep(draft.id);
+    const student = getEducationStudentById(draft.studentId);
+
+    if (resumeStep === "consent" || draft.status === "draft") {
+      navigate(RoutePathConstant.private.educationStudentLoanApplication, {
+        state: {
+          preselectedStudentId: draft.studentId,
+          resumeDraftId: draft.id,
+        },
+      });
+      return;
+    }
+
+    if (resumeStep === "loan-offer" || draft.status === "cam_generated") {
+      navigate(
+        RoutePathConstant.private.educationStudentLoanOffer.replace(":id", draft.id),
+      );
+      return;
+    }
+
+    if ((resumeStep === "credit-score" || resumeStep === "banking-details") && student) {
+      dispatch(setCustomerInfo(buildEducationCustomerInfo(student)));
+      navigate(RoutePathConstant.private.checkEligibility, {
+        state: {
+          educationFlow: true,
+          educationLoanApplicationId: draft.id,
+          loanApp: draft.id,
+          loanType: 0,
+          resumeStep,
+        },
+      });
+      return;
+    }
+
+    navigate(
+      RoutePathConstant.private.educationStudentDetail360View.replace(
+        ":id",
+        draft.studentId,
+      ),
+      {
+        state: {
+          selectedDraftId: draft.id,
+        },
+      },
+    );
+  };
+
   return (
     <div className="whiteBoxHldr p-24">
       <Loader isLoading={loading} />
@@ -178,40 +237,36 @@ const StudentOngoingApplications = () => {
                 value={paginatedApplications}
                 emptyMessage="No ongoing applications found."
               >
-                <Column field="studentName" header="Student Name" />
                 <Column field="courseName" header="Course Name" />
-                <Column field="instituteName" header="Institute Name" />
-                <Column field="loanApplicationStatus" header="Application Status" />
+
+                <Column
+                  header="Course Fees"
+                  body={(rowData: IEducationLoanDraft) =>
+                    formatCurrencyAmount(rowData.courseFees)}
+                />
+
                 <Column
                   header="Loan Amount"
                   body={(rowData: IEducationLoanDraft) =>
                     formatCurrencyAmount(rowData.loanAmount)
                   }
                 />
+
+                <Column field="loanApplicationStatus" header="Status" />
+
                 <Column
-                  header="Applied On"
+                  header="Last Activity Date"
                   body={(rowData: IEducationLoanDraft) =>
-                    new Date(rowData.createdAt).toLocaleDateString("en-IN")
+                    new Date(rowData.updatedAt).toLocaleDateString("en-IN")
                   }
                 />
+
                 <Column
                   header="Action"
                   body={(rowData: IEducationLoanDraft) => (
                     <Button
                       className="trash-icon p-0"
-                      onClick={() =>
-                        navigate(
-                          RoutePathConstant.private.educationStudentDetail360View.replace(
-                            ":id",
-                            rowData.studentId,
-                          ),
-                          {
-                            state: {
-                              selectedDraftId: rowData.id,
-                            },
-                          },
-                        )
-                      }
+                      onClick={() => handleResumeApplication(rowData)}
                     >
                       <img src="/assets/images/eye.svg" alt="view-application" />
                     </Button>

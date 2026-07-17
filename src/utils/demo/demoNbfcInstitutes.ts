@@ -1,10 +1,23 @@
 import {
   IEducationInstitute,
   IEducationInstituteDocument,
-  IEducationInstituteFormData,
 } from "../../interface/educationInstitute";
 
 const STORAGE_KEY = "credorbit.nbfcInstitutes";
+
+interface INbfcFormData {
+  instituteName: string;
+  contactPerson: string;
+  mobileNumber: string;
+  email: string;
+  state: string;
+  city: string;
+  address: string;
+  gstNumber: string;
+  panNumber: string;
+  registrationNumber: string;
+  isActive: boolean;
+}
 
 const documentUrlMap = new Map<string, string>();
 
@@ -35,6 +48,7 @@ const seedNbfcInstitutes: IEducationInstitute[] = [
     id: "nbfc-001",
     instituteCode: "CONBFC2601",
     instituteName: "Astra Finance Limited",
+    category: "NBFC",
     contactPerson: "Mehul Shah",
     mobileNumber: "9876600001",
     email: "operations@astrafinance.in",
@@ -49,12 +63,14 @@ const seedNbfcInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-02-03T10:00:00.000Z",
     documents: getSeedNbfcDocuments(),
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   },
   {
     id: "nbfc-002",
     instituteCode: "CONBFC2602",
     instituteName: "Vertex Capital Finance",
+    category: "NBFC",
     contactPerson: "Priya Desai",
     mobileNumber: "9876600002",
     email: "support@vertexcapital.in",
@@ -69,12 +85,14 @@ const seedNbfcInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-02-12T11:20:00.000Z",
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   },
   {
     id: "nbfc-003",
     instituteCode: "CONBFC2603",
     instituteName: "EduCred Lending Services",
+    category: "NBFC",
     contactPerson: "Rohit Verma",
     mobileNumber: "9876600003",
     email: "admin@educredlending.in",
@@ -89,12 +107,14 @@ const seedNbfcInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-03-08T12:10:00.000Z",
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   },
   {
     id: "nbfc-004",
     instituteCode: "CONBFC2604",
     instituteName: "Progressive Credit Partners",
+    category: "NBFC",
     contactPerson: "Sneha Reddy",
     mobileNumber: "9876600004",
     email: "contact@progressivecredit.in",
@@ -109,6 +129,7 @@ const seedNbfcInstitutes: IEducationInstitute[] = [
     updatedAt: "2026-03-18T13:30:00.000Z",
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   },
 ];
@@ -121,13 +142,17 @@ const normalizeNbfcInstitutes = (institutes: IEducationInstitute[]): IEducationI
       return {
         ...item,
         documents: getSeedNbfcDocuments(),
+        category: item.category || "NBFC",
+        authorizedPersons: item.authorizedPersons || [],
         branches: item.branches || [],
       };
     }
 
     return {
       ...item,
+      category: item.category || "NBFC",
       documents: item.documents || [],
+      authorizedPersons: item.authorizedPersons || [],
       branches: item.branches || [],
     };
   });
@@ -175,7 +200,7 @@ export const getNbfcInstituteById = (
   getNbfcInstitutes().find((institute) => institute.id === instituteId);
 
 export const createNbfcInstitute = (
-  instituteData: IEducationInstituteFormData,
+  instituteData: INbfcFormData,
 ): IEducationInstitute => {
   const institutes = getNbfcInstitutes();
   const now = new Date().toISOString();
@@ -185,6 +210,7 @@ export const createNbfcInstitute = (
     id: `nbfc-${Date.now()}`,
     instituteCode: `CONBFC26-${nextNumber}`,
     instituteName: instituteData.instituteName.trim(),
+    category: "NBFC",
     contactPerson: instituteData.contactPerson.trim(),
     mobileNumber: instituteData.mobileNumber.trim(),
     email: instituteData.email.trim(),
@@ -199,6 +225,7 @@ export const createNbfcInstitute = (
     updatedAt: now,
     documents: [],
     totalStudents: 0,
+    authorizedPersons: [],
     branches: [],
   };
 

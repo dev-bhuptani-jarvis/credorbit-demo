@@ -41,8 +41,10 @@ import {
 import {
   buildEducationCustomerInfo,
   calculateEducationLoanSummary,
+  getEducationLoanDraftById,
   getPendingEducationLoanApplicationsByStudent,
   getRecommendedEmiOptions,
+  setEducationLoanResumeStep,
 } from "../../utils/demo/demoEducationLoanFlow";
 import {
   createEducationLoanDraftAPI,
@@ -170,6 +172,7 @@ const EducationLoanApplication = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { state } = useLocation();
+  const resumeDraftId = state?.resumeDraftId as string | undefined;
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -541,7 +544,12 @@ const EducationLoanApplication = () => {
       setStudents(studentResponse);
       setCourses(courseResponse);
 
+      const resumeDraft = resumeDraftId
+        ? getEducationLoanDraftById(resumeDraftId)
+        : undefined;
+
       const preselectedStudentId =
+        resumeDraft?.studentId ||
         state?.preselectedStudentId ||
         getDecryptedSessionStorage(StorageKeyEnum.CRED_ORBIT_IMPERSONATE_STUDENT_ID);
 
@@ -552,8 +560,33 @@ const EducationLoanApplication = () => {
 
         if (matchedStudent) {
           setSelectedStudent(matchedStudent);
-          applySelectedCourse(undefined);
-          setActiveIndex(1);
+          if (resumeDraft) {
+            const matchedCourse = courseResponse.find(
+              (course) => course.id === resumeDraft.courseId,
+            );
+
+            applySelectedCourse(matchedCourse);
+            setEmiOptionMonths(resumeDraft.emiOptionMonths);
+            setAdvancedEmiMonths(resumeDraft.advancedEmiMonths);
+            setDownpayment(formatNumber(resumeDraft.downpayment));
+            setDiscountAmount(formatNumber(resumeDraft.discountAmount));
+            setDiscountPercentage(
+              resumeDraft.courseFees
+                ? Number(
+                    ((resumeDraft.discountAmount / resumeDraft.courseFees) * 100).toFixed(2),
+                  )
+                    .toString()
+                    .replace(/\.00$/, "")
+                : "",
+            );
+            setConsentState(consentChecklist.map(() => resumeDraft.consentAccepted));
+            setReviewTabIndex(0);
+            setActiveIndex(2);
+            setEducationLoanResumeStep(resumeDraft.id, "consent");
+          } else {
+            applySelectedCourse(undefined);
+            setActiveIndex(1);
+          }
         }
       } else if (isStudentUser) {
         const matchedStudent = studentResponse.find(
@@ -929,6 +962,7 @@ const EducationLoanApplication = () => {
 
       const draft = response.data;
 
+      setEducationLoanResumeStep(draft.id, "credit-score");
       dispatch(setCustomerInfo(buildEducationCustomerInfo(draftStudent)));
 
       toastSuccess(
@@ -941,6 +975,7 @@ const EducationLoanApplication = () => {
           educationLoanApplicationId: draft.id,
           loanApp: draft.id,
           loanType: 0,
+          resumeStep: "credit-score",
         },
       });
     } finally {
@@ -954,6 +989,25 @@ const EducationLoanApplication = () => {
     if (!selectedStudent) {
       toastError("Select a student before continuing.");
       return;
+    }
+
+    if (resumeDraftId) {
+      const resumeDraft = getEducationLoanDraftById(resumeDraftId);
+
+      if (resumeDraft) {
+        setEducationLoanResumeStep(resumeDraft.id, "credit-score");
+        dispatch(setCustomerInfo(buildEducationCustomerInfo(selectedStudent)));
+        navigate(RoutePathConstant.private.checkEligibility, {
+          state: {
+            educationFlow: true,
+            educationLoanApplicationId: resumeDraft.id,
+            loanApp: resumeDraft.id,
+            loanType: 0,
+            resumeStep: "credit-score",
+          },
+        });
+        return;
+      }
     }
 
     const pendingApplications = getPendingEducationLoanApplicationsByStudent(
