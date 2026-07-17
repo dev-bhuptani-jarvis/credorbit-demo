@@ -23,23 +23,26 @@ import { Button } from "primereact/button";
 import Loader from "../../components/Loader";
 import { validationMessages } from "../../utils/constants/messages";
 import { NotificationList } from "../../interface/notifications";
-import NotificationModalNew from "../../components/notifcationmodel/notifcation-model-new";
 import { CLIENT_ROLE } from "../../utils/constants/constant";
+import NotificationModalNew from "../../components/notifcationmodel/notifcation-model-new";
 
 const DashboardHeader = () => {
   const EDUCATION_INSTITUTE_USER_ID = "edu-inst-001";
   const STUDENT_USER_ID = "student-role-001";
 
   const [showLogoutDialog, setShowLogoutDialog] = useState<boolean>(false);
-
   const [showNotificationMenu, setShowNotificationMenu] =
     useState<boolean>(false);
 
   const [loading, setLoading] = useState<boolean>(false);
-
+  const [notificationList, setNotificationList] = useState<NotificationList[]>(
+    [],
+  );
   const [unReadNotificationList, setUnReadNotificationList] = useState<
     NotificationList[]
   >([]);
+  const [unReadNotificationCount, setUnReadNotificationCount] =
+    useState<number>(0);
 
   const navigate = useNavigate();
 
@@ -51,13 +54,6 @@ const DashboardHeader = () => {
     (state: RootState) => state.impersonateUser,
   );
 
-  const [notificationList, setNotificationList] = useState<NotificationList[]>(
-    [],
-  );
-
-  const [unReadNotificationCount, setUnReadNotificationCount] =
-    useState<number>(0);
-
   const isEducationInstituteDashboard =
     userData.userType === CLIENT_ROLE.CHANNEL_PARTNER &&
     userData.userID === EDUCATION_INSTITUTE_USER_ID;
@@ -65,8 +61,6 @@ const DashboardHeader = () => {
   const isStudentDashboard =
     userData.userType === CLIENT_ROLE.CUSTOMER &&
     (userData.userID === STUDENT_USER_ID || userData.roleName === "Student");
-
-  const isAdminWelcomeOnly = userData.userType === CLIENT_ROLE.SUPER_ADMIN;
 
   const isManagedEducationHeader =
     isEducationInstituteDashboard || isStudentDashboard;
@@ -178,115 +172,84 @@ const DashboardHeader = () => {
           } ${isStudentDashboard ? "student-dashboard-header" : ""
           }`}
       >
-        {!isAdminWelcomeOnly && (
-          <Link className="menuHldr" id="menuHldr" to="#">
-            <i className="bi bi-list" />
-          </Link>
-        )}
-
         <div
           className={`col-12 titleMainWrapper justify-content-between ${isManagedEducationHeader ? "education-dashboard-header__content" : ""
             } ${isStudentDashboard ? "student-dashboard-header__content" : ""
             }`}
         >
-          <h2
-            className={`fw-bold txt-30 ${isManagedEducationHeader ? "education-dashboard-header__title" : ""
-              } ${isStudentDashboard ? "student-dashboard-header__title" : ""
-              }`}
-          >
-            <span>Welcome,</span> {userData.userName}
-          </h2>
-          {!isAdminWelcomeOnly && (
-            <div
-              className={`BtnRightHldr d-flex flex-row ${isManagedEducationHeader ? "education-dashboard-header__actions" : ""
-                } ${isStudentDashboard ? "student-dashboard-header__actions" : ""
+          <div className="education-dashboard-header-div">
+            <h2
+              className={`fw-bold txt-30 ${isManagedEducationHeader ? "education-dashboard-header__title" : ""
+                } ${isStudentDashboard ? "student-dashboard-header__title" : ""
                 }`}
-              style={{ gap: "10px" }}
             >
-              {isEducationInstituteDashboard && (
-                <>
-                  <div className="form-group education-dashboard-header__action">
-                    <Button
-                      className="btn btn-orange-line"
-                      onClick={() =>
-                        navigate(
-                          RoutePathConstant.private.educationStudentLoanApplication,
-                        )
-                      }
-                    >
-                      Add Applications
-                    </Button>
-                  </div>
+              <span>Welcome,</span> {userData.userName}
+            </h2>
 
-                  <div className="form-group education-dashboard-header__action">
-                    <Button
-                      className="btn btn-orange-line"
-                      onClick={() =>
-                        navigate(RoutePathConstant.private.educationAddStudent)
-                      }
-                    >
-                      Add Student
-                    </Button>
-                  </div>
+            {(isEducationInstituteDashboard || isStudentDashboard) && (
+              <div
+                className={`BtnRightHldr d-flex flex-row flex-wrap ${isManagedEducationHeader ? "education-dashboard-header__actions" : ""
+                  } ${isStudentDashboard ? "student-dashboard-header__actions" : ""
+                  }`}
+                style={{ gap: "10px" }}
+              >
+                {isEducationInstituteDashboard && (
+                  <>
+                    <div className="form-group education-dashboard-header__action">
+                      <Button
+                        className="btn btn-orange-line"
+                        onClick={() =>
+                          navigate(
+                            RoutePathConstant.private.educationStudentLoanApplication,
+                          )
+                        }
+                      >
+                        Add Applications
+                      </Button>
+                    </div>
 
+                    <div className="form-group education-dashboard-header__action">
+                      <Button
+                        className="btn btn-orange-line"
+                        onClick={() =>
+                          navigate(RoutePathConstant.private.educationAddStudent)
+                        }
+                      >
+                        Add Student
+                      </Button>
+                    </div>
+
+                    <div className="form-group education-dashboard-header__action">
+                      <Button
+                        className="btn btn-orange"
+                        onClick={() =>
+                          navigate(
+                            `${RoutePathConstant.private.channelPartnerDashboard}?status=1`,
+                          )
+                        }
+                      >
+                        Show Ongoing Applications
+                      </Button>
+                    </div>
+                  </>
+                )}
+
+                {isStudentDashboard && (
                   <div className="form-group education-dashboard-header__action">
                     <Button
-                      className="btn btn-orange"
+                      className="btn btn-orange student-dashboard-header__button"
                       onClick={() =>
-                        navigate(
-                          `${RoutePathConstant.private.channelPartnerDashboard}?status=1`,
-                        )
+                        navigate(RoutePathConstant.private.studentOngoingApplications)
                       }
                     >
                       Show Ongoing Applications
                     </Button>
                   </div>
-                </>
-              )}
+                )}
+              </div>
+            )}
+          </div>
 
-              {isStudentDashboard && (
-                <div className="form-group education-dashboard-header__action">
-                  <Button
-                    className="btn btn-orange student-dashboard-header__button"
-                    onClick={() =>
-                      navigate(RoutePathConstant.private.studentOngoingApplications)
-                    }
-                  >
-                    Show Ongoing Applications
-                  </Button>
-                </div>
-              )}
-
-              {!isEducationInstituteDashboard && !isStudentDashboard && (
-                <div className="form-group">
-                  <Button
-                    className="btn btn-orange-line"
-                    onClick={() =>
-                      navigate(RoutePathConstant.private.addApplications)
-                    }
-                  >
-                    Add Application
-                  </Button>
-                </div>
-              )}
-
-              {!isEducationInstituteDashboard &&
-                !isStudentDashboard &&
-                <div className="form-group">
-                  <Button
-                    className="btn btn-orange"
-                    icon="bi bi-plus-circle me-2"
-                    iconPos="left"
-                  >
-                    Add Client
-                  </Button>
-                </div>
-              }
-            </div>
-          )}
-        </div>
-
-        {!isAdminWelcomeOnly && (
           <ul
             className={`rightSide ${isManagedEducationHeader ? "education-dashboard-header__utility" : ""
               } ${isStudentDashboard ? "student-dashboard-header__utility" : ""
@@ -338,8 +301,8 @@ const DashboardHeader = () => {
               </Link>
             </li>
           </ul>
-        )}
-      </header>
+        </div>
+      </header >
 
       <Dialog
         header="Confirm Logout"
