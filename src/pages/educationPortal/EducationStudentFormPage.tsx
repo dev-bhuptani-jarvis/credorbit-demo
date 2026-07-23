@@ -44,6 +44,59 @@ type PhotoPreviewState = {
   image: string;
 };
 
+type MobileLookupTarget =
+  | { type: "student" }
+  | { type: "applicant"; index: number; title: string };
+
+type MobileLookupPreview = {
+  name: string;
+  pan: string;
+  dateOfBirth: string;
+  gender: IEducationStudentApplicant["gender"];
+  mobileNumber: string;
+  email: string;
+  address: string;
+};
+
+const buildMobileLookupPreview = (mobileNumber: string): MobileLookupPreview => {
+  const normalizedMobileNumber = mobileNumber.trim();
+  const digits = normalizedMobileNumber.padEnd(10, "0");
+  const firstSeed = Number(digits.slice(0, 2));
+  const secondSeed = Number(digits.slice(2, 4));
+  const year = 1980 + (Number(digits.slice(4, 6)) % 18);
+  const month = (Number(digits.slice(6, 8)) % 12) + 1;
+  const day = (Number(digits.slice(8, 10)) % 28) + 1;
+  const genderPool: Array<IEducationStudentApplicant["gender"]> = ["Male", "Female", "Other"];
+  const firstNames = ["Aarav", "Diya", "Kavya", "Rohan", "Mihir", "Tanvi", "Vihaan", "Ishita"];
+  const lastNames = ["Shah", "Patel", "Nair", "Mehta", "Joshi", "Reddy", "Kapoor", "Iyer"];
+  const localities = [
+    "Navrangpura, Ahmedabad, Gujarat",
+    "Malad West, Mumbai, Maharashtra",
+    "Panampilly Nagar, Kochi, Kerala",
+    "Indiranagar, Bengaluru, Karnataka",
+    "Banjara Hills, Hyderabad, Telangana",
+    "T Nagar, Chennai, Tamil Nadu",
+  ];
+  const firstName = firstNames[firstSeed % firstNames.length];
+  const lastName = lastNames[secondSeed % lastNames.length];
+  const name = `${firstName} ${lastName}`;
+  const panPrefix = `${firstName}${lastName}`
+    .replace(/[^A-Za-z]/g, "")
+    .toUpperCase()
+    .padEnd(5, "X")
+    .slice(0, 5);
+
+  return {
+    name,
+    pan: `${panPrefix}${digits.slice(0, 4)}${lastName.charAt(0).toUpperCase()}`,
+    dateOfBirth: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+    gender: genderPool[firstSeed % genderPool.length],
+    mobileNumber: normalizedMobileNumber,
+    email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${digits.slice(6)}@demo.app`,
+    address: `${(Number(digits.slice(0, 3)) % 90) + 10}, ${localities[firstSeed % localities.length]}`,
+  };
+};
+
 const EducationStudentFormPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -63,6 +116,16 @@ const EducationStudentFormPage = () => {
   const [photoPreviewState, setPhotoPreviewState] =
     useState<PhotoPreviewState | null>(null);
   const [showPhotoCapture, setShowPhotoCapture] = useState<boolean>(false);
+  const [mobileLookupTarget, setMobileLookupTarget] =
+    useState<MobileLookupTarget | null>(null);
+  const [mobileLookupNumber, setMobileLookupNumber] = useState<string>("");
+  const [mobileLookupError, setMobileLookupError] = useState<string>("");
+  const [mobileLookupPreview, setMobileLookupPreview] =
+    useState<MobileLookupPreview | null>(null);
+  const [isStudentLockedByLookup, setIsStudentLockedByLookup] =
+    useState<boolean>(false);
+  const [lockedApplicantIds, setLockedApplicantIds] =
+    useState<Record<string, boolean>>({});
 
   const primaryApplicant = studentForm.applicants[0] || createEmptyApplicant();
   const coApplicants = studentForm.applicants.slice(1);
@@ -97,6 +160,12 @@ const EducationStudentFormPage = () => {
         applicants: [createEmptyApplicant()],
       });
       setIsApplicantSameAsStudent(false);
+      setIsStudentLockedByLookup(false);
+      setLockedApplicantIds({});
+      setMobileLookupTarget({ type: "student" });
+      setMobileLookupNumber("");
+      setMobileLookupError("");
+      setMobileLookupPreview(null);
       return;
     }
 
@@ -131,6 +200,8 @@ const EducationStudentFormPage = () => {
       isActive: student.isActive,
     });
     setIsApplicantSameAsStudent(false);
+    setIsStudentLockedByLookup(false);
+    setLockedApplicantIds({});
   }, [id, isEditMode, navigate]);
 
   useEffect(() => {
@@ -207,6 +278,138 @@ const EducationStudentFormPage = () => {
         applicantIndex === 0 ? getLinkedApplicant(applicant) : applicant,
       ),
     }));
+  };
+
+  const openMobileLookup = (target: MobileLookupTarget): void => {
+    const defaultMobileNumber =
+      target.type === "student"
+        ? studentForm.mobileNumber
+        : studentForm.applicants[target.index]?.mobileNumber || "";
+
+    setMobileLookupTarget(target);
+    setMobileLookupNumber(defaultMobileNumber);
+    setMobileLookupError("");
+    setMobileLookupPreview(
+      INDIAN_MOBILE_NUMBER_PATTERN.test(defaultMobileNumber.trim())
+        ? buildMobileLookupPreview(defaultMobileNumber.trim())
+        : null,
+    );
+  };
+
+  const closeMobileLookup = (): void => {
+    setMobileLookupTarget(null);
+    setMobileLookupNumber("");
+    setMobileLookupError("");
+    setMobileLookupPreview(null);
+  };
+
+  const handleFetchMobileLookup = (): void => {
+    const normalizedMobileNumber = mobileLookupNumber.trim();
+
+    if (!INDIAN_MOBILE_NUMBER_PATTERN.test(normalizedMobileNumber)) {
+      setMobileLookupError("Enter a valid 10-digit mobile number.");
+      setMobileLookupPreview(null);
+      return;
+    }
+
+    setMobileLookupError("");
+    setMobileLookupPreview(buildMobileLookupPreview(normalizedMobileNumber));
+  };
+
+  const applyMobileLookup = (): void => {
+    if (!mobileLookupTarget || !mobileLookupPreview) return;
+
+    if (mobileLookupTarget.type === "student") {
+      setStudentForm((prev) => {
+        const nextStudentData = {
+          studentName: mobileLookupPreview.name,
+          studentPan: mobileLookupPreview.pan,
+          studentDateOfBirth: mobileLookupPreview.dateOfBirth,
+          studentGender: mobileLookupPreview.gender,
+          mobileNumber: mobileLookupPreview.mobileNumber,
+          email: mobileLookupPreview.email,
+          address: mobileLookupPreview.address,
+        };
+
+        return {
+          ...prev,
+          ...nextStudentData,
+          isMinor: false,
+          parentPan: "",
+          applicants: prev.applicants.map((applicant, applicantIndex) =>
+            applicantIndex === 0 && isApplicantSameAsStudent
+              ? {
+                ...applicant,
+                name: nextStudentData.studentName,
+                pan: nextStudentData.studentPan,
+                dateOfBirth: nextStudentData.studentDateOfBirth,
+                gender: nextStudentData.studentGender,
+                mobileNumber: nextStudentData.mobileNumber,
+                email: nextStudentData.email,
+                photo: prev.studentPhoto,
+                address: nextStudentData.address,
+              }
+              : applicant,
+          ),
+        };
+      });
+
+      setFormErrors((prev) => ({
+        ...prev,
+        studentName: "",
+        studentDateOfBirth: "",
+        studentGender: "",
+        mobileNumber: "",
+        email: "",
+        address: "",
+        parentPan: "",
+      }));
+      setIsStudentLockedByLookup(true);
+      closeMobileLookup();
+      toastSuccess("Student details fetched from mobile number.");
+      return;
+    }
+
+    const applicantId = studentForm.applicants[mobileLookupTarget.index]?.id;
+
+    setStudentForm((prev) => ({
+      ...prev,
+      applicants: prev.applicants.map((applicant, applicantIndex) =>
+        applicantIndex === mobileLookupTarget.index
+          ? {
+            ...applicant,
+            name: mobileLookupPreview.name,
+            pan: mobileLookupPreview.pan,
+            dateOfBirth: mobileLookupPreview.dateOfBirth,
+            gender: mobileLookupPreview.gender,
+            mobileNumber: mobileLookupPreview.mobileNumber,
+            email: mobileLookupPreview.email,
+            address: mobileLookupPreview.address,
+          }
+          : applicant,
+      ),
+    }));
+
+    setFormErrors((prev) => ({
+      ...prev,
+      [`applicants.${mobileLookupTarget.index}.name`]: "",
+      [`applicants.${mobileLookupTarget.index}.pan`]: "",
+      [`applicants.${mobileLookupTarget.index}.dateOfBirth`]: "",
+      [`applicants.${mobileLookupTarget.index}.gender`]: "",
+      [`applicants.${mobileLookupTarget.index}.mobileNumber`]: "",
+      [`applicants.${mobileLookupTarget.index}.email`]: "",
+      [`applicants.${mobileLookupTarget.index}.address`]: "",
+    }));
+
+    if (applicantId) {
+      setLockedApplicantIds((prev) => ({
+        ...prev,
+        [applicantId]: true,
+      }));
+    }
+
+    closeMobileLookup();
+    toastSuccess(`${mobileLookupTarget.title} fetched from mobile number.`);
   };
 
   const getPhotoValue = (target: PhotoEditorTarget | null): string | null => {
@@ -542,11 +745,13 @@ const EducationStudentFormPage = () => {
     canRemove: boolean,
   ) => {
     const isPrimaryApplicantLocked = !canRemove && isApplicantSameAsStudent;
+    const isApplicantLockedByLookup = Boolean(lockedApplicantIds[applicant.id]);
+    const disableIdentityFields = isPrimaryApplicantLocked || isApplicantLockedByLookup;
 
     return (
       <section
         key={applicant.id}
-        className={`education-student-create-card ${isPrimaryApplicantLocked ? "education-student-create-card--disabled" : ""
+        className={`education-student-create-card mt-5 ${disableIdentityFields ? "education-student-create-card--disabled" : ""
           }`}
       >
         <div className="education-student-create-card__head">
@@ -556,32 +761,45 @@ const EducationStudentFormPage = () => {
           </div>
           <div className="education-student-create-card__head-actions">
             {!canRemove ? (
-              <label className="education-student-sync-check">
-                <input
-                  type="checkbox"
-                  checked={isApplicantSameAsStudent}
-                  onChange={(event) =>
-                    handleApplicantSyncChange(event.target.checked)
-                  }
-                />
-                <span>Same as Student</span>
-              </label>
+              <div className="d-flex align-items-center gap-2 flex-wrap">
+                <Button
+                  className="btn btn-orange-line"
+                  onClick={() => openMobileLookup({ type: "applicant", index, title })}
+                >
+                  Fetch by Mobile
+                </Button>
+                <label className="education-student-sync-check">
+                  <input
+                    type="checkbox"
+                    checked={isApplicantSameAsStudent}
+                    onChange={(event) =>
+                      handleApplicantSyncChange(event.target.checked)
+                    }
+                  />
+                  <span>Same as Student</span>
+                </label>
+              </div>
             ) : (
-              <Button
-                className="btn btn-black-line"
-                onClick={() => removeCoApplicant(index)}
-              >
-                Remove
-              </Button>
+              <div className="d-flex align-items-center gap-2 flex-wrap">
+                <Button
+                  className="btn btn-orange-line"
+                  onClick={() => openMobileLookup({ type: "applicant", index, title })}
+                >
+                  Fetch by Mobile
+                </Button>
+                <Button
+                  className="btn btn-black-line"
+                  onClick={() => removeCoApplicant(index)}
+                >
+                  Remove
+                </Button>
+              </div>
             )}
           </div>
         </div>
 
         <div className="education-student-create-card__body education-student-create-card__body--single">
-          <fieldset
-            className="education-student-create-fields education-student-create-fields--reset"
-            disabled={isPrimaryApplicantLocked}
-          >
+          <div className="education-student-create-fields education-student-create-fields--reset">
             <div className="row g-3">
               <div className="form-group col-md-6">
                 <label className="form-label">Name<sup>*</sup></label>
@@ -589,6 +807,7 @@ const EducationStudentFormPage = () => {
                   className="form-control"
                   placeholder={`Enter ${title.toLowerCase()} name`}
                   value={applicant.name}
+                  disabled={disableIdentityFields}
                   onChange={(event) =>
                     handleApplicantChange(index, "name", event.target.value)
                   }
@@ -604,6 +823,7 @@ const EducationStudentFormPage = () => {
                   className="form-control"
                   placeholder={`Enter ${title.toLowerCase()} PAN`}
                   value={applicant.pan}
+                  disabled={disableIdentityFields}
                   onChange={(event) =>
                     handleApplicantChange(index, "pan", event.target.value.toUpperCase())
                   }
@@ -619,6 +839,7 @@ const EducationStudentFormPage = () => {
                   className="form-control"
                   type="date"
                   value={applicant.dateOfBirth}
+                  disabled={disableIdentityFields}
                   onChange={(event) =>
                     handleApplicantChange(index, "dateOfBirth", event.target.value)
                   }
@@ -636,6 +857,7 @@ const EducationStudentFormPage = () => {
                   className="w-100"
                   value={applicant.gender}
                   options={genderOptions}
+                  disabled={disableIdentityFields}
                   onChange={(event) =>
                     handleApplicantChange(index, "gender", event.value)
                   }
@@ -653,6 +875,7 @@ const EducationStudentFormPage = () => {
                   maxLength={10}
                   placeholder="Enter 10-digit mobile number"
                   value={applicant.mobileNumber}
+                  disabled={disableIdentityFields}
                   onChange={(event) =>
                     handleApplicantChange(
                       index,
@@ -674,6 +897,7 @@ const EducationStudentFormPage = () => {
                   className="form-control"
                   placeholder="Enter email address"
                   value={applicant.email}
+                  disabled={disableIdentityFields}
                   onChange={(event) =>
                     handleApplicantChange(index, "email", event.target.value)
                   }
@@ -690,6 +914,7 @@ const EducationStudentFormPage = () => {
                   rows={3}
                   placeholder={`Enter ${title.toLowerCase()} address`}
                   value={applicant.address || ""}
+                  disabled={disableIdentityFields}
                   onChange={(event) =>
                     handleApplicantChange(index, "address", event.target.value)
                   }
@@ -705,7 +930,7 @@ const EducationStudentFormPage = () => {
                 `${title} Photo`,
                 "Upload or capture photo",
                 { type: "applicant", index, title },
-                isPrimaryApplicantLocked,
+                false,
               )}
               {renderUploadField(
                 `applicantPanDocumentUpload-${index}`,
@@ -716,7 +941,7 @@ const EducationStudentFormPage = () => {
                 (event) => handleApplicantDocumentChange(index, "panDocument", event),
                 formErrors[`applicants.${index}.panDocument`],
                 true,
-                isPrimaryApplicantLocked,
+                false,
               )}
               {renderUploadField(
                 `applicantAadhaarDocumentUpload-${index}`,
@@ -728,10 +953,10 @@ const EducationStudentFormPage = () => {
                   handleApplicantDocumentChange(index, "aadhaarDocument", event),
                 formErrors[`applicants.${index}.aadhaarDocument`],
                 true,
-                isPrimaryApplicantLocked,
+                false,
               )}
             </div>
-          </fieldset>
+          </div>
         </div>
       </section>
     );
@@ -758,6 +983,9 @@ const EducationStudentFormPage = () => {
                   <h4>Student Details</h4>
                   <p>Capture the core profile, contact details, address, and KYC documents.</p>
                 </div>
+                <Button className="btn btn-orange-line" onClick={() => openMobileLookup({ type: "student" })}>
+                  Fetch by Mobile
+                </Button>
               </div>
 
               <div className="education-student-create-card__body education-student-create-card__body--single">
@@ -772,6 +1000,7 @@ const EducationStudentFormPage = () => {
                         className="form-control"
                         placeholder="Enter student name"
                         value={studentForm.studentName}
+                        disabled={isStudentLockedByLookup}
                         onChange={(event) =>
                           handleFieldChange("studentName", event.target.value)
                         }
@@ -790,6 +1019,7 @@ const EducationStudentFormPage = () => {
                         className="form-control"
                         placeholder="Enter student PAN"
                         value={studentForm.studentPan}
+                        disabled={isStudentLockedByLookup}
                         onChange={(event) =>
                           handleFieldChange("studentPan", event.target.value.toUpperCase())
                         }
@@ -805,6 +1035,7 @@ const EducationStudentFormPage = () => {
                         className="form-control"
                         type="date"
                         value={studentForm.studentDateOfBirth}
+                        disabled={isStudentLockedByLookup}
                         onChange={(event) =>
                           handleFieldChange("studentDateOfBirth", event.target.value)
                         }
@@ -823,6 +1054,7 @@ const EducationStudentFormPage = () => {
                         className="w-100"
                         value={studentForm.studentGender}
                         options={genderOptions}
+                        disabled={isStudentLockedByLookup}
                         onChange={(event) =>
                           handleFieldChange("studentGender", event.value)
                         }
@@ -843,6 +1075,7 @@ const EducationStudentFormPage = () => {
                         placeholder="Enter 10-digit mobile number"
                         maxLength={10}
                         value={studentForm.mobileNumber}
+                        disabled={isStudentLockedByLookup}
                         onChange={(event) =>
                           handleFieldChange(
                             "mobileNumber",
@@ -864,6 +1097,7 @@ const EducationStudentFormPage = () => {
                         className="form-control"
                         placeholder="Enter student email address"
                         value={studentForm.email}
+                        disabled={isStudentLockedByLookup}
                         onChange={(event) => handleFieldChange("email", event.target.value)}
                       />
                       {formErrors.email ? (
@@ -881,6 +1115,7 @@ const EducationStudentFormPage = () => {
                         rows={3}
                         placeholder="Enter full student address"
                         value={studentForm.address}
+                        disabled={isStudentLockedByLookup}
                         onChange={(event) => handleFieldChange("address", event.target.value)}
                       />
                       {formErrors.address ? (
@@ -928,7 +1163,7 @@ const EducationStudentFormPage = () => {
               false,
             )}
 
-            <section className="education-student-create-card">
+            <section className="education-student-create-card mt-5">
               <div className="education-student-create-card__head">
                 <div>
                   <h4>Co-applicant Details</h4>
@@ -970,6 +1205,99 @@ const EducationStudentFormPage = () => {
           </main>
         </div>
       </div>
+
+      <Dialog
+        header={
+          mobileLookupTarget?.type === "student"
+            ? "Verify Student Mobile Number"
+            : mobileLookupTarget
+              ? `Verify ${mobileLookupTarget.title} Mobile Number`
+              : "Verify Mobile Number"
+        }
+        visible={mobileLookupTarget !== null}
+        onHide={closeMobileLookup}
+        modal
+        draggable={false}
+        resizable={false}
+        blockScroll
+        className="modalWrapper responsive-dialog"
+        style={{ width: "680px", maxWidth: "95vw" }}
+      >
+        <div className="education-verification-dialog">
+          <div className="form-group">
+            <label className="form-label" htmlFor="mobileLookupNumber">
+              Mobile Number<sup>*</sup>
+            </label>
+            <InputText
+              id="mobileLookupNumber"
+              className="form-control"
+              placeholder="Enter 10-digit mobile number"
+              maxLength={10}
+              value={mobileLookupNumber}
+              onChange={(event) => {
+                setMobileLookupNumber(event.target.value.replace(/\D/g, "").slice(0, 10));
+                setMobileLookupError("");
+              }}
+            />
+          </div>
+
+          {mobileLookupError ? <small className="error">{mobileLookupError}</small> : null}
+
+          <div className="d-flex justify-content-end mt-3">
+            <Button className="btn btn-orange-line" onClick={handleFetchMobileLookup}>
+              Fetch Mobile Details
+            </Button>
+          </div>
+
+          {mobileLookupPreview ? (
+            <div className="borderBoxHldr p-24 mt-3">
+              <div className="row">
+                <div className="col-lg-4 col-md-6 col-12 mb-4">
+                  <b>Name</b>
+                  <p className="text-break">{mobileLookupPreview.name}</p>
+                </div>
+                <div className="col-lg-4 col-md-6 col-12 mb-4">
+                  <b>PAN</b>
+                  <p className="text-break">{mobileLookupPreview.pan}</p>
+                </div>
+                <div className="col-lg-4 col-md-6 col-12 mb-4">
+                  <b>Date of Birth</b>
+                  <p className="text-break">{mobileLookupPreview.dateOfBirth}</p>
+                </div>
+                <div className="col-lg-4 col-md-6 col-12 mb-4">
+                  <b>Gender</b>
+                  <p className="text-break">{mobileLookupPreview.gender}</p>
+                </div>
+                <div className="col-lg-4 col-md-6 col-12 mb-4">
+                  <b>Mobile Number</b>
+                  <p className="text-break">{mobileLookupPreview.mobileNumber}</p>
+                </div>
+                <div className="col-lg-4 col-md-6 col-12 mb-4">
+                  <b>Email Address</b>
+                  <p className="text-break">{mobileLookupPreview.email}</p>
+                </div>
+                <div className="col-12 mb-0">
+                  <b>Address</b>
+                  <p className="text-break mb-0">{mobileLookupPreview.address}</p>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="d-flex justify-content-end gap-3 mt-4 flex-wrap">
+            <Button className="btn btn-black-line" onClick={closeMobileLookup}>
+              Cancel
+            </Button>
+            <Button
+              className="btn btn-orange"
+              onClick={applyMobileLookup}
+              disabled={!mobileLookupPreview}
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
+      </Dialog>
 
       <Dialog
         header={photoEditorTarget ? getPhotoTitle(photoEditorTarget) : "Photo Upload"}

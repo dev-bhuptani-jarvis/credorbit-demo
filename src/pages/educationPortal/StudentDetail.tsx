@@ -15,6 +15,39 @@ import { formatDate } from "../../utils/functions/shared";
 import { getEducationStudentById } from "../../utils/demo/demoEducationStudents";
 import { getEducationLoanDrafts } from "../../utils/demo/demoEducationLoanFlow";
 
+const renderDocumentLink = (
+  href: string | null | undefined,
+  label: string,
+  isImage: boolean = false,
+) => {
+  if (!href) {
+    return <p className="text-break mb-0">Not uploaded</p>;
+  }
+
+  return (
+    <div className="d-flex flex-column gap-2">
+      {isImage ? (
+        <a href={href} target="_blank" rel="noreferrer">
+          <img
+            src={href}
+            alt={label}
+            style={{
+              width: "88px",
+              height: "88px",
+              objectFit: "cover",
+              borderRadius: "12px",
+              border: "1px solid #f1d4c8",
+            }}
+          />
+        </a>
+      ) : null}
+      <a href={href} target="_blank" rel="noreferrer" className="btn btn-orange-line">
+        View {label}
+      </a>
+    </div>
+  );
+};
+
 const StudentDetail = () => {
   const navigate = useNavigate();
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
@@ -77,6 +110,32 @@ const StudentDetail = () => {
         <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
           <b>Email Address</b>
           <p className="text-break">{applicant.email || "-"}</p>
+        </div>
+        <div className="col-lg-6 col-md-7 col-sm-12 col-12 mb-4">
+          <b>Address</b>
+          <p className="text-break">{applicant.address || "-"}</p>
+        </div>
+        <div className="col-12">
+          <div className="row">
+            <div className="col-lg-4 col-md-6 col-12 mb-4">
+              <b>{title} Photo</b>
+              <div className="mt-2">
+                {renderDocumentLink(applicant.photo, `${title} Photo`, true)}
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-6 col-12 mb-4">
+              <b>{title} PAN Upload</b>
+              <div className="mt-2">
+                {renderDocumentLink(applicant.panDocument, `${title} PAN`)}
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-6 col-12 mb-4">
+              <b>{title} Aadhaar Upload</b>
+              <div className="mt-2">
+                {renderDocumentLink(applicant.aadhaarDocument, `${title} Aadhaar`)}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -174,6 +233,10 @@ const StudentDetail = () => {
                     <p className="text-break">{student.email}</p>
                   </div>
                   <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
+                    <b>Student PAN</b>
+                    <p className="text-break">{student.studentPan || "-"}</p>
+                  </div>
+                  <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                     <b>Credit Score</b>
                     <p className="text-break">{student.creditInformation.creditScore}</p>
                   </div>
@@ -182,6 +245,32 @@ const StudentDetail = () => {
                     <p className="text-break">
                       {student.creditInformation.lastDateCreditScore}
                     </p>
+                  </div>
+                  <div className="col-lg-6 col-md-7 col-sm-12 col-12 mb-4">
+                    <b>Address</b>
+                    <p className="text-break">{student.address || "-"}</p>
+                  </div>
+                  <div className="col-12">
+                    <div className="row">
+                      <div className="col-lg-4 col-md-6 col-12 mb-4">
+                        <b>Student Photo</b>
+                        <div className="mt-2">
+                          {renderDocumentLink(student.studentPhoto, "Student Photo", true)}
+                        </div>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-12 mb-4">
+                        <b>Student PAN Upload</b>
+                        <div className="mt-2">
+                          {renderDocumentLink(student.studentPanDocument, "Student PAN")}
+                        </div>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-12 mb-4">
+                        <b>Student Aadhaar Upload</b>
+                        <div className="mt-2">
+                          {renderDocumentLink(student.studentAadhaarDocument, "Student Aadhaar")}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
