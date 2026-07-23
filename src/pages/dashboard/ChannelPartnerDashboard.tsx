@@ -280,6 +280,9 @@ const ChannelPartnerDashboard = () => {
     contractEnforcementDate,
   } = useSelector((state: RootState) => state.user.user);
 
+  const isChannelPartnerUser = userType === CLIENT_ROLE.CHANNEL_PARTNER;
+  const shouldShowWelcomeText = roleName?.toLowerCase() === "channel partner";
+
   const { isProfileUpdated } = useSelector((state: RootState) => state.profile);
 
   const { create } = usePermission("Dashboard", ["create"])();
@@ -303,9 +306,11 @@ const ChannelPartnerDashboard = () => {
   const isEducationInstituteDashboard =
     userType === CLIENT_ROLE.CHANNEL_PARTNER &&
     userID === EDUCATION_INSTITUTE_USER_ID;
+
   const isNbfcDashboard =
     userType === CLIENT_ROLE.CHANNEL_PARTNER &&
     userID === NBFC_USER_ID;
+
   const isStudentDashboard =
     userType === CLIENT_ROLE.CUSTOMER &&
     (userID === STUDENT_USER_ID ||
@@ -322,8 +327,8 @@ const ChannelPartnerDashboard = () => {
     return matchedDrafts.length > 0
       ? matchedDrafts
       : getEducationLoanDrafts().filter(
-          (draft) => draft.studentUserId === STUDENT_USER_ID,
-        );
+        (draft) => draft.studentUserId === STUDENT_USER_ID,
+      );
   }, [isStudentDashboard, userID]);
 
   const educationInstituteEnrollments = useMemo(() => {
@@ -622,9 +627,9 @@ const ChannelPartnerDashboard = () => {
 
     setEducationDisbursementYear((currentYear) =>
       currentYear &&
-      educationDisbursementYearOptions.some(
-        (option) => option.value === currentYear,
-      )
+        educationDisbursementYearOptions.some(
+          (option) => option.value === currentYear,
+        )
         ? currentYear
         : educationDisbursementYearOptions[0].value,
     );
@@ -662,15 +667,15 @@ const ChannelPartnerDashboard = () => {
       const bottomInsetPercentage =
         step.widthPercentage > 0
           ? Math.max(
-              0,
-              Math.min(
-                50,
-                ((step.widthPercentage - nextWidthPercentage) /
-                  step.widthPercentage /
-                  2) *
-                  100,
-              ),
-            )
+            0,
+            Math.min(
+              50,
+              ((step.widthPercentage - nextWidthPercentage) /
+                step.widthPercentage /
+                2) *
+              100,
+            ),
+          )
           : 50;
 
       return {
@@ -1975,67 +1980,120 @@ const ChannelPartnerDashboard = () => {
 
       <div className="whiteBoxHldr p-30">
         <div className="row">
+          {shouldShowWelcomeText && (
+            <div className="col-lg-12 mb-4">
+              <div className="col-12 titleMainWrapper justify-content-between">
+                <h2 className="fw-bold txt-30">
+                  <span>Welcome,</span> {userName}
+                </h2>
+                <div
+                  className="BtnRightHldr d-flex flex-row"
+                  style={{ gap: "10px" }}
+                >
+                  {create && (
+                    <div className="form-group">
+                      <Button
+                        className="btn btn-orange-line"
+                        onClick={() =>
+                          navigate(RoutePathConstant.private.addApplications)
+                        }
+                        disabled={!channelPartnerInfo?.isAddApplicationEnabled}
+                      >
+                        Add Application
+                      </Button>
+                    </div>
+                  )}
+
+                  {(clientMasterRight.create ||
+                    sourcingPartnerRight.create) && (
+                      <div className="form-group">
+                        <Button
+                          className="btn btn-orange"
+                          icon="bi bi-plus-circle me-2"
+                          iconPos="left"
+                          onClick={() => {
+                            if (
+                              !(userType === CLIENT_ROLE.USER_MANAGEMENT) &&
+                              !isContractSigned &&
+                              !hasSkippedContractAgreement &&
+                              shouldShowContractModal(contractEnforcementDate)
+                            ) {
+                              setShowContractAgreement(true);
+                            } else {
+                              setPanDetailPopUp(true);
+                            }
+                          }}
+                        >
+                          Add Client
+                        </Button>
+                      </div>
+                    )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {!status &&
             channelPartnerInfo &&
             !isEducationInstituteDashboard &&
             !isNbfcDashboard &&
             !isStudentDashboard && (
-            <div className="col-12 ApplicationsBoxWrapper mb-4">
-              <div className="row">
-                {channelPartnerInfo.totalLoanApplicationsCountByStatus.map(
-                  (applicationStatus: ITotalCountByStatus) => {
-                    return (
-                      <div
-                        key={applicationStatus.statusID}
-                        className="col-lg-4 col-md-6 col-sm-6 col-12 mt-4"
-                        style={{
-                          cursor:
-                            applicationStatus.amount > 0
-                              ? "pointer"
-                              : "default",
-                        }}
-                        onClick={() => {
-                          if (applicationStatus.amount > 0) {
-                            navigate(
-                              `${RoutePathConstant.private.channelPartnerDashboard}?status=${applicationStatus.statusID}`,
-                            );
-                          }
-                        }}
-                      >
-                        <div className="applicationBoxHldr">
-                          <div className="amoutnHldr">
-                            <h2 className="fw-bold">
-                              {applicationStatus.noOfApplications}
-                            </h2>
+              <div className="col-12 ApplicationsBoxWrapper mb-4">
+                <div className="row">
+                  {channelPartnerInfo.totalLoanApplicationsCountByStatus.map(
+                    (applicationStatus: ITotalCountByStatus) => {
+                      return (
+                        <div
+                          key={applicationStatus.statusID}
+                          className="col-lg-4 col-md-6 col-sm-6 col-12 mt-4"
+                          style={{
+                            cursor:
+                              applicationStatus.amount > 0
+                                ? "pointer"
+                                : "default",
+                          }}
+                          onClick={() => {
+                            if (applicationStatus.amount > 0) {
+                              navigate(
+                                `${RoutePathConstant.private.channelPartnerDashboard}?status=${applicationStatus.statusID}`,
+                              );
+                            }
+                          }}
+                        >
+                          <div className="applicationBoxHldr">
+                            <div className="amoutnHldr">
+                              <h2 className="fw-bold">
+                                {applicationStatus.noOfApplications}
+                              </h2>
 
-                            <p className="txt-20">
-                              Amount: ₹
-                              {applicationStatus.amount !== 0 &&
-                                applicationStatus.formattedAmount
-                                ? formatDecimalValue(
-                                  applicationStatus.formattedAmount,
-                                )
-                                : "00"}
-                            </p>
-                          </div>
-
-                          <h3 className="fw-bold">
-                            {applicationStatus.displayName}
-                          </h3>
-
-                          {applicationStatus.amount > 0 && (
-                            <div className="clickNext">
-                              <i className="bi bi-arrow-right" />
+                              <p className="txt-20">
+                                Amount: ₹
+                                {applicationStatus.amount !== 0 &&
+                                  applicationStatus.formattedAmount
+                                  ? formatDecimalValue(
+                                    applicationStatus.formattedAmount,
+                                  )
+                                  : "00"}
+                              </p>
                             </div>
-                          )}
+
+                            <h3 className="fw-bold">
+                              {applicationStatus.displayName}
+                            </h3>
+
+                            {applicationStatus.amount > 0 && (
+                              <div className="clickNext">
+                                <i className="bi bi-arrow-right" />
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  },
-                )}
+                      );
+                    },
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {!status && channelPartnerInfo && isEducationInstituteDashboard && (
             <>
@@ -2078,8 +2136,8 @@ const ChannelPartnerDashboard = () => {
                             const selectedStartDate = e.value as Date | null;
                             const nextEndDate =
                               selectedStartDate &&
-                              educationEndDate &&
-                              educationEndDate < selectedStartDate
+                                educationEndDate &&
+                                educationEndDate < selectedStartDate
                                 ? null
                                 : educationEndDate;
 
