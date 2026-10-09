@@ -11,6 +11,10 @@ export interface IPincodeFetchDetailsResponse extends APIResponseEntity {
 export interface IUserInfo {
   id?: string;
   name: string;
+  fullName?: string;
+  firstName?: string | null;
+  middleName?: string | null;
+  lastName?: string | null;
   panNumber: string;
   emailID: string;
   mobileNumber: string;
@@ -37,8 +41,21 @@ export interface IUserInfo {
   udhyamAadhaar: string | null;
   userConsents: UserConsentData[];
   cpCompanyLogo?: string;
+  cinOrLLP?: string | null;
+  gstInfo: UserGstInfo;
+  category?: string | null;
+  tradeName?: string | null;
+  gstNumber?: string | null;
   constitution?: string | null;
+  constitutionOfInstitute?: string | null;
   website?: string | null;
+  maskedAadhaar?: string | null;
+}
+
+interface UserGstInfo {
+  tradeName: string | null;
+  gstAddress: string | null;
+  dateOfGstRegistration: string | null;
 }
 
 interface UserConsentData {
@@ -52,7 +69,6 @@ export interface IGSTListInfo {
   dateOfGstRegistration?: string | null;
   gstAddress?: string | null;
   tradeName?: string | null;
-  cinOrLlp?: string | null;
   dateOfRegistration?: string | null;
 }
 
@@ -74,7 +90,7 @@ interface CoApplicantData {
   creditScore?: number | null;
 }
 
-export interface PartnerData {
+interface PartnerData {
   id: string;
   name: string;
   firstName: string | null;
@@ -87,11 +103,14 @@ export interface PartnerData {
   city: string | null;
   pinCode: string | null;
   mobile: string | null;
-  email?: string | null;
+  emailID?: string | null;
   dateOfBirth: string | null;
   gender: string | null;
   creditScore: string | null;
-  profilePicture?: string | null;
+  constitution?: string | null;
+  constitutionOfInstitute?: string | null;
+  profilePhoto?: File | null;
+  profilePhotoUrl?: string | null;
 }
 
 export interface IUserValidation {
@@ -104,6 +123,8 @@ export interface IUserValidation {
   zipCode: string;
   aadhaar: string;
   mobileNumber: string;
+  cinOrLLP?: string;
+  udhyamAadhaar?: string;
 }
 
 export interface IProfileFieldUpdateable {
@@ -128,7 +149,6 @@ export interface IDeleteUser {
   userType: number;
 }
 
-
 export interface IPincodeFetchDetails {
   name: string;
   district: string;
@@ -136,4 +156,12 @@ export interface IPincodeFetchDetails {
   circle: string;
   division: string;
   country: string;
+}
+
+export interface IValidateUdhyamNumberBody {
+  udyamRegNo: string;
+}
+
+export interface IValidateCINNumberBody {
+  cin: string;
 }

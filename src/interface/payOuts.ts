@@ -77,6 +77,8 @@ export interface IPayOutsDetailList {
   saccode?: string | null;
   userInvoiceNumber?: string | null;
   disbursementId: string;
+  parentType: string;
+  parentName: string;
 }
 
 export interface ICreatePayOutsRequestParams {
@@ -125,10 +127,42 @@ export interface IGenerateCpPayoutInvoiceParams {
   recipientStateID: number,
   recipientStateName: string,
   recipientStateCode: string,
+  disbursementId: string,
+  ismasterCP: boolean
+}
+
+export interface IGenerateMasterPayoutInvoiceParams {
+  masterCpID: string,
+  applicationCode: string,
+  disbursedDate: string,
+  payAmount: number,
+  gstAmount: number,
+  tdsAmount: number,
+  netPayment: number,
+  applicationID: string,
+  payoutId: string,
+  saccode: string,
+  userInvoiceNumber?: string,
+  recipientName: string,
+  recipientGST: string,
+  recipientEmail: string,
+  recipientAddress: string,
+  recipientStateID: number,
+  recipientStateName: string,
+  recipientStateCode: string,
   disbursementId: string
 }
 
+export type GenerateInvoicePayload =
+  Partial<Pick<IGenerateCpPayoutInvoiceParams, "cpId">> &
+  Partial<Pick<IGenerateMasterPayoutInvoiceParams, "masterCpID">> &
+  Omit<IGenerateCpPayoutInvoiceParams, "cpId">;
+
 export interface IGenerateCpPayoutInvoiceResponse extends APIResponseEntity {
+  data: string,
+}
+
+export interface IGenerateMasterPayoutInvoiceResponse extends APIResponseEntity {
   data: string,
 }
 
@@ -146,6 +180,7 @@ export interface ISourcingPartnerPayOutsParams {
   page: number;
   pageSize: number;
   spFilter?: string;
+  isSpPayoutRequiredForMCP?: boolean;
 }
 
 export interface ISourcingPartnerPayOutsResponse extends APIResponseEntity {
@@ -193,6 +228,13 @@ export interface ISourcingPartnerPayOutDetailParams {
   toDate?: string;
 }
 
+export interface IChannelPartnerPayOutDetailParams {
+  page: number;
+  pageSize: number;
+  cpID: string;
+  fromDate?: string;
+  toDate?: string;
+}
 
 export interface IGeneratePayoutInvoiceParams {
   spID: string;
@@ -231,4 +273,21 @@ export interface IFetchStateResponseData {
   id: number,
   name: string,
   stateCode: string
+}
+
+export interface IChannelPartnerPayOutDetailResponse extends APIResponseEntity {
+  data: IChannelPartnerPayOutDetailResponseData;
+}
+
+export interface IChannelPartnerPayOutDetailResponseData {
+  userId: string,
+  userName: string,
+  userCode: string,
+  mobileNumber: string,
+  email: string,
+  panNumber: string,
+  payOutPercent: number,
+  loansCompleted: number,
+  payoutList: IPayOutsDetailList[]
+  totalCount: number
 }

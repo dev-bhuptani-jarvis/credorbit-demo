@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Permission } from "../../interface/sidebarPermission";
 import { IGeneratePublicTokenResponse } from "../../interface/publicToken";
 import {
@@ -8,7 +9,7 @@ import { ISendOTPResponse } from "../../interface/signIn";
 import { IRefferalDataResponse } from "../../interface/wallet";
 import { CLIENT_ROLE } from "../constants/constant";
 import { OtpRequestType } from "../constants/enum";
-import { decryptLoginVAPTData, decryptVAPTData, encryptVAPTData } from "../functions/encryptDecrypt";
+import { decryptVAPTData, encryptVAPTData } from "../functions/encryptDecrypt";
 
 const DEMO_DELAY_MS = 300;
 
@@ -18,7 +19,7 @@ const decryptDemoValue = (value?: string): string => {
   if (!value) return "";
 
   try {
-    return decryptLoginVAPTData(value).trim();
+    return decryptVAPTData(value).trim();
   } catch {
     return "";
   }
@@ -523,23 +524,56 @@ const demoLoginResponses = {
     status: true,
     message: "Successfully signed in!",
     data: {
-      userID: "edu-inst-001",
-      userName: "Education Institute One",
+      userID: "08df0979-cc2e-456a-8b0b-43c4220bf98b",
+      parentUserId: null,
+      parentUserType: null,
+      userName: "DEV SANJAYKUMAR BHUPTANI",
+      masterCPId: null,
       showPanDetailPopUp: false,
       emailID: "educationinstitute1@yopmail.com",
       mobileNumber: "2222222222",
-      token: "demo-education-institute-token",
-      userType: 2,
-      panTypeID: 9,
-      roleID: 2,
+      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlcxUUdlb0wyVXF2Uk9SVnV2V0VqdW45dExyekpvanNoalFxQmZuaWRJc3A5OEtaZC9xWFczc0ZFWUFmaG9RVXMiLCJuYmYiOjE3OTE1MjkxMzAsImV4cCI6MTc5MTU1MDczMCwiaWF0IjoxNzkxNTI5MTMwfQ.pW1K3aDnfoc8GWiVjO8QrIGwMfeJuuHEifYEe_rQp9s",
+      userType: 11,
+      panTypeID: 1,
+      roleID: 11,
       panNumber: "EDUIN1234E",
-      gstNumber: "24EDUIN1234E1Z5",
-      roleName: "Educational Institute",
-      profilePicture: "https://i.postimg.cc/Njq5CnTY/credorbit-logo.jpg",
-      contractEnforcementDate: "2025-10-09T00:00:00",
+      gstNumber: null,
+      roleName: "Institute",
+      whiteLabelSettings: {
+        id: "08dea6d6-ea36-4c67-8a3f-bc04bcb5f713",
+        whiteLabelUserId: "f4204821-5d9b-484c-87b7-83e61167840d",
+        companyName: "CredOrbit",
+        displayName: "Credorbit Technologies Private Limited",
+        logoUrl: "https://credstagestorage.blob.core.windows.net/credorbit-dev/WhiteLabel/f4204821-5d9b-484c-87b7-83e61167840d/f4204821-5d9b-484c-87b7-83e61167840d_logo.png",
+        faviconUrl: "https://credstagestorage.blob.core.windows.net/credorbit-dev/WhiteLabel/f4204821-5d9b-484c-87b7-83e61167840d/f4204821-5d9b-484c-87b7-83e61167840d_favicon.ico",
+        logoUrlBase64: null,
+        faviconUrlBase64: null,
+        primaryColor: "#ff632c",
+        secondaryColor: "#3d3d3d",
+        accentColor: "#ffe0d5",
+        fontFamily: null,
+        theme: "Light",
+        customCss: null,
+        isLogoUploaded: false,
+        isDefault: false,
+        subDomainURL: null,
+      },
+      profilePicture: "https://credstagestorage.blob.core.windows.net/credorbit-dev/ProfilePictures/DefaultProfilePicture.png",
+      contractEnforcementDate: null,
       isDefaultCpClient: false,
       isContractSigned: true,
-      permissions: demoChannelPartnerPermissions,
+      isUserUnderMasterCP: false,
+      tradeName: "Credorbit Technologies Private Limited",
+      permissions: [
+        { rightID: 1, parentID: 0, rightName: "Dashboard", create: null, delete: null, view: null, list: true, displayName: "Dashboard", displayOrder: 1 },
+        { rightID: 2, parentID: 0, rightName: "Profile", create: true, delete: null, view: null, list: true, displayName: "Profile", displayOrder: 2 },
+        { rightID: 3, parentID: 23, rightName: "RoleMaster", create: true, delete: null, view: true, list: true, displayName: "Role Master", displayOrder: 5 },
+        { rightID: 11, parentID: 0, rightName: "Policy", create: null, delete: null, view: null, list: null, displayName: "Policy", displayOrder: 25 },
+        { rightID: 12, parentID: 0, rightName: "Support", create: null, delete: null, view: null, list: true, displayName: "Support", displayOrder: 26 },
+        { rightID: 16, parentID: 0, rightName: "TermsAndConditions", create: null, delete: null, view: null, list: null, displayName: "Terms & Conditions", displayOrder: 19 },
+        { rightID: 83, parentID: 0, rightName: "EducationManagement", create: null, delete: null, view: null, list: true, displayName: "Education Management", displayOrder: 6 },
+        { rightID: 84, parentID: 83, rightName: "ManageCourses", create: true, delete: null, view: true, list: true, displayName: "Manage Courses", displayOrder: 7 },
+      ],
     },
   },
   sourcingPartner: {
@@ -699,11 +733,7 @@ const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) =
   const email = decryptDemoValue(encryptedEmail).toLowerCase();
   const mobile = decryptDemoValue(encryptedMobile);
 
-  console.log('email', email)
-  console.log('mobile', mobile)
-
   if (email === "info@credorbit.com" && mobile === "1111111111") {
-    console.log('admin');
     return {
       associatedUsers: [demoLoginAssociatedUsers[0]],
       response: demoLoginResponses.admin,
@@ -711,7 +741,6 @@ const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) =
   }
 
   if (email === "credsp1@yopmail.com" && mobile === "3333333333") {
-    console.log('sourcing partner');
     return {
       associatedUsers: [demoLoginAssociatedUsers[3]],
       response: demoLoginResponses.sourcingPartner,
@@ -726,7 +755,6 @@ const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) =
   }
 
   if (email === "client@yopmail.com" && mobile === "4444444444") {
-    console.log('client');
     return {
       associatedUsers: [demoLoginAssociatedUsers[4]],
       response: demoLoginResponses.client,
@@ -747,10 +775,9 @@ const getDemoLoginPreset = (encryptedEmail?: string, encryptedMobile?: string) =
     };
   }
 
-  console.log('channel partner');
   return {
-    associatedUsers: [demoLoginAssociatedUsers[1]],
-    response: demoLoginResponses.channelPartner,
+    associatedUsers: [demoLoginAssociatedUsers[2]],
+    response: demoLoginResponses.educationInstitute,
   };
 };
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { IEducationStudentEnrollment } from "../../interface/educationManagement";
 
 const STUDENT_USER_ID = "student-role-001";

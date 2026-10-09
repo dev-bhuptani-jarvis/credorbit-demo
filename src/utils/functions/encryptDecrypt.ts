@@ -30,9 +30,12 @@ export const encryptData = (data: any): string => {
 export const decryptData = (
   data: string | CryptoJS.lib.CipherParams
 ): string => {
-  const bytes = CryptoJS.AES.decrypt(data, key, options);
-  const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
-  return decryptedData;
+  try {
+    const bytes = CryptoJS.AES.decrypt(data, key, options);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  } catch {
+    return "";
+  }
 };
 
 /**
@@ -52,23 +55,20 @@ export const encryptVAPTData = (data: any): string => {
  * @returns {string} - Decrypted data as string
  */
 export const decryptVAPTData = (
-  data: string
+  data: string | CryptoJS.lib.CipherParams
 ): string => {
-  // const bytes = CryptoJS.AES.decrypt(data, vaptKey, options);
-  // const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
-  return data;
-};
+  if (
+    typeof data === "string" &&
+    (!/^[A-Za-z0-9+/]+={0,2}$/.test(data) || data.length < 24)
+  ) {
+    return data;
+  }
 
-/**
- * Decrypts an encrypted string and returns the original data as string.
- *
- * @param {string} data - Encrypted string to decrypt
- * @returns {string} - Decrypted data as string
- */
-export const decryptLoginVAPTData = (
-  data: string
-): string => {
-  const bytes = CryptoJS.AES.decrypt(data, vaptKey, options);
-  const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
-  return decryptedData;
+  try {
+    const bytes = CryptoJS.AES.decrypt(data, vaptKey, options);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  } catch {
+    // Local Demo fixtures can contain plain values or values encrypted by another environment.
+    return typeof data === "string" ? data : "";
+  }
 };

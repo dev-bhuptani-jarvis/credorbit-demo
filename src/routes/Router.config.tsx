@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast";
 import { PrivateRouteComponent } from "./PrivateRouteComponent";
 import { PublicRouteComponent } from "./PublicRouteComponent";
 import { toasterPosition } from "../utils/constants/constant";
-import { handleErrors } from "../utils/functions/shared";
+import { handleErrors } from "../utils/functions/appRuntime";
 import { useEffect } from "react";
 
 const AppRoutes = () => {

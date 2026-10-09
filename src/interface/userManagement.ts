@@ -47,6 +47,7 @@ export interface ISaveUserDetailData {
   designation: string;
   roleName: string;
   status: boolean;
+  whiteLabelTenantId: string
 }
 
 export interface IUserDetailValidationData {

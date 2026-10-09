@@ -16,6 +16,12 @@ const SearchButton = ({
     setSearchText(e.target.value);
   };
 
+  const handleClearSearch = (): void => {
+    if (!searchText) return;
+
+    setSearchText("");
+  };
+
   return (
     <div className="form-group search">
       <i className="icon-search" />
@@ -30,10 +36,21 @@ const SearchButton = ({
           }
         }}
         onChange={handleSearchChange}
-        // onPaste={(e) => e.preventDefault()}
-        // onCopy={(e) => e.preventDefault()}
-        // onCut={(e) => e.preventDefault()}
+      // onPaste={(e) => e.preventDefault()}
+      // onCopy={(e) => e.preventDefault()}
+      // onCut={(e) => e.preventDefault()}
       />
+
+      {searchText && (
+        <button
+          type="button"
+          className="search-clear-btn"
+          onClick={handleClearSearch}
+          aria-label="Clear search"
+        >
+          <i className="pi pi-times clear-icon-btn" aria-hidden="true" />
+        </button>
+      )}
     </div>
   );
 };

@@ -59,7 +59,7 @@ const RoleMaster = () => {
       isMasterRole: userType === CLIENT_ROLE.SUPER_ADMIN,
     };
 
-    if (userType === CLIENT_ROLE.CHANNEL_PARTNER || userType === CLIENT_ROLE.USER_MANAGEMENT) {
+    if (userType !== CLIENT_ROLE.SUPER_ADMIN) {
       queryParams.linkedUserID = userID;
     }
 
@@ -102,7 +102,18 @@ const RoleMaster = () => {
 
     if (response && response.statusCode === 200) {
       toastSuccess(response.message);
-      fetchRoleListingApi();
+
+      const shouldMoveToPreviousPage =
+        roleMaster.length === 1 && filterReq.pageNumber > 0;
+
+      if (shouldMoveToPreviousPage) {
+        setFilterReq((prev) => ({
+          ...prev,
+          pageNumber: prev.pageNumber - 1,
+        }));
+      } else {
+        fetchRoleListingApi();
+      }
     } else {
       toastError(response.message);
     }
@@ -113,60 +124,59 @@ const RoleMaster = () => {
   };
 
   const actionTemplate = (role: IRoleParams) => {
-  const viewId = `role-view-${role.roleID}`;
-  const editId = `role-edit-${role.roleID}`;
-  const deleteId = `role-delete-${role.roleID}`;
+    const viewId = `role-view-${role.roleID}`;
+    const editId = `role-edit-${role.roleID}`;
+    const deleteId = `role-delete-${role.roleID}`;
 
-  return (
-    <>
-      <Tooltip target={`#${viewId}`} position="top" />
-      <Tooltip target={`#${editId}`} position="top" />
-      <Tooltip target={`#${deleteId}`} position="top" />
+    return (
+      <>
+        <Tooltip target={`#${viewId}`} position="top" />
+        <Tooltip target={`#${editId}`} position="top" />
+        <Tooltip target={`#${deleteId}`} position="top" />
 
-      {view && (
-        <Button
-          id={viewId}
-          className="trash-icon p-0 ms-2"
-          data-pr-tooltip="View Role"
-          onClick={() =>
-            navigate(
-              `${RoutePathConstant.private.roleMaster}/view/${role.roleID}`
-            )
-          }
-        >
-          <img src="/assets/images/eye.svg" alt="eye-icon" />
-        </Button>
-      )}
+        {view && (
+          <Button
+            id={viewId}
+            className="trash-icon p-0 ms-2"
+            data-pr-tooltip="View Role"
+            onClick={() =>
+              navigate(
+                `${RoutePathConstant.private.roleMaster}/view/${role.roleID}`
+              )
+            }
+          >
+            <i className="icon-eye" />
+          </Button>
+        )}
 
-      {create && (
-        <Button
-          id={editId}
-          className="trash-icon p-0 ms-2"
-          data-pr-tooltip="Edit Role"
-          onClick={() =>
-            navigate(
-              `${RoutePathConstant.private.roleMaster}/edit/${role.roleID}`
-            )
-          }
-        >
-          <img src="/assets/images/pencil.svg" alt="edit-icon" />
-        </Button>
-      )}
+        {create && (
+          <Button
+            id={editId}
+            className="trash-icon p-0 ms-2"
+            data-pr-tooltip="Edit Role"
+            onClick={() =>
+              navigate(
+                `${RoutePathConstant.private.roleMaster}/edit/${role.roleID}`
+              )
+            }
+          >
+            <i className="icon-edit" />
+          </Button>
+        )}
 
-      {(userType === CLIENT_ROLE.CHANNEL_PARTNER ||
-        userType === CLIENT_ROLE.USER_MANAGEMENT) && (
-        <Button
-          id={deleteId}
-          className="trash-icon p-0 ms-2"
-          data-pr-tooltip="Delete Role"
-          onClick={() => handleDelete(role.roleID)}
-        >
-          <i className="bi bi-trash" />
-        </Button>
-      )}
-    </>
-  );
-};
+        {userType === CLIENT_ROLE.USER_MANAGEMENT && (
+          <Button
+            id={deleteId}
+            className="trash-icon p-0 ms-2"
+            data-pr-tooltip="Delete Role"
+            onClick={() => handleDelete(role.roleID)}
+          >
+            <i className="bi bi-trash" style={{ fontSize: '22px' }} />
+          </Button>
+        )}
+      </>
+    );
+  };
 
   const onPageChange = (event: PaginatorPageChangeEvent) => {
     setFilterReq({
@@ -186,9 +196,8 @@ const RoleMaster = () => {
       />
 
       <Button
-        className={`btn ${
-          loading ? "btn-orange-disabled" : "btn-orange"
-        } w-100 text-center`}
+        className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+          } w-100 text-center`}
         disabled={loading}
         onClick={handleDeleteRole}
         label="Delete"
@@ -212,7 +221,7 @@ const RoleMaster = () => {
 
                 <div className="BtnRightHldr">
                   <div className="form-group">
-                    {(userType === CLIENT_ROLE.CHANNEL_PARTNER || userType === CLIENT_ROLE.USER_MANAGEMENT) && (
+                    {create && (
                       <Button
                         className="btn btn-orange"
                         onClick={() =>
@@ -240,14 +249,11 @@ const RoleMaster = () => {
                   options.rowIndex +
                   1
                 }
-                style={{ width: "60px" }}
               />
-              <Column
-                field="roleName"
-                style={{ width: "955px" }}
-                header="Role Name"
-              />
+              <Column field="roleName" header="Role Name" />
+
               <Column body={statusBodyTemplate} header="Status" />
+
               {(create || view) && (
                 <Column body={actionTemplate} header="Action" />
               )}

@@ -33,10 +33,12 @@ export interface IAddPanCardResponse extends APIResponseEntity {
 
 export interface IAddPanCardResponseData {
   panNumber: string;
-  emailID: string;
-  mobileNumber: string;
+  emailID: string | null;
+  mobileNumber: string | null;
   fullName: string;
   category: string;
+  website?: string | null;
+  tradeName?: string | null;
   firstName?: string;
   middleName?: string;
   lastName?: string;
@@ -47,6 +49,14 @@ export interface IAddPanCardResponseData {
   zipCode?: string;
   maskedAadhaar?: string;
   gender?: string;
+  gstNumber?: IGstNumberDetails[] | null;
+}
+
+export interface IGstNumberDetails {
+  gstin: string;
+  state: string;
+  stateCode: string;
+  activeStatus: string;
 }
 
 export interface IConfirmDetail {
@@ -55,6 +65,12 @@ export interface IConfirmDetail {
   mobileNumber: string | null;
   fullName: string;
   category: string;
+  gstNumber?: string | null;
+  gstDetails?: IGstNumberDetails[] | null;
+  constitutionOfInstitute?: string | null;
+  constitution?: string | null;
+  website?: string | null;
+  tradeName?: string | null;
   dob?: string | null;
   address?: string | null;
   state?: string | null;

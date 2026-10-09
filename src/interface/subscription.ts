@@ -1,8 +1,10 @@
 import { APIResponseEntity } from "./apiResponse";
 
 export interface ISubscriptionBody {
-    subscriptionPlanID: string;
+    studentID: string;
+    loanApplicationID: string;
     amount?: string;
+    nbfcID: string;
 }
 
 export interface ISubscriptionResponse extends APIResponseEntity {
@@ -63,6 +65,7 @@ export interface ISubscriptionResponseListingData {
     colorCode: string,
     paymentLinkID: string;
     subscriptionUrl: string;
+    subscriptionInvoiceUrl?: string;
 }
 
 export interface IFetchAllPaymentsResponse extends APIResponseEntity {
@@ -122,4 +125,9 @@ export interface TabWiseUserRecordEntity {
 export interface IAddCreditsBody {
     creditbeneficiaryUserID: string;
     credit: number;
+}
+
+export interface ITransferCreditsBody {
+    transferUserID: string;
+    creditsAmount: number;
 }

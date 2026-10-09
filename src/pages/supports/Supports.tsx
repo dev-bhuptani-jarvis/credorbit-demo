@@ -13,11 +13,10 @@ import {
   NUMBER_ONLY_PATTERN,
 } from "../../utils/constants/pattern";
 import {
-  formatDate,
   IsFormValid,
   restrictInputByPattern,
   toastError,
-  toastSuccess,
+  toastSuccess
 } from "../../utils/functions/shared";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
@@ -44,8 +43,6 @@ const Supports = () => {
     WhatsappNumber: "",
     EmailID: "",
   });
-
-  const [updatedDate, setUpdatedDate] = useState<string>("");
 
   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
 
@@ -101,7 +98,6 @@ const Supports = () => {
         (acc, item) => ({ ...acc, [item.name]: item.value }),
         {} as IGetSupportData
       );
-      setUpdatedDate(response.data[0].updatedDate);
       setFormValues(fetchedData);
     } else {
       toastError(response.message);
@@ -127,8 +123,8 @@ const Supports = () => {
         errors[fieldName] = IsStringNullEmptyOrUndefined(value)
           ? "Please Enter Email Address"
           : !isEmailValid
-          ? "Please Enter a Valid Email Address"
-          : "";
+            ? "Please Enter a Valid Email Address"
+            : "";
         break;
       }
 
@@ -136,18 +132,15 @@ const Supports = () => {
       case "WhatsappNumber":
         const isPhoneValid: boolean = INDIAN_MOBILE_NUMBER_PATTERN.test(value);
         errors[fieldName] = IsStringNullEmptyOrUndefined(value)
-          ? `Please Enter ${
-              fieldName === "PhoneNumber" ? "Mobile" : "WhatsApp"
-            } Number`
+          ? `Please Enter ${fieldName === "PhoneNumber" ? "Mobile" : "WhatsApp"
+          } Number`
           : !isPhoneValid
-          ? `Enter a Valid 10-digit ${
-              fieldName === "PhoneNumber" ? "Mobile" : "WhatsApp"
+            ? `Enter a Valid 10-digit ${fieldName === "PhoneNumber" ? "Mobile" : "WhatsApp"
             } Number`
-          : value.length !== 10
-          ? `${
-              fieldName === "PhoneNumber" ? "Mobile" : "WhatsApp"
-            } Number must be exactly 10 digits`
-          : "";
+            : value.length !== 10
+              ? `${fieldName === "PhoneNumber" ? "Mobile" : "WhatsApp"
+              } Number must be exactly 10 digits`
+              : "";
         break;
       default:
         break;
@@ -166,23 +159,17 @@ const Supports = () => {
       <Loader isLoading={loading} />
       <div className="row">
         <div className="col-lg-12">
-          <div className="col-12 mb-4 titleBtnWrapper">
+          <div className="col-12 titleBtnWrapper">
             <div className="d-flex flex-column">
               <TableTitle title="Support" />
-              {!isEditable && (
-                <p className="txt-14">
-                  Last Updated: {formatDate(updatedDate)}
-                </p>
-              )}
             </div>
           </div>
 
           <div className="row">
             <div className="col-12 mt-4 mb-4">
               <div
-                className={`col-12 ${
-                  !isEditable && "col-lg-4 col-md-4 col-sm-4"
-                }`}
+                className={`col-12 ${!isEditable && "col-lg-4 col-md-4 col-sm-4"
+                  }`}
               >
                 <div className="borderBoxHldr p-24">
                   <div className="row">
@@ -222,9 +209,9 @@ const Supports = () => {
 
                                 handleChange(e.target.name, value.trimStart());
                               }}
-                              // onPaste={(e) => e.preventDefault()}
-                              // onCopy={(e) => e.preventDefault()}
-                              // onCut={(e) => e.preventDefault()}
+                            // onPaste={(e) => e.preventDefault()}
+                            // onCopy={(e) => e.preventDefault()}
+                            // onCut={(e) => e.preventDefault()}
                             />
                             {isFormSubmitted && (
                               <span className="error">{formErrors.Name}</span>
@@ -253,9 +240,9 @@ const Supports = () => {
                                 onKeyPress={(e) =>
                                   restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
                                 }
-                                // onPaste={(e) => e.preventDefault()}
-                                // onCopy={(e) => e.preventDefault()}
-                                // onCut={(e) => e.preventDefault()}
+                              // onPaste={(e) => e.preventDefault()}
+                              // onCopy={(e) => e.preventDefault()}
+                              // onCut={(e) => e.preventDefault()}
                               />
                               {isFormSubmitted && (
                                 <span className="error">
@@ -285,9 +272,9 @@ const Supports = () => {
                                 onKeyPress={(e) =>
                                   restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
                                 }
-                                // onPaste={(e) => e.preventDefault()}
-                                // onCopy={(e) => e.preventDefault()}
-                                // onCut={(e) => e.preventDefault()}
+                              // onPaste={(e) => e.preventDefault()}
+                              // onCopy={(e) => e.preventDefault()}
+                              // onCut={(e) => e.preventDefault()}
                               />
                               {isFormSubmitted && (
                                 <span className="error">
@@ -313,9 +300,9 @@ const Supports = () => {
                                     e.target.value.trimStart()
                                   )
                                 }
-                                // onPaste={(e) => e.preventDefault()}
-                                // onCopy={(e) => e.preventDefault()}
-                                // onCut={(e) => e.preventDefault()}
+                              // onPaste={(e) => e.preventDefault()}
+                              // onCopy={(e) => e.preventDefault()}
+                              // onCut={(e) => e.preventDefault()}
                               />
                               {isFormSubmitted && (
                                 <span className="error">

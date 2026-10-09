@@ -1,4 +1,4 @@
-import { LoanStatusType, PaymentStatus } from "./enum";
+import { AdminDateFilterType, CourseType, LoanStatusType, PaymentStatus } from "./enum";
 import { environment } from "./environments";
 
 export const API_URL = environment.API_URL;
@@ -11,12 +11,13 @@ export const toasterPosition = "top-center";
 
 export const CLIENT_ROLE = {
   SUPER_ADMIN: 1,
-  CHANNEL_PARTNER: 2,
-  SOURCING_PARTNER: 3,
-  CUSTOMER: 4,
   CO_APPLICANT: 5,
-  PARTNER: 6,
-  USER_MANAGEMENT: 7
+
+  USER_MANAGEMENT: 7,
+  STUDENT: 10,
+  EDUCATIONAL_INSTITUTE: 11,
+  NBFC: 12,
+  AUTHORIZED_PERSON: 13
 };
 
 export type RouteParams = {
@@ -46,7 +47,20 @@ export type PermissionModule =
   | "GeographicalReport"
   | "ChannelPartnerPayout"
   | "ManageUsers"
-  | "SourcingPartnerPayout";
+  | "SourcingPartnerPayout"
+  | "WalletAndReferral"
+  | "LoanApplicationManagement"
+  | "ContractMasterCP"
+  | "LeadManagement"
+  | "MasterChannelPartner"
+  | "MasterChannelPartnerPayout"
+  | "BranchManagement"
+  | "MasterCPPayout"
+  | "ManageEducationInstitute"
+  | "ManageCourses"
+  | "ManageStudents"
+  | "DSACodeManagement"
+  | "ManageNBFC";
 
 export const PAYMENT_REQUEST_STATUS = {
   PENDING: 0,
@@ -81,9 +95,9 @@ export const paymentStatusList = [
 export const getTitleByStatus = (status: string): string => {
   switch (status) {
     case LoanStatusType.PENDING.toString():
-      return "Ongoing Applications";
+      return "Pending Applications";
     case LoanStatusType.APPLIED.toString():
-      return "Login Applications";
+      return "Applied Applications";
     case LoanStatusType.QUERY_RAISED.toString():
       return "Query Raised Applications";
     case LoanStatusType.SANCTIONED.toString():
@@ -167,10 +181,11 @@ export const CREDIT_SCORE_REPORT_TECHNICAL_ERROR = [
   "ENR029",
 ];
 
-export const formatDecimalValue = (value: string) => {
-  // If it's a string with numbers + text (e.g., "6.50 Lac+"), format the number part only
-  return value.replace(/(\d+(\.\d+)?)/, (match) => {
-    let num = Number(match).toFixed(2);
+export const formatDecimalValue = (value: string | number) => {
+  const stringValue = String(value);
+
+  return stringValue.replace(/(\d+(\.\d+)?)/, (match) => {
+    const num = Number(match).toFixed(2);
     return num.endsWith(".00") ? num.slice(0, -3) : num;
   });
 };
@@ -188,7 +203,10 @@ export const formatMobileNumber = (number: string | undefined) => {
 };
 
 export const formatCurrencyAmount = (number: number) => {
-  return `₹ ${new Intl.NumberFormat("en-IN").format(number)}`;
+  return `₹ ${new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(number)}`;
 };
 
 export const allowedZipMimeTypes = [
@@ -205,6 +223,58 @@ export const ContractSigned = {
   ADMIN_TO_CP: 1,
   CP_TO_SP: 2,
   CLIENT: 3,
+  ADMIN_TO_MASTER_CP: 4,
+  MASTER_CP_TO_CP: 5,
 }
 
 export const REFERRAL_CODE_LENGTH = 9;
+
+export const dateFilters = [
+  { label: "Yesterday", value: AdminDateFilterType.Yesterday },
+  { label: "Today", value: AdminDateFilterType.TODAY },
+  { label: "Last 7 Days", value: AdminDateFilterType.LAST_WEEK },
+  { label: "Last 30 Days", value: AdminDateFilterType.LAST_30_DAYS },
+  { label: "This Quarter", value: AdminDateFilterType.THIS_QUARTER },
+  { label: "Last 1 Year", value: AdminDateFilterType.LAST_1_YEAR },
+  { label: "Custom Range", value: AdminDateFilterType.CUSTOM_DATE_RANGE },
+  { label: "MTD", value: AdminDateFilterType.MTD },
+  { label: "YTD", value: AdminDateFilterType.YTD },
+  { label: "All", value: AdminDateFilterType.ALL },
+];
+
+export const genderOptions = [
+  { label: "Male", value: "Male" },
+  { label: "Female", value: "Female" },
+  { label: "Other", value: "Other" },
+];
+
+export const courseTypeOptions = [
+  { label: "Online", value: CourseType.ONLINE },
+  { label: "Offline", value: CourseType.OFFLINE },
+];
+
+export const jobGuaranteedOptions = [
+  { label: "Job Guaranteed", value: true },
+  { label: "Not Job Guaranteed", value: false },
+];
+
+export const getLoanStatusClassName = (statusID?: number): string => {
+  switch (statusID) {
+    case LoanStatusType.PENDING:
+      return "status-pending";
+    case LoanStatusType.APPLIED:
+      return "status-applied";
+    case LoanStatusType.QUERY_RAISED:
+      return "status-query-raised";
+    case LoanStatusType.SANCTIONED:
+      return "status-sanctioned";
+    case LoanStatusType.PENDING_AT_CREDIT:
+      return "status-pending-at-credit";
+    case LoanStatusType.DISBURSED:
+      return "status-disbursed";
+    case LoanStatusType.REJECTED:
+      return "status-rejected";
+    default:
+      return "status-pending";
+  }
+};

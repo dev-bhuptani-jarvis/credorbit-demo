@@ -1,7 +1,7 @@
 export interface Permission {
   create: boolean | null;
   list: boolean | null;
-  delete?: boolean | null;
+  delete: boolean | null;
   parentID: number;
   rightID: number;
   rightName: string;

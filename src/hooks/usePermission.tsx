@@ -1,12 +1,19 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { Permission } from "../interface/sidebarPermission";
-import { PermissionModule } from "../utils/constants/constant";
+import { CLIENT_ROLE, PermissionModule } from "../utils/constants/constant";
 
 export type ActionType = "view" | "create";
 
 const usePermission = (subModule: PermissionModule, action: ActionType[]) => {
-  const { permissions } = useSelector((state: RootState) => state.user.user);
+  const { permissions, userType } = useSelector((state: RootState) => state.user.user);
+
+  const { isImpersonate } = useSelector(
+    (state: RootState) => state.impersonateUser,
+  );
+
+  const isReadOnlyImpersonation =
+    isImpersonate && userType === CLIENT_ROLE.EDUCATIONAL_INSTITUTE;
 
   const checkPermissions = () => {
     const modulePermission = permissions?.find(
@@ -14,7 +21,10 @@ const usePermission = (subModule: PermissionModule, action: ActionType[]) => {
     );
 
     return action.reduce((result, action) => {
-      result[action] = modulePermission?.[action] ?? false;
+      result[action] =
+        action === "create" && isReadOnlyImpersonation
+          ? false
+          : modulePermission?.[action] ?? false;
       return result;
     }, {} as Record<ActionType, boolean>);
   };

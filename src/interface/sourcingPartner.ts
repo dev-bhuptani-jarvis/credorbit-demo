@@ -57,5 +57,39 @@ export interface ISourcingPartnerListParams {
   page: number;
   pageSize: number;
   sourcingPartner?: string;
-  channelpartnerID: string;
+  parentID: string;
+}
+
+export interface IMasterSourcingPartnerListParams {
+  page: number;
+  pageSize: number;
+  search?: string;
+}
+
+export interface IMasterSourcingPartnerResponse extends APIResponseEntity {
+  data: IMasterSourcingPartnerData;
+}
+
+export interface IMasterSourcingPartnerData {
+  totalCount: number;
+  sourcingPartnersList: IMasterSourcingPartner[];
+}
+
+export interface IMasterSourcingPartner {
+  id: string;
+  name: string;
+  code: string;
+  registeredDate: string;
+  mobileNumber: string;
+  tokenCreatedDate: string;
+  refreshTokenCreatedDate: string | null;
+  isActive: boolean;
+  isTestUser: boolean;
+  channelPartnerName: string;
+}
+
+export interface IMasterSourcingPartnerListParams {
+  page: number;
+  pageSize: number;
+  search?: string;
 }

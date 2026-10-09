@@ -24,11 +24,13 @@ export interface IRoleDetailData {
   roleName: string;
   isActive: boolean;
   permissions: IRolePermission[];
+  linkedUserID?: string;
 }
 
 export interface IRolePermission {
   id: number | null;
   rightID: number;
+  parentID: number;
   rightName: string;
   displayName?: string;
   displayOrder: number;

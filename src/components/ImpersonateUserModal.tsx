@@ -13,11 +13,13 @@ import { setImpersonateUser } from "../store/reducer/impersonateSlice";
 import { setUserData } from "../store/reducer/userSlice";
 import { setEncryptedSessionStorage } from "../utils/functions/sessionStorage";
 import { StorageKeyEnum } from "../utils/constants/enum";
-import { RoutePathConstant } from "../utils/constants/routePaths";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Loader from "./Loader";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
+import { dashboardRoute } from "../utils/functions/appRuntime";
 
 interface ImpersonateModalProps {
   impersonateModal: boolean;
@@ -36,11 +38,16 @@ const ImpersonateUserModal = ({
 
   const navigate = useNavigate();
 
+  const location = useLocation();
+
+  const { userID } = useSelector((state: RootState) => state.user.user);
+
   const handleImpersonateUser = async (): Promise<void> => {
     setLoading(true);
 
     const body: IGeneratePublicTokenRequest = {
       userID: impersonateId,
+      parentUserId: userID,
       extraToken: encryptData(extraToken()),
     };
 
@@ -52,16 +59,16 @@ const ImpersonateUserModal = ({
       const decryptedData = {
         ...response.data,
         emailID: response.data.emailID
-          ? (response.data.emailID)
+          ? decryptVAPTData(response.data.emailID)
           : "",
         mobileNumber: response.data.mobileNumber
-          ? (response.data.mobileNumber)
+          ? decryptVAPTData(response.data.mobileNumber)
           : "",
         panNumber: response.data.panNumber
-          ? (response.data.panNumber)
+          ? decryptVAPTData(response.data.panNumber)
           : "",
         gstNumber: response.data.gstNumber
-          ? (response.data.gstNumber)
+          ? decryptVAPTData(response.data.gstNumber)
           : null,
       };
 
@@ -74,9 +81,14 @@ const ImpersonateUserModal = ({
         decryptedData.token
       );
 
+      setEncryptedSessionStorage(
+        StorageKeyEnum.CRED_ORBIT_IMPERSONATE_RETURN_PATH,
+        `${location.pathname}${location.search}`,
+      );
+
       toastSuccess(response.message);
 
-      navigate(RoutePathConstant.private.clientDashboard);
+      navigate(dashboardRoute(response.data.userType));
     } else {
       toastError(response.message);
     }
@@ -95,10 +107,9 @@ const ImpersonateUserModal = ({
       />
 
       <Button
-        className={`btn ${
-          loading ? "btn-orange-disabled" : "btn-orange"
-        } w-100 ms-2 text-center`}
-        label={loading ? "Loading..." : "Login as Client"}
+        className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+          } w-100 ms-2 text-center`}
+        label={loading ? "Loading..." : "Login"}
         disabled={loading}
         onClick={handleImpersonateUser}
       />
@@ -107,7 +118,7 @@ const ImpersonateUserModal = ({
 
   return (
     <Dialog
-      header="Login as Client"
+      header="Login as Institute"
       visible={impersonateModal}
       modal
       onHide={() => {
@@ -123,9 +134,9 @@ const ImpersonateUserModal = ({
       <Loader isLoading={loading} />
 
       <p className="modal-text">
-        Do you want to proceed with logging in as this client?
+        Do you want to proceed with logging in as this institute ?
       </p>
-    </Dialog>
+    </Dialog >
   );
 };
 

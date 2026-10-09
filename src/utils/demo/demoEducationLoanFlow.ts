@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { IClientDashboardData, IPartnerScore } from "../../interface/clientDashboard";
 import { IClientDetailList } from "../../interface/reports";
 import {

@@ -4,9 +4,21 @@ import { APIResponseEntity } from "./apiResponse";
 export interface IReportParams {
   page: number;
   pageSize: number;
+  filterType?: number;
   channelPartner?: string;
   stateFilter?: string;
   filter?: string;
+  entityTypeFilter?: number;
+  loanStatusFilter?: number;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+  bankId?: number;
+  partnerType?: number;
+  payoutStatus?: number;
+  partnerTypeFilter?: number;
+  payoutStatusFilter?: number;
+  IndustryID?: number;
 }
 
 export interface IReportResponse extends APIResponseEntity {
@@ -16,16 +28,101 @@ export interface IReportResponse extends APIResponseEntity {
 interface IReportResponseData {
   totalCount: number;
   channelPartnersQueue: IChannelPartnersQueue[];
+  segmentFocusDropdown: ISegmentFocusDropdown[];
 }
 
 export interface IChannelPartnersQueue {
   cpID: string;
   cpCode: string;
   cpName: string;
+  partnerType: string;
+  panType: string | null;
+  dateOnboarded: string;
+  parentUser: string;
+  segmentFocus: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+  commision: number;
   spCount: number;
-  clientsCount: number;
-  totalLoan: number;
-  totalAmount: number;
+}
+
+export interface ISegmentFocusDropdown {
+  id: number;
+  displayName: string;
+}
+
+export interface IAdminChannelPartnerDailyReportResponse
+  extends APIResponseEntity {
+  data: IAdminChannelPartnerDailyReportData;
+}
+
+export interface IAdminChannelPartnerDailyReportData {
+  dailyReportQueue: IAdminChannelPartnerDailyReportItem[];
+  totalCount: number;
+}
+
+export interface IAdminChannelPartnerDailyReportItem {
+  reportDate: string;
+  partnerID: string;
+  partnerName: string;
+  partnerType: string;
+  newOnboarded: string;
+  appsLoggedDay: number;
+  appsLoggedMTD: number;
+  appsLoggedYTD: number;
+  sanctionedCountDay: number;
+  sanctionedAmountDay: number;
+  sanctionedCountMTD: number;
+  sanctionedAmountMTD: number;
+  disbursedCountDay: number;
+  disbursedAmountDay: number;
+  disbursedCountMTD: number;
+  disbursedAmountMTD: number;
+  loginToSanctionTATAvgDays: number;
+  sanctionToDisbTATAvgDays: number;
+  approvalRatePercent: number;
+  funnelConversionPercent: number;
+  formattedsanctionedAmountDay: string;
+  formattedsanctionedAmountMTD: string;
+  formatteddisbursedAmountDay: string;
+  formatteddisbursedAmountMTD: string;
+}
+
+export interface IApplicationFunnelDailyReportParams {
+  search: string;
+  page: number;
+  pageSize: number;
+  filterType: number;
+  startDate: string | null;
+  endDate: string | null;
+}
+
+export interface IApplicationFunnelDailyReportResponse
+  extends APIResponseEntity {
+  data: IApplicationFunnelDailyReportData;
+}
+
+export interface IApplicationFunnelDailyReportData {
+  applications: IApplicationFunnelDailyReportItem[];
+  totalCount: number;
+}
+
+export interface IApplicationFunnelDailyReportItem {
+  loanApplicationID: string;
+  applicationCode: string;
+  borrowerCode: string;
+  borrowerName: string;
+  partner: string;
+  productType: string;
+  loanAmount: number;
+  formattedLoanAmount: string;
+  applicationCreated: string;
+  status: IStatus;
+  loginToSanctionTAT: string | null;
+  sanctionToDisbTAT: string | null;
+  loginTimestamp: string | null;
+  disbursedTime: string | null;
 }
 
 export interface IGeographicalReportResponse extends APIResponseEntity {
@@ -38,11 +135,6 @@ interface IGeographicalReportResponseData {
   stateList: string[];
 }
 
-export interface ICityDropdown {
-  name: string;
-  code: number;
-}
-
 export interface IGeographicalChannelPartnerQueue {
   state?: string;
   city?: string;
@@ -51,17 +143,6 @@ export interface IGeographicalChannelPartnerQueue {
   clientsCount: number;
   totalLoan: number;
   totalAmount: number;
-}
-
-export interface IGSTReportResponse extends APIResponseEntity {
-  data: IGSTReportData;
-}
-
-export interface IGSTReportData {
-  gstNumber: string;
-  gstDetailsList: IGSTDetail[];
-  gstList: IGSTList[];
-  gstReportRefetchedDays?: number;
 }
 
 export interface IGSTList {
@@ -75,106 +156,31 @@ export interface IGSTList {
   user: string | null;
 }
 
-export interface IGSTDetail {
-  id: string;
-  fileName: string;
-  pdfFilePath: string;
-  excelFilePath: string;
-  retrievedDate: string;
-  gstFrom: null;
-  gstTo: null;
-  gstNumber: string;
+export interface IStatus {
+  label: string;
+  color: string;
+  statusID: number;
 }
 
-export interface IITRReportBody {
-  username: string;
-  password: string;
+export interface IStudentReportDetailResponse extends APIResponseEntity {
+  data: IStudentReportDetailResponseData;
 }
 
-export interface IShareLinkITRReportBody {
-  referenceID: string;
-  reservationId: string;
+export interface IStudentReportDetailResponseData {
+  studentID: string;
+  studentName: string;
+  studentCode: string;
+  mobileNumber: string;
+  email: string;
+  panNumber: string;
+  institute: string;
+  studentReports: IStudentReports[];
 }
 
-export interface IITRReportResponse extends APIResponseEntity {
-  data: IITRReportData;
-}
-
-export interface IITRReportData {
-  itrReportDate: string | null;
-  itrReportRefetchedDays: number;
-  itrDetailsList: IITRDetail[];
-}
-
-export interface IITRDetail {
-  id: string;
-  fileName: string;
-  filePath?: string | null;
-  retrievedDate: string;
-  pdfFilePath: string;
-  excelFilePath: string;
-}
-
-export interface IBankingAnalyticsReportResponse extends APIResponseEntity {
-  data: IBankingAnalyticsReportData;
-}
-
-export interface IBankingAnalyticsReportData {
-  bankingAnalyticsDetailsList: IBankingReportList[];
-}
-
-export interface IBankingReportList {
-  id: string;
-  fileName: string;
-  pdfFilePath: string;
-  excelFilePath: string;
-  retrievedDate: string;
-  bankName: null;
-  accountType: null;
-  period: null;
-}
-
-export interface IChannelPartnerReportParams {
-  page: number;
-  pageSize: number;
-  clientFilter?: string;
-}
-export interface IChannelPartnerClientReportResponse extends APIResponseEntity {
-  data: IChannelPartnerClientReportData;
-}
-
-interface IChannelPartnerClientReportData {
-  totalCount: number;
-  clientsList: IClientList[];
-}
-
-export interface IClientList {
-  clientID: string;
-  clientName: string;
-  clientCode: string;
-  mobile: string;
-  sourcingPartnerName: string;
-}
-
-export interface IChannelPartnerClientReportDetailResponse
-  extends APIResponseEntity {
-  data: IChannelPartnerClientReportDetailData;
-}
-
-export interface IChannelPartnerClientReportDetailData {
-  channelPartner: string | null;
-  clientCode: string | null;
-  clientID: string;
-  clientName: string | null;
-  email: string | null;
-  mobileNumber: string | null;
-  panNumber: string | null;
-  clientReports: IClientDetailList[];
-}
-
-export interface IClientDetailListParams {
-  clientID: string;
-  isClientDetailsRequired: boolean;
+export interface IStudentReports {
+  name: string;
+  filePath: string;
+  reportType: number;
 }
 
 export interface IClientDetailList {
@@ -194,27 +200,46 @@ export interface IExternalReportData {
   requestId?: string;
 }
 
-export interface IGenerateGstReportUsingLinkBodyForOTP {
-  gstIn: string;
-  email: string;
+export interface IGetStudentCoApplicantsListResponse extends APIResponseEntity {
+  data: IGetStudentCoApplicantsList[];
 }
 
-export interface IGenerateGstReportUsingLinkBodyForPassword {
-  gstInList: string[];
-  emailList: string[];
+export interface IGetStudentCoApplicantsList {
+  id: string,
+  name: string,
+  firstName: string | null,
+  middleName: string | null,
+  lastName: string | null,
+  pan: string,
+  aadhaarNumber: string | null,
+  address: string,
+  state: string | null,
+  city: string | null,
+  pinCode: string | null,
+  mobile: string,
+  dateOfBirth: string,
+  gender: string,
+  creditScore: number | null,
+  userType: number
 }
 
-export interface IGenerateGstReportShareLink extends APIResponseEntity {
-  data: {
-    responseCode: string;
-    gstIn: string | null;
-    reservationID: string | null;
-    referenceID: string;
-  };
+export interface IInstituteReportParams {
+  page: number;
+  pageSize: number;
+  studentFilter?: string;
+}
+export interface IInstituteReportResponse extends APIResponseEntity {
+  data: IInstituteReportResponseData;
 }
 
-export interface IValidateGSTReportResponse extends APIResponseEntity {
-  data: {
-    gstReportDate: string
-  };
+interface IInstituteReportResponseData {
+  totalCount: number;
+  studentsList: IStudentList[];
+}
+
+export interface IStudentList {
+  studentID: string,
+  studentName: string,
+  studentCode: string,
+  mobile: string
 }

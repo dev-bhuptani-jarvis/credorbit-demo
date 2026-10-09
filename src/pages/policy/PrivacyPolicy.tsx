@@ -8,7 +8,6 @@ import {
   IUpdatedContractBody,
 } from "../../interface/contract";
 import {
-  cleanCmsContent,
   formatDate,
   sanitizeHTML,
   toastError,
@@ -78,10 +77,7 @@ const PrivacyPolicy = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      setContract({
-        ...response.data,
-        content: cleanCmsContent(response.data.content),
-      });
+      setContract(response.data);
     } else {
       toastError(response.message);
     }
@@ -114,7 +110,7 @@ const PrivacyPolicy = () => {
                     className="btn btn-orange"
                     onClick={() => setIsEditable(true)}
                   >
-                    Edit Policy <i className="bi bi-pencil-fill ms-2" />
+                    Edit Policy <i className="icon-edit ms-2" />
                   </Button>
                 </div>
               </div>

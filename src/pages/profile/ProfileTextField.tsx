@@ -4,10 +4,10 @@ import { InputText } from "primereact/inputtext";
 export interface ProfileTextFieldProps {
   label: string;
   name: string;
-  value: string;
+  value: string | null | undefined;
   placeholder: string;
   isEditable?: boolean;
-  onChange?: (name: string, value: Date | null) => void;
+  onChange?: (name: string, value: string) => void;
   disabled?: boolean;
   tooltip?: boolean;
 }
@@ -18,6 +18,8 @@ export const ProfileTextField = ({
   value,
   placeholder,
   tooltip,
+  disabled = true,
+  onChange,
 }: ProfileTextFieldProps) => (
   <div className="col-lg-4 col-md-6 col-sm-12 col-12">
     <div className="form-group mb-4">
@@ -42,11 +44,12 @@ export const ProfileTextField = ({
         className="form-control"
         placeholder={placeholder}
         name={name}
-        value={value}
-        disabled
-        // onPaste={(e) => e.preventDefault()}
-        // onCopy={(e) => e.preventDefault()}
-        // onCut={(e) => e.preventDefault()}
+        value={value ?? ""}
+        disabled={disabled}
+        onChange={(e) => onChange?.(name, e.target.value)}
+      // onPaste={(e) => e.preventDefault()}
+      // onCopy={(e) => e.preventDefault()}
+      // onCut={(e) => e.preventDefault()}
       />
     </div>
   </div>

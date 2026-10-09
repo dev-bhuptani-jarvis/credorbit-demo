@@ -1,6 +1,7 @@
 import { Component, ReactNode } from "react";
-import { RoutePathConstant } from "../utils/constants/routePaths";
 import { Button } from "primereact/button";
+import { dashboardRoute } from "../utils/functions/appRuntime";
+import store from "../store";
 
 interface Props {
   children?: ReactNode;
@@ -13,6 +14,12 @@ interface State {
 class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
+  };
+
+  private handleBackToHomePage = (): void => {
+    const userType = store.getState().user.user.userType;
+
+    window.location.assign(dashboardRoute(userType));
   };
 
   public static getDerivedStateFromError(): State {
@@ -29,9 +36,7 @@ class ErrorBoundary extends Component<Props, State> {
             </h1>
             <Button
               className="btn btn-orange"
-              onClick={() =>
-                window.location.replace(RoutePathConstant.private.dashboard)
-              }
+              onClick={this.handleBackToHomePage}
             >
               Back to Home Page
             </Button>

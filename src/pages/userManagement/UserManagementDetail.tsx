@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Loader from "../../components/Loader";
 import { Button } from "primereact/button";
@@ -26,6 +26,8 @@ import {
   EMAIL_PATTERN,
   INDIAN_MOBILE_NUMBER_PATTERN,
   NUMBER_ONLY_PATTERN,
+  DESIGNATION_PATTERN,
+  USER_NAME_PATTERN,
 } from "../../utils/constants/pattern";
 import { InputSwitch } from "primereact/inputswitch";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
@@ -36,6 +38,9 @@ import {
   decryptVAPTData,
   encryptVAPTData,
 } from "../../utils/functions/encryptDecrypt";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
+import usePermission from "../../hooks/usePermission";
 
 const UserManagementDetail = () => {
   const [userData, setUserData] = useState<IUserDetailData>();
@@ -55,6 +60,8 @@ const UserManagementDetail = () => {
 
   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
 
+  const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
+
   const [selectedOption, setSelectedOption] = useState<string>("");
 
   const location = useLocation();
@@ -63,7 +70,17 @@ const UserManagementDetail = () => {
 
   const { id } = useParams<RouteParams>();
 
+  const { whiteLabelSettings } = useSelector(
+    (state: RootState) => state.user.user,
+  );
+
+  const { isImpersonate } = useSelector(
+    (state: RootState) => state.impersonateUser,
+  );
+
   const currentState = location.pathname.split("/")[2];
+
+  const { create } = usePermission("ManageUsers", ["create"])();
 
   const currentTopic = (state: string): string => {
     return state === "create"
@@ -91,8 +108,10 @@ const UserManagementDetail = () => {
       const formatedUserData: IUserDetailData = {
         firstName: response.data.fullName.split(" ")[0] || "",
         lastName: response.data.fullName.split(" ")[1] || "",
-        email: response.data.email,
-        mobileNumber: response.data.mobileNumber,
+        email: response.data.email ? decryptVAPTData(response.data.email) : "",
+        mobileNumber: response.data.mobileNumber
+          ? decryptVAPTData(response.data.mobileNumber)
+          : "",
         designation: response.data.designation,
         rolesList: response.data.rolesList.map((role) => role.roleName) || [],
         selectedRoleName: response.data.selectedRoleName,
@@ -118,18 +137,25 @@ const UserManagementDetail = () => {
     setLoading(false);
   };
 
-  const validateFormFields = (): void => {
-    if (!userData) return;
+  const validateFormFields = (): IUserDetailValidationData | null => {
+    if (!userData) return null;
 
     const errors = { ...formErrors };
+    const firstName = userData.firstName?.trim() || "";
+    const lastName = userData.lastName?.trim() || "";
+    const designation = userData.designation?.trim() || "";
 
-    errors.firstName = IsStringNullEmptyOrUndefined(userData.firstName ?? "")
+    errors.firstName = IsStringNullEmptyOrUndefined(firstName)
       ? validationMessages.firstNameRequired
-      : "";
+      : firstName.length < 2 || !USER_NAME_PATTERN.test(firstName)
+        ? validationMessages.firstNameInvalid
+        : "";
 
-    errors.lastName = IsStringNullEmptyOrUndefined(userData.lastName ?? "")
+    errors.lastName = IsStringNullEmptyOrUndefined(lastName)
       ? validationMessages.lastNameRequired
-      : "";
+      : !USER_NAME_PATTERN.test(lastName)
+        ? validationMessages.lastNameInvalid
+        : "";
 
     const isEmailValid = EMAIL_PATTERN.test(
       userData.email.toLowerCase().trim()
@@ -150,23 +176,29 @@ const UserManagementDetail = () => {
         ? validationMessages.mobileNumberInvalid
         : "";
 
-    errors.designation = IsStringNullEmptyOrUndefined(userData.designation)
+    errors.designation = IsStringNullEmptyOrUndefined(designation)
       ? validationMessages.designationRequired
-      : "";
+      : designation.length < 2 || designation.length > 100 || !DESIGNATION_PATTERN.test(designation)
+        ? validationMessages.designationInvalid
+        : "";
 
     errors.rolesList = selectedOption ? "" : validationMessages.selectRole;
 
     setFormErrors(errors);
+    return errors;
   };
 
-  const handleSave = async (): Promise<void> => {
+  const handleSave = async (
+    event?: MouseEvent<HTMLButtonElement>
+  ): Promise<void> => {
     if (!userData) return;
 
+    event?.currentTarget.blur();
     setIsFormSubmitted(true);
 
-    validateFormFields();
+    const errors = validateFormFields();
 
-    const isValid: boolean = IsFormValid(formErrors);
+    const isValid: boolean = !!errors && IsFormValid(errors);
 
     if (isValid) {
       const formatedUserData: ISaveUserDetailData = {
@@ -176,6 +208,7 @@ const UserManagementDetail = () => {
         designation: userData.designation.trim(),
         roleName: selectedOption,
         status: userData.status,
+        whiteLabelTenantId: whiteLabelSettings?.id || ""
       };
 
       if (id) {
@@ -202,6 +235,8 @@ const UserManagementDetail = () => {
   const handleChange = (fieldName: string, value: string): void => {
     if (!userData) return;
 
+    setTouchedFields((previous) => ({ ...previous, [fieldName]: true }));
+
     switch (fieldName) {
       case "firstName":
         const formattedFirstName = value
@@ -212,7 +247,9 @@ const UserManagementDetail = () => {
           ...formErrors,
           [fieldName]: IsStringNullEmptyOrUndefined(formattedFirstName)
             ? validationMessages.firstNameRequired
-            : "",
+            : formattedFirstName.length < 2 || !USER_NAME_PATTERN.test(formattedFirstName)
+              ? validationMessages.firstNameInvalid
+              : "",
         });
 
         setUserData({ ...userData, firstName: formattedFirstName });
@@ -227,7 +264,9 @@ const UserManagementDetail = () => {
           ...formErrors,
           [fieldName]: IsStringNullEmptyOrUndefined(formattedLastName)
             ? validationMessages.lastNameRequired
-            : "",
+            : !USER_NAME_PATTERN.test(formattedLastName)
+              ? validationMessages.lastNameInvalid
+              : "",
         });
 
         setUserData({ ...userData, lastName: formattedLastName });
@@ -279,7 +318,9 @@ const UserManagementDetail = () => {
           ...formErrors,
           [fieldName]: IsStringNullEmptyOrUndefined(formattedDesignationValue)
             ? validationMessages.designationRequired
-            : "",
+            : formattedDesignationValue.length < 2 || formattedDesignationValue.length > 100 || !DESIGNATION_PATTERN.test(formattedDesignationValue)
+              ? validationMessages.designationInvalid
+              : "",
         });
 
         setUserData({ ...userData, designation: formattedDesignationValue });
@@ -313,9 +354,11 @@ const UserManagementDetail = () => {
 
   return (
     <>
+      <Loader isLoading={loading} />
+
       {userData && (
         <div className="whiteBoxHldr p-24">
-          <Loader isLoading={loading} />
+
           <div className="row">
             <div className="col-12 mb-4 titleBtnWrapper">
               <TableTitle title={`${currentTopic(currentState)} User`} />
@@ -342,7 +385,7 @@ const UserManagementDetail = () => {
                 // onCut={(e) => e.preventDefault()}
                 />
 
-                {isFormSubmitted && (
+                {(isFormSubmitted || touchedFields.firstName) && formErrors.firstName && (
                   <span className="error">{formErrors.firstName}</span>
                 )}
               </div>
@@ -368,7 +411,7 @@ const UserManagementDetail = () => {
                 // onCut={(e) => e.preventDefault()}
                 />
 
-                {isFormSubmitted && (
+                {(isFormSubmitted || touchedFields.lastName) && formErrors.lastName && (
                   <span className="error">{formErrors.lastName}</span>
                 )}
               </div>
@@ -397,7 +440,7 @@ const UserManagementDetail = () => {
                 // onCut={(e) => e.preventDefault()}
                 />
 
-                {isFormSubmitted && (
+                {(isFormSubmitted || touchedFields.email) && formErrors.email && (
                   <span className="error">{formErrors.email}</span>
                 )}
               </div>
@@ -428,7 +471,7 @@ const UserManagementDetail = () => {
                   disabled={currentState === "view" || currentState === "edit"}
                 />
 
-                {isFormSubmitted && (
+                {(isFormSubmitted || touchedFields.mobileNumber) && formErrors.mobileNumber && (
                   <span className="error">{formErrors.mobileNumber}</span>
                 )}
               </div>
@@ -442,7 +485,7 @@ const UserManagementDetail = () => {
                   aria-label="Designation"
                   placeholder="Enter designation"
                   className="form-control"
-                  maxLength={35}
+                  maxLength={100}
                   name="designation"
                   value={userData.designation}
                   onChange={(e) =>
@@ -454,7 +497,7 @@ const UserManagementDetail = () => {
                 // onCut={(e) => e.preventDefault()}
                 />
 
-                {isFormSubmitted && (
+                {(isFormSubmitted || touchedFields.designation) && formErrors.designation && (
                   <span className="error">{formErrors.designation}</span>
                 )}
               </div>
@@ -483,31 +526,33 @@ const UserManagementDetail = () => {
                   disabled={currentState === "view"}
                 />
 
-                {isFormSubmitted && (
+                {(isFormSubmitted || touchedFields.roleName) && formErrors.rolesList && (
                   <span className="error">{formErrors.rolesList}</span>
                 )}
               </div>
 
-              <div className="col-lg-6 col-sm-12 d-flex align-items-center mb-4">
-                <InputSwitch
-                  aria-label="Role Active"
-                  checked={userData.status}
-                  onChange={(e) =>
-                    setUserData({
-                      ...userData,
-                      status: e.value,
-                    })
-                  }
-                  disabled={currentState === "view"}
-                />
-                <p className="ps-2 small">
-                  {userData.status ? "Active" : "Inactive"}
-                </p>
-              </div>
+              {!isImpersonate &&
+                <div className="col-lg-6 col-sm-12 d-flex align-items-center mb-4">
+                  <InputSwitch
+                    aria-label="Role Active"
+                    checked={userData.status}
+                    onChange={(e) =>
+                      setUserData({
+                        ...userData,
+                        status: e.value,
+                      })
+                    }
+                    disabled={currentState === "view"}
+                  />
+                  <p className="ps-2 small">
+                    {userData.status ? "Active" : "Inactive"}
+                  </p>
+                </div>
+              }
             </div>
           </div>
 
-          <div className="col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+          <div className="col-12 mb-4 justify-content-end d-flex">
             {currentState !== "view" && (
               <Button
                 className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
@@ -520,7 +565,7 @@ const UserManagementDetail = () => {
 
             <BackButton />
 
-            {currentState === "view" && (
+            {currentState === "view" && create && (
               <Button
                 className="btn btn-orange ms-3"
                 label="Edit User"

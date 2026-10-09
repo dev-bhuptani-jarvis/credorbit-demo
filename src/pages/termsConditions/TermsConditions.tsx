@@ -8,7 +8,6 @@ import {
   IUpdatedContractBody,
 } from "../../interface/contract";
 import {
-  cleanCmsContent,
   formatDate,
   sanitizeHTML,
   toastError,
@@ -78,10 +77,7 @@ const TermsConditions = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      setContract({
-        ...response.data,
-        content: cleanCmsContent(response.data.content),
-      });
+      setContract(response.data);
     } else {
       toastError(response.message);
     }
@@ -115,7 +111,7 @@ const TermsConditions = () => {
                     onClick={() => setIsEditable(true)}
                   >
                     Edit Terms and Conditions
-                    <i className="bi bi-pencil-fill ms-2" />
+                    <i className="icon-edit ms-2" />
                   </Button>
                 </div>
               </div>

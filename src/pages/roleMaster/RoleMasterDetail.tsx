@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import { IsStringNullEmptyOrUndefined } from "../../utils/functions/nullCheck";
 import { InputSwitch } from "primereact/inputswitch";
 import {
@@ -26,6 +26,15 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import TableTitle from "../../components/TableTitle";
 import { validationMessages } from "../../utils/constants/messages";
+import { ROLE_NAME_PATTERN } from "../../utils/constants/pattern";
+import {
+  buildPermissionTableTree,
+  disableUserManagementPermissions,
+  isPermissionBlockedByParent,
+  PermissionTableNode,
+  updatePermissionWithChildren,
+} from "../../utils/functions/permissionTree";
+import usePermission from "../../hooks/usePermission";
 
 const RoleMasterDetail = () => {
   const [roleData, setRoleData] = useState<IRoleDetailData>();
@@ -38,9 +47,15 @@ const RoleMasterDetail = () => {
 
   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
 
+  const [isRoleNameTouched, setIsRoleNameTouched] = useState<boolean>(false);
+
   const [loading, setLoading] = useState<boolean>(false);
 
   const [clickCounter, setClickCounter] = useState<number>(0);
+
+  const [expandedRows, setExpandedRows] = useState<
+    Record<string, boolean> | PermissionTableNode[]
+  >({});
 
   const navigate = useNavigate();
 
@@ -48,19 +63,24 @@ const RoleMasterDetail = () => {
 
   const { id } = useParams<RouteParams>();
 
-  const { userType } = useSelector((state: RootState) => state.user.user);
+  const { userType, userID } = useSelector((state: RootState) => state.user.user);
 
   const currentState = location.pathname.split("/")[2];
+
+  const { create } = usePermission("RoleMaster", ["create"])();
 
   const handleChange = (fieldName: string, value: string): void => {
     if (!roleData) return;
 
     if (fieldName === "roleName") {
+      setIsRoleNameTouched(true);
       setFormErrors({
         ...formErrors,
-        [fieldName]: IsStringNullEmptyOrUndefined(value)
+        [fieldName]: IsStringNullEmptyOrUndefined(value.trim())
           ? validationMessages.roleNameRequired
-          : "",
+          : value.trim().length < 3 || value.trim().length > 50 || !ROLE_NAME_PATTERN.test(value.trim())
+            ? validationMessages.roleNameInvalid
+            : "",
       });
     }
 
@@ -82,12 +102,7 @@ const RoleMasterDetail = () => {
     if (response && response.statusCode === 200) {
       const updatedPermissions = {
         ...response.data,
-        permissions: response.data.permissions.filter(
-          (permission) =>
-            typeof permission.create === "boolean" ||
-            typeof permission.view === "boolean" ||
-            typeof permission.list === "boolean"
-        ),
+        permissions: disableUserManagementPermissions(response.data.permissions),
       };
 
       setRoleData(updatedPermissions);
@@ -107,40 +122,12 @@ const RoleMasterDetail = () => {
   ): void => {
     if (!roleData) return;
 
-    const updatedPermissions = roleData.permissions.map((permission) => {
-      if (permission.rightID !== rightId) return permission;
-
-      const updatedPermission = { ...permission };
-
-      if (action === "create" || action === "view") {
-        // Only update if action field is not null
-        if (updatedPermission[action] !== null) {
-          updatedPermission[action] = value;
-        }
-
-        if (value && updatedPermission.list !== null) {
-          // If create/view is checked, check list if list is not null
-          updatedPermission.list = true;
-        }
-      } else if (action === "list") {
-        // Only update list if it's not null
-        if (updatedPermission.list !== null) {
-          updatedPermission.list = value;
-        }
-
-        if (!value) {
-          // If list is unchecked, uncheck create and view only if they are not null
-          if (updatedPermission.create !== null) {
-            updatedPermission.create = false;
-          }
-          if (updatedPermission.view !== null) {
-            updatedPermission.view = false;
-          }
-        }
-      }
-
-      return updatedPermission;
-    });
+    const updatedPermissions = updatePermissionWithChildren(
+      roleData.permissions,
+      action,
+      value,
+      rightId
+    );
 
     setClickCounter((prev) => prev + 1);
 
@@ -156,9 +143,9 @@ const RoleMasterDetail = () => {
     }
 
     const isDisabled =
-      role.rightName === "Role Master" ||
       currentState === "view" ||
-      (role.rightName === "Dashboard" && action === "list");
+      (role.rightName === "Dashboard" && action === "list") ||
+      isPermissionBlockedByParent(roleData?.permissions || [], role);
 
     return (
       <div className="form-check">
@@ -172,17 +159,27 @@ const RoleMasterDetail = () => {
             }
           />
         ) : (
-          <i className="bi bi-x-circle-fill" style={{ color: "#E5222D" }} />
+          <div className="danger-icon">
+            <i className="bi bi-x-circle-fill" />
+          </div>
         )}
       </div>
     );
   };
 
-  const handleSave = async (): Promise<void> => {
+  const handleSave = async (event?: MouseEvent<HTMLButtonElement>): Promise<void> => {
+    event?.currentTarget.blur();
     if (!roleData) return;
 
-    if (IsStringNullEmptyOrUndefined(roleData.roleName)) {
-      setFormErrors({ ...formErrors, roleName: validationMessages.roleNameRequired });
+    const roleName = roleData.roleName.trim();
+
+    if (IsStringNullEmptyOrUndefined(roleName) || roleName.length < 3 || roleName.length > 50 || !ROLE_NAME_PATTERN.test(roleName)) {
+      setFormErrors({
+        ...formErrors,
+        roleName: IsStringNullEmptyOrUndefined(roleName)
+          ? validationMessages.roleNameRequired
+          : validationMessages.roleNameInvalid,
+      });
       setIsFormSubmitted(true);
 
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -192,9 +189,9 @@ const RoleMasterDetail = () => {
     setFormErrors({ roleName: "" });
     setIsFormSubmitted(false);
 
-    if (roleData.roleID === 0) {
-      delete roleData.roleID;
-    }
+    // if (roleData.roleID === 0) {
+    //   delete roleData.roleID;
+    // }
 
     const getChangedPermissions = () => {
       if (!initialRoleData) return [];
@@ -208,7 +205,6 @@ const RoleMasterDetail = () => {
           if (!initialPermission) {
             // New permission added (optional, depends if needed)
             return {
-              id: currentPermission.id,
               rightID: currentPermission.rightID,
               rightName: currentPermission.rightName,
               displayOrder: currentPermission.displayOrder,
@@ -238,7 +234,6 @@ const RoleMasterDetail = () => {
 
           if (Object.keys(changedFields).length > 0) {
             return {
-              id: currentPermission.id,
               rightID: currentPermission.rightID,
               rightName: currentPermission.rightName,
               displayOrder: currentPermission.displayOrder,
@@ -260,6 +255,10 @@ const RoleMasterDetail = () => {
       changedPermissions,
     };
 
+    if (userType !== CLIENT_ROLE.SUPER_ADMIN) {
+      payload.linkedUserID = userID;
+    }
+
     const response: APIResponseEntity = await updateRoleDetailAPI(payload);
 
     if (!response) return;
@@ -278,15 +277,63 @@ const RoleMasterDetail = () => {
     return state === "create"
       ? "Create Role"
       : state === "view"
-      ? "View Role"
-      : state === "edit"
-      ? "Edit Role"
-      : "Role";
+        ? "View Role"
+        : state === "edit"
+          ? "Edit Role"
+          : "Role";
   };
 
   useEffect(() => {
     fetchViewRoleApi();
   }, [id]);
+
+  const permissionTree = roleData
+    ? buildPermissionTableTree(roleData.permissions)
+    : [];
+
+  const canExpandRow = (rowData: PermissionTableNode): boolean =>
+    rowData.children.length > 0;
+
+  const renderModuleCell = (
+    permission: IRolePermission,
+    isChild = false
+  ): JSX.Element => (
+    <div className={`permission-matrix-module ${isChild ? "permission-matrix-module-child" : ""}`}>
+      <span className="permission-matrix-module-title">
+        {permission.displayName}
+      </span>
+    </div>
+  );
+
+  const renderPermissionExpansion = (
+    rowData: PermissionTableNode
+  ): JSX.Element => (
+    <div className="permission-matrix-expansion">
+      <div className="permission-matrix-expansion-header">
+        <span>Sub-module</span>
+        <span>Create / Edit</span>
+        <span>View</span>
+        <span>List</span>
+      </div>
+
+      {rowData.children.map((childPermission) => (
+        <div className="permission-matrix-child-row" key={childPermission.rightID}>
+          <div className="permission-matrix-child-module">
+            {renderModuleCell(childPermission, true)}
+          </div>
+          <div className="permission-matrix-child-check" data-label="Create / Edit">
+            {renderCheckBoxes(childPermission, "create")}
+          </div>
+          <div className="permission-matrix-child-check" data-label="View">
+            {renderCheckBoxes(childPermission, "view")}
+          </div>
+          <div className="permission-matrix-child-check" data-label="List">
+            {renderCheckBoxes(childPermission, "list")}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <>
@@ -314,34 +361,37 @@ const RoleMasterDetail = () => {
                   value={roleData.roleName.trimStart()}
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
                   disabled={currentState === "view"}
-                  // onPaste={(e) => e.preventDefault()}
-                  // onCopy={(e) => e.preventDefault()}
-                  // onCut={(e) => e.preventDefault()}
+                // onPaste={(e) => e.preventDefault()}
+                // onCopy={(e) => e.preventDefault()}
+                // onCut={(e) => e.preventDefault()}
                 />
 
-                {isFormSubmitted && (
+                {(isFormSubmitted || isRoleNameTouched) && formErrors.roleName && (
                   <span className="error">{formErrors.roleName}</span>
                 )}
               </div>
 
-              <div className="col-lg-6 col-sm-12 d-flex align-items-center mt-4">
-                <InputSwitch
-                  aria-label="Role Active"
-                  checked={roleData.isActive}
-                  onChange={(e) =>
-                    setRoleData({
-                      ...roleData,
-                      isActive: e.value,
-                    })
-                  }
-                  disabled={currentState === "view"}
-                />
-                <p className="ps-2 small">
-                  {roleData.isActive ? "Active" : "Inactive"}
-                </p>
-              </div>
+              {create &&
+                <div className="col-lg-6 col-sm-12 d-flex align-items-center mt-4">
+                  <InputSwitch
+                    aria-label="Role Active"
+                    checked={roleData.isActive}
+                    onChange={(e) =>
+                      setRoleData({
+                        ...roleData,
+                        isActive: e.value,
+                      })
+                    }
+                    disabled={currentState === "view"}
+                  />
+                  <p className="ps-2 primary-color">
+                    {roleData.isActive ? "Active" : "Inactive"}
+                  </p>
+                </div>
+              }
             </div>
-            {currentState === "view" && (
+
+            {currentState === "view" && create && (
               <div className="row col-4 d-flex justify-content-end align-content-center">
                 <Button
                   className="btn btn-orange w-50"
@@ -366,15 +416,24 @@ const RoleMasterDetail = () => {
 
           <div className="table-responsive">
             <DataTable
-              className="tableMain"
+              className="tableMain permission-matrix-table"
               key={clickCounter}
-              value={roleData.permissions}
+              value={permissionTree}
+              dataKey="rightID"
+              expandedRows={expandedRows}
+              onRowToggle={(event) =>
+                setExpandedRows(
+                  (event.data || {}) as Record<string, boolean> | PermissionTableNode[]
+                )
+              }
+              rowExpansionTemplate={renderPermissionExpansion}
               emptyMessage="No Role Found"
             >
+              <Column expander={canExpandRow} style={{ width: "3.5rem" }} />
               <Column
-                field="rightName"
                 header="Module"
-                style={{ width: "740px" }}
+                body={(role: PermissionTableNode) => renderModuleCell(role)}
+                style={{ width: "calc(43% - 3.5rem)" }}
               />
 
               <Column
@@ -382,22 +441,28 @@ const RoleMasterDetail = () => {
                 body={(role: IRolePermission) =>
                   renderCheckBoxes(role, "create")
                 }
-                style={{ width: "150px" }}
+                style={{ width: "19%" }}
+                bodyClassName="permission-matrix-check-cell"
+                headerClassName="permission-matrix-check-header"
               />
               <Column
                 header="View"
                 body={(role: IRolePermission) => renderCheckBoxes(role, "view")}
-                style={{ width: "150px" }}
+                style={{ width: "19%" }}
+                bodyClassName="permission-matrix-check-cell"
+                headerClassName="permission-matrix-check-header"
               />
               <Column
                 header="List"
                 body={(role: IRolePermission) => renderCheckBoxes(role, "list")}
-                style={{ width: "150px" }}
+                style={{ width: "19%" }}
+                bodyClassName="permission-matrix-check-cell"
+                headerClassName="permission-matrix-check-header"
               />
             </DataTable>
           </div>
 
-          <div className="col-lg-4 col-md-4 col-sm-12 col-12 mt-4">
+          <div className="col-12 mt-4 d-flex justify-content-end">
             {currentState !== "view" && (
               <Button className="btn btn-orange me-3" onClick={handleSave}>
                 {currentState === "create" ? "Create" : "Save"}
@@ -405,10 +470,13 @@ const RoleMasterDetail = () => {
             )}
             <Button
               className="btn btn-black-line text-center"
-              onClick={() => {
+              onClick={(
+                event?: MouseEvent<HTMLButtonElement>
+              ) => {
                 navigate(-1);
                 fetchViewRoleApi();
                 window.scrollTo({ top: 0, behavior: "smooth" });
+                event?.currentTarget?.blur();
               }}
               label="Back"
             />

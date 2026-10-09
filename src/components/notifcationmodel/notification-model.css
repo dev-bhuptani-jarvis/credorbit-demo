@@ -3,9 +3,9 @@
     top: 60px;
     right: 20px;
     width: 380px;
-    background: #fff;
+    background: var(--color-white);
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 10px 30px var(--color-black-shadow-subtle);
     z-index: 999;
     overflow: hidden;
 }
@@ -13,8 +13,8 @@
 /* Header */
 .notification-header {
     padding: 14px 16px;
-    border-bottom: 1px solid #eaeaea;
-    background: #fafafa;
+    border-bottom: 1px solid var(--color-border-light-2);
+    background: var(--color-surface-page);
 }
 
 .notification-header-top {
@@ -25,8 +25,8 @@
 }
 
 .view-all-btn {
-    background: #2563eb;
-    color: #fff;
+    background: var(--color-accent-blue-brand);
+    color: var(--color-white);
     padding: 6px 14px;
     border-radius: 20px;
     border: none;
@@ -48,17 +48,17 @@
     gap: 12px;
     padding: 16px;
     cursor: pointer;
-    border-bottom: 1px solid #f1f1f1;
+    border-bottom: 1px solid var(--color-surface-soft-6);
     position: relative;
 }
 
 .notification-item:hover {
-    background: #f9fafb;
+    background: var(--color-surface-soft);
 }
 
 .notification-icon {
     font-size: 20px;
-    color: #facc15;
+    color: var(--color-warning-highlight);
     margin-top: 4px;
 }
 
@@ -73,13 +73,13 @@
 
 .notification-desc {
     font-size: 13px;
-    color: #6b7280;
+    color: var(--color-text-secondary);
     margin-top: 4px;
 }
 
 .notification-time {
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--color-text-tertiary);
     margin-top: 6px;
 }
 
@@ -87,7 +87,7 @@
 .side-dot {
     width: 8px;
     height: 8px;
-    background: #7c3aed;
+    background: var(--color-accent-violet);
     border-radius: 50%;
     position: absolute;
     left: 8px;
@@ -98,13 +98,14 @@
 .notification-footer {
     padding: 12px;
     text-align: center;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--color-border-light);
 }
 
 .show-all-link {
     background: none;
     border: none;
-    color: #ff632c;
+    color: var(--color-brand-primary);
     font-weight: 500;
     cursor: pointer;
 }
+

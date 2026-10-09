@@ -34,26 +34,30 @@ const Editor = ({ content, setContent }: EditorProps) => {
     <>
       <div id="custom-toolbar">
         <span className="ql-formats">
-          <select className="ql-header">
+          <select className="ql-header" defaultValue="">
+            <option value="">Normal</option>
             <option value="1">H1</option>
             <option value="2">H2</option>
           </select>
         </span>
+
         <span className="ql-formats">
-          <select className="ql-font">
-            <option value="sans-serif">Sans Serif</option>
+          <select className="ql-font" defaultValue="">
+            <option value="">Sans Serif</option>
             <option value="serif">Serif</option>
             <option value="monospace">Monospace</option>
           </select>
         </span>
+
         <span className="ql-formats">
-          <select className="ql-size">
-            <option value="small" />
-            <option value="normal" selected/>
-            <option value="large" />
-            <option value="huge" />
+          <select className="ql-size" defaultValue="">
+            <option value="small">Small</option>
+            <option value="">Normal</option>
+            <option value="large">Large</option>
+            <option value="huge">Huge</option>
           </select>
         </span>
+
         <span className="ql-formats">
           <button className="ql-bold" />
           <button className="ql-italic" />
@@ -61,6 +65,7 @@ const Editor = ({ content, setContent }: EditorProps) => {
           <button className="ql-strike" />
           <button className="ql-blockquote" />
         </span>
+
         <span className="ql-formats">
           <button className="ql-list" value="ordered" />
           <button className="ql-list" value="bullet" />
@@ -68,6 +73,7 @@ const Editor = ({ content, setContent }: EditorProps) => {
           <button className="ql-indent" value="+1" />
         </span>
       </div>
+
       <ReactQuill
         theme="snow"
         value={content}

@@ -1,11 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  convertPartnersToCoApplicantsAPI,
   fetchUserProfile,
   generateAadharOTP,
   getDataByPincodeAPI,
   updateAadharAPI,
   updateUserProfile,
+  validateCinNumberAPI,
+  validateUdyamNumberAPI,
+  sendUpdateMobileOtp,
+  verifyUpdateMobileOtp
 } from "../../utils/axios/apiServices";
 import {
   IGSTListInfo,
@@ -15,6 +18,8 @@ import {
   IUserInfo,
   IUserProfileResponse,
   IUserValidation,
+  IValidateCINNumberBody,
+  IValidateUdhyamNumberBody,
 } from "../../interface/userData";
 import {
   IsNullOrEmptyArray,
@@ -22,15 +27,17 @@ import {
 } from "../../utils/functions/nullCheck";
 import {
   CLIENT_ROLE,
-  formatCurrencyAmount,
   formatMobileNumber,
 } from "../../utils/constants/constant";
 import { useSelector, useDispatch } from "react-redux";
 import {
   formatAadhaarNumber,
-  formatDate,
   formatTime,
+  getFileSizeLimitErrorMessage,
+  IMAGE_FILE_ACCEPT,
   IsFormValid,
+  isFileSizeWithinLimit,
+  isImageFile,
   maskAadhaarNumber,
   restrictInputByPattern,
   toastError,
@@ -42,7 +49,6 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import Loader from "../../components/Loader";
-import CameraCaptureDialog from "../../components/CameraCaptureDialog";
 import usePermission from "../../hooks/usePermission";
 import { Dialog } from "primereact/dialog";
 import { InputOtp } from "primereact/inputotp";
@@ -50,21 +56,19 @@ import {
   IAadharCardResponse,
   OnlyAadharNumber,
 } from "../../interface/contract";
-import { RadioButton, RadioButtonChangeEvent } from "primereact/radiobutton";
+import { RadioButton } from "primereact/radiobutton";
 import {
   BANK_ACCOUNT_NUMBER_ONLY_PATTERN,
+  BANK_NAME_PATTERN,
+  CIN_NUMBER_REGEX,
   IFSC_CODE_PATTERN,
   INDIAN_MOBILE_NUMBER_PATTERN,
   NUMBER_ONLY_PATTERN,
+  UDHYAM_AADHAAR_REGEX,
 } from "../../utils/constants/pattern";
-import AddPanModal from "../../components/AddPanModal";
 import { updateShowPanDetailPopUp } from "../../store/reducer/userSlice";
-import {
-  getDecryptedSessionStorage,
-  setEncryptedSessionStorage,
-} from "../../utils/functions/sessionStorage";
+import { setEncryptedSessionStorage } from "../../utils/functions/sessionStorage";
 import { OTPType, StorageKeyEnum } from "../../utils/constants/enum";
-import DeleteUserModal from "../../components/DeleteUserModal";
 import { ProfileTextField } from "./ProfileTextField";
 import { Dropdown } from "primereact/dropdown";
 import DateTextField from "./DateTextField";
@@ -75,32 +79,31 @@ import {
   decryptVAPTData,
   encryptVAPTData,
 } from "../../utils/functions/encryptDecrypt";
-import { Tooltip } from "primereact/tooltip";
-import { setProfileUpdated } from "../../store/reducer/profileSlice";
 import { Image } from "primereact/image";
-import { IEducationStudentApplicant } from "../../interface/educationManagement";
-import { getEducationLoanDrafts } from "../../utils/demo/demoEducationLoanFlow";
-import {
-  getEducationStudentById,
-  getEducationStudents,
-} from "../../utils/demo/demoEducationStudents";
+import { Calendar } from "primereact/calendar";
 
-const constitutionOptions = [
-  { label: "Proprietorship", value: "Proprietorship" },
-  { label: "Partnership", value: "Partnership" },
-  { label: "Private Limited Company", value: "Private Limited Company" },
-  { label: "Public Limited Company", value: "Public Limited Company" },
-  { label: "LLP", value: "LLP" },
-  { label: "Society", value: "Society" },
-  { label: "Trust", value: "Trust" },
-];
-
-const DEFAULT_STUDENT_USER_ID = "student-role-001";
+const MOBILE_UPDATE_OTP_LENGTH = 4;
 
 const Profile = () => {
   const [userFormData, setUserFormData] = useState<IUserInfo>();
 
-  console.log('userFormData', userFormData)
+  const [verifiedProfileFields, setVerifiedProfileFields] = useState({
+    cinOrLLP: false,
+    udhyamAadhaar: false,
+    mobileNumber: false,
+  });
+
+  const [initialValidationFields, setInitialValidationFields] = useState<{
+    cinOrLLP: string | null;
+    udhyamAadhaar: string | null;
+  }>({
+    cinOrLLP: null,
+    udhyamAadhaar: null,
+  });
+
+  const [verifyingProfileField, setVerifyingProfileField] = useState<
+    "cinOrLLP" | "udhyamAadhaar" | "mobileNumber" | null
+  >(null);
 
   const [formErrors, setFormErrors] = useState<IUserValidation>({
     bankAccountNumber: validationMessages.bankAccountNumberRequired,
@@ -112,19 +115,20 @@ const Profile = () => {
     zipCode: validationMessages.zipCodeRequired,
     aadhaar: validationMessages.aadhaarRequired,
     mobileNumber: validationMessages.mobileNumberRequired,
+    cinOrLLP: "",
+    udhyamAadhaar: "",
   });
 
   const [selectedGSTNumber, setSelectedGSTNumber] = useState<string>("");
 
   const [selectedGSTDetail, setSelectedGSTDetail] = useState<IGSTListInfo>();
 
-  const [targetUser, setTargetUser] = useState<number>(
-    CLIENT_ROLE.CO_APPLICANT,
-  );
+  const [manualGSTDetails, setManualGSTDetails] = useState({
+    gstAddress: "",
+    tradeName: "",
+  });
 
-  const [targetUserName, setTargetUserName] = useState<string>("");
-
-  const [editingAadhaar, setEditingAadhaar] = useState<string | null>(null);
+  const [manualGSTDate, setManualGSTDate] = useState<string>("");
 
   const [selectedPartnerIndex, setSelectedPartnerIndex] = useState<
     number | null
@@ -134,10 +138,11 @@ const Profile = () => {
     IUserInfo["partners"][number] | null
   >(null);
 
-  const [showAuthorizedPersonCamera, setShowAuthorizedPersonCamera] =
-    useState<boolean>(false);
-
   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
+
+  const [touchedFields, setTouchedFields] = useState<
+    Partial<Record<keyof IUserValidation, boolean>>
+  >({});
 
   const [isEditable, setIsEditable] = useState<boolean>(false);
 
@@ -153,27 +158,20 @@ const Profile = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [panDetailPopUp, setPanDetailPopUp] = useState<boolean>(false);
+  const [mobileOtpPopUp, setMobileOtpPopUp] = useState<boolean>(false);
 
-  const [aadharCardPopUp, setAadharCardPopUp] = useState<boolean>(false);
+  const [mobileOtpValue, setMobileOtpValue] = useState<string>("");
 
-  const [otpValues, setOtpValues] = useState<string | undefined>(undefined);
-
-  const [clientID, setClientID] = useState<string>("");
-
-  const [userID, setUserID] = useState<string>("");
-
-  const [userType, setUserType] = useState<number>(0);
-
-  const [deleteID, setDeleteID] = useState<string>("");
-
-  const [deleteModal, setDeleteModal] = useState<boolean>(false);
+  const [mobileNumberForVerification, setMobileNumberForVerification] =
+    useState<string>("");
 
   const [aadhaarCardNumber, setAadhaarCardNumber] = useState<string>("");
 
   const userData = useSelector((state: RootState) => state.user.user);
 
   const [timeLeft, setTimeLeft] = useState<number>(0);
+
+  const [mobileOtpTimeLeft, setMobileOtpTimeLeft] = useState<number>(0);
 
   const { create } = usePermission("Profile", ["create"])();
 
@@ -184,84 +182,11 @@ const Profile = () => {
   );
 
   const dispatch = useDispatch();
-  const impersonatedStudentId = getDecryptedSessionStorage(
-    StorageKeyEnum.CRED_ORBIT_IMPERSONATE_STUDENT_ID,
-  );
 
-  const isEducationInstituteProfile =
-    (userFormData?.role || "") === "Educational Institute";
-
-  const isNbfcRestrictedProfile = ["NBFC User", "NBFC"].includes(
-    userFormData?.role || "",
-  );
-
-  const isStudentPortalProfile =
-    userData.userID === DEFAULT_STUDENT_USER_ID ||
-    userData.roleName === "Student" ||
-    Boolean(impersonatedStudentId);
-
-  const studentContext = useMemo(() => {
-    if (!isStudentPortalProfile) return null;
-
-    const directStudentId = impersonatedStudentId || userData.userID;
-
-    if (directStudentId) {
-      const matchedStudent = getEducationStudentById(directStudentId);
-      if (matchedStudent) {
-        return {
-          student: matchedStudent,
-          studentUserId: impersonatedStudentId
-            ? directStudentId
-            : userData.userID || DEFAULT_STUDENT_USER_ID,
-        };
-      }
-    }
-
-    const draftCandidates = getEducationLoanDrafts().filter(
-      (draft) =>
-        draft.studentUserId === (userData.userID || DEFAULT_STUDENT_USER_ID),
-    );
-
-    if (draftCandidates.length > 0) {
-      const matchedStudent = getEducationStudentById(draftCandidates[0].studentId);
-
-      if (matchedStudent) {
-        return {
-          student: matchedStudent,
-          studentUserId: draftCandidates[0].studentUserId,
-        };
-      }
-    }
-
-    return {
-      student: getEducationStudents()[0],
-      studentUserId: userData.userID || DEFAULT_STUDENT_USER_ID,
-    };
-  }, [
-    impersonatedStudentId,
-    isStudentPortalProfile,
-    userData.userID,
-  ]);
-
-  const studentApplications = useMemo(() => {
-    if (!studentContext?.student) return [];
-
-    const matchedByStudentId = getEducationLoanDrafts().filter(
-      (draft) => draft.studentId === studentContext.student.id,
-    );
-
-    const matchedDrafts =
-      matchedByStudentId.length > 0
-        ? matchedByStudentId
-        : getEducationLoanDrafts().filter(
-            (draft) => draft.studentUserId === studentContext.studentUserId,
-          );
-
-    return matchedDrafts.sort(
-      (left, right) =>
-        new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
-    );
-  }, [studentContext]);
+  const shouldIncludeBankDetails = (
+    userType: number,
+  ): boolean =>
+    [CLIENT_ROLE.SUPER_ADMIN].includes(userType);
 
   const fetchUserInfo = async (): Promise<void> => {
     setLoading(true);
@@ -271,11 +196,108 @@ const Profile = () => {
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      setSelectedGSTNumber(response.data.selectedGstNumber!);
+      const decryptedData = {
+        ...response.data,
+        emailID: response.data.emailID
+          ? decryptVAPTData(response.data.emailID)
+          : "",
+        mobileNumber: response.data.mobileNumber
+          ? decryptVAPTData(response.data.mobileNumber)
+          : "",
+        address: response.data.address
+          ? decryptVAPTData(response.data.address)
+          : "",
+        city: response.data.city ? decryptVAPTData(response.data.city) : "",
+        state: response.data.state ? decryptVAPTData(response.data.state) : "",
+        selectedGstNumber: response.data.selectedGstNumber
+          ? decryptVAPTData(response.data.selectedGstNumber)
+          : "",
+        udhyamAadhaar: response.data.udhyamAadhaar
+          ? decryptVAPTData(response.data.udhyamAadhaar)
+          : null,
+        cinOrLLP: response.data.cinOrLLP
+          ? decryptVAPTData(response.data.cinOrLLP)
+          : null,
+        zipCode: response.data.zipCode
+          ? decryptVAPTData(response.data.zipCode)
+          : "",
+        dateOfBirth: response.data.dateOfBirth
+          ? decryptVAPTData(response.data.dateOfBirth)
+          : "",
+        panNumber: response.data.panNumber
+          ? decryptVAPTData(response.data.panNumber)
+          : "",
+        aadhaar: response.data.aadhaar
+          ? decryptVAPTData(response.data.aadhaar).replace(/-/g, "")
+          : "",
+        ifscCode: response.data.ifscCode
+          ? decryptVAPTData(response.data.ifscCode)
+          : "",
+        bankAccountNumber: response.data.bankAccountNumber
+          ? decryptVAPTData(response.data.bankAccountNumber)
+          : "",
+        partners:
+          response.data.partners?.map((partner) => ({
+            ...partner,
+            pan: partner.pan ? decryptVAPTData(partner.pan) : "",
+            aadhaarNumber: partner.aadhaarNumber
+              ? decryptVAPTData(partner.aadhaarNumber)?.replace(/-/g, "")
+              : "",
+            address: partner.address ? decryptVAPTData(partner.address) : "",
+            city: partner.city ? decryptVAPTData(partner.city) : "",
+            state: partner.state ? decryptVAPTData(partner.state) : "",
+            pinCode: partner.pinCode ? decryptVAPTData(partner.pinCode) : "",
+            dateOfBirth: partner.dateOfBirth
+              ? decryptVAPTData(partner.dateOfBirth)
+              : "",
+            mobile: partner.mobile ? decryptVAPTData(partner.mobile) : "",
+            gender: partner.gender ? partner.gender : "",
+          })) || [],
+        coApplicants:
+          response.data.coApplicants?.map((coApplicant) => ({
+            ...coApplicant,
+            pan: coApplicant.pan ? decryptVAPTData(coApplicant.pan) : "",
+            aadhaarNumber: coApplicant.aadhaarNumber
+              ? decryptVAPTData(coApplicant.aadhaarNumber)?.replace(/-/g, "")
+              : "",
+          })) || [],
+        gstList:
+          response.data.gstList?.map((gst) => ({
+            ...gst,
+            gstNumber: gst.gstNumber
+              ? decryptVAPTData(gst.gstNumber)
+              : gst.gstNumber,
+            tradeName: gst.tradeName
+              ? decryptVAPTData(gst.tradeName) === "" ? null : decryptVAPTData(gst.tradeName)
+              : gst.tradeName,
+            gstAddress: gst.gstAddress
+              ? decryptVAPTData(gst.gstAddress) === "" ? null : decryptVAPTData(gst.gstAddress)
+              : gst.gstAddress,
+            dateOfGstRegistration: gst.dateOfGstRegistration
+              ? decryptVAPTData(gst.dateOfGstRegistration) === "" ? null : decryptVAPTData(gst.dateOfGstRegistration)
+              : gst.dateOfGstRegistration,
+          })) || [],
+      };
+
+      setSelectedGSTNumber(decryptedData.selectedGstNumber!);
+
+      setInitialValidationFields({
+        cinOrLLP: decryptedData.cinOrLLP ?? null,
+        udhyamAadhaar: decryptedData.udhyamAadhaar ?? null,
+      });
+
+      // setVerifiedProfileFields({
+      //   cinOrLLP: !IsStringNullEmptyOrUndefined(
+      //     decryptedData.cinOrLLP ?? "",
+      //   ),
+      //   udhyamAadhaar: !IsStringNullEmptyOrUndefined(
+      //     decryptedData.udhyamAadhaar ?? "",
+      //   ),
+      // });
 
       const updatedUser = {
         ...userData,
-        profilePicture: response.data.profilePicture!,
+        profilePicture: decryptedData.profilePicture!,
       };
 
       dispatch(updateShowPanDetailPopUp(updatedUser));
@@ -305,7 +327,7 @@ const Profile = () => {
         };
       };
 
-      setUserFormData(maskUserData(response.data));
+      setUserFormData(maskUserData(decryptedData));
     }
 
     setLoading(false);
@@ -358,58 +380,235 @@ const Profile = () => {
     setLoading(false);
   };
 
-  const handlePinCodePartner = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number,
-  ) => {
-    setLoading(true);
+  const handleUdhyamAadhaar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const sanitizedValue = value.toUpperCase().replace(/\s/g, "");
 
-    const { value } = e.target;
+    setVerifiedProfileFields((prev) => ({
+      ...prev,
+      udhyamAadhaar: false,
+    }));
 
-    // 1️⃣ Immediately update only pincode
-    setUserFormData((prev) => {
-      if (!prev) return prev;
+    setFormErrors((prev) => ({
+      ...prev,
+      udhyamAadhaar: IsStringNullEmptyOrUndefined(sanitizedValue)
+        ? ""
+        : !UDHYAM_AADHAAR_REGEX.test(sanitizedValue)
+          ? validationMessages.validUdhyamNumber
+          : "Please verify the Udhyam Aadhaar number",
+    }));
 
-      const partners = [...prev.partners];
-
-      partners[index] = {
-        ...partners[index],
-        pinCode: value,
-      };
-
-      return { ...prev, partners };
+    setUserFormData({
+      ...userFormData!,
+      [name]: sanitizedValue,
     });
+  };
 
-    // 2️⃣ Stop if not 6 digits
-    if (value.length !== 6) return;
+  const appendValidatedProfileField = (
+    formData: FormData,
+    fieldName: "cinOrLLP" | "udhyamAadhaar",
+    fieldValue?: string | null,
+  ): void => {
+    const normalizedValue = fieldValue?.trim() ?? "";
+    const initialValue = initialValidationFields[fieldName];
+    const shouldAppendValue = verifiedProfileFields[fieldName];
 
-    // 3️⃣ Call API
-    const response: IPincodeFetchDetailsResponse = await getDataByPincodeAPI({
-      pincode: Number(value),
-    });
-
-    if (!response) return;
-
-    if (response.data && response.statusCode === 200) {
-      // 4️⃣ Update city/state/country safely
-      setUserFormData((prev) => {
-        if (!prev) return prev;
-
-        const partners = [...prev.partners];
-
-        partners[index] = {
-          ...partners[index],
-          city: response.data.circle,
-          state: response.data.state,
-        };
-
-        return { ...prev, partners };
-      });
-    } else {
-      toastError(response.message);
+    if (
+      !IsStringNullEmptyOrUndefined(normalizedValue) &&
+      shouldAppendValue
+    ) {
+      formData.append(fieldName, encryptVAPTData(normalizedValue));
+      return;
     }
 
-    setLoading(false);
+    if (!IsStringNullEmptyOrUndefined(initialValue ?? "")) {
+      formData.append(fieldName, "");
+    }
+  };
+
+  const validateUdhyamAadhaarField = async (
+    valueToValidate?: string | null,
+    showSuccessToast: boolean = true,
+  ): Promise<boolean> => {
+    const value = (valueToValidate ?? userFormData?.udhyamAadhaar ?? "")
+      .toUpperCase()
+      .trim();
+
+    if (IsStringNullEmptyOrUndefined(value)) {
+      toastError(validationMessages.validUdhyamNumber);
+      setFormErrors((prev) => ({
+        ...prev,
+        udhyamAadhaar: validationMessages.validUdhyamNumber,
+      }));
+      setVerifiedProfileFields((prev) => ({
+        ...prev,
+        udhyamAadhaar: false,
+      }));
+      return false;
+    }
+
+    if (!UDHYAM_AADHAAR_REGEX.test(value)) {
+      toastError(validationMessages.validUdhyamNumber);
+      setFormErrors((prev) => ({
+        ...prev,
+        udhyamAadhaar: validationMessages.validUdhyamNumber,
+      }));
+      return false;
+    }
+
+    setVerifyingProfileField("udhyamAadhaar");
+
+    const body: IValidateUdhyamNumberBody = {
+      udyamRegNo: encryptVAPTData(value),
+    };
+
+    try {
+      const response: APIResponseEntity = await validateUdyamNumberAPI(body);
+
+      if (!response || response.statusCode !== 200) {
+        const errorMessage =
+          response?.message || validationMessages.validUdhyamNumber;
+        toastError(errorMessage);
+        setFormErrors((prev) => ({
+          ...prev,
+          udhyamAadhaar: errorMessage,
+        }));
+        setVerifiedProfileFields((prev) => ({
+          ...prev,
+          udhyamAadhaar: false,
+        }));
+        return false;
+      }
+
+      setUserFormData((prev) =>
+        prev
+          ? {
+            ...prev,
+            udhyamAadhaar: value,
+          }
+          : prev,
+      );
+      setFormErrors((prev) => ({
+        ...prev,
+        udhyamAadhaar: "",
+      }));
+      setVerifiedProfileFields((prev) => ({
+        ...prev,
+        udhyamAadhaar: true,
+      }));
+
+      if (showSuccessToast) {
+        toastSuccess(response.message);
+      }
+
+      return true;
+    } finally {
+      setVerifyingProfileField(null);
+    }
+  };
+
+  const handleCINNumber = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const sanitizedValue = value.toUpperCase().replace(/\s/g, "");
+
+    setVerifiedProfileFields((prev) => ({
+      ...prev,
+      cinOrLLP: false,
+    }));
+    setFormErrors((prev) => ({
+      ...prev,
+      cinOrLLP: IsStringNullEmptyOrUndefined(sanitizedValue)
+        ? ""
+        : !CIN_NUMBER_REGEX.test(sanitizedValue)
+          ? validationMessages.validCINNumber
+          : "Please verify the CIN/LLP number",
+    }));
+
+    setUserFormData({
+      ...userFormData!,
+      [name]: sanitizedValue,
+    });
+  };
+
+  const validateCINNumberField = async (
+    valueToValidate?: string | null,
+    showSuccessToast: boolean = true,
+  ): Promise<boolean> => {
+    const value = (valueToValidate ?? userFormData?.cinOrLLP ?? "")
+      .toUpperCase()
+      .trim();
+
+    if (IsStringNullEmptyOrUndefined(value)) {
+      toastError(validationMessages.validCINNumber);
+      setFormErrors((prev) => ({
+        ...prev,
+        cinOrLLP: validationMessages.validCINNumber,
+      }));
+      setVerifiedProfileFields((prev) => ({
+        ...prev,
+        cinOrLLP: false,
+      }));
+      return false;
+    }
+
+    if (!CIN_NUMBER_REGEX.test(value)) {
+      toastError(validationMessages.validCINNumber);
+      setFormErrors((prev) => ({
+        ...prev,
+        cinOrLLP: validationMessages.validCINNumber,
+      }));
+      return false;
+    }
+
+    setVerifyingProfileField("cinOrLLP");
+
+    const body: IValidateCINNumberBody = {
+      cin: encryptVAPTData(value),
+    };
+
+    try {
+      const response: APIResponseEntity = await validateCinNumberAPI(body);
+
+      if (!response || response.statusCode !== 200) {
+        const errorMessage =
+          response?.message || validationMessages.validCINNumber;
+        toastError(errorMessage);
+        setFormErrors((prev) => ({
+          ...prev,
+          cinOrLLP: errorMessage,
+        }));
+        setVerifiedProfileFields((prev) => ({
+          ...prev,
+          cinOrLLP: false,
+        }));
+        return false;
+      }
+
+      setUserFormData((prev) =>
+        prev
+          ? {
+            ...prev,
+            cinOrLLP: value,
+          }
+          : prev,
+      );
+      setFormErrors((prev) => ({
+        ...prev,
+        cinOrLLP: "",
+      }));
+      setVerifiedProfileFields((prev) => ({
+        ...prev,
+        cinOrLLP: true,
+      }));
+
+      if (showSuccessToast) {
+        toastSuccess(response.message);
+      }
+
+      return true;
+    } finally {
+      setVerifyingProfileField(null);
+    }
   };
 
   const handleChange = (
@@ -417,12 +616,17 @@ const Profile = () => {
   ): void => {
     const { name, value } = e.target;
 
+    setTouchedFields((previous) => ({
+      ...previous,
+      [name as keyof IUserValidation]: true,
+    }));
+
     switch (name) {
       case "bankAccountNumber": {
         let errorMessage: string = "";
         const isValid = BANK_ACCOUNT_NUMBER_ONLY_PATTERN.test(value);
 
-        if (userData.userType === CLIENT_ROLE.SOURCING_PARTNER) {
+        if (shouldIncludeBankDetails(userData.userType)) {
           if (!isValid) {
             errorMessage = validationMessages.bankAccountNumberInvalid;
           }
@@ -430,7 +634,7 @@ const Profile = () => {
           if (IsStringNullEmptyOrUndefined(value)) {
             errorMessage = validationMessages.bankAccountNumberRequired;
           }
-        } else if (userData.userType === CLIENT_ROLE.CHANNEL_PARTNER) {
+        } else if (shouldIncludeBankDetails(userData.userType)) {
           if (!IsStringNullEmptyOrUndefined(value)) {
             if (!isValid) {
               errorMessage = validationMessages.bankAccountNumberInvalid;
@@ -454,7 +658,7 @@ const Profile = () => {
         let errorMessage: string = "";
         const isValid: boolean = IFSC_CODE_PATTERN.test(value);
 
-        if (userData.userType === CLIENT_ROLE.SOURCING_PARTNER) {
+        if (shouldIncludeBankDetails(userData.userType)) {
           if (!isValid) {
             errorMessage = validationMessages.ifscCodeInvalid;
           }
@@ -462,7 +666,7 @@ const Profile = () => {
           if (IsStringNullEmptyOrUndefined(value)) {
             errorMessage = validationMessages.ifscCodeRequired;
           }
-        } else if (userData.userType === CLIENT_ROLE.CHANNEL_PARTNER) {
+        } else if (shouldIncludeBankDetails(userData.userType)) {
           if (!IsStringNullEmptyOrUndefined(value)) {
             if (!isValid) {
               errorMessage = validationMessages.ifscCodeInvalid;
@@ -486,10 +690,14 @@ const Profile = () => {
       case "bankName": {
         let errorMessage: string = "";
 
-        if (userData.userType === CLIENT_ROLE.SOURCING_PARTNER) {
+        if (shouldIncludeBankDetails(userData.userType)) {
           if (IsStringNullEmptyOrUndefined(value)) {
             errorMessage = validationMessages.bankNameRequired;
+          } else if (!BANK_NAME_PATTERN.test(value.trim())) {
+            errorMessage = validationMessages.bankNameInvalidGeneric;
           }
+        } else if (shouldIncludeBankDetails(userData.userType) && !IsStringNullEmptyOrUndefined(value) && !BANK_NAME_PATTERN.test(value.trim())) {
+          errorMessage = validationMessages.bankNameInvalidGeneric;
         }
 
         setFormErrors({
@@ -592,19 +800,16 @@ const Profile = () => {
       }
 
       case "udhyamAadhaar": {
-        setUserFormData({
-          ...userFormData!,
-          [name]: value.toUpperCase(),
-        });
+        if (e.target instanceof HTMLInputElement) {
+          handleUdhyamAadhaar(e as React.ChangeEvent<HTMLInputElement>);
+        }
         break;
       }
 
-      case "constitution":
-      case "website": {
-        setUserFormData({
-          ...userFormData!,
-          [name]: value.trim(),
-        });
+      case "cinOrLLP": {
+        if (e.target instanceof HTMLInputElement) {
+          handleCINNumber(e as React.ChangeEvent<HTMLInputElement>);
+        }
         break;
       }
 
@@ -612,16 +817,10 @@ const Profile = () => {
         const isValid: boolean =
           INDIAN_MOBILE_NUMBER_PATTERN.test(value) && value.length === 10;
 
-        if (userData.userType === CLIENT_ROLE.USER_MANAGEMENT) {
-          setFormErrors({ ...formErrors, [name]: "" });
-
-          setUserFormData({
-            ...userFormData!,
-            [name]: value.trim(),
-          });
-
-          return;
-        }
+        setVerifiedProfileFields((prev) => ({
+          ...prev,
+          mobileNumber: false,
+        }));
 
         setFormErrors({
           ...formErrors,
@@ -645,38 +844,114 @@ const Profile = () => {
     }
   };
 
+  const shouldShowFieldError = (field: keyof IUserValidation): boolean =>
+    isEditable && (isFormSubmitted || Boolean(touchedFields[field]));
+
+  const handleGSTDetailFieldChange = (
+    field: keyof typeof manualGSTDetails,
+    value: string,
+  ): void => {
+    setManualGSTDetails((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const getGSTDetailValue = (
+    field: keyof typeof manualGSTDetails,
+  ): string => {
+    const manualValue = manualGSTDetails[field];
+
+    if (!IsStringNullEmptyOrUndefined(manualValue)) {
+      return manualValue;
+    }
+
+    return selectedGSTDetail?.[field] ?? "";
+  };
+
+  const normalizeGSTDateToISO = (value?: string | null): string => {
+    if (IsStringNullEmptyOrUndefined(value ?? "")) {
+      return "";
+    }
+
+    const trimmedValue = value!.trim();
+
+    const isoDateMatch = trimmedValue.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (isoDateMatch) {
+      return trimmedValue;
+    }
+
+    const slashDateMatch = trimmedValue.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (slashDateMatch) {
+      const [, day, month, year] = slashDateMatch;
+      return `${year}-${month}-${day}`;
+    }
+
+    const parsedDate = new Date(trimmedValue);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return trimmedValue;
+    }
+
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+    const day = String(parsedDate.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
+  const getGSTDateValue = (): string => {
+    if (!IsStringNullEmptyOrUndefined(manualGSTDate)) {
+      return normalizeGSTDateToISO(manualGSTDate);
+    }
+
+    if (!selectedGSTDetail?.dateOfGstRegistration) {
+      return "";
+    }
+
+    return normalizeGSTDateToISO(selectedGSTDetail.dateOfGstRegistration);
+  };
+
+  const buildGSTInfoPayload = (): string => {
+    if (!userFormData?.isCompany || !selectedGSTNumber) {
+      return JSON.stringify({
+        tradeName: "",
+        gstAddress: "",
+        dateOfGstRegistration: "",
+      });
+    }
+
+    return JSON.stringify({
+      tradeName: encryptVAPTData(getGSTDetailValue("tradeName")),
+      gstAddress: encryptVAPTData(getGSTDetailValue("gstAddress")),
+      dateOfGstRegistration: encryptVAPTData(getGSTDateValue()),
+    });
+  };
+
   const handleUpdateGstDetail = (): void => {
     const updatedDetail = userFormData?.gstList.find(
       (gstDetail) => gstDetail.gstNumber === selectedGSTNumber,
     );
 
     setSelectedGSTDetail(updatedDetail);
+    setManualGSTDetails({
+      gstAddress: "",
+      tradeName: "",
+    });
+    setManualGSTDate("");
   };
 
-  const handleRadioButtonChange = (event: RadioButtonChangeEvent): void => {
-    const { name, value } = event.target;
+  const handleEnforcementDateChange = (value: Date | null): void => {
+    if (!value) {
+      setManualGSTDate("");
+      return;
+    }
 
-    setUserFormData((prevState) => {
-      if (!prevState) return prevState;
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, "0");
+    const day = String(value.getDate()).padStart(2, "0");
 
-      // Special case: update partner gender inside partners array
-      if (name === "gender") {
-        return {
-          ...prevState,
-          partners: prevState.partners?.map((partner, index) =>
-            index === 0
-              ? { ...partner, gender: value } // update gender
-              : partner,
-          ),
-        };
-      }
-
-      // Default: yes/no booleans
-      return {
-        ...prevState,
-        [name]: value === "yes",
-      };
-    });
+    setManualGSTDate(`${year}-${month}-${day}`);
   };
 
   const handleOpenPartnerDetails = (partnerIndex: number): void => {
@@ -750,24 +1025,6 @@ const Profile = () => {
     setLoading(false);
   };
 
-  const handlePartnerPhotoChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ): Promise<void> => {
-    const selectedFile = e.target.files?.[0];
-
-    if (!selectedFile || !selectedPartnerDraft) {
-      e.target.value = "";
-      return;
-    }
-
-    const fileReader = new FileReader();
-    fileReader.onload = () => {
-      handlePartnerDraftChange("profilePicture", String(fileReader.result || ""));
-    };
-    fileReader.readAsDataURL(selectedFile);
-    e.target.value = "";
-  };
-
   const getEncryptedPartners = (
     partners: IUserInfo["partners"] | undefined,
   ): Record<string, unknown>[] =>
@@ -783,7 +1040,6 @@ const Profile = () => {
             "middleName",
             "lastName",
             "gender",
-            "profilePicture",
           ].includes(key)
         ) {
           encryptedPartner[key] = partner[key];
@@ -806,12 +1062,9 @@ const Profile = () => {
   ): FormData => {
     const formData: FormData = new FormData();
 
-    formData.append("billingDetails", String(userFormData?.billingDetails));
+    formData.append("billingDetails", "true");
 
-    if (
-      userData.userType === CLIENT_ROLE.CHANNEL_PARTNER ||
-      userData.userType === CLIENT_ROLE.SOURCING_PARTNER
-    ) {
+    if (shouldIncludeBankDetails(userData.userType)) {
       formData.append("bankName", userFormData?.bankName || "");
 
       formData.append(
@@ -831,6 +1084,7 @@ const Profile = () => {
 
     if (userFormData?.isCompany && selectedGSTNumber) {
       formData.append("gstNumber", encryptVAPTData(selectedGSTNumber));
+      formData.append("gstInfo", buildGSTInfoPayload());
     }
 
     formData.append("address", encryptVAPTData(userFormData?.address!));
@@ -838,18 +1092,17 @@ const Profile = () => {
     formData.append("state", encryptVAPTData(userFormData?.state!));
     formData.append("zipCode", encryptVAPTData(userFormData?.zipCode!));
 
-    formData.append(
+    appendValidatedProfileField(
+      formData,
       "udhyamAadhaar",
-      encryptVAPTData(userFormData?.udhyamAadhaar || ""),
+      userFormData?.udhyamAadhaar,
     );
+    appendValidatedProfileField(formData, "cinOrLLP", userFormData?.cinOrLLP);
 
     formData.append(
       "mobileNumber",
       encryptVAPTData(String(userFormData?.mobileNumber)),
     );
-
-    formData.append("constitution", userFormData?.constitution || "");
-    formData.append("website", userFormData?.website || "");
 
     formData.append("userConsents", JSON.stringify(userFormData?.userConsents));
     formData.append(
@@ -897,46 +1150,56 @@ const Profile = () => {
   };
 
   const handleReset = (): void => {
-    setOtpValues(undefined);
-    setEditingAadhaar(null);
     setAadhaarCardNumber("");
-    setAadharCardPopUp(false);
     handleClosePartnerDetails();
     setIsEditable(false);
+    setTouchedFields({});
+    setVerifiedProfileFields({
+      cinOrLLP: false,
+      udhyamAadhaar: false,
+      mobileNumber: false,
+    });
+    closeMobileOtpModal();
+    setMobileNumberForVerification("");
     fetchUserInfo();
     setIsFormSubmitted(false);
-    setTargetUser(CLIENT_ROLE.CO_APPLICANT);
-    setTargetUserName("");
-  };
-
-  const handleChangeTargetUser = (value: number): void => {
-    setTargetUser(value);
-    setPanDetailPopUp(!panDetailPopUp);
   };
 
   const handleSave = async (): Promise<void> => {
     setIsFormSubmitted(true);
 
-    const isValid: boolean = IsFormValid(formErrors);
+    const effectiveFormErrors = {
+      ...formErrors,
+      cinOrLLP:
+        !verifiedProfileFields.cinOrLLP &&
+          !IsStringNullEmptyOrUndefined(userFormData?.cinOrLLP ?? "")
+          ? ""
+          : formErrors.cinOrLLP,
+      udhyamAadhaar:
+        !verifiedProfileFields.udhyamAadhaar &&
+          !IsStringNullEmptyOrUndefined(userFormData?.udhyamAadhaar ?? "")
+          ? ""
+          : formErrors.udhyamAadhaar,
+    };
+
+    if (
+      effectiveFormErrors.cinOrLLP !== formErrors.cinOrLLP ||
+      effectiveFormErrors.udhyamAadhaar !== formErrors.udhyamAadhaar
+    ) {
+      setFormErrors(effectiveFormErrors);
+    }
+
+    const isValid: boolean = IsFormValid(effectiveFormErrors);
 
     if (!isValid) return;
 
     setLoading(true);
 
-    // Temporary added for until the aadhar number flow is not working
-    // if (isFieldEditable.aadhaar) {
-    //   toastError(validationMessages.verifyAadhaarNumberRequired);
-    //   return;
-    // }
-
     const formData: FormData = new FormData();
 
-    formData.append("billingDetails", String(userFormData?.billingDetails));
+    formData.append("billingDetails", "true");
 
-    if (
-      userData.userType === CLIENT_ROLE.CHANNEL_PARTNER ||
-      userData.userType === CLIENT_ROLE.SOURCING_PARTNER
-    ) {
+    if (shouldIncludeBankDetails(userData.userType)) {
       formData.append("bankName", userFormData?.bankName || "");
 
       formData.append(
@@ -955,8 +1218,10 @@ const Profile = () => {
     // Temporary added for until the aadhar number flow is not working
     formData.append("aadhaar", encryptVAPTData(userFormData?.aadhaar));
 
-    if (userFormData?.isCompany && selectedGSTNumber)
+    if (userFormData?.isCompany && selectedGSTNumber) {
       formData.append("gstNumber", encryptVAPTData(selectedGSTNumber));
+      formData.append("gstInfo", buildGSTInfoPayload());
+    }
 
     formData.append("address", encryptVAPTData(userFormData?.address!));
 
@@ -966,18 +1231,18 @@ const Profile = () => {
 
     formData.append("zipCode", encryptVAPTData(userFormData?.zipCode!));
 
-    formData.append(
+    appendValidatedProfileField(
+      formData,
       "udhyamAadhaar",
-      encryptVAPTData(userFormData?.udhyamAadhaar || ""),
+      userFormData?.udhyamAadhaar,
     );
+
+    appendValidatedProfileField(formData, "cinOrLLP", userFormData?.cinOrLLP);
 
     formData.append(
       "mobileNumber",
       encryptVAPTData(String(userFormData?.mobileNumber)),
     );
-
-    formData.append("constitution", userFormData?.constitution || "");
-    formData.append("website", userFormData?.website || "");
 
     formData.append("userConsents", JSON.stringify(userFormData?.userConsents));
 
@@ -994,7 +1259,6 @@ const Profile = () => {
               "middleName",
               "lastName",
               "gender",
-              "profilePicture",
             ].includes(key)
           ) {
             encryptedPartner[key] = partner[key];
@@ -1041,6 +1305,20 @@ const Profile = () => {
       return;
     }
 
+    if (!isImageFile(selectedFile)) {
+      toastError("Invalid file type. Only JPG, JPEG, or PNG images are allowed.");
+      input.value = "";
+      setLoading(false);
+      return;
+    }
+
+    if (!isFileSizeWithinLimit(selectedFile)) {
+      toastError(getFileSizeLimitErrorMessage("File"));
+      input.value = "";
+      setLoading(false);
+      return;
+    }
+
     const formData: FormData = new FormData();
 
     if (inputId === "profileImage") {
@@ -1066,151 +1344,129 @@ const Profile = () => {
     setLoading(false);
   };
 
-  const handleAgree = async (): Promise<void> => {
-    if (!otpValues || otpValues.toString().length !== OTPType.SIX_DIGIT_OTP) {
-      toastError(`Please enter a valid ${OTPType.SIX_DIGIT_OTP}-digit OTP`);
+  const handleSendMobileOtp = async (): Promise<void> => {
+    const mobileNumber = String(userFormData?.mobileNumber || "").trim();
+    const isValidMobileNumber =
+      INDIAN_MOBILE_NUMBER_PATTERN.test(mobileNumber) &&
+      mobileNumber.length === 10;
+
+    if (!isValidMobileNumber) {
+      // setFormErrors((prev) => ({
+      //   ...prev,
+      //   mobileNumber: validationMessages.mobileNumberInvalid,
+      // }));
+      toastError(validationMessages.mobileNumberInvalid);
       return;
     }
+
     setLoading(true);
+    setVerifyingProfileField("mobileNumber");
 
-    const body: IUpdateAadhaarBody = {
-      clientID,
-      otp: otpValues,
-      coapplicantOrPartnerID: userID,
-      aadhaarNumber: encryptVAPTData(aadhaarCardNumber.replace(/\D/g, "")),
-      userType,
-    };
+    try {
+      const response: APIResponseEntity = await sendUpdateMobileOtp({
+        mobileNumber: encryptVAPTData(mobileNumber),
+      });
 
-    const response: APIResponseEntity = await updateAadharAPI(body);
-
-    if (!response) return;
-
-    if (response && response.statusCode === 200) {
-      toastSuccess(response.message);
-      handleReset();
-    } else {
-      toastError(response.message);
-    }
-
-    setLoading(false);
-  };
-
-  const validUser = (): boolean => {
-    return (
-      userData.userType === CLIENT_ROLE.CUSTOMER ||
-      userData.userType === CLIENT_ROLE.CHANNEL_PARTNER
-    );
-  };
-
-  const footerContent = (
-    <div className="modal-footer gap-3">
-      <Button
-        className="btn btn-orange-line w-100 text-center"
-        label="Cancel"
-        onClick={handleReset}
-      />
-      <Button
-        className="btn btn-orange w-100 text-center"
-        onClick={handleAgree}
-        label="Add Aadhaar Number"
-      />
-    </div>
-  );
-
-  const handleOtpChange = (value: string | number | null | undefined): void => {
-    if (value !== null && value !== undefined) {
-      setOtpValues(String(value));
-    } else {
-      setOtpValues("");
+      if (response?.statusCode === 200) {
+        setMobileNumberForVerification(mobileNumber);
+        setMobileOtpValue("");
+        setMobileOtpTimeLeft(environment.OTP_TIMER);
+        setMobileOtpPopUp(true);
+        toastSuccess(response.message);
+      } else if (response) {
+        toastError(response.message);
+      }
+    } finally {
+      setVerifyingProfileField(null);
+      setLoading(false);
     }
   };
 
-  const handleGetAadharCardOTP = async (
-    value: { aadhaarNumber: string; id: string },
-    index: number,
-    userType: number,
-  ): Promise<void> => {
+  const handleVerifyMobileOtp = async (): Promise<void> => {
+    if (mobileOtpValue.length !== MOBILE_UPDATE_OTP_LENGTH) {
+      toastError(`Please enter a valid ${MOBILE_UPDATE_OTP_LENGTH}-digit OTP`);
+      return;
+    }
+
     setLoading(true);
+    setVerifyingProfileField("mobileNumber");
 
-    const { aadhaarNumber, id } = value;
+    try {
+      const response: APIResponseEntity = await verifyUpdateMobileOtp({
+        mobileNumber: encryptVAPTData(mobileNumberForVerification),
+        otp: mobileOtpValue,
+      });
 
-    const body: OnlyAadharNumber = {
-      userID: id,
-      aadharNumber: encryptVAPTData(aadhaarNumber.replace(/\D/g, "")),
-    };
-
-    const response: IAadharCardResponse = await generateAadharOTP(body);
-
-    if (!response) return;
-
-    if (response && response.statusCode === 200) {
-      setClientID(response.data.clientId);
-      setUserID(id);
-      setEditingAadhaar(null);
-      setAadharCardPopUp(true);
-      setUserType(userType);
-      setTargetUser(index);
-    } else {
-      toastError(response.message);
+      if (response?.statusCode === 200) {
+        setVerifiedProfileFields((prev) => ({
+          ...prev,
+          mobileNumber: true,
+        }));
+        setFormErrors((prev) => ({
+          ...prev,
+          mobileNumber: "",
+        }));
+        setMobileOtpPopUp(false);
+        setMobileOtpValue("");
+        setMobileOtpTimeLeft(0);
+        toastSuccess(response.message);
+      } else if (response) {
+        toastError(response.message);
+      }
+    } finally {
+      setVerifyingProfileField(null);
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
-  const handleDelete = (
-    roleID: string,
-    targetedUser: number,
-    targetedName: string,
-  ): void => {
-    setDeleteID(roleID);
-    setDeleteModal(true);
-    setTargetUser(targetedUser);
-    setTargetUserName(targetedName);
-  };
-
-  const handleAddToCoApplicants = async (partnersID: string): Promise<void> => {
-    if (!partnersID) return toastError("Partner ID is missing");
+  const resendMobileOtp = async (): Promise<void> => {
+    if (!mobileNumberForVerification) return;
 
     setLoading(true);
 
-    const body = {
-      partnersID,
-      userType: CLIENT_ROLE.CO_APPLICANT,
-    };
+    try {
+      const response: APIResponseEntity = await sendUpdateMobileOtp({
+        mobileNumber: encryptVAPTData(mobileNumberForVerification),
+      });
 
-    const response = await convertPartnersToCoApplicantsAPI(body);
-
-    if (!response) return;
-
-    if (response.statusCode === 200) {
-      toastSuccess(response.message);
-      dispatch(setProfileUpdated(!isProfileUpdated));
-    } else {
-      toastError(response.message);
+      if (response?.statusCode === 200) {
+        setMobileOtpValue("");
+        setMobileOtpTimeLeft(environment.OTP_TIMER);
+        toastSuccess(response.message);
+      } else if (response) {
+        toastError(response.message);
+      }
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setLoading(false);
+  const closeMobileOtpModal = (): void => {
+    setMobileOtpPopUp(false);
+    setMobileOtpValue("");
+    setMobileOtpTimeLeft(0);
   };
 
   const handleEditButton = (): void => {
+    setTouchedFields({});
     setIsFieldEditable(() => ({
       aadhaar:
         !userFormData?.isCompany &&
         IsStringNullEmptyOrUndefined(userFormData?.aadhaar ?? ""),
       address:
-        userData.userType === CLIENT_ROLE.SOURCING_PARTNER
+        userData.userType === CLIENT_ROLE.USER_MANAGEMENT
           ? IsStringNullEmptyOrUndefined(userFormData?.address ?? "")
           : true,
       city:
-        userData.userType === CLIENT_ROLE.SOURCING_PARTNER
+        userData.userType === CLIENT_ROLE.USER_MANAGEMENT
           ? IsStringNullEmptyOrUndefined(userFormData?.city ?? "")
           : true,
       state:
-        userData.userType === CLIENT_ROLE.SOURCING_PARTNER
+        userData.userType === CLIENT_ROLE.USER_MANAGEMENT
           ? IsStringNullEmptyOrUndefined(userFormData?.state ?? "")
           : true,
       zipCode:
-        userData.userType === CLIENT_ROLE.SOURCING_PARTNER
+        userData.userType === CLIENT_ROLE.USER_MANAGEMENT
           ? IsStringNullEmptyOrUndefined(userFormData?.zipCode ?? "")
           : true,
       mobileNumber: IsStringNullEmptyOrUndefined(
@@ -1224,19 +1480,19 @@ const Profile = () => {
       ...formErrors,
 
       bankAccountNumber:
-        userData.userType === CLIENT_ROLE.SOURCING_PARTNER &&
+        shouldIncludeBankDetails(userData.userType) &&
           IsStringNullEmptyOrUndefined(userFormData?.bankAccountNumber ?? "")
           ? validationMessages.bankAccountNumberRequired
           : "",
 
       ifscCode:
-        userData.userType === CLIENT_ROLE.SOURCING_PARTNER &&
+        shouldIncludeBankDetails(userData.userType) &&
           IsStringNullEmptyOrUndefined(userFormData?.ifscCode ?? "")
           ? validationMessages.ifscCodeRequired
           : "",
 
       bankName:
-        userData.userType === CLIENT_ROLE.SOURCING_PARTNER &&
+        shouldIncludeBankDetails(userData.userType) &&
           IsStringNullEmptyOrUndefined(userFormData?.bankName ?? "")
           ? validationMessages.bankNameRequired
           : "",
@@ -1269,6 +1525,20 @@ const Profile = () => {
           : IsStringNullEmptyOrUndefined(userFormData?.mobileNumber ?? "")
             ? validationMessages.mobileNumberRequired
             : "",
+
+      cinOrLLP: IsStringNullEmptyOrUndefined(userFormData?.cinOrLLP ?? "")
+        ? ""
+        : verifiedProfileFields.cinOrLLP
+          ? ""
+          : "Please verify the CIN/LLP number",
+
+      udhyamAadhaar: IsStringNullEmptyOrUndefined(
+        userFormData?.udhyamAadhaar ?? "",
+      )
+        ? ""
+        : verifiedProfileFields.udhyamAadhaar
+          ? ""
+          : "Please verify the Udhyam Aadhaar number",
     });
   };
 
@@ -1310,28 +1580,6 @@ const Profile = () => {
     }
   };
 
-  const handleRegistrationLinkCopy = () => {
-    if (!userFormData?.customerID) {
-      toastError(
-        "Unable to generate registration link. Channel Partner Code is missing.",
-      );
-      return;
-    }
-
-    const registrationLink = `${window.location.origin}/register?channelPartnerCode=${userFormData.customerID}`;
-
-    navigator.clipboard
-      .writeText(registrationLink)
-      .then(() => {
-        toastSuccess(
-          "Registration link copied successfully. You can now share it with the customer.",
-        );
-      })
-      .catch(() => {
-        toastError("Failed to copy the registration link. Please try again.");
-      });
-  };
-
   const handleCopyValue = (value: string, label: string): void => {
     if (IsStringNullEmptyOrUndefined(value)) {
       toastError(`${label} not available to copy.`);
@@ -1367,67 +1615,27 @@ const Profile = () => {
   }, [timeLeft]);
 
   useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+
+    if (mobileOtpTimeLeft > 0) {
+      timer = setInterval(() => {
+        setMobileOtpTimeLeft((prevTime) => prevTime - 1);
+      }, 1000);
+    }
+
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [mobileOtpTimeLeft]);
+
+  useEffect(() => {
     // isProfileUpdated is for the updation of Partners and Co-Applicants fields
     fetchUserInfo();
   }, [isProfileUpdated]);
 
   useEffect(() => {
     handleUpdateGstDetail();
-  }, [selectedGSTNumber]);
-
-  useEffect(() => {
-    if (otpValues && otpValues.toString().length === OTPType.SIX_DIGIT_OTP) {
-      handleAgree();
-    }
-  }, [otpValues]);
-
-  const renderStudentProfileField = (
-    label: string,
-    value?: string | null,
-  ): JSX.Element => (
-    <div className="col-lg-4 col-md-6 col-sm-12 col-12" key={label}>
-      <div className="form-group mb-4">
-        <label className="form-label small">{label}</label>
-        <InputText className="form-control" value={value || "-"} disabled />
-      </div>
-    </div>
-  );
-
-  const renderEducationApplicantFields = (
-    applicant: IEducationStudentApplicant | undefined,
-    relationLabel?: string,
-  ): JSX.Element[] => {
-    if (!applicant) {
-      return [renderStudentProfileField("Status", "No details available")];
-    }
-
-    return [
-      renderStudentProfileField("Name", applicant.name || "-"),
-      renderStudentProfileField("PAN", applicant.pan || "-"),
-      renderStudentProfileField(
-        "Date of Birth",
-        applicant.dateOfBirth
-          ? formatDate(applicant.dateOfBirth, "DD MMM, YYYY")
-          : "-",
-      ),
-      renderStudentProfileField(
-        "Mobile Number",
-        applicant.mobileNumber
-          ? formatMobileNumber(applicant.mobileNumber)
-          : "-",
-      ),
-      renderStudentProfileField("Email Address", applicant.email || "-"),
-      renderStudentProfileField("Gender", applicant.gender || "-"),
-      renderStudentProfileField("Address", applicant.address || "-"),
-      renderStudentProfileField(
-        "Photo",
-        applicant.photo ? "Uploaded" : "Not uploaded",
-      ),
-      ...(relationLabel
-        ? [renderStudentProfileField("Relation", relationLabel)]
-        : []),
-    ];
-  };
+  }, [selectedGSTNumber, userFormData?.gstList]);
 
   return (
     <>
@@ -1469,7 +1677,7 @@ const Profile = () => {
                       className="edit-icon"
                       aria-label="Edit Profile Image"
                     >
-                      <i className="bi bi-pencil-square" />
+                      <i className="icon-edit" />
                     </label>
                   )}
                 </div>
@@ -1477,25 +1685,27 @@ const Profile = () => {
                 <div className="profileHeroMeta">
                   <h3 className="profileHeroName">{userFormData?.name}</h3>
 
-                  <div className="profileHeroPanRow">
-                    <span className="profileHeroPan">
-                      {userFormData?.panNumber}
-                    </span>
+                  {userFormData?.panNumber &&
+                    <div className="profileHeroPanRow">
+                      <span className="profileHeroPan">
+                        {userFormData?.panNumber}
+                      </span>
 
-                    <button
-                      type="button"
-                      className="profileIconButton"
-                      onClick={() =>
-                        handleCopyValue(
-                          userFormData?.panNumber || "",
-                          "PAN Card",
-                        )
-                      }
-                      aria-label="Copy PAN"
-                    >
-                      <i className="bi bi-copy" />
-                    </button>
-                  </div>
+                      <button
+                        type="button"
+                        className="profileIconButton"
+                        onClick={() =>
+                          handleCopyValue(
+                            userFormData?.panNumber || "",
+                            "PAN Card",
+                          )
+                        }
+                        aria-label="Copy PAN"
+                      >
+                        <i className="bi bi-copy" />
+                      </button>
+                    </div>
+                  }
 
                   <p className="profileHeroSubtext mb-0">
                     {userFormData?.role}
@@ -1510,11 +1720,13 @@ const Profile = () => {
                       className="btn btn-black-line"
                       onClick={handleReset}
                       label="Cancel"
+                      disabled={verifyingProfileField !== null}
                     />
                     <Button
                       className="btn btn-orange"
                       onClick={handleSave}
                       label="Save"
+                      disabled={verifyingProfileField !== null}
                     />
                   </>
                 ) : (
@@ -1525,7 +1737,7 @@ const Profile = () => {
                       onClick={handleEditButton}
                       aria-label="Edit profile"
                     >
-                      <i className="bi bi-pencil-square" />
+                      <i className="icon-edit" />
                     </button>
                   )
                 )}
@@ -1535,7 +1747,7 @@ const Profile = () => {
             <InputText
               type="file"
               id="profileImage"
-              accept="image/*"
+              accept={IMAGE_FILE_ACCEPT}
               onChange={handleFileChange}
               className="d-none"
             />
@@ -1551,7 +1763,7 @@ const Profile = () => {
                     </div>
                   </div>
 
-                  {userData.userType !== CLIENT_ROLE.SUPER_ADMIN && (
+                  {userData.userType !== CLIENT_ROLE.SUPER_ADMIN && userData.userType !== CLIENT_ROLE.USER_MANAGEMENT && (
                     <div className="col-lg-4 col-md-6 col-sm-12 col-12">
                       <div className="form-group mb-4">
                         <div className="d-flex flex-row align-items-center justify-content-between">
@@ -1559,44 +1771,15 @@ const Profile = () => {
                             className="form-label mb-0"
                             htmlFor="customerID"
                           >
-                            {isStudentPortalProfile ? "Student Code" : "Code"}
+                            Code
                           </label>
-
-                          {userData.userType ===
-                            CLIENT_ROLE.CHANNEL_PARTNER &&
-                            !isEducationInstituteProfile &&
-                            !isNbfcRestrictedProfile && (
-                              <>
-                                <span
-                                  id="registrationLink"
-                                  className="text-orange cursor-pointer fw-medium small"
-                                  onClick={handleRegistrationLinkCopy}
-                                >
-                                  Registration Link
-                                </span>
-
-                                <Tooltip
-                                  target="#registrationLink"
-                                  content="Click here to copy the registration link which you can share with your borrower"
-                                  position="top"
-                                />
-                              </>
-                            )}
                         </div>
 
                         <InputText
                           className="form-control"
-                          placeholder={
-                            isStudentPortalProfile
-                              ? "Student Code"
-                              : "Channel Partner Code"
-                          }
+                          placeholder="Code"
                           name="customerID"
-                          value={
-                            isStudentPortalProfile
-                              ? studentContext?.student?.studentCode || ""
-                              : userFormData?.customerID || ""
-                          }
+                          value={userFormData?.customerID!}
                           disabled
                         // onPaste={(e) => e.preventDefault()}
                         // onCopy={(e) => e.preventDefault()}
@@ -1606,49 +1789,16 @@ const Profile = () => {
                     </div>
                   )}
 
-                  {userData.userType === CLIENT_ROLE.SOURCING_PARTNER && (
-                    <ProfileTextField
-                      label="Commission (in %)"
-                      name="commission"
-                      value={String(userFormData?.commission?.toFixed(2))}
-                      placeholder="Commission"
-                    />
-                  )}
-
                   {!userFormData?.isCompany && (
                     <div className="col-lg-4 col-md-6 col-sm-12 col-12">
                       <div className="form-group mb-4">
                         <div className="d-flex justify-content-between">
-                          <label className="form-label small" htmlFor="aadhaar">
+                          <label className="form-label" htmlFor="aadhaar">
                             Aadhaar Number
                             {isEditable && isFieldEditable.aadhaar && (
                               <sup>*</sup>
                             )}
                           </label>
-
-                          {/* Temporary added for until the aadhar number flow is not working */}
-                          {/* {isEditable && isFieldEditable.aadhaar && (
-                          <span
-                            className="txt-14 txt-orange"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              if (userFormData?.aadhaar !== "") {
-                                handleGetAadharCardOTP(
-                                  {
-                                    aadhaarNumber: userFormData?.aadhaar ?? "",
-                                    id: userData.userID,
-                                  },
-                                  0,
-                                  userData.userType
-                                );
-                              } else {
-                                toastError(validationMessages.aadhaarRequired);
-                              }
-                            }}
-                          >
-                            Verify Aadhaar Number
-                          </span>
-                        )} */}
                         </div>
 
                         <InputText
@@ -1667,14 +1817,14 @@ const Profile = () => {
                           disabled={!isEditable || !isFieldEditable.aadhaar}
                         />
 
-                        {isFormSubmitted && isEditable && (
+                        {shouldShowFieldError("aadhaar") && (
                           <span className="error">{formErrors.aadhaar}</span>
                         )}
                       </div>
                     </div>
                   )}
 
-                  {userFormData?.dateOfBirth &&
+                  {userData.userType !== CLIENT_ROLE.USER_MANAGEMENT && (
                     <DateTextField
                       label={
                         userFormData?.isCompany
@@ -1682,14 +1832,18 @@ const Profile = () => {
                           : "Date of Birth"
                       }
                       name="dateOfBirth"
-                      value={userFormData?.dateOfBirth}
+                      value={
+                        userFormData?.dateOfBirth
+                          ? new Date(userFormData?.dateOfBirth).toISOString()
+                          : ""
+                      }
                       placeholder={
                         userFormData?.isCompany
                           ? "Date of Incorporation"
                           : "Date of Birth"
                       }
                     />
-                  }
+                  )}
 
                   <ProfileTextField
                     label="Email ID"
@@ -1700,15 +1854,47 @@ const Profile = () => {
 
                   <div className="col-lg-4 col-md-6 col-sm-12 col-12">
                     <div className="form-group mb-4">
-                      <label
-                        className="form-label small"
-                        htmlFor="mobileNumber"
-                      >
-                        Mobile Number
-                        {isEditable && isFieldEditable.mobileNumber && (
-                          <sup>*</sup>
-                        )}
-                      </label>
+                      <div className="d-flex align-items-center justify-content-between">
+                        <label
+                          className="form-label mb-0"
+                          htmlFor="mobileNumber"
+                        >
+                          Mobile Number
+                          {isEditable &&
+                            userData.userType !== CLIENT_ROLE.USER_MANAGEMENT && (
+                              <sup>*</sup>
+                            )}
+                        </label>
+
+                        {isEditable &&
+                          !IsStringNullEmptyOrUndefined(
+                            userFormData?.mobileNumber?.trim() ?? "",
+                          ) && (
+                            <button
+                              type="button"
+                              className={`border-0 bg-transparent fw-medium small ${verifiedProfileFields.mobileNumber
+                                ? "text-success"
+                                : "text-orange cursor-pointer"
+                                }`}
+                              onClick={handleSendMobileOtp}
+                              disabled={
+                                verifiedProfileFields.mobileNumber ||
+                                verifyingProfileField !== null
+                              }
+                            >
+                              {verifyingProfileField === "mobileNumber" ? (
+                                "Sending OTP..."
+                              ) : verifiedProfileFields.mobileNumber ? (
+                                <>
+                                  <i className="bi bi-check-circle-fill me-1" />
+                                  Verified
+                                </>
+                              ) : (
+                                "Verify"
+                              )}
+                            </button>
+                          )}
+                      </div>
 
                       <InputText
                         className="form-control"
@@ -1734,19 +1920,141 @@ const Profile = () => {
                             e.preventDefault();
                           }
                         }}
-                        disabled={
-                          !isEditable ||
-                          userData.userType === CLIENT_ROLE.USER_MANAGEMENT ||
-                          userData.userType === CLIENT_ROLE.CHANNEL_PARTNER
-                        }
+                        // disabled={
+                        //   !isEditable ||
+                        //   userData.userType === CLIENT_ROLE.USER_MANAGEMENT ||
+                        //   userData.userType === CLIENT_ROLE.CHANNEL_PARTNER
+                        // }
+                        disabled={!isEditable}
                       />
 
-                      {isFormSubmitted && isEditable && (
+                      {shouldShowFieldError("mobileNumber") && (
                         <span className="error">{formErrors.mobileNumber}</span>
                       )}
                     </div>
                   </div>
+                  <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                    <div className="form-group mb-4">
+                      <div className="d-flex align-items-center justify-content-between">
+                        <label
+                          className="form-label mb-0"
+                          htmlFor="cinOrLLP"
+                        >
+                          CIN/LLP
+                        </label>
 
+                        {isEditable &&
+                          !IsStringNullEmptyOrUndefined(
+                            userFormData?.cinOrLLP?.trim() ?? "",
+                          ) && (
+                            <button
+                              type="button"
+                              className={`border-0 bg-transparent fw-medium small ${verifiedProfileFields.cinOrLLP
+                                ? "text-success"
+                                : "text-orange cursor-pointer"
+                                }`}
+                              onClick={() => validateCINNumberField()}
+                              disabled={
+                                verifiedProfileFields.cinOrLLP ||
+                                verifyingProfileField !== null
+                              }
+                            >
+                              {verifyingProfileField === "cinOrLLP" ? (
+                                "Verifying..."
+                              ) : verifiedProfileFields.cinOrLLP ? (
+                                <>
+                                  <i className="bi bi-check-circle-fill me-1" />
+                                  Verified
+                                </>
+                              ) : (
+                                "Verify"
+                              )}
+                            </button>
+                          )}
+                      </div>
+
+                      <InputText
+                        className="form-control"
+                        placeholder="Enter your CIN/LLP"
+                        name="cinOrLLP"
+                        value={userFormData?.cinOrLLP ?? ""}
+                        onChange={handleChange}
+                        disabled={!isEditable}
+                        maxLength={25}
+                      // onPaste={(e) => e.preventDefault()}
+                      // onCopy={(e) => e.preventDefault()}
+                      // onCut={(e) => e.preventDefault()}
+                      />
+
+                      {shouldShowFieldError("cinOrLLP") &&
+                        formErrors.cinOrLLP && (
+                          <span className="error">{formErrors.cinOrLLP}</span>
+                        )}
+
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                    <div className="form-group mb-4">
+                      <div className="d-flex align-items-center justify-content-between">
+                        <label
+                          className="form-label mb-0"
+                          htmlFor="udhyamAadhaar"
+                        >
+                          Udhyam Aadhaar
+                        </label>
+
+                        {isEditable &&
+                          !IsStringNullEmptyOrUndefined(
+                            userFormData?.udhyamAadhaar?.trim() ?? "",
+                          ) && (
+                            <button
+                              type="button"
+                              className={`border-0 bg-transparent fw-medium small ${verifiedProfileFields.udhyamAadhaar
+                                ? "text-success"
+                                : "text-orange cursor-pointer"
+                                }`}
+                              onClick={() => validateUdhyamAadhaarField()}
+                              disabled={
+                                verifiedProfileFields.udhyamAadhaar ||
+                                verifyingProfileField !== null
+                              }
+                            >
+                              {verifyingProfileField === "udhyamAadhaar" ? (
+                                "Verifying..."
+                              ) : verifiedProfileFields.udhyamAadhaar ? (
+                                <>
+                                  <i className="bi bi-check-circle-fill me-1" />
+                                  Verified
+                                </>
+                              ) : (
+                                "Verify"
+                              )}
+                            </button>
+                          )}
+                      </div>
+
+                      <InputText
+                        className="form-control"
+                        placeholder="Enter your Udhyam Aadhaar"
+                        name="udhyamAadhaar"
+                        value={userFormData?.udhyamAadhaar ?? ""}
+                        onChange={handleChange}
+                        disabled={!isEditable}
+                        maxLength={25}
+                      // onPaste={(e) => e.preventDefault()}
+                      // onCopy={(e) => e.preventDefault()}
+                      // onCut={(e) => e.preventDefault()}
+                      />
+
+                      {shouldShowFieldError("udhyamAadhaar") &&
+                        formErrors.udhyamAadhaar && (
+                          <span className="error">
+                            {formErrors.udhyamAadhaar}
+                          </span>
+                        )}
+
+                    </div>
+                  </div>
                   <div className="col-12">
                     <div className="profileSectionHeader">Address Details</div>
                   </div>
@@ -1755,7 +2063,7 @@ const Profile = () => {
                     <div className="row align-items-stretch">
                       <div className="col-lg-6 col-md-12 col-sm-12 col-12">
                         <div className="form-group mb-4 h-100">
-                          <label className="form-label small" htmlFor="address">
+                          <label className="form-label" htmlFor="address">
                             Address
                             {isEditable && isFieldEditable.address && (
                               <sup>*</sup>
@@ -1773,7 +2081,7 @@ const Profile = () => {
                             disabled={!isEditable || !isFieldEditable.address}
                           />
 
-                          {isFormSubmitted && isEditable && (
+                          {shouldShowFieldError("address") && (
                             <span className="error">{formErrors.address}</span>
                           )}
                         </div>
@@ -1784,7 +2092,7 @@ const Profile = () => {
                           <div className="col-md-6 col-sm-12 col-12">
                             <div className="form-group mb-4">
                               <label
-                                className="form-label small"
+                                className="form-label"
                                 htmlFor="zipCode"
                               >
                                 PIN Code
@@ -1808,7 +2116,7 @@ const Profile = () => {
                                 }
                               />
 
-                              {isFormSubmitted && isEditable && (
+                              {shouldShowFieldError("zipCode") && (
                                 <span className="error">
                                   {formErrors.zipCode}
                                 </span>
@@ -1819,7 +2127,7 @@ const Profile = () => {
                           <div className="col-md-6 col-sm-12 col-12">
                             <div className="form-group mb-4">
                               <label
-                                className="form-label small"
+                                className="form-label"
                                 htmlFor="city"
                               >
                                 City
@@ -1837,7 +2145,7 @@ const Profile = () => {
                                 disabled
                               />
 
-                              {isFormSubmitted && isEditable && (
+                              {shouldShowFieldError("city") && (
                                 <span className="error">{formErrors.city}</span>
                               )}
                             </div>
@@ -1846,7 +2154,7 @@ const Profile = () => {
                           <div className="col-md-6 col-sm-12 col-12">
                             <div className="form-group mb-4">
                               <label
-                                className="form-label small"
+                                className="form-label"
                                 htmlFor="state"
                               >
                                 State
@@ -1864,7 +2172,7 @@ const Profile = () => {
                                 disabled
                               />
 
-                              {isFormSubmitted && isEditable && (
+                              {shouldShowFieldError("state") && (
                                 <span className="error">
                                   {formErrors.state}
                                 </span>
@@ -1875,7 +2183,7 @@ const Profile = () => {
                           <div className="col-md-6 col-sm-12 col-12">
                             <div className="form-group mb-4">
                               <label
-                                className="form-label small"
+                                className="form-label"
                                 htmlFor="country"
                               >
                                 Country
@@ -1895,306 +2203,123 @@ const Profile = () => {
                     </div>
                   </div>
 
-                  {isStudentPortalProfile && studentContext?.student && (
+                  {(userFormData?.gstList &&
+                    userFormData?.gstList?.length > 0) &&
                     <>
                       <div className="col-12">
-                        <div className="profileSectionHeader">
-                          Student Academic Details
-                        </div>
+                        <div className="profileSectionHeader">GST Info</div>
                       </div>
 
-                      {renderStudentProfileField(
-                        "Course",
-                        studentContext.student.courseName || "-",
-                      )}
-                      {renderStudentProfileField(
-                        "Institute Name",
-                        studentApplications[0]?.instituteName || "-",
-                      )}
-                      {renderStudentProfileField(
-                        "Gender",
-                        studentContext.student.studentGender || "-",
-                      )}
-                      {renderStudentProfileField(
-                        "Parent PAN",
-                        studentContext.student.parentPan || "-",
-                      )}
-                      {renderStudentProfileField(
-                        "Registered On",
-                        studentContext.student.createdAt
-                          ? formatDate(
-                            studentContext.student.createdAt,
-                            "DD MMM, YYYY",
-                          )
-                          : "-",
-                      )}
-                      {renderStudentProfileField(
-                        "Photo",
-                        studentContext.student.studentPhoto
-                          ? "Uploaded"
-                          : "Not uploaded",
-                      )}
-
-                      <div className="col-12">
-                        <div className="profileSectionHeader">Loan Summary</div>
-                      </div>
-
-                      {renderStudentProfileField(
-                        "Latest Application",
-                        studentApplications[0]?.courseName || "-",
-                      )}
-                      {renderStudentProfileField(
-                        "Application Status",
-                        studentApplications[0]?.loanApplicationStatus || "-",
-                      )}
-                      {renderStudentProfileField(
-                        "Loan Amount",
-                        studentApplications[0]
-                          ? formatCurrencyAmount(studentApplications[0].loanAmount)
-                          : "-",
-                      )}
-                      {renderStudentProfileField(
-                        "Outstanding Amount",
-                        formatCurrencyAmount(
-                          studentContext.student.loanDetails.outstandingAmount || 0,
-                        ),
-                      )}
-                      {renderStudentProfileField(
-                        "Credit Score",
-                        String(
-                          studentContext.student.creditInformation.creditScore ||
-                            "-",
-                        ),
-                      )}
-                      {renderStudentProfileField(
-                        "Course Fee",
-                        studentApplications[0]
-                          ? formatCurrencyAmount(studentApplications[0].courseFees)
-                          : "-",
-                      )}
-
-                      <div className="col-12">
-                        <div className="profileSectionHeader">
-                          Applicant Details
-                        </div>
-                      </div>
-
-                      {renderEducationApplicantFields(
-                        studentContext.student.applicants?.[0],
-                      )}
-
-                      <div className="col-12">
-                        <div className="profileSectionHeader">
-                          Co-applicant Details
-                        </div>
-                      </div>
-
-                      {studentContext.student.applicants?.slice(1).length ? (
-                        studentContext.student.applicants
-                          .slice(1)
-                          .flatMap((applicant, index) => [
-                            <div
-                              className="col-12"
-                              key={`student-co-applicant-heading-${applicant.id || index}`}
+                      {/* GST NO. */}
+                      {userFormData?.gstList.length > 1 ? (
+                        <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                          <div className="form-group mb-4">
+                            <label
+                              className="form-label"
+                              htmlFor="gstSelect"
                             >
-                              <h6 className="mb-3">
-                                {studentContext.student.coApplicantRelation ||
-                                  `Co-applicant ${index + 1}`}
-                              </h6>
-                            </div>,
-                            ...renderEducationApplicantFields(
-                              applicant,
-                              studentContext.student.coApplicantRelation ||
-                                `Co-applicant ${index + 1}`,
-                            ),
-                          ])
-                      ) : (
-                        renderStudentProfileField(
-                          "Status",
-                          "No co-applicant details available",
-                        )
-                      )}
-                    </>
-                  )}
+                              GST No.
+                            </label>
 
-                  {(userFormData?.isCompany ||
-                    (userFormData?.gstList &&
-                      userFormData?.gstList?.length > 0)) && (
-                      <>
-                        <div className="col-12">
-                          <div className="profileSectionHeader">GST Info</div>
-                        </div>
-
-                        {/* GST NO. */}
-                        {userFormData?.gstList.length > 1 ? (
-                          <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                            <div className="form-group mb-4">
-                              <label
-                                className="form-label small"
-                                htmlFor="gstSelect"
-                              >
-                                GST No.
-                              </label>
-
-                              <Dropdown
-                                id="gstSelect"
-                                variant={isEditable ? "outlined" : "filled"}
-                                value={selectedGSTNumber}
-                                options={userFormData?.gstList.sort((a, b) =>
-                                  a.gstNumber.localeCompare(b.gstNumber),
-                                )}
-                                placeholder="Please Select GST Number"
-                                onChange={(e) => setSelectedGSTNumber(e.value)}
-                                optionLabel="gstNumber"
-                                optionValue="gstNumber"
-                                disabled={!isEditable}
-                              />
-                            </div>
+                            <Dropdown
+                              id="gstSelect"
+                              variant={isEditable ? "outlined" : "filled"}
+                              value={selectedGSTNumber}
+                              options={userFormData?.gstList.sort((a, b) =>
+                                a.gstNumber.localeCompare(b.gstNumber),
+                              )}
+                              placeholder="Please Select GST Number"
+                              onChange={(e) => setSelectedGSTNumber(e.value)}
+                              optionLabel="gstNumber"
+                              optionValue="gstNumber"
+                              disabled={!isEditable}
+                            />
                           </div>
-                        ) : (
-                          <ProfileTextField
-                            label="GST No."
-                            name={selectedGSTNumber}
-                            value={selectedGSTNumber}
-                            placeholder="Please Select GST Number"
-                          />
-                        )}
-
-                        {/* Date of GST Registration */}
-                        <DateTextField
-                          label="Date of GST Registration"
-                          name={`dateOfGstRegistration-${selectedGSTDetail?.dateOfGstRegistration}`}
-                          value={
-                            selectedGSTDetail?.dateOfGstRegistration
-                              ? new Date(
-                                selectedGSTDetail?.dateOfGstRegistration,
-                              ).toISOString()
-                              : ""
-                          }
-                          placeholder="Select GST number to view registration date"
-                        />
-
-                        {/* GST Address */}
+                        </div>
+                      ) : (
                         <ProfileTextField
-                          label="GST Address"
-                          name={`gstAddress-${selectedGSTDetail?.gstAddress}`}
-                          value={selectedGSTDetail?.gstAddress!}
-                          placeholder="Select GST number to view address"
+                          label="GST No."
+                          name={selectedGSTNumber}
+                          value={selectedGSTNumber}
+                          placeholder="Please Select GST Number"
                         />
-
-                        {!isNbfcRestrictedProfile &&
-                          <>
-                            {/* Trade Name */}
-                            <ProfileTextField
-                              label="Trade Name"
-                              name={`tradeName-${selectedGSTDetail?.tradeName}`}
-                              value={selectedGSTDetail?.tradeName!}
-                              placeholder="Select GST number to view trade name"
-                            />
-
-                            {/* CIN/LLP */}
-                            <ProfileTextField
-                              label="CIN/LLP"
-                              name={`cinOrLlp-${selectedGSTDetail?.cinOrLlp}`}
-                              value={selectedGSTDetail?.cinOrLlp!}
-                              placeholder="Select GST number to view CIN/LLP"
-                              tooltip={true}
-                            />
-                          </>
-                        }
-
-                      </>
-                    )}
-
-                  {!isNbfcRestrictedProfile && (
-                    <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                      <div className="form-group mb-4">
-                        <label
-                          className="form-label small"
-                          htmlFor="udhyamAadhaar"
-                        >
-                          Udhyam Aadhaar
+                      )}
+                      <div className="col-lg-4 col-md-6 col-sm-12 col-12">      <div className="form-group mb-3">
+                        <label className="form-label small" htmlFor="dateOfRegistration">
+                          Date of GST Registration
                         </label>
 
-                        <InputText
-                          className="form-control"
-                          placeholder="Enter your Udhyam Aadhaar"
-                          name="udhyamAadhaar"
-                          value={userFormData?.udhyamAadhaar ?? ""}
-                          onChange={handleChange}
-                          disabled={!isEditable}
-                          maxLength={25}
-                        // onPaste={(e) => e.preventDefault()}
-                        // onCopy={(e) => e.preventDefault()}
-                        // onCut={(e) => e.preventDefault()}
+                        <Calendar
+                          name="dateOfRegistration"
+                          value={getGSTDateValue() ? new Date(`${getGSTDateValue()}T00:00:00`) : null}
+                          onChange={(e) =>
+                            handleEnforcementDateChange(e.value as Date | null)
+                          }
+                          placeholder="Select Date"
+                          dateFormat="dd/mm/yy"
+                          className="w-100"
+                          maxDate={new Date()}
+                          showButtonBar
+                          // disabled={
+                          //   !isEditable ||
+                          //   !IsStringNullEmptyOrUndefined(
+                          //     selectedGSTDetail?.dateOfGstRegistration ?? "",
+                          //   )
+                          // }
+                          disabled
                         />
                       </div>
-                    </div>
-                  )}
-
-                  {isEducationInstituteProfile && (
-                    <>
-                      <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="form-group mb-4">
-                          <label className="form-label small" htmlFor="constitution">
-                            Constitution
-                          </label>
-
-                          <Dropdown
-                            id="constitution"
-                            className="w-100"
-                            value={userFormData?.constitution || ""}
-                            options={constitutionOptions}
-                            optionLabel="label"
-                            optionValue="value"
-                            placeholder="Select constitution"
-                            onChange={(e) =>
-                              setUserFormData((prev) =>
-                                prev
-                                  ? {
-                                    ...prev,
-                                    constitution: e.value,
-                                  }
-                                  : prev,
-                              )
-                            }
-                            disabled={!isEditable}
-                          />
-                        </div>
                       </div>
 
-                      <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="form-group mb-4">
-                          <label className="form-label small" htmlFor="website">
-                            Website
-                          </label>
+                      {/* GST Address */}
+                      <ProfileTextField
+                        label="GST Address"
+                        name={`gstAddress-${selectedGSTDetail?.gstAddress ?? "manual"}`}
+                        value={getGSTDetailValue("gstAddress")}
+                        placeholder="Enter GST Address"
+                        // disabled={
+                        //   !isEditable ||
+                        //   !IsStringNullEmptyOrUndefined(
+                        //     selectedGSTDetail?.gstAddress ?? "",
+                        //   )
+                        // }
+                        disabled
+                        onChange={(name, value) =>
+                          handleGSTDetailFieldChange("gstAddress", value)
+                        }
+                      />
 
-                          <InputText
-                            id="website"
-                            className="form-control"
-                            placeholder="Enter institute website"
-                            name="website"
-                            value={userFormData?.website ?? ""}
-                            onChange={handleChange}
-                            disabled={!isEditable}
-                          />
-                        </div>
-                      </div>
+                      {/* Trade Name */}
+                      <ProfileTextField
+                        label="Trade Name"
+                        name={`tradeName-${selectedGSTDetail?.tradeName ?? "manual"}`}
+                        value={getGSTDetailValue("tradeName")}
+                        placeholder="Enter Trade Name"
+                        // disabled={
+                        //   !isEditable ||
+                        //   !IsStringNullEmptyOrUndefined(
+                        //     selectedGSTDetail?.tradeName ?? "",
+                        //   )
+                        // }
+                        disabled
+                        onChange={(name, value) =>
+                          handleGSTDetailFieldChange("tradeName", value)
+                        }
+                      />
                     </>
-                  )}
+                  }
 
                   {/* Company Logo */}
-                  {userData.userType === CLIENT_ROLE.CHANNEL_PARTNER &&
-                    !isEducationInstituteProfile && (
-                    <div className="col-lg-4 col-md-6 col-sm-12 col-12 mb-4">
+                  <div className="col-12 mb-4 profileWrapper">
+                    <div className="form-group">
                       <label className="form-label">Company Logo</label>
 
                       <div className="companyLogoField">
                         {userFormData?.cpCompanyLogo ? (
                           <div className="profilePhoto profileHeroAvatar companyLogoAvatar">
                             <Image
-                              src={userFormData.cpCompanyLogo}
-                              zoomSrc={userFormData.cpCompanyLogo}
+                              src={userFormData?.cpCompanyLogo}
+                              zoomSrc={userFormData?.cpCompanyLogo}
                               alt="Company Logo"
                               width="60"
                               height="60"
@@ -2208,7 +2333,7 @@ const Profile = () => {
                                 className="edit-icon"
                                 aria-label="Edit Company Logo"
                               >
-                                <i className="bi bi-pencil-square" />
+                                <i className="icon-edit" />
                               </label>
                             )}
                           </div>
@@ -2224,7 +2349,7 @@ const Profile = () => {
                                 className="edit-icon"
                                 aria-label="Upload Company Logo"
                               >
-                                <i className="bi bi-pencil-square" />
+                                <i className="icon-edit" />
                               </label>
                             )}
                           </div>
@@ -2233,7 +2358,7 @@ const Profile = () => {
                         <div className="companyLogoFieldMeta">
                           <span className="companyLogoFieldTitle">
                             {userFormData?.cpCompanyLogo
-                              ? "Company logo uploaded"
+                              ? "Company logo"
                               : "Upload company logo"}
                           </span>
 
@@ -2254,481 +2379,171 @@ const Profile = () => {
                       <InputText
                         type="file"
                         id="cpCompanyLogo"
-                        accept="image/*"
+                        accept={IMAGE_FILE_ACCEPT}
                         onChange={handleFileChange}
                         className="d-none"
                       />
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-        {(userData.userType === CLIENT_ROLE.CHANNEL_PARTNER ||
-            userData.userType === CLIENT_ROLE.SOURCING_PARTNER) &&
-            !isNbfcRestrictedProfile &&
-            !isEducationInstituteProfile && (
-              <div className="col-lg-12 mb-2">
-                <div className="titleMainWrapper">
-                  <h2 className="txt-24">Bank Details</h2>
-                </div>
+          {shouldIncludeBankDetails(userData.userType) && (
+            <div className="col-lg-12 mb-2">
+              <div className="titleMainWrapper">
+                <h2 className="txt-24">Bank Details</h2>
+              </div>
 
-                <div className="col-12 mt-3">
-                  <div className="row">
-                    {/* Bank Name */}
-                    <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                      <div className="form-group mb-4">
-                        <label className="form-label small" htmlFor="bankName">
-                          Bank Name
-                          {isEditable &&
-                            userData.userType ===
-                            CLIENT_ROLE.SOURCING_PARTNER && <sup>*</sup>}
-                        </label>
+              <div className="col-12 mt-3">
+                <div className="row">
+                  {/* Bank Name */}
+                  <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                    <div className="form-group mb-4">
+                      <label className="form-label" htmlFor="bankName">
+                        Bank Name
+                        {isEditable &&
+                          shouldIncludeBankDetails(userData.userType) && (
+                            <sup>*</sup>
+                          )}
+                      </label>
 
-                        <InputText
-                          className="form-control"
-                          placeholder="Enter your Bank Name"
-                          name="bankName"
-                          id="bankName"
-                          onChange={handleChange}
-                          value={userFormData?.bankName}
-                          disabled={!isEditable}
-                          maxLength={50}
-                          // onPaste={(e) => e.preventDefault()}
-                          // onCopy={(e) => e.preventDefault()}
-                          // onCut={(e) => e.preventDefault()}
-                          onKeyPress={(e) => {
-                            const regex = /^[a-zA-Z\s]*$/;
-                            if (!regex.test(e.key)) {
-                              e.preventDefault();
-                            }
-
-                            if (
-                              e.currentTarget.selectionStart === 0 &&
-                              e.key === " "
-                            ) {
-                              e.preventDefault();
-                            }
-                          }}
-                        />
-
-                        {isFormSubmitted && isEditable && (
-                          <span className="error">{formErrors.bankName}</span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Bank Account Number */}
-                    <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                      <div className="form-group mb-4">
-                        <label
-                          className="form-label small"
-                          htmlFor="bankAccountNumber"
-                        >
-                          Bank Account No.
-                          {isEditable &&
-                            userData.userType ===
-                            CLIENT_ROLE.SOURCING_PARTNER && <sup>*</sup>}
-                        </label>
-
-                        <InputText
-                          className="form-control"
-                          id="bankAccountNumber"
-                          name="bankAccountNumber"
-                          onChange={handleChange}
-                          onKeyPress={(e) =>
-                            restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
-                          }
-                          maxLength={18}
-                          placeholder="Enter your Bank Account No."
-                          value={userFormData?.bankAccountNumber}
-                          disabled={!isEditable}
+                      <InputText
+                        className="form-control"
+                        placeholder="Enter your Bank Name"
+                        name="bankName"
+                        id="bankName"
+                        onChange={handleChange}
+                        value={userFormData?.bankName}
+                        disabled={!isEditable}
+                        maxLength={100}
                         // onPaste={(e) => e.preventDefault()}
                         // onCopy={(e) => e.preventDefault()}
                         // onCut={(e) => e.preventDefault()}
-                        />
+                        onKeyPress={(e) => {
+                          if (
+                            e.currentTarget.selectionStart === 0 &&
+                            e.key === " "
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
+                      />
 
-                        {isFormSubmitted && isEditable && (
-                          <span className="error">
-                            {formErrors.bankAccountNumber}
-                          </span>
-                        )}
-                      </div>
+                      {shouldShowFieldError("bankName") && (
+                        <span className="error">{formErrors.bankName}</span>
+                      )}
                     </div>
+                  </div>
 
-                    {/* IFSC Code */}
-                    <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-                      <div className="form-group mb-4">
-                        <label className="form-label small" htmlFor="ifscCode">
-                          IFSC Code
-                          {isEditable &&
-                            userData.userType ===
-                            CLIENT_ROLE.SOURCING_PARTNER && <sup>*</sup>}
-                        </label>
+                  {/* Bank Account Number */}
+                  <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                    <div className="form-group mb-4">
+                      <label
+                        className="form-label"
+                        htmlFor="bankAccountNumber"
+                      >
+                        Bank Account No.
+                        {isEditable &&
+                          shouldIncludeBankDetails(userData.userType) && (
+                            <sup>*</sup>
+                          )}
+                      </label>
 
-                        <InputText
-                          id="ifscCode"
-                          className="form-control"
-                          placeholder="Enter IFSC Code"
-                          name="ifscCode"
-                          value={userFormData?.ifscCode}
-                          onChange={handleChange}
-                          maxLength={11}
-                          disabled={!isEditable}
-                          // onPaste={(e) => e.preventDefault()}
-                          // onCopy={(e) => e.preventDefault()}
-                          // onCut={(e) => e.preventDefault()}
-                          onKeyPress={(e) => {
-                            const regex = /^[a-zA-Z0-9]*$/;
-                            if (!regex.test(e.key)) {
-                              e.preventDefault();
-                            }
-                          }}
-                        />
+                      <InputText
+                        className="form-control"
+                        id="bankAccountNumber"
+                        name="bankAccountNumber"
+                        onChange={handleChange}
+                        onKeyPress={(e) =>
+                          restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
+                        }
+                        maxLength={18}
+                        placeholder="Enter your Bank Account No."
+                        value={userFormData?.bankAccountNumber}
+                        disabled={!isEditable}
+                      // onPaste={(e) => e.preventDefault()}
+                      // onCopy={(e) => e.preventDefault()}
+                      // onCut={(e) => e.preventDefault()}
+                      />
 
-                        {isFormSubmitted && isEditable && (
-                          <span className="error">{formErrors.ifscCode}</span>
-                        )}
-                      </div>
+                      {shouldShowFieldError("bankAccountNumber") && (
+                        <span className="error">
+                          {formErrors.bankAccountNumber}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* IFSC Code */}
+                  <div className="col-lg-4 col-md-6 col-sm-12 col-12">
+                    <div className="form-group mb-4">
+                      <label className="form-label" htmlFor="ifscCode">
+                        IFSC Code
+                        {isEditable &&
+                          shouldIncludeBankDetails(userData.userType) && (
+                            <sup>*</sup>
+                          )}
+                      </label>
+
+                      <InputText
+                        id="ifscCode"
+                        className="form-control"
+                        placeholder="Enter IFSC Code"
+                        name="ifscCode"
+                        value={userFormData?.ifscCode}
+                        onChange={handleChange}
+                        maxLength={11}
+                        disabled={!isEditable}
+                        // onPaste={(e) => e.preventDefault()}
+                        // onCopy={(e) => e.preventDefault()}
+                        // onCut={(e) => e.preventDefault()}
+                      />
+
+                      {shouldShowFieldError("ifscCode") && (
+                        <span className="error">{formErrors.ifscCode}</span>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
         </div>
 
-        {!isNbfcRestrictedProfile &&
-          !IsNullOrEmptyArray(userFormData?.userConsents || []) && (
-            <div className="col-lg-12 mb-4">
-              <div className="titleMainWrapper">
-                <h2 className="txt-24">My Consents</h2>
-              </div>
-
-              <div className="col-12 mt-3 d-flex flex-wrap gap-3">
-                {!IsNullOrEmptyArray(userFormData?.userConsents || []) &&
-                  userFormData?.userConsents.map((consent) => {
-                    return (
-                      <div
-                        className="d-flex align-items-center text-center px-3 py-2 form-check"
-                        key={consent.userConsentID}
-                      >
-                        <Checkbox
-                          inputId={`consent-${consent.userConsentID}`}
-                          className="me-2"
-                          checked={consent.isConsented}
-                          onChange={(e) =>
-                            handleConsentChange(
-                              consent.userConsentID,
-                              e.checked as boolean,
-                            )
-                          }
-                          disabled={!isEditable}
-                        />
-                        <label htmlFor={`consent-${consent.userConsentID}`}>
-                          {consent.consentName}
-                        </label>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-          )}
-
-        {(userData.userType === CLIENT_ROLE.CUSTOMER ||
-          userData.userType === CLIENT_ROLE.CHANNEL_PARTNER) &&
-          !isNbfcRestrictedProfile &&
-          !isStudentPortalProfile && (
-            <div className="col-lg-12 mb-4">
-              <div className="titleMainWrapper">
-                <h2 className="txt-24">
-                  {isEducationInstituteProfile
-                    ? "Authorized Persons"
-                    : "Partners / Directors"}
-                </h2>
-
-                {create && isEditable && (
-                  <div className="btnGroup">
-                    <Button
-                      className="btn btn-orange fw-bold"
-                      onClick={() => handleChangeTargetUser(CLIENT_ROLE.PARTNER)}
-                      label={
-                        isEducationInstituteProfile
-                          ? "Add Authorized Person"
-                          : "Add Partners"
-                      }
-                      iconPos="left"
-                      icon="bi bi-plus-circle me-2"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="col-12 mt-3 profilePersonGrid">
-                {!IsNullOrEmptyArray(userFormData?.partners || []) &&
-                  userFormData?.partners.map((partner, index) => {
-                    const isEditing = editingAadhaar === partner.id;
-
-                    return (
-                      <div key={partner.id} className="profilePersonCard">
-                        <div className="profilePersonCardTop">
-                          <div className="profilePersonInfo">
-                            {partner.profilePicture && (
-                              <img
-                                src={partner.profilePicture}
-                                alt={partner.name}
-                                className="profilePersonThumb"
-                              />
-                            )}
-                            <h3>{partner.name}</h3>
-                            <p>
-                              {partner.pan}
-                              {partner.email ? ` • ${partner.email}` : ""}
-                            </p>
-                          </div>
-
-                          <div className="profilePersonActions">
-                            <button
-                              type="button"
-                              className="profileIconButton"
-                              onClick={() => handleOpenPartnerDetails(index)}
-                              aria-label="View Partner Details"
-                            >
-                              <i className="bi bi-eye" />
-                            </button>
-
-                            {isEditable && (
-                              <>
-                                {partner.aadhaarNumber === null && !isEditing && (
-                                  <button
-                                    type="button"
-                                    className="profileIconButton"
-                                    onClick={() => setEditingAadhaar(partner.id)}
-                                    aria-label="Update Aadhaar"
-                                  >
-                                    <i className="bi bi-pencil-square" />
-                                  </button>
-                                )}
-
-                                <button
-                                  type="button"
-                                  className="profileIconButton profileIconButtonDanger"
-                                  onClick={() =>
-                                    handleDelete(
-                                      partner.id,
-                                      CLIENT_ROLE.CHANNEL_PARTNER,
-                                      isEducationInstituteProfile
-                                        ? "Authorized Person"
-                                        : "Partner/Director",
-                                    )
-                                  }
-                                  aria-label="Delete Partner"
-                                >
-                                  <i className="bi bi-trash3" />
-                                </button>
-
-                                {userData.userType === CLIENT_ROLE.CUSTOMER && (
-                                  <button
-                                    type="button"
-                                    className="profileIconButton"
-                                    onClick={() =>
-                                      handleAddToCoApplicants(partner.id)
-                                    }
-                                    aria-label="Add to Co-Applicants"
-                                  >
-                                    <i className="bi bi-person-plus" />
-                                  </button>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        </div>
-
-                        {isEditing && (
-                          <div className="profilePersonEditor">
-                            <InputText
-                              className="form-control"
-                              placeholder="Enter Partner Aadhaar Number"
-                              name={`partnerAadhar-${index}`}
-                              value={partner.aadhaarNumber || ""}
-                              maxLength={12}
-                              onChange={(e) => {
-                                const updatedPartners = [
-                                  ...userFormData.partners,
-                                ];
-                                updatedPartners[index].aadhaarNumber =
-                                  e.target.value;
-                                setUserFormData({
-                                  ...userFormData,
-                                  partners: updatedPartners,
-                                });
-                                setAadhaarCardNumber(e.target.value);
-                              }}
-                              onKeyPress={(e) =>
-                                restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
-                              }
-                            />
-
-                            <div className="profilePersonEditorActions">
-                              <Button
-                                label="Cancel"
-                                className="btn btn-orange-line"
-                                onClick={handleReset}
-                              />
-                              <Button
-                                label="Add"
-                                icon="bi bi-plus-circle me-2"
-                                className="btn btn-orange fw-bold"
-                                onClick={() => {
-                                  handleGetAadharCardOTP(
-                                    userFormData.partners[index],
-                                    index,
-                                    CLIENT_ROLE.PARTNER,
-                                  );
-                                }}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-
-                {IsNullOrEmptyArray(userFormData?.partners || []) && (
-                  <p className="small">
-                    {isEducationInstituteProfile
-                      ? "No Authorized Person Found"
-                      : "No Partners Found"}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-
-        {userData.userType === CLIENT_ROLE.CUSTOMER &&
-          !isStudentPortalProfile && (
+        {!IsNullOrEmptyArray(userFormData?.userConsents || []) && (
           <div className="col-lg-12 mb-4">
             <div className="titleMainWrapper">
-              <h2>Co-Applicants</h2>
-
-              {create && isEditable && (
-                <div className="btnGroup">
-                  <Button
-                    className="btn btn-orange fw-bold"
-                    onClick={() =>
-                      handleChangeTargetUser(CLIENT_ROLE.CO_APPLICANT)
-                    }
-                    label="Add Co-Applicants"
-                    iconPos="left"
-                    icon="bi bi-plus-circle me-2"
-                  />
-                </div>
-              )}
+              <h2 className="txt-24">My Consents</h2>
             </div>
-            <div className="col-12 mt-3 profilePersonGrid">
-              {!IsNullOrEmptyArray(userFormData?.coApplicants || []) &&
-                userFormData?.coApplicants.map((coApplicant, index) => {
-                  const isEditing = editingAadhaar === coApplicant.id;
+
+            <div className="col-12 mt-3 d-flex flex-wrap gap-3">
+              {!IsNullOrEmptyArray(userFormData?.userConsents || []) &&
+                userFormData?.userConsents.map((consent) => {
                   return (
-                    <div key={coApplicant.id} className="profilePersonCard">
-                      <div className="profilePersonCardTop">
-                        <div className="profilePersonInfo">
-                          <h3>
-                            {coApplicant.name || `Co-Applicant ${index + 1}`}
-                          </h3>
-                          <p>{coApplicant.pan || "PAN not available"}</p>
-                        </div>
-
-                        {isEditable && (
-                          <div className="profilePersonActions">
-                            {coApplicant.aadhaarNumber === null &&
-                              !isEditing && (
-                                <button
-                                  type="button"
-                                  className="profileIconButton"
-                                  onClick={() =>
-                                    setEditingAadhaar(coApplicant.id)
-                                  }
-                                  aria-label="Update Aadhaar"
-                                >
-                                  <i className="bi bi-pencil-square" />
-                                </button>
-                              )}
-
-                            {validUser() && (
-                              <button
-                                type="button"
-                                className="profileIconButton profileIconButtonDanger"
-                                onClick={() =>
-                                  handleDelete(
-                                    coApplicant.id,
-                                    CLIENT_ROLE.CHANNEL_PARTNER,
-                                    "Co-Applicant",
-                                  )
-                                }
-                                aria-label="Delete Co-Applicant"
-                              >
-                                <i className="bi bi-trash3" />
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      {isEditing && (
-                        <div className="profilePersonEditor">
-                          <InputText
-                            id={`coApplicantAadhar-${index}`}
-                            className="form-control"
-                            placeholder="Enter Co-Applicant Aadhaar Number"
-                            name={`coApplicantAadhar-${index}`}
-                            value={coApplicant.aadhaarNumber || ""}
-                            maxLength={12}
-                            onChange={(e) => {
-                              const updatedCoApplicants = [
-                                ...userFormData.coApplicants,
-                              ];
-                              updatedCoApplicants[index].aadhaarNumber =
-                                e.target.value;
-                              setUserFormData({
-                                ...userFormData,
-                                coApplicants: updatedCoApplicants,
-                              });
-                              setAadhaarCardNumber(e.target.value);
-                            }}
-                            onKeyPress={(e) =>
-                              restrictInputByPattern(e, NUMBER_ONLY_PATTERN)
-                            }
-                          />
-
-                          <div className="profilePersonEditorActions">
-                            <Button
-                              label="Cancel"
-                              className="btn btn-orange-line fw-bold"
-                              onClick={handleReset}
-                            />
-                            <Button
-                              label="Add"
-                              icon="bi bi-plus-circle me-2 fw-bold"
-                              className="btn btn-orange"
-                              onClick={() => {
-                                handleGetAadharCardOTP(
-                                  userFormData.coApplicants[index],
-                                  index,
-                                  CLIENT_ROLE.CO_APPLICANT,
-                                );
-                              }}
-                            />
-                          </div>
-                        </div>
-                      )}
+                    <div
+                      className="d-flex align-items-center text-center px-3 py-2 form-check"
+                      key={consent.userConsentID}
+                    >
+                      <Checkbox
+                        inputId={`consent-${consent.userConsentID}`}
+                        className="me-2"
+                        checked={consent.isConsented}
+                        onChange={(e) =>
+                          handleConsentChange(
+                            consent.userConsentID,
+                            e.checked as boolean,
+                          )
+                        }
+                        disabled={!isEditable}
+                      />
+                      <label htmlFor={`consent-${consent.userConsentID}`} className="primary-color">
+                        {consent.consentName}
+                      </label>
                     </div>
                   );
                 })}
-
-              {IsNullOrEmptyArray(userFormData?.coApplicants || []) && (
-                <p className="small">No Co-Applicant Found</p>
-              )}
             </div>
           </div>
         )}
@@ -2740,72 +2555,82 @@ const Profile = () => {
                 className="btn btn-black-line"
                 onClick={handleReset}
                 label="Cancel"
+                disabled={verifyingProfileField !== null}
               />
               <Button
                 className="btn btn-orange"
                 onClick={handleSave}
                 label="Save"
+                disabled={verifyingProfileField !== null}
               />
             </div>
           </div>
         )}
       </div>
 
-      <AddPanModal
-        panDetailPopUp={panDetailPopUp}
-        setPanDetailPopUp={setPanDetailPopUp}
-        showPartnerOption={false}
-        targetUser={targetUser}
-      />
-
       <Dialog
-        header="Enter Aadhaar OTP"
-        visible={aadharCardPopUp}
+        header="Verify Mobile Number"
+        visible={mobileOtpPopUp}
         modal
-        onHide={() => {
-          setAadhaarCardNumber("");
-          setAadharCardPopUp(false);
-        }}
+        onHide={closeMobileOtpModal}
         blockScroll
         className="modalWrapper"
         draggable={false}
         resizable={false}
-        footer={footerContent}
         style={{ width: "500px" }}
+        footer={
+          <div className="modal-footer gap-3">
+            <Button
+              className="btn btn-orange-line w-100 text-center"
+              label="Cancel"
+              onClick={closeMobileOtpModal}
+            />
+            <Button
+              className="btn btn-orange w-100 text-center"
+              label="Verify OTP"
+              onClick={handleVerifyMobileOtp}
+              disabled={
+                loading ||
+                mobileOtpValue.length !== MOBILE_UPDATE_OTP_LENGTH
+              }
+            />
+          </div>
+        }
       >
         <div className="modal-content">
           <Loader isLoading={loading} />
 
           <div className="modal-body">
             <p className="mb-3">
-              Validate your Aadhaar card details by entering the OTP sent to
-              your registered mobile number.
+              Enter the OTP sent to {formatMobileNumber(mobileNumberForVerification)}.
             </p>
 
             <div className="form-group mb-3">
-              <label className="form-label small" htmlFor="otpInput">
+              <label className="form-label" htmlFor="mobileOtpInput">
                 Enter OTP <sup>*</sup>
               </label>
 
               <InputOtp
-                id="otpInput"
+                id="mobileOtpInput"
                 integerOnly
-                value={otpValues}
-                onChange={(e) => handleOtpChange(e.value)}
-                length={OTPType.SIX_DIGIT_OTP}
+                value={mobileOtpValue}
+                onChange={(event) =>
+                  setMobileOtpValue(String(event.value || ""))
+                }
+                length={MOBILE_UPDATE_OTP_LENGTH}
               />
 
-              {timeLeft > 0 ? (
+              {mobileOtpTimeLeft > 0 ? (
                 <b
                   className="txt-14"
                   style={{ fontWeight: "600" }}
-                >{`Resend OTP in ${formatTime(timeLeft)}`}</b>
+                >{`Resend OTP in ${formatTime(mobileOtpTimeLeft)}`}</b>
               ) : (
                 <Button
                   className="resendBtn"
-                  onClick={resendOTP}
+                  onClick={resendMobileOtp}
                   label="Resend OTP"
-                  disabled={loading || timeLeft > 0}
+                  disabled={loading || mobileOtpTimeLeft > 0}
                 />
               )}
             </div>
@@ -2815,7 +2640,7 @@ const Profile = () => {
 
       {selectedPartnerIndex !== null && selectedPartnerDraft && (
         <Dialog
-          header={`${selectedPartnerDraft.name || (isEducationInstituteProfile ? "Authorized Person" : "Partner")} Details`}
+          header={`${selectedPartnerDraft.name || "Partner"} Details`}
           visible={selectedPartnerIndex !== null}
           modal
           onHide={handleClosePartnerDetails}
@@ -2829,9 +2654,7 @@ const Profile = () => {
             <>
               {isEditable && (
                 <span className="small text-muted d-flex mt-2">
-                  {isEducationInstituteProfile
-                    ? "Note: Authorized person changes are saved separately from profile edit."
-                    : "Note: Partner changes are saved separately from profile edit."}
+                  Note: Partner changes are saved separately from profile edit.
                 </span>
               )}
               <div className="modal-footer gap-3">
@@ -2851,64 +2674,9 @@ const Profile = () => {
         >
           <div className="row">
             <Loader isLoading={loading} />
-            <div className="col-12 mb-3">
-              <div className="educationAuthorizedPhotoPanel">
-                <div className="educationAuthorizedPhotoPreview">
-                  {selectedPartnerDraft.profilePicture ? (
-                    <img
-                      src={selectedPartnerDraft.profilePicture}
-                      alt={selectedPartnerDraft.name || "Authorized Person"}
-                    />
-                  ) : (
-                    <div className="educationAuthorizedPhotoFallback">
-                      {(selectedPartnerDraft.name || "A").charAt(0)}
-                    </div>
-                  )}
-                </div>
-
-                <div className="educationAuthorizedPhotoActions">
-                  <label
-                    htmlFor="authorizedPersonPhotoUpload"
-                    className="btn btn-orange-line mb-0"
-                  >
-                    Upload Photo
-                  </label>
-                  <button
-                    type="button"
-                    className="btn btn-orange mb-0"
-                    onClick={() => setShowAuthorizedPersonCamera(true)}
-                  >
-                    Capture Photo
-                  </button>
-                </div>
-
-                <input
-                  type="file"
-                  id="authorizedPersonPhotoUpload"
-                  accept="image/*"
-                  onChange={handlePartnerPhotoChange}
-                  className="d-none"
-                />
-              </div>
-            </div>
-
             <div className="col-lg-4 col-md-6 col-sm-12 col-12">
               <div className="form-group mb-3">
-                <label className="form-label small">Name</label>
-                <InputText
-                  className="form-control"
-                  value={selectedPartnerDraft.name || ""}
-                  onChange={(e) => handlePartnerDraftChange("name", e.target.value.trimStart())}
-                  placeholder={
-                    isEducationInstituteProfile ? "Authorized person name" : "Partner name"
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-              <div className="form-group mb-3">
-                <label className="form-label small">PAN</label>
+                <label className="form-label">PAN</label>
                 <InputText
                   className="form-control"
                   value={selectedPartnerDraft.pan || ""}
@@ -2920,7 +2688,7 @@ const Profile = () => {
 
             <div className="col-lg-4 col-md-6 col-sm-12 col-12">
               <div className="form-group mb-3">
-                <label className="form-label small">Aadhaar Number</label>
+                <label className="form-label">Aadhaar Number</label>
                 <InputText
                   className="form-control"
                   value={selectedPartnerDraft.aadhaarNumber || ""}
@@ -2943,7 +2711,7 @@ const Profile = () => {
 
             <div className="col-lg-4 col-md-6 col-sm-12 col-12">
               <div className="form-group mb-3">
-                <label className="form-label small">Mobile Number</label>
+                <label className="form-label">Mobile Number</label>
                 <InputText
                   className="form-control"
                   value={selectedPartnerDraft.mobile || ""}
@@ -2961,19 +2729,7 @@ const Profile = () => {
 
             <div className="col-lg-4 col-md-6 col-sm-12 col-12">
               <div className="form-group mb-3">
-                <label className="form-label small">Email</label>
-                <InputText
-                  className="form-control"
-                  value={selectedPartnerDraft.email || ""}
-                  onChange={(e) => handlePartnerDraftChange("email", e.target.value.trim())}
-                  placeholder="Authorized person email"
-                />
-              </div>
-            </div>
-
-            <div className="col-lg-4 col-md-6 col-sm-12 col-12">
-              <div className="form-group mb-3">
-                <label className="form-label small">PIN Code</label>
+                <label className="form-label">PIN Code</label>
                 <InputText
                   className="form-control"
                   value={selectedPartnerDraft.pinCode || ""}
@@ -2989,7 +2745,7 @@ const Profile = () => {
 
             <div className="col-lg-4 col-md-6 col-sm-12 col-12">
               <div className="form-group mb-3">
-                <label className="form-label small">State</label>
+                <label className="form-label">State</label>
                 <InputText
                   className="form-control"
                   value={selectedPartnerDraft.state || ""}
@@ -3001,7 +2757,7 @@ const Profile = () => {
 
             <div className="col-lg-4 col-md-6 col-sm-12 col-12">
               <div className="form-group mb-3">
-                <label className="form-label small">City</label>
+                <label className="form-label">City</label>
                 <InputText
                   className="form-control"
                   value={selectedPartnerDraft.city || ""}
@@ -3013,7 +2769,7 @@ const Profile = () => {
 
             <div className="col-lg-4 col-md-6 col-sm-12 col-12">
               <div className="form-group mb-3">
-                <label className="form-label small">Gender</label>
+                <label className="form-label">Gender</label>
                 <div className="d-flex">
                   <div className="form-check form-check-inline">
                     <RadioButton
@@ -3024,7 +2780,7 @@ const Profile = () => {
                       onChange={() => handlePartnerDraftChange("gender", "M")}
                     />
                     <label
-                      className="form-check-label"
+                      className="form-check-label primary-color"
                       htmlFor={`partner-dialog-male-${selectedPartnerIndex}`}
                     >
                       Male
@@ -3040,7 +2796,7 @@ const Profile = () => {
                       onChange={() => handlePartnerDraftChange("gender", "F")}
                     />
                     <label
-                      className="form-check-label"
+                      className="form-check-label primary-color"
                       htmlFor={`partner-dialog-female-${selectedPartnerIndex}`}
                     >
                       Female
@@ -3052,7 +2808,7 @@ const Profile = () => {
 
             <div className="col-12">
               <div className="form-group mb-0">
-                <label className="form-label small">Address</label>
+                <label className="form-label">Address</label>
                 <InputTextarea
                   className="form-control"
                   value={selectedPartnerDraft.address || ""}
@@ -3070,27 +2826,6 @@ const Profile = () => {
             </div>
           </div>
         </Dialog>
-      )}
-
-      <CameraCaptureDialog
-        visible={showAuthorizedPersonCamera}
-        title="Capture Authorized Person Photo"
-        onHide={() => setShowAuthorizedPersonCamera(false)}
-        onCapture={(dataUrl) => {
-          handlePartnerDraftChange("profilePicture", dataUrl);
-          setShowAuthorizedPersonCamera(false);
-        }}
-      />
-
-      {deleteModal && (
-        <DeleteUserModal
-          deleteModal={deleteModal}
-          setDeleteModal={setDeleteModal}
-          deleteId={deleteID}
-          fetchListingAPI={fetchUserInfo}
-          targetUser={targetUser}
-          targetUserName={targetUserName}
-        />
       )}
     </>
   );

@@ -1,145 +1,80 @@
 import { lazy } from "react";
 import { Navigate, Outlet, RouteObject } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { RoutePathConstant } from "../utils/constants/routePaths";
-import ChannelPartnerDetail from "../pages/userMaster/ChannelPartnerDetail";
-import NotificationPage from "../pages/notification-page/notification-page";
+import { dashboardRoute } from "../utils/functions/appRuntime";
+import { RootState } from "../store";
 
 const PublicLayout = lazy(() => import("../layout/publicLayout"));
 const PrivateLayout = lazy(() => import("../layout/privateLayout"));
-const AdminDashboard = lazy(() => import("../pages/dashboard/AdminDashboard"));
-const ChannelPartnerManagement = lazy(
-  () => import("../pages/userMaster/ChannelPartnerManagement"),
-);
-const UserProfile = lazy(() => import("../pages/profile/ProfileEntry"));
+const EducationalAdminDashboard = lazy(() => import("../pages/dashboard/EducationalAdminDashboard"));
+const UserProfile = lazy(() => import("../layout/userProfile"));
 const CongratulationsPage = lazy(() => import("../components/congratulations"));
-const ClientDetail = lazy(() => import("../pages/userMaster/ClientDetail"));
-const LoanDetail = lazy(() => import("../pages/userMaster/LoanDetail"));
-const SourcingPartnerDetail = lazy(
-  () => import("../pages/userMaster/SourcingPartnerDetail"),
-);
-const ClientDashboard = lazy(
-  () => import("../pages/dashboard/ClientDashboard"),
-);
-const SourcingPartner = lazy(
-  () => import("../pages/userMaster/SourcingPartner"),
-);
-const ClientMaster = lazy(() => import("../pages/userMaster/ClientMaster"));
-const RoleMaster = lazy(() => import("../pages/roleMaster/RoleMaster"));
-const RoleMasterDetail = lazy(
-  () => import("../pages/roleMaster/RoleMasterDetail"),
-);
-const ChannelPartnerDashboard = lazy(
-  () => import("../pages/dashboard/ChannelPartnerDashboard"),
-);
-const PayOuts = lazy(() => import("../pages/payOuts/Payouts"));
-const PayoutsDetail = lazy(() => import("../pages/payOuts/PayoutsDetail"));
-const ContractChannelPartner = lazy(
-  () => import("../pages/contracts/ContractChannelPartner"),
-);
-const ContractSourcingPartner = lazy(
-  () => import("../pages/contracts/ContractSourcingPartner"),
-);
-const ContractClient = lazy(() => import("../pages/contracts/ContractClient"));
-const PrivacyPolicy = lazy(() => import("../pages/policy/PrivacyPolicy"));
 const Supports = lazy(() => import("../pages/supports/Supports"));
-const ApplyLoan = lazy(() => import("../pages/applyLoan/ApplyLoan"));
-const Documents = lazy(() => import("../pages/documents/Documents"));
-const LoanMarketPlace = lazy(
-  () => import("../pages/applyLoan/LoanMarketPlace"),
-);
-const CheckEligibility = lazy(
-  () => import("../pages/applyLoan/checkEligibilty/CheckEligibility"),
-);
-const TermsConditions = lazy(
-  () => import("../pages/termsConditions/TermsConditions"),
-);
-const AddApplication = lazy(() => import("../pages/applyLoan/AddApplication"));
 const UserManagement = lazy(
   () => import("../pages/userManagement/UserManagement"),
 );
 const UserManagementDetail = lazy(
   () => import("../pages/userManagement/UserManagementDetail"),
 );
-const SourcingPartnerPayout = lazy(
-  () => import("../pages/payOuts/SourcingPartnerPayout"),
-);
-const SourcingPartnerPayoutsDetail = lazy(
-  () => import("../pages/payOuts/SourcingPartnerPayoutsDetail"),
-);
 const UserManagementRights = lazy(
   () => import("../pages/userManagement/UserManagementRights"),
 );
-const ChannelPartnerReports = lazy(
-  () => import("../pages/reports/ChannelPartnerReports"),
+const RoleMaster = lazy(() => import("../pages/roleMaster/RoleMaster"));
+const RoleMasterDetail = lazy(
+  () => import("../pages/roleMaster/RoleMasterDetail"),
 );
-const GeographicalReports = lazy(
-  () => import("../pages/reports/GeographicalReports"),
+const StudentFormData = lazy(() => import("../pages/educationPortal/StudentFormData"));
+const ManageCourses = lazy(() => import("../pages/educationPortal/courses/ManageCourses"));
+const ManageStudents = lazy(() => import("../pages/educationPortal/students/ManageStudents"));
+const CourseDetail = lazy(() => import("../pages/educationPortal/courses/CourseDetail"));
+const InstitueDashboard = lazy(() => import("../pages/dashboard/InstitueDashboard"));
+const NBFCDashboard = lazy(() => import("../pages/dashboard/NBFCDashboard"));
+const StudentDashboard = lazy(() => import("../pages/dashboard/StudentDashboard"));
+const NbfcStudentApplicationDetail = lazy(() => import("../pages/nbfc/StudentApplicationDetail"));
+const ManagedEducationInstitute = lazy(
+  () => import("../pages/institutes/ManagedEducationInstitute"),
 );
-const IncomeTaxReport = lazy(
-  () => import("../pages/documents/IncomeTaxReport"),
+const ManagedNBFC = lazy(() => import("../pages/nbfc/ManagedNBFC"));
+const NBFCDetail = lazy(() => import("../pages/nbfc/NBFCDetail"));
+const EducationInstituteDetail = lazy(
+  () => import("../pages/institutes/EducationInstituteDetail"),
 );
-const GstReport = lazy(() => import("../pages/documents/GstReport"));
-const BankingAnalyticsReport = lazy(
-  () => import("../pages/documents/BankingAnalyticsReport"),
+const StudentDetail = lazy(() => import("../pages/educationPortal/students/StudentDetail"));
+const LoanApplications = lazy(() => import("../pages/applyLoan/LoanApplications"));
+const EducationLoanApplication = lazy(() => import("../pages/educationPortal/loanApplication/EducationLoanApplication"));
+const GetCreditScoreForEducation = lazy(() => import("../pages/educationPortal/loanApplication/GetCreditScoreForEducation"));
+const EducationBankDetails = lazy(() => import("../pages/educationPortal/loanApplication/EducationBankDetails"));
+const StudentDetail360View = lazy(() => import("../pages/educationPortal/students/StudentDetail360View"));
+const LoanMarketPlaceForEducationInstitute = lazy(() => import("../pages/educationPortal/loanApplication/LoanMarketPlace"));
+const PrivacyPolicy = lazy(() => import("../pages/policy/PrivacyPolicy"));
+const BreBuilderDetail = lazy(
+  () => import("../pages/breBuilder/BreBuilderDetail"),
 );
-const Subscription = lazy(() => import("../pages/subscription/Subscription"));
+const BreBuilderListing = lazy(
+  () => import("../pages/breBuilder/BreBuilderListing"),
+);
+const RunTimeLogsListing = lazy(
+  () => import("../pages/breBuilder/RunTimeLogsListing"),
+);
+const RunTimeLogDetail = lazy(
+  () => import("../pages/breBuilder/RunTimeLogDetail"),
+);
+const TermsConditions = lazy(
+  () => import("../pages/termsConditions/TermsConditions"),
+);
+const NotificationPage = lazy(
+  () => import("../pages/notification-page/notification-page"),
+);
 const Reports = lazy(() => import("../pages/reports/Report"));
 const ReportDetails = lazy(() => import("../pages/reports/ReportDetails"));
-const ClientReport = lazy(() => import("../pages/reports/ClientReport"));
-const DocumentFolder = lazy(() => import("../pages/documents/DocumentFolder"));
-const PolicyPage = lazy(() => import("../pages/policy/PublicPolicy"));
-const TermsConditionsPage = lazy(() => import("../pages/policy/PublicPolicy"));
-const ClientPolicyPage = lazy(() => import("../pages/policy/PublicPolicy"));
-const ChannelPartnerPolicyPage = lazy(
-  () => import("../pages/policy/PublicPolicy"),
-);
-const BankDetails = lazy(
-  () => import("../pages/applyLoan/checkEligibilty/BankDetails"),
-);
-const DocumentFileList = lazy(
-  () => import("../pages/documents/DocumentFileList"),
-);
-const DeleteAccount = lazy(() => import("../pages/auth/DeleteAccont"));
-const Wallet = lazy(() => import("../pages/wallet/wallet"));
-const ManagedEducationInstitute = lazy(
-  () => import("../pages/educationPortal/ManagedEducationInstitute"),
-);
-const ManagedNBFC = lazy(() => import("../pages/educationPortal/ManagedNBFC"));
-const NBFCDetail = lazy(() => import("../pages/educationPortal/NBFCDetail"));
-const EducationInstituteDetail = lazy(
-  () => import("../pages/educationPortal/EducationInstituteDetail"),
-);
-const ManageCourses = lazy(() => import("../pages/educationPortal/ManageCourses"));
-const CourseDetail = lazy(() => import("../pages/educationPortal/CourseDetail"));
-const ManageStudents = lazy(() => import("../pages/educationPortal/ManageStudents"));
-const EducationStudentFormPage = lazy(
-  () => import("../pages/educationPortal/EducationStudentFormPage"),
-);
-const StudentDetail = lazy(() => import("../pages/educationPortal/StudentDetail"));
-const EducationLoanApplication = lazy(
-  () => import("../pages/educationPortal/EducationLoanApplication"),
-);
-const EducationLoanOffer = lazy(
-  () => import("../pages/educationPortal/EducationLoanOffer"),
-);
-const EducationLoanOfferKfs = lazy(
-  () => import("../pages/educationPortal/EducationLoanOfferKfs"),
-);
-const StudentOngoingApplications = lazy(
-  () => import("../pages/educationPortal/StudentOngoingApplications"),
-);
-const StudentEnrolledCourses = lazy(
-  () => import("../pages/educationPortal/StudentEnrolledCourses"),
-);
-const NbfcStudentApplications = lazy(
-  () => import("../pages/educationPortal/NbfcStudentApplications"),
-);
-const NbfcStudentApplicationDetail = lazy(
-  () => import("../pages/educationPortal/NbfcStudentApplicationDetail"),
-);
-const StudentDetail360View = lazy(
-  () => import("../pages/educationPortal/Student360View"),
-);
+const ManagedNBFCLoanApplications = lazy(() => import("../pages/nbfc/LoanApplications"))
+
+const DashboardRouteRedirect = () => {
+  const userType = useSelector((state: RootState) => state.user.user.userType);
+
+  return <Navigate to={dashboardRoute(userType)} replace />;
+};
 
 export const publicRoutes: RouteObject[] = [
   {
@@ -154,33 +89,13 @@ export const publicRoutes: RouteObject[] = [
         path: RoutePathConstant.public.login,
         element: <PublicLayout />,
       },
-      {
-        path: RoutePathConstant.public.register,
-        element: <PublicLayout />,
-      },
+      // {
+      //   path: RoutePathConstant.public.register,
+      //   element: <PublicLayout />,
+      // },
       {
         path: RoutePathConstant.public.congratulations,
         element: <CongratulationsPage />,
-      },
-      {
-        path: RoutePathConstant.public.policy,
-        element: <PolicyPage />,
-      },
-      {
-        path: RoutePathConstant.public.termsConditions,
-        element: <TermsConditionsPage />,
-      },
-      {
-        path: RoutePathConstant.public.clientPolicy,
-        element: <ClientPolicyPage />,
-      },
-      {
-        path: RoutePathConstant.public.channelPartnerPolicy,
-        element: <ChannelPartnerPolicyPage />,
-      },
-      {
-        path: RoutePathConstant.public.deleteAccount,
-        element: <DeleteAccount />,
       },
       {
         path: "*",
@@ -201,115 +116,15 @@ export const privateRoutes: RouteObject[] = [
       },
       {
         path: RoutePathConstant.private.dashboard,
-        element: <AdminDashboard />,
-      },
-      {
-        path: RoutePathConstant.private.clientDashboard,
-        element: <ClientDashboard />,
-      },
-      {
-        path: RoutePathConstant.private.channelPartnerDashboard,
-        element: <ChannelPartnerDashboard />,
-      },
-      {
-        path: RoutePathConstant.private.userMasterChannelPartner,
-        element: <ChannelPartnerManagement />,
+        element: <EducationalAdminDashboard />,
       },
       {
         path: RoutePathConstant.private.profile,
         element: <UserProfile />,
       },
       {
-        path: RoutePathConstant.private.channelPartnerDetail,
-        element: <ChannelPartnerDetail />,
-      },
-      {
-        path: RoutePathConstant.private.clientDetail,
-        element: <ClientDetail />,
-      },
-      {
-        path: RoutePathConstant.private.loanDetails,
-        element: <LoanDetail />,
-      },
-      {
-        path: RoutePathConstant.private.sourcingPartnerDetail,
-        element: <SourcingPartnerDetail />,
-      },
-      {
-        path: RoutePathConstant.private.userMasterSourcingPartner,
-        element: <SourcingPartner />,
-      },
-      {
-        path: RoutePathConstant.private.userMasterClientMaster,
-        element: <ClientMaster />,
-      },
-      {
-        path: RoutePathConstant.private.roleMaster,
-        element: <RoleMaster />,
-      },
-      {
-        path: RoutePathConstant.private.roleMasterView,
-        element: <RoleMasterDetail />,
-      },
-      {
-        path: RoutePathConstant.private.roleMasterCreate,
-        element: <RoleMasterDetail />,
-      },
-      {
-        path: RoutePathConstant.private.roleMasterEdit,
-        element: <RoleMasterDetail />,
-      },
-      {
-        path: RoutePathConstant.private.payouts,
-        element: <PayOuts />,
-      },
-      {
-        path: RoutePathConstant.private.payoutsDetail,
-        element: <PayoutsDetail />,
-      },
-      {
-        path: RoutePathConstant.private.contractChannelMaster,
-        element: <ContractChannelPartner />,
-      },
-      {
-        path: RoutePathConstant.private.contractSourcingPartner,
-        element: <ContractSourcingPartner />,
-      },
-      {
-        path: RoutePathConstant.private.contractClient,
-        element: <ContractClient />,
-      },
-      {
-        path: RoutePathConstant.private.policy,
-        element: <PrivacyPolicy />,
-      },
-      {
         path: RoutePathConstant.private.support,
         element: <Supports />,
-      },
-      {
-        path: RoutePathConstant.private.applyLoan,
-        element: <ApplyLoan />,
-      },
-      {
-        path: RoutePathConstant.private.editLoanDetail,
-        element: <ApplyLoan />,
-      },
-      {
-        path: RoutePathConstant.private.loanMarketPlace,
-        element: <LoanMarketPlace />,
-      },
-      {
-        path: RoutePathConstant.private.checkEligibility,
-        element: <CheckEligibility />,
-      },
-      {
-        path: RoutePathConstant.private.termsConditions,
-        element: <TermsConditions />,
-      },
-      {
-        path: RoutePathConstant.private.addApplications,
-        element: <AddApplication />,
       },
       {
         path: RoutePathConstant.private.userManagement,
@@ -332,72 +147,60 @@ export const privateRoutes: RouteObject[] = [
         element: <UserManagementRights />,
       },
       {
-        path: RoutePathConstant.private.channelPartnerReport,
-        element: <ChannelPartnerReports />,
+        path: RoutePathConstant.private.educationManageStudents,
+        element: <ManageStudents />,
       },
       {
-        path: RoutePathConstant.private.geographicalReport,
-        element: <GeographicalReports />,
+        path: RoutePathConstant.private.educationAddStudent,
+        element: <StudentFormData />,
       },
       {
-        path: RoutePathConstant.private.sourcingPartnerPayouts,
-        element: <SourcingPartnerPayout />,
+        path: RoutePathConstant.private.educationEditStudent,
+        element: <StudentFormData />,
       },
       {
-        path: RoutePathConstant.private.sourcingPartnerPayoutsDetail,
-        element: <SourcingPartnerPayoutsDetail />,
+        path: RoutePathConstant.private.educationManageCourse,
+        element: <ManageCourses />,
       },
       {
-        path: RoutePathConstant.private.incomeTaxReport,
-        element: <IncomeTaxReport />,
+        path: RoutePathConstant.private.educationCourseDetail,
+        element: <CourseDetail />,
       },
       {
-        path: RoutePathConstant.private.gstReport,
-        element: <GstReport />,
+        path: RoutePathConstant.private.institueDashboard,
+        element: <InstitueDashboard />,
       },
       {
-        path: RoutePathConstant.private.bankingAnalyticsReport,
-        element: <BankingAnalyticsReport />,
+        path: RoutePathConstant.private.nbfcDashboard,
+        element: <NBFCDashboard />,
       },
       {
-        path: RoutePathConstant.private.subscription,
-        element: <Subscription />,
+        path: RoutePathConstant.private.studentDashboard,
+        element: <StudentDashboard />,
       },
       {
-        path: RoutePathConstant.private.reports,
-        element: <Reports />,
+        path: RoutePathConstant.private.educationNbfcStudentApplications,
+        element: <LoanApplications />,
       },
       {
-        path: RoutePathConstant.private.reportDetails,
-        element: <ReportDetails />,
+        path: RoutePathConstant.private.educationNbfcStudentApplicationDetail,
+        element: <NbfcStudentApplicationDetail />,
       },
       {
-        path: RoutePathConstant.private.clientReports,
-        element: <ClientReport />,
+        path: RoutePathConstant.private.roleMaster,
+        element: <RoleMaster />,
       },
       {
-        path: RoutePathConstant.private.documents,
-        element: <Documents />,
+        path: RoutePathConstant.private.roleMasterView,
+        element: <RoleMasterDetail />,
       },
       {
-        path: RoutePathConstant.private.documentId,
-        element: <DocumentFolder />,
+        path: RoutePathConstant.private.roleMasterCreate,
+        element: <RoleMasterDetail />,
       },
       {
-        path: RoutePathConstant.private.subDocumentId,
-        element: <DocumentFileList />,
-      },
-      {
-        path: RoutePathConstant.private.bankDetails,
-        element: <BankDetails />,
-      },
-      {
-        path: RoutePathConstant.private.wallet,
-        element: <Wallet />,
-      },
-      {
-        path: RoutePathConstant.private.notification,
-        element: <NotificationPage />,
+        path: RoutePathConstant.private.roleMasterEdit,
+        element: <RoleMasterDetail />,
       },
       {
         path: RoutePathConstant.private.educationManagedInstitute,
@@ -416,64 +219,76 @@ export const privateRoutes: RouteObject[] = [
         element: <NBFCDetail />,
       },
       {
-        path: RoutePathConstant.private.educationManageCourse,
-        element: <ManageCourses />,
-      },
-      {
-        path: RoutePathConstant.private.educationCourseDetail,
-        element: <CourseDetail />,
-      },
-      {
-        path: RoutePathConstant.private.educationManageStudents,
-        element: <ManageStudents />,
-      },
-      {
-        path: RoutePathConstant.private.educationAddStudent,
-        element: <EducationStudentFormPage />,
-      },
-      {
-        path: RoutePathConstant.private.educationEditStudent,
-        element: <EducationStudentFormPage />,
-      },
-      {
         path: RoutePathConstant.private.educationStudentDetail,
         element: <StudentDetail />,
+      },
+      {
+        path: RoutePathConstant.private.educationLoanApplications,
+        element: <LoanApplications />,
       },
       {
         path: RoutePathConstant.private.educationStudentLoanApplication,
         element: <EducationLoanApplication />,
       },
       {
-        path: RoutePathConstant.private.educationStudentLoanOffer,
-        element: <EducationLoanOffer />,
+        path: RoutePathConstant.private.educationStudentConsentVerification,
+        element: <GetCreditScoreForEducation />,
       },
       {
-        path: RoutePathConstant.private.educationStudentLoanOfferKfs,
-        element: <EducationLoanOfferKfs />,
+        path: RoutePathConstant.private.educationStudentBankDetails,
+        element: <EducationBankDetails />,
       },
       {
-        path: RoutePathConstant.private.studentEnrolledCourses,
-        element: <StudentEnrolledCourses />,
-      },
-      {
-        path: RoutePathConstant.private.studentOngoingApplications,
-        element: <StudentOngoingApplications />,
-      },
-      {
-        path: RoutePathConstant.private.educationNbfcStudentApplications,
-        element: <NbfcStudentApplications />,
-      },
-      {
-        path: RoutePathConstant.private.educationNbfcStudentApplicationDetail,
-        element: <NbfcStudentApplicationDetail />,
-      },
-      {
-        path: RoutePathConstant.private.educationStudentDetail360View,
+        path: RoutePathConstant.private.educationStudentDetail360ViewDetailed,
         element: <StudentDetail360View />,
       },
       {
+        path: RoutePathConstant.private.loanMarketPlaceForEducationInstitute,
+        element: <LoanMarketPlaceForEducationInstitute />,
+      },
+      {
+        path: RoutePathConstant.private.breBuilderDetail,
+        element: <BreBuilderDetail />,
+      },
+      {
+        path: RoutePathConstant.private.policy,
+        element: <PrivacyPolicy />,
+      },
+      {
+        path: RoutePathConstant.private.termsConditions,
+        element: <TermsConditions />,
+      },
+      {
+        path: RoutePathConstant.private.breBuilder,
+        element: <BreBuilderListing />,
+      },
+      {
+        path: RoutePathConstant.private.runTimeLogs,
+        element: <RunTimeLogsListing />,
+      },
+      {
+        path: RoutePathConstant.private.runTimeLogsDetails,
+        element: <RunTimeLogDetail />,
+      },
+      {
+        path: RoutePathConstant.private.notification,
+        element: <NotificationPage />,
+      },
+      {
+        path: RoutePathConstant.private.reports,
+        element: <Reports />,
+      },
+      {
+        path: RoutePathConstant.private.reportDetails,
+        element: <ReportDetails />,
+      },
+      {
+        path: RoutePathConstant.private.educationManagedNbfcLoanApplications,
+        element: <ManagedNBFCLoanApplications />,
+      },
+      {
         path: "*",
-        element: <Navigate to={RoutePathConstant.private.dashboard} />,
+        element: <DashboardRouteRedirect />,
       },
     ],
   },

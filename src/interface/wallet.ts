@@ -15,7 +15,8 @@ export interface IWalletData {
     date: string,
     transactionType: string,
     points: number,
-    description: string
+    description: string,
+    rechargeAmount: number
 }
 
 export interface IIsProceedForCamReportEntity {

@@ -1,10 +1,11 @@
 import { APIResponseEntity } from "./apiResponse";
+import { ICategoryList } from "./clientMaster";
 
 export interface IChannelPartnerResponse extends APIResponseEntity {
   data: IChannelPartnerData;
 }
 
-interface IChannelPartnerData {
+export interface IChannelPartnerData {
   totalCount: number;
   channelPartnerList: IUserMasterChannelPartner[];
 }
@@ -17,6 +18,16 @@ export interface IUserMasterChannelPartner {
   isActive: boolean;
   registeredDate: string;
   noOfRegisteredSP: number;
+  activeCredits: number;
+  freeCredits: number;
+  subscribedCredits: number;
+  reservedCredits: number;
+  usedCredits: number;
+  tokenCreatedDate: string | null;
+  refreshTokenCreatedDate: string | null;
+  isTestUser: boolean;
+  masterCPName: string | null;
+  isUserUnderMasterCP: boolean;
 }
 
 export interface IChannelPartnerDetailResponse extends APIResponseEntity {
@@ -46,5 +57,38 @@ export interface IChannelPartnerParams {
 export interface IChannelPartnerListParams {
   page: number;
   pageSize: number;
-  channelPartner?: string;
+  search?: string;
+  filterType?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface IMasterCpClientResponse extends APIResponseEntity {
+  data: IMasterCpClientData;
+}
+
+export interface IMasterCpClientData {
+  totalCount: number;
+  customersList: IMasterCpClient[];
+  categoryList: ICategoryList[];
+}
+
+export interface IMasterCpClient {
+  id: string;
+  customerCode: string;
+  fullName: string;
+  phoneNumber: string;
+  cpName: string;
+  sourcingPartnerName: string | null;
+  createdDate: string;
+  isActive: boolean;
+  applicationStatuses: string[];
+  userManagementUserName: string | null;
+  branchName: string | null;
+}
+
+export interface IMasterChannelPartnerListParams {
+  page: number;
+  pageSize: number;
+  search?: string;
 }

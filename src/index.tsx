@@ -1,11 +1,12 @@
 import ReactDOM from "react-dom/client";
 import "./index.css";
+import "./styles/palette.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import "./styles/palette.css";
 import { Provider } from "react-redux";
 import store from "./store";
 import { BrowserRouter } from "react-router-dom";
+import { PrimeReactProvider } from "primereact/api";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "primereact/resources/primereact.min.css";
 import "./App.css";
@@ -13,17 +14,23 @@ import { Suspense } from "react";
 import ErrorBoundary from "./error/ErrorBoundary";
 import Loader from "./components/Loader";
 
+const primeReactConfig = {
+  hideOverlaysOnDocumentScrolling: true,
+};
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <ErrorBoundary>
     <Suspense fallback={<Loader isLoading={true} />}>
-      <Provider store={store}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </Provider>
+      <PrimeReactProvider value={primeReactConfig}>
+        <Provider store={store}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </Provider>
+      </PrimeReactProvider>
     </Suspense>
   </ErrorBoundary>
 );

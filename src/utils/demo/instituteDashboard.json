@@ -1,0 +1,1098 @@
+{
+    "status": true,
+    "statusCode": 200,
+    "message": "Dashboard Data fetched successfully!",
+    "data": {
+        "totalRegisteredInstitutes": 0,
+        "totalRegisteredLenders": 0,
+        "totalStudentsEnrolled": 5,
+        "placementLinkedCourse": 23,
+        "totalApplicationInInstitute": 16,
+        "totalSanctionedApplication": 0,
+        "totalDisbursedApplication": 4,
+        "applicationOverview": [
+            {
+                "displayName": "Total Applications",
+                "displayOrder": 1,
+                "amount": 2536219.96,
+                "noOfApplications": 16,
+                "formattedAmount": "25.36 Lac+",
+                "percentageValue": 0,
+                "statusID": 0
+            },
+            {
+                "displayName": "Pending",
+                "displayOrder": 2,
+                "amount": 347679.76,
+                "noOfApplications": 5,
+                "formattedAmount": "3.48 Lac+",
+                "percentageValue": 0,
+                "statusID": 1
+            },
+            {
+                "displayName": "Applied",
+                "displayOrder": 3,
+                "amount": 297423,
+                "noOfApplications": 2,
+                "formattedAmount": "2.97 Lac+",
+                "percentageValue": 0,
+                "statusID": 2
+            },
+            {
+                "displayName": "Sanctioned",
+                "displayOrder": 4,
+                "amount": 0,
+                "noOfApplications": 0,
+                "formattedAmount": "0",
+                "percentageValue": 0,
+                "statusID": 4
+            },
+            {
+                "displayName": "Disbursed",
+                "displayOrder": 5,
+                "amount": 1015000,
+                "noOfApplications": 4,
+                "formattedAmount": "10.15 Lac+",
+                "percentageValue": 0,
+                "statusID": 6
+            },
+            {
+                "displayName": "Rejected",
+                "displayOrder": 6,
+                "amount": 283117.2,
+                "noOfApplications": 3,
+                "formattedAmount": "2.83 Lac+",
+                "percentageValue": 0,
+                "statusID": 7
+            },
+            {
+                "displayName": "Query Raised",
+                "displayOrder": 7,
+                "amount": 0,
+                "noOfApplications": 0,
+                "formattedAmount": "0",
+                "percentageValue": 0,
+                "statusID": 3
+            }
+        ],
+        "disbursementTrend": {
+            "monthly": {
+                "2026": {
+                    "title": "Monthly Disbursement Trend (2026)",
+                    "categories": [
+                        "Sep",
+                        "Oct"
+                    ],
+                    "amountData": [
+                        1010000,
+                        603117
+                    ],
+                    "applicationCountData": [
+                        4,
+                        4
+                    ]
+                }
+            },
+            "yearly": {
+                "title": "Yearly Disbursement Trend",
+                "categories": [
+                    "2026"
+                ],
+                "amountData": [
+                    1613117
+                ],
+                "applicationCountData": [
+                    8
+                ]
+            }
+        },
+        "disbursementTrendData": {
+            "monthly": {
+                "prevYear": {
+                    "title": "Monthly Disbursement Trend (2025)",
+                    "categories": [
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec"
+                    ],
+                    "amountData": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "applicationCountData": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                "currYear": {
+                    "title": "Monthly Disbursement Trend (2026)",
+                    "categories": [
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec"
+                    ],
+                    "amountData": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1010000,
+                        603117,
+                        0,
+                        0
+                    ],
+                    "applicationCountData": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        4,
+                        4,
+                        0,
+                        0
+                    ]
+                }
+            },
+            "yearly": {
+                "title": "Yearly Disbursement Trend",
+                "categories": [
+                    "2026"
+                ],
+                "amountData": [
+                    1613117
+                ],
+                "applicationCountData": [
+                    8
+                ]
+            }
+        },
+        "instituteWiseDisbursement": null,
+        "courseWiseDisbursement": {
+            "monthly": {
+                "prevYear": {
+                    "Jan": [],
+                    "Feb": [],
+                    "Mar": [],
+                    "Apr": [],
+                    "May": [],
+                    "Jun": [],
+                    "Jul": [],
+                    "Aug": [],
+                    "Sep": [],
+                    "Oct": [],
+                    "Nov": [],
+                    "Dec": []
+                },
+                "currYear": {
+                    "Jan": [],
+                    "Feb": [],
+                    "Mar": [],
+                    "Apr": [],
+                    "May": [],
+                    "Jun": [],
+                    "Jul": [],
+                    "Aug": [],
+                    "Sep": [
+                        {
+                            "courseID": "08df12e8-c3ca-4925-8002-9e7b8744f6d9",
+                            "courseName": "Bachelor of Technology (B.Tech) 2",
+                            "totalLoans": 6,
+                            "totalDisbursedAmount": 865000.0000000000000000000000
+                        },
+                        {
+                            "courseID": "08df1226-6ce7-448d-8562-60405a078158",
+                            "courseName": "Bachelor of Technology (B.Tech)",
+                            "totalLoans": 3,
+                            "totalDisbursedAmount": 743000.00000000000000000000000
+                        },
+                        {
+                            "courseID": "08df17d2-0b14-4d31-8fb3-63374fc5f40c",
+                            "courseName": "Advanced Excel",
+                            "totalLoans": 1,
+                            "totalDisbursedAmount": 3008.6000000000000000000000000
+                        },
+                        {
+                            "courseID": "08df17d2-0553-4346-8ddb-8992d249ac6e",
+                            "courseName": "Full Stack Development",
+                            "totalLoans": 1,
+                            "totalDisbursedAmount": 0.0000000000000000000000000000
+                        },
+                        {
+                            "courseID": "08df17d1-60e8-4fff-884f-a3af13c6bd9f",
+                            "courseName": "Test 1",
+                            "totalLoans": 1,
+                            "totalDisbursedAmount": 0.0000000000000000000000000000
+                        },
+                        {
+                            "courseID": "08df17d1-fa7c-4b78-8402-c0cd81634bb5",
+                            "courseName": "MBA - Finance",
+                            "totalLoans": 1,
+                            "totalDisbursedAmount": 0.0000000000000000000000000000
+                        }
+                    ],
+                    "Oct": [
+                        {
+                            "courseID": "08df17d2-0b14-4d31-8fb3-63374fc5f40c",
+                            "courseName": "Advanced Excel",
+                            "totalLoans": 3,
+                            "totalDisbursedAmount": 2108.6000000000000000000000000
+                        }
+                    ],
+                    "Nov": [],
+                    "Dec": []
+                }
+            },
+            "yearly": {
+                "2026": [
+                    {
+                        "courseID": "08df12e8-c3ca-4925-8002-9e7b8744f6d9",
+                        "courseName": "Bachelor of Technology (B.Tech) 2",
+                        "totalLoans": 6,
+                        "totalDisbursedAmount": 865000.0000000000000000000000
+                    },
+                    {
+                        "courseID": "08df1226-6ce7-448d-8562-60405a078158",
+                        "courseName": "Bachelor of Technology (B.Tech)",
+                        "totalLoans": 3,
+                        "totalDisbursedAmount": 743000.00000000000000000000000
+                    },
+                    {
+                        "courseID": "08df17d2-0b14-4d31-8fb3-63374fc5f40c",
+                        "courseName": "Advanced Excel",
+                        "totalLoans": 4,
+                        "totalDisbursedAmount": 5117.2000000000000000000000000
+                    },
+                    {
+                        "courseID": "08df17d2-0553-4346-8ddb-8992d249ac6e",
+                        "courseName": "Full Stack Development",
+                        "totalLoans": 1,
+                        "totalDisbursedAmount": 0.0000000000000000000000000000
+                    },
+                    {
+                        "courseID": "08df17d1-60e8-4fff-884f-a3af13c6bd9f",
+                        "courseName": "Test 1",
+                        "totalLoans": 1,
+                        "totalDisbursedAmount": 0.0000000000000000000000000000
+                    },
+                    {
+                        "courseID": "08df17d1-fa7c-4b78-8402-c0cd81634bb5",
+                        "courseName": "MBA - Finance",
+                        "totalLoans": 1,
+                        "totalDisbursedAmount": 0.0000000000000000000000000000
+                    }
+                ]
+            }
+        },
+        "paymentHistoryCards": {
+            "monthly": {
+                "prevYear": {
+                    "Jan": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Feb": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Mar": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Apr": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "May": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Jun": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Jul": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Aug": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Sep": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Oct": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Nov": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Dec": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ]
+                },
+                "currYear": {
+                    "Jan": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Feb": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Mar": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Apr": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "May": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Jun": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Jul": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Aug": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Sep": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 6,
+                            "emiCount": 0,
+                            "emiAmount": 0.0
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Oct": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 6,
+                            "emiCount": 4,
+                            "emiAmount": 145369.04000000000000000000000
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Nov": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 8,
+                            "emiCount": 8,
+                            "emiAmount": 270096.59000000000000000000000
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ],
+                    "Dec": [
+                        {
+                            "title": "Ongoing",
+                            "color": "#0BB680",
+                            "loanCount": 8,
+                            "emiCount": 8,
+                            "emiAmount": 270096.59000000000000000000000
+                        },
+                        {
+                            "title": "Delayed",
+                            "color": "#F4A917",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        },
+                        {
+                            "title": "Overdue",
+                            "color": "#F64F59",
+                            "loanCount": 0,
+                            "emiCount": 0,
+                            "emiAmount": 0
+                        }
+                    ]
+                }
+            },
+            "yearly": {
+                "2026": [
+                    {
+                        "title": "Ongoing",
+                        "color": "#0BB680",
+                        "loanCount": 16,
+                        "emiCount": 20,
+                        "emiAmount": 685562.22000000000000000000000
+                    },
+                    {
+                        "title": "Delayed",
+                        "color": "#F4A917",
+                        "loanCount": 0,
+                        "emiCount": 0,
+                        "emiAmount": 0
+                    },
+                    {
+                        "title": "Overdue",
+                        "color": "#F64F59",
+                        "loanCount": 0,
+                        "emiCount": 0,
+                        "emiAmount": 0
+                    }
+                ]
+            }
+        },
+        "paymentHistoryTrend": {
+            "monthly": {
+                "prevYear": {
+                    "categories": [
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec"
+                    ],
+                    "amountLabel": "Total scheduled EMI amount",
+                    "series": [
+                        {
+                            "name": "Ongoing",
+                            "color": "#0BB680",
+                            "data": [
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0
+                            ]
+                        },
+                        {
+                            "name": "Delayed",
+                            "color": "#F4A917",
+                            "data": [
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0
+                            ]
+                        },
+                        {
+                            "name": "Overdue",
+                            "color": "#F64F59",
+                            "data": [
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0
+                            ]
+                        }
+                    ]
+                },
+                "currYear": {
+                    "categories": [
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec"
+                    ],
+                    "amountLabel": "Total scheduled EMI amount",
+                    "series": [
+                        {
+                            "name": "Ongoing",
+                            "color": "#0BB680",
+                            "data": [
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0.0,
+                                145369.04000000000000000000000,
+                                270096.59000000000000000000000,
+                                270096.59000000000000000000000
+                            ]
+                        },
+                        {
+                            "name": "Delayed",
+                            "color": "#F4A917",
+                            "data": [
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0
+                            ]
+                        },
+                        {
+                            "name": "Overdue",
+                            "color": "#F64F59",
+                            "data": [
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "yearly": {
+                "categories": [
+                    "2026"
+                ],
+                "amountLabel": "Total scheduled EMI amount",
+                "series": [
+                    {
+                        "name": "Ongoing",
+                        "color": "#0BB680",
+                        "data": [
+                            685562.22000000000000000000000
+                        ]
+                    },
+                    {
+                        "name": "Delayed",
+                        "color": "#F4A917",
+                        "data": [
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Overdue",
+                        "color": "#F64F59",
+                        "data": [
+                            0
+                        ]
+                    }
+                ]
+            }
+        },
+        "studentLoanSummary": null
+    }
+}

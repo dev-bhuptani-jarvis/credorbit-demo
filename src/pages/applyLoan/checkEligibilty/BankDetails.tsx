@@ -18,14 +18,16 @@ import {
   fetchUploadedBankDocumentsAPI,
   getBankDetailsAPI,
   getInstitutionList,
-  IsProceedForCamReport,
-  uploadBankStatementFilesAPI,
+  isProceedForCamReportForEducationalInstituteAPI,
+  uploadBankStatementFilesEducationalInstituteAPI,
   validateBankStatementFilesAPI,
 } from "../../../utils/axios/apiServices";
-import { INextStepProps } from "./GetCreditScore";
 import {
+  getApiErrorMessage,
   getFetchEligibilityStatus,
   handleViewDocument,
+  MAX_FILE_UPLOAD_NOTE,
+  MAX_FILE_UPLOAD_SIZE_BYTES,
   showGlobalReportModal,
   toastErrorWithExtraTime,
   toastSuccessWithExtraTime,
@@ -37,42 +39,36 @@ import { APIResponseEntity } from "../../../interface/apiResponse";
 import { RoutePathConstant } from "../../../utils/constants/routePaths";
 import TableTitle from "../../../components/TableTitle";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../store";
 import ModalLoader from "../../../components/ModalLoader";
-import { environment } from "../../../utils/constants/environments";
-import {
-  getDecryptedSessionStorage,
-  setEncryptedSessionStorage,
-} from "../../../utils/functions/sessionStorage";
 import {
   ReportType,
-  ReportTypeSignalR,
-  StorageKeyEnum,
+  ReportTypeSignalR
 } from "../../../utils/constants/enum";
-import { setUserData } from "../../../store/reducer/userSlice";
-import { setImpersonateUser } from "../../../store/reducer/impersonateSlice";
-import { useDispatch } from "react-redux";
-import CreditNotAvailable from "../../../components/CreditNotAvailable";
 import ReFetchModal from "../../../components/ReFetchModal";
-import { IsNullOrEmptyArray } from "../../../utils/functions/nullCheck";
 import {
   IIsProceedForCamReportEntity,
   IIsProceedForCamReportResponse,
   IIsProceedForGeneratingReport,
-  IIsProceedForReportEntity,
+  IIsProceedForReportEntity
 } from "../../../interface/wallet";
 import { Tooltip } from "primereact/tooltip";
-import {
-  addStudentCamReport,
-  getEducationLoanDraftById,
-  setEducationLoanResumeStep,
-  updateEducationLoanDraftStatus,
-} from "../../../utils/demo/demoEducationLoanFlow";
+import { IsNullOrEmptyArray } from "../../../utils/functions/nullCheck";
 
 interface IWrongUserDialog {
   modal: boolean;
   message: string;
+}
+
+const BANK_STATEMENT_FILE_ACCEPT = ".pdf,.zip,application/pdf,application/zip,application/x-zip-compressed";
+
+const isBankStatementFile = (file: File): boolean => {
+  const fileName = file.name.toLowerCase();
+  return fileName.endsWith(".pdf") || fileName.endsWith(".zip");
+};
+
+export interface INextStepProps {
+  nextStep?: () => void;
+  prevStep?: () => void;
 }
 
 const BankDetails = ({ prevStep }: INextStepProps) => {
@@ -90,9 +86,9 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
     IUploadedBankDocumentDetails[]
   >([]);
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
 
-  const [showCreditPopup, setShowCreditPopup] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [showPrevDocs, setShowPrevDocs] = useState<boolean>(false);
 
@@ -105,6 +101,8 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
   const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
 
   const [showReUploadModal, setShowReUploadModal] = useState<boolean>(false);
+
+  const [isReuploading, setIsReuploading] = useState<boolean>(false);
 
   const [reUploadDocumentID, setReUploadDocumentID] = useState<string>("");
 
@@ -142,50 +140,12 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
   const { state } = useLocation();
 
-  const { isImpersonate } = useSelector(
-    (state: RootState) => state.impersonateUser,
-  );
+  const locationState = state as any;
+  const studentID = locationState?.studentID || "";
 
-  const { isDefaultCpClient } = useSelector(
-    (state: RootState) => state.user.user,
-  );
+  const isBankingReportRequired: boolean = locationState?.isBankingReportRequired !== false;
 
   const navigate = useNavigate();
-
-  const dispatch = useDispatch();
-
-  const isEducationFlow = !!state?.educationFlow;
-
-  useEffect(() => {
-    if (!isEducationFlow || !state?.educationLoanApplicationId) return;
-
-    setEducationLoanResumeStep(
-      state.educationLoanApplicationId,
-      "banking-details",
-    );
-  }, [isEducationFlow, state]);
-
-  const continueEducationLoanFlow = () => {
-    if (!state?.educationLoanApplicationId) return;
-
-    const draft = getEducationLoanDraftById(state.educationLoanApplicationId);
-
-    if (!draft) return;
-
-    addStudentCamReport({
-      studentUserId: draft.studentUserId,
-      courseName: draft.courseName,
-    });
-    updateEducationLoanDraftStatus(draft.id, "cam_generated");
-    setEducationLoanResumeStep(draft.id, "loan-offer");
-
-    navigate(
-      RoutePathConstant.private.educationStudentLoanOffer.replace(
-        ":id",
-        draft.id,
-      ),
-    );
-  };
 
   const handleDropFileUpload = async (
     event: React.DragEvent<HTMLDivElement>,
@@ -228,8 +188,6 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
       return;
     }
 
-    const MAX_FILE_SIZE = environment.DOCUMENT_FILE_SIZE * 1024 * 1024;
-
     let zipFile = null;
 
     const pdfFiles: File[] = [];
@@ -254,9 +212,9 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
         return;
       }
 
-      if (file.size > MAX_FILE_SIZE) {
+      if (file.size > MAX_FILE_UPLOAD_SIZE_BYTES) {
         toastErrorWithExtraTime(
-          `File ${file.name} exceeds the ${environment.DOCUMENT_FILE_SIZE} MB limit.`,
+          `File ${file.name} exceeds the ${MAX_FILE_UPLOAD_NOTE.replace("Max ", "")} limit.`,
         );
         setLoading(false);
         event.target.value = "";
@@ -273,6 +231,8 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
     }
 
     formData.append("bankID", String(selectedInstitutionID));
+
+    formData.append("studentID", studentID);
 
     try {
       const response: IUploadBankDocumentResponse =
@@ -329,7 +289,7 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
           );
         }
       } else {
-        toastErrorWithExtraTime(response.message);
+        toastErrorWithExtraTime(getApiErrorMessage(response.message));
       }
 
       setLoading(false);
@@ -341,15 +301,17 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
     }
   };
 
-  const fetchInstitutionList = async (): Promise<void> => {
+  const fetchInstitutionList = async (): Promise<InstitutionList[]> => {
     const response: IInstitutionListResponse = await getInstitutionList();
 
-    if (!response) return;
+    if (!response) return [];
 
     if (response && response.statusCode === 200) {
       setInstitutionList(response.data);
+      return response.data;
     } else {
-      toastErrorWithExtraTime(response.message);
+      toastErrorWithExtraTime(getApiErrorMessage(response.message));
+      return [];
     }
   };
 
@@ -367,54 +329,77 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
           data-pr-tooltip="View Bank Document"
           onClick={() => handleViewDocument(rowData.filePath)}
         >
-          <img src="/assets/images/eye.svg" alt="eye-icon" loading="lazy" />
+          <i className="icon-eye" />
         </Button>
       </>
     );
-  };
-
-  const handleImpersonateLogout = (): void => {
-    if (isDefaultCpClient) {
-      navigate(RoutePathConstant.private.subscription, {
-        state: { creditsInSufficient: true },
-      });
-      return;
-    }
-
-    const previousUserData = JSON.parse(
-      getDecryptedSessionStorage(
-        StorageKeyEnum.CRED_ORBIT_IMPERSONATE_USER_DATA,
-      ),
-    );
-
-    dispatch(setUserData(previousUserData));
-
-    setEncryptedSessionStorage(
-      StorageKeyEnum.CRED_ORBIT_PUBLIC_TOKEN,
-      previousUserData.token,
-    );
-
-    navigate(RoutePathConstant.private.subscription, {
-      state: { creditsInSufficient: true },
-    });
-
-    dispatch(setImpersonateUser(false));
   };
 
   const handleWrongUserInfo = (message: string): void => {
     setWrongUserDialog({ modal: true, message });
   };
 
+  const handlePreviousNavigation = (): void => {
+    if (prevStep) {
+      prevStep();
+      return;
+    }
+
+    if (locationState?.previousRoute === "credit-score") {
+      navigate(RoutePathConstant.private.educationStudentConsentVerification, {
+        state: {
+          loanApplicationId: locationState?.loanApplicationId,
+          studentID: locationState?.studentID,
+          studentName:
+            locationState?.selectedStudent?.fullName ||
+            locationState?.selectedStudent?.name ||
+            locationState?.studentName ||
+            "",
+          selectedStudent: locationState?.selectedStudent || null,
+        },
+      });
+      return;
+    }
+
+    navigate(
+      `${RoutePathConstant.private.educationStudentDetail360View}/${locationState?.studentID}`,
+      {
+        state: {
+          selectedDraftId: locationState?.loanApplicationId,
+          loanApplicationId: locationState?.loanApplicationId,
+          studentID: locationState?.studentID,
+          studentName:
+            locationState?.selectedStudent?.fullName ||
+            locationState?.selectedStudent?.name ||
+            locationState?.studentName ||
+            "",
+          selectedStudent: locationState?.selectedStudent || null,
+        },
+      },
+    );
+    return;
+  };
+
   const handleUpload = async (): Promise<void> => {
     setLoading(true);
 
-    const checkResponse = await IsProceedForCamReport(
+    const checkResponse = await isProceedForCamReportForEducationalInstituteAPI(
       ReportTypeSignalR.BankingReportCompleted,
-    );
+      studentID,
+      locationState?.loanApplicationId,
+    )
 
     if (!checkResponse) return;
 
     if (checkResponse && checkResponse.statusCode === 200) {
+      const data = checkResponse.data as IIsProceedForGeneratingReport;
+
+      if (data.isInProgress) {
+        toastErrorWithExtraTime(getApiErrorMessage(checkResponse.message));
+        setLoading(false);
+        return;
+      }
+
       setLoading(false);
 
       const groupedDocuments = finalBanksDocument.reduce(
@@ -445,30 +430,20 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
       const body: UploadRequestBody = {
         UploadedDocumentObjectList: groupedDocuments,
+        studentID,
       };
 
-      const response: APIResponseEntity =
-        await uploadBankStatementFilesAPI(body);
+      const response: APIResponseEntity = await uploadBankStatementFilesEducationalInstituteAPI(body);
 
       if (!response) return;
 
       if (response?.statusCode === 200) {
         setCheckEligibilityBtn(true);
-        showGlobalReportModal(response?.message, "Banking Report Update");
-
-        if (state === "dashboard") {
-          navigate(RoutePathConstant.private.bankingAnalyticsReport);
-        }
-      } else if (response?.statusCode === 402) {
-        if (!isImpersonate) {
-          setShowCreditPopup(true);
-        } else {
-          handleImpersonateLogout();
-        }
+        showGlobalReportModal(getApiErrorMessage(response?.message), "Banking Report Update");
       } else if (response?.statusCode === 409) {
-        handleWrongUserInfo(response?.message);
+        handleWrongUserInfo(getApiErrorMessage(response?.message));
       } else {
-        showGlobalReportModal(response?.message, "Banking Report Update");
+        showGlobalReportModal(getApiErrorMessage(response?.message), "Banking Report Update");
       }
 
       setReportLoading(false);
@@ -480,8 +455,11 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
   const handleCheckEligibility = async () => {
     setReportLoading(true);
 
-    const response: IIsProceedForCamReportResponse =
-      await IsProceedForCamReport();
+    const response: IIsProceedForCamReportResponse = await isProceedForCamReportForEducationalInstituteAPI(
+      undefined,
+      studentID,
+      locationState?.loanApplicationId,
+    )
 
     if (!response) return;
 
@@ -491,27 +469,56 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
       if (!data.isProceedForCamReport && !IsNullOrEmptyArray(data.reports)) {
         setCAMReportPopUp(true);
         setCamReportDetails(data.reports);
-      } else {
+      } else if (
+        !data.isProceedForCamReport &&
+        IsNullOrEmptyArray(data.reports)
+      ) {
+        setCamReportDetails([]);
+        toastErrorWithExtraTime(getApiErrorMessage(response?.message));
+      } else if (data.isProceedForCamReport) {
         setCamReportDetails([]);
 
-        showGlobalReportModal(response?.message, "Banking Report Update");
-
-        if (isEducationFlow) {
-          continueEducationLoanFlow();
-        } else {
-          navigate(RoutePathConstant.private.loanMarketPlace, {
-            state: {
-              showDocument: true,
-              loanType: state?.loanType,
-              loanApp: state?.loanApp,
-            },
-          });
-        }
+        navigate(RoutePathConstant.private.loanMarketPlaceForEducationInstitute, {
+          state: {
+            loanApplicationId: locationState?.loanApplicationId,
+            loanApplicationID: locationState?.loanApplicationId,
+            studentID: locationState?.studentID,
+            studentName:
+              locationState?.selectedStudent?.fullName ||
+              locationState?.selectedStudent?.name ||
+              locationState?.studentName ||
+              "",
+            selectedStudent: locationState?.selectedStudent || null,
+            isBankingReportRequired,
+            origin: "bank-details",
+          },
+        });
+      } else {
+        setCamReportDetails([]);
+        toastErrorWithExtraTime(getApiErrorMessage(response?.message));
       }
     } else {
-      toastErrorWithExtraTime(response?.message);
+      toastErrorWithExtraTime(getApiErrorMessage(response?.message));
     }
     setReportLoading(false);
+  };
+
+  const handleSkipBankingReport = (): void => {
+    navigate(RoutePathConstant.private.loanMarketPlaceForEducationInstitute, {
+      state: {
+        loanApplicationId: locationState?.loanApplicationId,
+        loanApplicationID: locationState?.loanApplicationId,
+        studentID: locationState?.studentID,
+        studentName:
+          locationState?.selectedStudent?.fullName ||
+          locationState?.selectedStudent?.name ||
+          locationState?.studentName ||
+          "",
+        selectedStudent: locationState?.selectedStudent || null,
+        isBankingReportRequired,
+        origin: "bank-details",
+      },
+    });
   };
 
   const handleDeleteDocument = async (id: string): Promise<void> => {
@@ -573,8 +580,14 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
     const file = event.target.files[0];
 
-    if (file.type !== "application/pdf") {
-      toastErrorWithExtraTime("Only PDF files are allowed");
+    if (file.size > MAX_FILE_UPLOAD_SIZE_BYTES) {
+      toastErrorWithExtraTime(`File size should not exceed ${MAX_FILE_UPLOAD_NOTE.replace("Max ", "")}.`);
+      event.target.value = "";
+      return;
+    }
+
+    if (!isBankStatementFile(file)) {
+      toastErrorWithExtraTime("Only PDF or ZIP files are allowed");
       event.target.value = "";
       return;
     }
@@ -584,13 +597,14 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
     formData.append("file", file);
     formData.append("id", reUploadDocumentID);
 
-    setLoading(true);
+    setIsReuploading(true);
 
-    const response: IReUploadedDocumentResponse =
-      await deleteReuploadLoanDocumentAPI(formData);
+    try {
+      const response: IReUploadedDocumentResponse =
+        await deleteReuploadLoanDocumentAPI(formData);
 
-    if (response && response.statusCode === 200) {
-      toastSuccessWithExtraTime(response.message);
+      if (response && response.statusCode === 200) {
+        toastSuccessWithExtraTime(response.message);
 
       const updatedDocument: IUploadedDocument =
         response.data.reuploadedDocument;
@@ -624,15 +638,18 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
         );
       }
 
-      setUploadedBanksDocument([...updatedDocuments]);
-      setShowReUploadModal(false);
-      setStateKey((prev) => prev + 1);
-    } else {
-      toastErrorWithExtraTime(response.message);
+        setUploadedBanksDocument([...updatedDocuments]);
+        setShowReUploadModal(false);
+        setStateKey((prev) => prev + 1);
+      } else {
+        toastErrorWithExtraTime(getApiErrorMessage(response?.message));
+      }
+    } catch {
+      toastErrorWithExtraTime("Document could not be re-uploaded. Please try again.");
+    } finally {
+      setIsReuploading(false);
+      event.target.value = "";
     }
-
-    setLoading(false);
-    event.target.value = "";
   };
 
   const uploadedBankTemplate = (
@@ -652,11 +669,11 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
         <Button
           id={viewId}
-          className="trash-icon p-0 ms-2"
+          className="trash-icon p-0 ms-2 mb-2"
           data-pr-tooltip="View Document"
           onClick={() => handleViewDocument(rowData.filePath)}
         >
-          <img src="/assets/images/eye.svg" alt="eye-icon" loading="lazy" />
+          <i className="icon-eye" />
         </Button>
 
         {rowData.hasPasswordIssue && (
@@ -691,7 +708,7 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
           data-pr-tooltip="Delete Document"
           onClick={() => handleDeleteDocument(rowData.id)}
         >
-          <i className="bi bi-trash" />
+          <i className="bi bi-trash" style={{ fontSize: '22px' }} />
         </Button>
       </>
     );
@@ -704,26 +721,26 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
     const deleteId = `final-delete-${rowData.id}`;
 
     return (
-      <div className="text-center d-inline">
+      <div className="bank-details-file-actions">
         <Tooltip target={`#${viewId}`} position="top" />
         <Tooltip target={`#${deleteId}`} position="top" />
 
         <Button
           id={viewId}
-          className="trash-icon p-0 ms-2"
+          className="trash-icon p-0"
           data-pr-tooltip="View File"
           onClick={() => handleViewDocument(rowData.filePath)}
         >
-          <img src="/assets/images/eye.svg" alt="eye-icon" loading="lazy" />
+          <i className="icon-eye" />
         </Button>
 
         <Button
           id={deleteId}
-          className="trash-icon p-0 ms-2"
+          className="trash-icon p-0"
           data-pr-tooltip="Delete File"
           onClick={() => handleDeleteDocument(rowData.id)}
         >
-          <i className="bi bi-trash" />
+          <i className="bi bi-trash" style={{ fontSize: '22px' }} />
         </Button>
       </div>
     );
@@ -823,14 +840,8 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
       const allValid = uploadedDocument.every((doc) => doc.valid);
 
       if (allValid) handleNextClick();
-    } else if (response?.statusCode === 402) {
-      if (!isImpersonate) {
-        setShowCreditPopup(true);
-      } else {
-        handleImpersonateLogout();
-      }
     } else {
-      toastErrorWithExtraTime(response.message);
+      toastErrorWithExtraTime(getApiErrorMessage(response.message));
     }
 
     setLoading(false);
@@ -847,18 +858,27 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
     setStateKey((prev) => prev + 1);
   };
 
-  const handleAlreadyUploadedDocument = async () => {
-    setLoading(true);
+  const handleAlreadyUploadedDocument = async (
+    institutions: InstitutionList[],
+  ): Promise<void> => {
+    if (!studentID) {
+      setShowPrevDocs(false);
+      toastErrorWithExtraTime("Student ID is missing.");
+      return;
+    }
 
-    const response = await fetchUploadedBankDocumentsAPI();
+    const response = await fetchUploadedBankDocumentsAPI({ studentID });
 
-    if (!response) return;
+    if (!response) {
+      setShowPrevDocs(false);
+      return;
+    }
 
     if (response?.statusCode === 200) {
       const updatedDocs = response?.data?.uploadedFiles
         ?.filter((docs: any) => docs.bankID !== null)
         ?.map((doc: any) => {
-          const bank = institutionList.find(
+          const bank = institutions.find(
             (b) => b.institutionID === doc.bankID,
           );
 
@@ -878,22 +898,30 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
       setShowPrevDocs(updatedDocs.length > 0 ? true : false);
     } else {
-      toastErrorWithExtraTime(response.message);
+      toastErrorWithExtraTime(getApiErrorMessage(response.message));
     }
-
-    setLoading(false);
   };
 
   const handleReGenerate = async (): Promise<void> => {
     setLoading(true);
 
-    const checkResponse = await IsProceedForCamReport(
+    const checkResponse = await isProceedForCamReportForEducationalInstituteAPI(
       ReportTypeSignalR.BankingReportCompleted,
+      studentID,
+      locationState?.loanApplicationId
     );
 
     if (!checkResponse) return;
 
     if (checkResponse && checkResponse.statusCode === 200) {
+      const data = checkResponse.data as IIsProceedForGeneratingReport;
+
+      if (data.isInProgress) {
+        toastErrorWithExtraTime(getApiErrorMessage(checkResponse.message));
+        setLoading(false);
+        return;
+      }
+
       setLoading(false);
 
       if (bankingLastReportDate < 30) {
@@ -937,7 +965,7 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
         className="btn btn-black-line w-100 text-center mt-4"
         data-bs-dismiss="modal"
         label="Cancel"
-        disabled={loading}
+        disabled={loading || isReuploading}
         onClick={() => setShowReUploadModal(false)}
       />
     );
@@ -956,8 +984,8 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
       <Button
         className={`btn ${loading || validAllDocument
-            ? "btn btn-orange-disabled cursor-not-allowed"
-            : "btn-orange"
+          ? "btn btn-orange-disabled cursor-not-allowed"
+          : "btn-orange"
           } w-100 text-center`}
         onClick={() =>
           validateBankStatementFilesFunction(uploadedBanksDocument)
@@ -978,7 +1006,7 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
         case "Pending":
           return "redLine";
         default:
-          return "grayLine";
+          return "orangeLine";
       }
     };
 
@@ -991,16 +1019,6 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
   const footerContentCamReport = (
     <div className="flex justify-content-end mt-3">
-      {isEducationFlow && (
-        <Button
-          className="btn btn-orange text-center me-2"
-          label="Continue"
-          onClick={() => {
-            setCAMReportPopUp(false);
-            continueEducationLoanFlow();
-          }}
-        />
-      )}
       <Button
         className="btn btn-black-line text-center"
         data-bs-dismiss="modal"
@@ -1011,6 +1029,26 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
   );
 
   useEffect(() => {
+    const initializeBankDetails = async () => {
+      setIsInitialLoading(true);
+
+      try {
+        const institutions = await fetchInstitutionList();
+
+        if (institutions.length > 0) {
+          await handleAlreadyUploadedDocument(institutions);
+        } else {
+          setShowPrevDocs(false);
+        }
+      } finally {
+        setIsInitialLoading(false);
+      }
+    };
+
+    initializeBankDetails();
+  }, []);
+
+  useEffect(() => {
     const allDocumentsValid =
       uploadedBanksDocument.length > 0 &&
       uploadedBanksDocument.every(
@@ -1019,16 +1057,6 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
     setValidAllDocument(!allDocumentsValid);
   }, [uploadedBanksDocument]);
-
-  useEffect(() => {
-    fetchInstitutionList();
-  }, []);
-
-  useEffect(() => {
-    if (institutionList.length > 0) {
-      handleAlreadyUploadedDocument();
-    }
-  }, [institutionList]);
 
   useEffect(() => {
     if (uploadedBanksDocument.length > 0 && institutionList.length > 0) {
@@ -1057,18 +1085,16 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
   }, []);
 
   useEffect(() => {
-    if (state?.triggerEligibility) {
-      setCheckEligibilityBtn(true);
-    }
+    if (state?.triggerEligibility) setCheckEligibilityBtn(true);
   }, [state]);
 
   return (
     <>
-      <Loader isLoading={loading} />
+      <Loader isLoading={loading || isInitialLoading} />
 
-      {showPrevDocs && (
+      {!isInitialLoading && showPrevDocs && (
         <>
-          <div className="col-12 mt-4 d-flex gap-2">
+          <div className="col-12 mt-4 d-flex gap-2 text-heading-muted">
             {finalBanksDocument.length > 0 && (
               <div className="col-12">
                 <b style={{ fontSize: "1.125em" }}>Uploaded Documents</b>
@@ -1099,11 +1125,7 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
           <div className="form-group mt-4 d-flex">
             <Button
               className="btn btn-black-line text-center"
-              onClick={() =>
-                prevStep
-                  ? prevStep()
-                  : navigate(RoutePathConstant.private.bankingAnalyticsReport)
-              }
+              onClick={handlePreviousNavigation}
               label="Previous"
             />
 
@@ -1122,15 +1144,29 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
                 label="Check Eligibility"
               />
             )}
+
+            {!isBankingReportRequired && (
+              <Button
+                className="btn btn-orange ms-2 text-center"
+                onClick={handleSkipBankingReport}
+                label="Skip"
+              />
+            )}
           </div>
         </>
       )}
 
-      {!showPrevDocs && (
+      {!isInitialLoading && !showPrevDocs && (
         <div className="whiteBoxHldr p-24">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="col-12 titleBtnWrapper">
+          <div className="row text-heading-muted">
+            <div className="col-12">
+              <div className="col-12 mb-4 titleMainWrapper txt-orange">
+                <h2 className="client-welcome">
+                  <span>Application for,</span> {locationState?.studentName || "Student"}
+                </h2>
+              </div>
+
+              <div className="col-12 titleBtnWrapper mt-5">
                 <TableTitle title="Bank Details" />
               </div>
               <p className="mt-2 mb-4">
@@ -1178,7 +1214,7 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
                     <p>Upload bank statements for the past 12 months</p>
 
                     <small className="text-muted">
-                      Accepted formats: PDF or a ZIP file containing only PDFs
+                      Accepted formats: PDF or a ZIP file containing only PDFs. {MAX_FILE_UPLOAD_NOTE} per file.
                     </small>
 
                     <label
@@ -1220,6 +1256,9 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
                         <Column
                           body={uploadedFinalBankTemplate}
                           header="Files Action"
+                          headerClassName="bank-details-file-actions-column"
+                          bodyClassName="bank-details-file-actions-column"
+                          style={{ width: "18%" }}
                         />
                       </DataTable>
                     </div>
@@ -1229,31 +1268,41 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
             </div>
           </div>
 
-          {finalBanksDocument.length > 0 && (
+          {(finalBanksDocument.length > 0 || !isBankingReportRequired) && (
             <div className="form-group mt-4 d-flex">
               {state !== "dashboard" && (
                 <Button
                   className="btn btn-black-line text-center"
-                  onClick={prevStep}
+                  onClick={handlePreviousNavigation}
                   label="Previous"
                 />
               )}
 
-              <Button
-                className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
-                  } ms-2 text-center`}
-                disabled={loading}
-                label="Generate Report"
-                onClick={handleUpload}
-              />
+              {finalBanksDocument.length > 0 && (
+                <Button
+                  className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+                    } ms-2 text-center`}
+                  disabled={loading}
+                  label="Generate Report"
+                  onClick={handleUpload}
+                />
+              )}
 
-              {state !== "dashboard" && (
+              {state !== "dashboard" && finalBanksDocument.length > 0 && (
                 <Button
                   className={`btn ${!checkEligibilityBtn ? "btn-orange-disabled" : "btn-orange"
                     } ms-2 text-center`}
                   onClick={handleCheckEligibility}
                   disabled={!checkEligibilityBtn}
                   label="Check Eligibility"
+                />
+              )}
+
+              {!isBankingReportRequired && (
+                <Button
+                  className="btn btn-orange ms-2 text-center"
+                  onClick={handleSkipBankingReport}
+                  label="Skip"
                 />
               )}
             </div>
@@ -1332,17 +1381,9 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
-                <img
-                  src="/assets/images/eye.svg"
-                  alt="eye-icon"
-                  loading="lazy"
-                />
+                <i className="icon-eye" />
               ) : (
-                <img
-                  src="/assets/images/eye-slash.svg"
-                  alt="eye-icon"
-                  loading="lazy"
-                />
+                <i className="icon-eye-slash" />
               )}
             </Button>
           </div>
@@ -1353,7 +1394,9 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
         header="Re-Upload Document"
         visible={showReUploadModal}
         modal
-        onHide={() => setShowReUploadModal(false)}
+        onHide={() => {
+          if (!isReuploading) setShowReUploadModal(false);
+        }}
         draggable={false}
         resizable={false}
         className="modalWrapper"
@@ -1361,7 +1404,13 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
         footer={reuploadfooterContent}
         blockScroll
       >
-        <div className="form-group">
+        {isReuploading ? (
+          <div className="d-flex flex-column align-items-center justify-content-center gap-2 py-5">
+            <i className="pi pi-spinner pi-spin fs-2" aria-hidden="true" />
+            <span>Re-uploading document...</span>
+          </div>
+        ) : (
+          <div className="form-group">
           <div className="uploadFileWrapper">
             <img
               src="/assets/images/upload-cloud.svg"
@@ -1371,8 +1420,8 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 
             <p style={{ fontSize: "0.875em" }}>Upload a statement</p>
 
-            <p style={{ color: "#979797", fontSize: "0.75em" }}>
-              Accepted format: PDF
+            <p style={{ color: "var(--color-text-disabled-soft)", fontSize: "0.75em" }}>
+              Accepted formats: PDF or a ZIP file containing only PDFs. {MAX_FILE_UPLOAD_NOTE} per file.
             </p>
 
             <label className="btn btn-black-line" htmlFor="reuploaddocument">
@@ -1382,12 +1431,13 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
             <InputText
               type="file"
               id="reuploaddocument"
-              accept=".pdf"
+              accept={BANK_STATEMENT_FILE_ACCEPT}
               onChange={handleReUploadFileChange}
               className="d-none"
             />
           </div>
-        </div>
+          </div>
+        )}
       </Dialog>
 
       <Dialog
@@ -1439,7 +1489,9 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
                         >
                           <span
                             style={{
-                              color: rowData.valid ? "black" : "red",
+                              color: rowData.valid
+                                ? "var(--color-text-black)"
+                                : "var(--color-danger)",
                             }}
                           >
                             {rowData.fileName}
@@ -1509,8 +1561,6 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
               setWrongUserDialog({ modal: false, message: "" });
               if (state !== "dashboard") {
                 setCheckEligibilityBtn(true);
-              } else {
-                navigate(RoutePathConstant.private.bankingAnalyticsReport);
               }
             }}
           >
@@ -1519,41 +1569,37 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
         </div>
       </Dialog>
 
-      <Dialog
-        header="CAM Report Details"
-        visible={cAMReportPopUp}
-        onHide={() => setCAMReportPopUp(false)}
-        draggable={false}
-        resizable={false}
-        modal
-        closable
-        blockScroll
-        className="modalWrapper"
-        style={{ width: "500px" }}
-        footer={footerContentCamReport}
-      >
-        <div className="modal-content">
-          <div className="modal-body">
-            <div className="camList">
-              {camReportDetails.map((item, index) => (
-                <div key={index} className="camCard">
-                  <div className="camLeft">
-                    <span className="camTitle">{item.reportType}</span>
-                  </div>
+      {cAMReportPopUp &&
+        <Dialog
+          header="Eligibility Screening Report"
+          visible={cAMReportPopUp}
+          onHide={() => setCAMReportPopUp(false)}
+          draggable={false}
+          resizable={false}
+          modal
+          closable
+          blockScroll
+          className="modalWrapper"
+          style={{ width: "500px" }}
+          footer={footerContentCamReport}
+        >
+          <div className="modal-content">
+            <div className="modal-body">
+              <div className="camList">
+                {camReportDetails.map((item, index) => (
+                  <div key={index} className="camCard">
+                    <div className="camLeft">
+                      <span className="camTitle">{item.reportType}</span>
+                    </div>
 
-                  {statusBodyTemplate(item)}
-                </div>
-              ))}
+                    {statusBodyTemplate(item)}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </Dialog>
-
-      <CreditNotAvailable
-        isShow={showCreditPopup}
-        onHide={() => setShowCreditPopup(false)}
-        message="Your channel partner does not have credits. Please ask them to add the credits."
-      />
+        </Dialog>
+      }
 
       <ReFetchModal
         visible={showRefetchReport}
@@ -1571,3 +1617,4 @@ const BankDetails = ({ prevStep }: INextStepProps) => {
 };
 
 export default BankDetails;
+

@@ -9,18 +9,18 @@ import PrimePaginator from "../../components/PrimePaginator";
 import { PaginatorPageChangeEvent } from "primereact/paginator";
 import {
   debounceTimeInMilliseconds,
-  formatMobileNumber,
+  formatMobileNumber
 } from "../../utils/constants/constant";
 import useDebouncedEffect from "../../hooks/useDebounce";
 import { toastError } from "../../utils/functions/shared";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import { useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
-import { getCpReportClientListAPI } from "../../utils/axios/apiServices";
+import { getInstituteReportStudentListAPI } from "../../utils/axios/apiServices";
 import {
-  IChannelPartnerClientReportResponse,
-  IChannelPartnerReportParams,
-  IClientList,
+  IInstituteReportParams,
+  IInstituteReportResponse,
+  IStudentList,
 } from "../../interface/reports";
 import TableTitle from "../../components/TableTitle";
 import usePermission from "../../hooks/usePermission";
@@ -28,7 +28,7 @@ import { decryptVAPTData } from "../../utils/functions/encryptDecrypt";
 import { Tooltip } from "primereact/tooltip";
 
 const Report = () => {
-  const [reportsData, setReportsData] = useState<IClientList[]>([]);
+  const [reportsData, setReportsData] = useState<IStudentList[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -57,22 +57,30 @@ const Report = () => {
   const fetchReports = async (): Promise<void> => {
     setLoading(true);
 
-    const queryParams: IChannelPartnerReportParams = {
+    const queryParams: IInstituteReportParams = {
       page: filterReq.pageNumber + 1,
       pageSize: filterReq.pageSize,
     };
 
     if (filterReq.searchText?.trim()) {
-      queryParams.clientFilter = filterReq.searchText?.trim();
+      queryParams.studentFilter = filterReq.searchText?.trim();
     }
 
-    const response: IChannelPartnerClientReportResponse =
-      await getCpReportClientListAPI(queryParams);
+    const response: IInstituteReportResponse =
+      await getInstituteReportStudentListAPI(queryParams);
 
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      setReportsData(response.data.clientsList);
+      const decryptedData = {
+        ...response.data,
+        studentsList: response.data.studentsList.map((item) => ({
+          ...item,
+          mobile: item.mobile ? decryptVAPTData(item.mobile) : "",
+        })),
+      };
+
+      setReportsData(decryptedData.studentsList);
       setTotalRecords(response.data.totalCount);
     } else {
       toastError(response.message);
@@ -81,8 +89,8 @@ const Report = () => {
     setLoading(false);
   };
 
-  const actionBody = (rowData: IClientList): JSX.Element => {
-    const viewId = `client-report-${rowData.clientID}`;
+  const actionBody = (rowData: IStudentList): JSX.Element => {
+    const viewId = `student-report-${rowData.studentID}`;
 
     return (
       <>
@@ -91,12 +99,12 @@ const Report = () => {
         <Button
           id={viewId}
           className="trash-icon p-0 me-2"
-          data-pr-tooltip="View Client Report"
+          data-pr-tooltip="View Student Report"
           onClick={() =>
-            navigate(`${RoutePathConstant.private.reports}/${rowData.clientID}`)
+            navigate(`${RoutePathConstant.private.reports}/${rowData.studentID}`)
           }
         >
-          <img src="/assets/images/eye.svg" alt="eye-icon" loading="lazy" />
+          <i className="icon-eye" />
         </Button>
       </>
     );
@@ -123,15 +131,19 @@ const Report = () => {
   return (
     <div className="whiteBoxHldr p-24">
       <Loader isLoading={loading} />
+
       <div className="row">
         <div className="col-lg-12">
-          <div className="col-12 mb-4 titleBtnWrapper d-flex justify-content-between">
+          <div className="col-12 mb-4 titleBtnWrapper flex-md-wrap">
             <TableTitle title="Reports" />
-            <SearchButton
-              searchText={searchText}
-              setSearchText={setSearchText}
-              placeholder="Search by Client"
-            />
+
+            <div className="BtnRightHldr flex-md-wrap">
+              <SearchButton
+                searchText={searchText}
+                setSearchText={setSearchText}
+                placeholder="Search by Student name and code"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -148,21 +160,19 @@ const Report = () => {
             header="Sr. No."
           />
 
-          <Column field="clientName" header="Client Name" />
+          <Column field="studentName" header="Student Name" />
 
-          <Column field="clientCode" header="Client Code" />
+          <Column field="studentCode" header="Student Code" />
 
           <Column
-            body={(rowData: IClientList) => formatMobileNumber(rowData.mobile)}
+            body={(rowData: IStudentList) => formatMobileNumber(rowData.mobile)}
             header="Mobile Number"
           />
 
-          <Column
-            body={(rowData: IClientList) => rowData.sourcingPartnerName ?? "-"}
-            header="Sourcing Partner"
-          />
+          {view && (
+            <Column body={actionBody} header="Action" />
+          )}
 
-          {view && <Column body={actionBody} header="Action" />}
         </DataTable>
       </div>
 

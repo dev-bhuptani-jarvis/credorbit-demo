@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import Loader from "./Loader";
 
 interface CameraCaptureDialogProps {
   visible: boolean;
   title?: string;
   onHide: () => void;
   onCapture: (dataUrl: string) => void;
+  loading: boolean
 }
 
 const CameraCaptureDialog = ({
@@ -14,10 +16,14 @@ const CameraCaptureDialog = ({
   title = "Capture Photo",
   onHide,
   onCapture,
+  loading
 }: CameraCaptureDialogProps) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
   const streamRef = useRef<MediaStream | null>(null);
+
   const [cameraError, setCameraError] = useState<string>("");
 
   useEffect(() => {
@@ -75,7 +81,6 @@ const CameraCaptureDialog = ({
 
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     onCapture(canvas.toDataURL("image/png"));
-    onHide();
   };
 
   return (
@@ -95,16 +100,19 @@ const CameraCaptureDialog = ({
             className="btn btn-black-line w-100 text-center"
             label="Cancel"
             onClick={onHide}
+            disabled={loading}
           />
           <Button
             className="btn btn-orange w-100 text-center"
-            label="Capture Photo"
+            label={loading ? "Uploading..." : "Capture Photo"}
             onClick={handleCapture}
-            disabled={!!cameraError}
+            disabled={!!cameraError || loading}
           />
         </div>
       }
     >
+      <Loader isLoading={loading} />
+
       <div className="text-center">
         {cameraError ? (
           <p className="error mb-0">{cameraError}</p>

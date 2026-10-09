@@ -11,7 +11,7 @@ const DateTextField = ({
   return (
     <div className="col-lg-4 col-md-6 col-sm-12 col-12">
       <div className="form-group mb-4">
-        <label className="form-label small" htmlFor={name}>
+        <label className="form-label" htmlFor={name}>
           {label}
         </label>
         <div className="position-relative">
@@ -25,7 +25,7 @@ const DateTextField = ({
             // onCopy={(e) => e.preventDefault()}
             // onCut={(e) => e.preventDefault()}
           />
-          <i className="bi bi-calendar position-absolute top-50 end-0 translate-middle-y me-3" />
+          <i className="bi bi-calendar position-absolute top-50 end-0 translate-middle-y me-3 secondary-icon" />
         </div>
       </div>
     </div>

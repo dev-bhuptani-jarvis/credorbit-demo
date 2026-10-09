@@ -3,7 +3,7 @@ import {
   extraToken,
   formatTime,
   toastError,
-  toastSuccess,
+  toastSuccess
 } from "../utils/functions/shared";
 import { CLIENT_ROLE } from "../utils/constants/constant";
 import {
@@ -35,6 +35,7 @@ import { IAssociatedUsersData } from "../interface/signIn";
 import { Dialog } from "primereact/dialog";
 import { RadioButton } from "primereact/radiobutton";
 import Loader from "./Loader";
+import { applyWhiteLabelBranding } from "../utils/functions/whiteLabelBranding";
 
 interface OtpModalProps {
   formValues: any;
@@ -51,7 +52,7 @@ const OtpModal = ({
   associatedUsersData = [],
   setAssociatedUsersData,
 }: OtpModalProps) => {
-  const [otpValues, setOtpValues] = useState<number | undefined>();
+  const [otpValues, setOtpValues] = useState<string | undefined>();
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -71,13 +72,18 @@ const OtpModal = ({
 
   const { isProfileUpdated } = useSelector((state: RootState) => state.profile);
 
+  const { whiteLabelSettings } = useSelector((state: RootState) => state.user.user);
+  const publicWhiteLabelTenantId = useSelector(
+    (state: RootState) => state.user.publicWhiteLabelTenantId,
+  );
+
   const otpRef = useRef<HTMLInputElement | null>(null);
 
   const handleOtpChange = (value: string | number | null | undefined): void => {
-    if (typeof value === "number" || typeof value === "string") {
-      setOtpValues(Number(value));
+    if (value !== null && value !== undefined) {
+      setOtpValues(String(value));
     } else {
-      setOtpValues(undefined);
+      setOtpValues("");
     }
   };
 
@@ -98,12 +104,20 @@ const OtpModal = ({
     setLoading(true);
 
     const payload: any = {
-      emailID: encryptVAPTData(formValues.emailID),
-      mobileNumber: encryptVAPTData(formValues.mobileNumber),
       otp: otpValues,
       extraToken: encryptData(extraToken()),
       userID: customFormValues?.userID,
+      whiteLabelTenantId:
+        whiteLabelSettings?.id || publicWhiteLabelTenantId || "",
+      isEducationalPortal: true,
     };
+
+    if (formValues.leadID) {
+      payload.leadID = formValues.leadID;
+    } else {
+      payload.emailID = encryptVAPTData(formValues.emailID);
+      payload.mobileNumber = encryptVAPTData(formValues.mobileNumber);
+    }
 
     if (formValues.channelPartnerCode) {
       payload.channelPartnerCode = formValues.channelPartnerCode;
@@ -126,18 +140,6 @@ const OtpModal = ({
           isTnCAccepted: formValues.isTnCAccepted,
           isSelfRegistered: true,
           panNumber: encryptVAPTData(formValues.name),
-        });
-        break;
-
-      case VerifyOTPType.CHANNEL_PARTNER:
-        Object.assign(payload, {
-          userType: formValues.userType,
-          isUserDetailsRequired: false,
-          panNumber: encryptVAPTData(formValues.panNumber),
-          parentID: formValues.userID,
-          isTnCAccepted: formValues.isTnCAccepted,
-          isIndianAdult: formValues.isIndianAdult,
-          isSelfRegistered: false,
         });
         break;
     }
@@ -175,12 +177,17 @@ const OtpModal = ({
           handleLogin(updatedResponse);
           break;
         case VerifyOTPType.REGISTER:
-          handleRegister(updatedResponse);
+          if (updatedResponse?.data?.isFromLead) {
+            handleRegisterForLead(updatedResponse);
+          } else {
+            handleRegister(updatedResponse);
+          }
           break;
         case VerifyOTPType.CHANNEL_PARTNER:
           handleChannelPartner(updatedResponse);
           break;
       }
+
       setOtpValues(undefined);
     } else {
       toastError(response.message);
@@ -199,48 +206,97 @@ const OtpModal = ({
     handleSubmit(updatedValues);
   };
 
-  const handleLogin = async (
+  const handleLoginForLead = async (
     response: IVerifyEmailOTPResponse,
   ): Promise<void> => {
+    applyWhiteLabelBranding(response.data?.whiteLabelSettings);
+
     dispatch(setAuth(true));
+
     dispatch(setUserData(response.data));
+
     dispatch(setCount(environment.USER_EXPIRY_TIMER));
 
     setEncryptedSessionStorage(
       StorageKeyEnum.CRED_ORBIT_USER_EXPIRY_TIMER,
       String(environment.USER_EXPIRY_TIMER),
     );
+
     setEncryptedSessionStorage(
       StorageKeyEnum.CRED_ORBIT_PUBLIC_TOKEN,
       response.data.token,
     );
+
     setEncryptedSessionStorage(
       StorageKeyEnum.CRED_ORBIT_IMPERSONATE_USER_DATA,
       JSON.stringify(response.data),
     );
 
     toastSuccess(response.message);
+
+    setLoading(false);
+
+    navigate(RoutePathConstant.private.applyLoan, {
+      state: response.data,
+    });
+  };
+
+  const handleLogin = async (
+    response: IVerifyEmailOTPResponse,
+  ): Promise<void> => {
+    applyWhiteLabelBranding(response.data?.whiteLabelSettings);
+
+    dispatch(setAuth(true));
+
+    dispatch(setUserData(response.data));
+
+    dispatch(setCount(environment.USER_EXPIRY_TIMER));
+
+    setEncryptedSessionStorage(
+      StorageKeyEnum.CRED_ORBIT_USER_EXPIRY_TIMER,
+      String(environment.USER_EXPIRY_TIMER),
+    );
+
+    setEncryptedSessionStorage(
+      StorageKeyEnum.CRED_ORBIT_PUBLIC_TOKEN,
+      response.data.token,
+    );
+
+    setEncryptedSessionStorage(
+      StorageKeyEnum.CRED_ORBIT_IMPERSONATE_USER_DATA,
+      JSON.stringify(response.data),
+    );
+
+    toastSuccess(response.message);
+
     setLoading(false);
 
     switch (response.data.roleID) {
       case CLIENT_ROLE.SUPER_ADMIN:
         navigate(RoutePathConstant.private.dashboard);
         break;
-      case CLIENT_ROLE.CUSTOMER:
-        navigate(
-          response.data.userID === "student-role-001"
-            ? RoutePathConstant.private.channelPartnerDashboard
-            : RoutePathConstant.private.clientDashboard,
-        );
+      case CLIENT_ROLE.USER_MANAGEMENT:
+      case CLIENT_ROLE.EDUCATIONAL_INSTITUTE:
+        navigate(RoutePathConstant.private.institueDashboard);
         break;
-      case CLIENT_ROLE.SOURCING_PARTNER:
-        navigate(RoutePathConstant.private.userMasterClientMaster);
+      case CLIENT_ROLE.STUDENT:
+        navigate(RoutePathConstant.private.studentDashboard);
+        break;
+      case CLIENT_ROLE.NBFC:
+        navigate(RoutePathConstant.private.nbfcDashboard);
         break;
       default:
-        navigate(RoutePathConstant.private.channelPartnerDashboard);
+        navigate(RoutePathConstant.private.institueDashboard);
         break;
     }
   };
+
+  const handleRegisterForLead = async (
+    response: IVerifyEmailOTPResponse,
+  ): Promise<void> => {
+    navigate(RoutePathConstant.public.congratulations);
+    setTimeout(() => handleLoginForLead(response), 5000);
+  }
 
   const handleRegister = async (
     response: IVerifyEmailOTPResponse,
@@ -260,12 +316,28 @@ const OtpModal = ({
 
     setTimeLeft(environment.OTP_TIMER);
 
-    const body = {
-      emailID: encryptVAPTData(formValues.emailID),
-      mobileNumber: encryptVAPTData(formValues.mobileNumber),
+    const body: any = {
       otpType: formValues.otpType,
       isFetchLinkedUsers: formValues.isFetchLinkedUsers,
+      whiteLabelTenantId:
+        whiteLabelSettings?.id || publicWhiteLabelTenantId || "",
+      isEducationalPortal: true
     };
+
+    if (formValues.leadID) {
+      body.leadID = formValues.leadID;
+    } else {
+      body.emailID = encryptVAPTData(formValues.emailID);
+      body.mobileNumber = encryptVAPTData(formValues.mobileNumber);
+    }
+
+    if (formValues.masterChannelPartnerCode) {
+      body.masterChannelPartnerCode = formValues.masterChannelPartnerCode;
+    }
+
+    if (formValues.channelPartnerCode) {
+      body.channelPartnerCode = formValues.channelPartnerCode;
+    }
 
     const response: ISendOTPResponse = await sendOTPAPI(body);
     setLoading(false);
@@ -335,9 +407,11 @@ const OtpModal = ({
 
   return (
     <>
+      <Loader isLoading={loading} />
+
       <div className="row" onKeyDown={handleKeyDown}>
         <div className="col-12">
-          <h2 className="txt-24 mb-2 fw-bold">Enter OTP</h2>
+          <h2 className="txt-24 mb-2 fw-bold primary-color">Enter OTP</h2>
         </div>
 
         <div className="col-12">
@@ -350,14 +424,14 @@ const OtpModal = ({
             />
           </div>
 
-          <div className="registerWrapper mb-4">
+          <div className="registerWrapper mb-4 primary-color">
             {timeLeft > 0 ? (
               <b className="txt-14" style={{ fontWeight: 600 }}>
                 Resend OTP in {formatTime(timeLeft)}
               </b>
             ) : (
               <Button
-                className="resendBtn"
+                className="resendBtn primary-color"
                 onClick={resendOTP}
                 label="Resend OTP"
                 disabled={loading}
@@ -378,9 +452,8 @@ const OtpModal = ({
               )}
             <Button
               type="button"
-              className={`btn ${
-                loading ? "btn-orange-disabled" : "btn-orange"
-              } w-100 text-center`}
+              className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+                } w-100 text-center`}
               disabled={loading}
               onClick={
                 type === VerifyOTPType.REGISTER
@@ -389,8 +462,8 @@ const OtpModal = ({
               }
               label={
                 pathname !== "/" &&
-                pathname !== RoutePathConstant.public.login &&
-                pathname !== RoutePathConstant.public.register
+                  pathname !== RoutePathConstant.public.login &&
+                  pathname !== RoutePathConstant.public.register
                   ? loading
                     ? "Processing..."
                     : "Next"
@@ -437,12 +510,11 @@ const OtpModal = ({
             {associatedUsersData.map((user, index) => (
               <div
                 key={index}
-                className={`d-flex gap-3 p-3 border mt-2 rounded-2 cursor-pointer ${
-                  selectedRole?.userType === user.userType &&
+                className={`d-flex gap-3 p-3 border mt-2 rounded-2 cursor-pointer ${selectedRole?.userType === user.userType &&
                   selectedRole?.userID === user.userID
-                    ? "bg-orange-50 border-orange-400"
-                    : "hover:bg-gray-50"
-                }`}
+                  ? "bg-orange-50 border-orange-400"
+                  : "hover:bg-gray-50"
+                  }`}
                 onClick={() => setSelectedRole(user)}
               >
                 <RadioButton
@@ -458,52 +530,37 @@ const OtpModal = ({
                 <div>
                   <label
                     htmlFor={`role-${index}`}
-                    className="cursor-pointer"
+                    className="cursor-pointer primary-color"
                     style={{ lineHeight: "1.5" }}
                   >
-                    {user.userType === CLIENT_ROLE.CHANNEL_PARTNER && (
-                      <p className="text-sm text-gray-500">
-                        {user.userName} is a Channel Partner.
-                      </p>
-                    )}
-
                     {user.userType === CLIENT_ROLE.USER_MANAGEMENT && (
                       <p className="text-sm text-gray-500">
                         {user.userName} is a user under User Management.
                         {user.cpName ? (
                           <>
                             {" "}
-                            This user is linked to the Channel Partner{" "}
+                            This user is linked to the Institute{" "}
                             <strong>{user.cpName}</strong>.
                           </>
                         ) : null}
                       </p>
                     )}
 
-                    {user.userType === CLIENT_ROLE.CUSTOMER && (
+                    {user.userType === CLIENT_ROLE.EDUCATIONAL_INSTITUTE && (
                       <p className="text-sm text-gray-500">
-                        {user.userName} is a Client.
-                        {user.spName && user.cpName ? (
-                          <>
-                            {" "}
-                            This client works with the Sourcing Partner{" "}
-                            <strong>{user.spName}</strong> and is linked to the
-                            Channel Partner <strong>{user.cpName}</strong>.
-                          </>
-                        ) : user.cpName ? (
-                          <>
-                            {" "}
-                            This client is linked to the Channel Partner{" "}
-                            <strong>{user.cpName}</strong>.
-                          </>
-                        ) : null}
+                        {user.userName} is a Education Institute.
                       </p>
                     )}
 
-                    {user.userType === CLIENT_ROLE.SOURCING_PARTNER && (
+                    {user.userType === CLIENT_ROLE.STUDENT && (
                       <p className="text-sm text-gray-500">
-                        {user.userName} is a Sourcing Partner and works with the
-                        Channel Partner <strong>{user.cpName}</strong>.
+                        {user.userName} is a Student under the {user.cpName} Institute.
+                      </p>
+                    )}
+
+                    {user.userType === CLIENT_ROLE.NBFC && (
+                      <p className="text-sm text-gray-500">
+                        {user.userName} is a Lender.
                       </p>
                     )}
                   </label>

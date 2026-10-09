@@ -54,7 +54,7 @@ export interface IUpdatedContractBody {
 
 export interface IUpdatedContractStatusBody {
   mobileNumber: string;
-  otp: number;
+  otp: string;
   userID: string;
   status: boolean;
 }
@@ -68,6 +68,7 @@ export interface OnlyMobileNumber {
   emailID: string;
   otpType: number;
   mobileNumber: string;
+  whiteLabelTenantId: string;
 }
 
 export interface IAadharCardResponse extends APIResponseEntity {

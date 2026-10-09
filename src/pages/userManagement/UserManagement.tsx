@@ -11,20 +11,16 @@ import {
   IUserMasterListParams,
   IUsersData,
 } from "../../interface/userManagement";
-import { shouldShowContractModal, toastError } from "../../utils/functions/shared";
+import { toastError } from "../../utils/functions/shared";
 import { getUserListingAPI } from "../../utils/axios/apiServices";
 import { Button } from "primereact/button";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import { useNavigate } from "react-router-dom";
 import usePermission from "../../hooks/usePermission";
 import TableTitle from "../../components/TableTitle";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
-import ContractAgreementModal from "../../components/ContractAgreementModal";
 import {
-  CLIENT_ROLE,
   debounceTimeInMilliseconds,
-  formatMobileNumber,
+  formatMobileNumber
 } from "../../utils/constants/constant";
 import SearchButton from "../../components/SearchButton";
 import useDebouncedEffect from "../../hooks/useDebounce";
@@ -43,23 +39,11 @@ const UserManagement = () => {
 
   const [totalRecords, setTotalRecords] = useState<number>(0);
 
-  const [clickCounter, setClickCounter] = useState<number>(0);
-
-  const { isContractSigned, contractEnforcementDate, userType } = useSelector(
-    (state: RootState) => state.user.user
-  );
-
-  const [showContractAgreement, setShowContractAgreement] =
-    useState<boolean>(false);
-
-  const [hasSkippedContractAgreement, setHasSkippedContractAgreement] =
-    useState<boolean>(false);
-
   const [searchText, setSearchText] = useState<string>("");
 
   const navigate = useNavigate();
 
-  const { view, create } = usePermission("UserManagement", [
+  const { view, create } = usePermission("ManageUsers", [
     "view",
     "create",
   ])();
@@ -97,7 +81,15 @@ const UserManagement = () => {
         };
       });
 
-      setUsersData(updatedUserData);
+      const decryptedUserData = updatedUserData.map((user) => {
+        return {
+          ...user,
+          email: user.email ? decryptVAPTData(user.email) : "",
+          mobileNumber: user.mobileNumber ? decryptVAPTData(user.mobileNumber) : "",
+        };
+      });
+
+      setUsersData(decryptedUserData);
 
       setTotalRecords(response.data.totalCount);
     } else {
@@ -108,66 +100,63 @@ const UserManagement = () => {
   };
 
   const actionTemplate = (user: IUsersData) => {
-  const viewId = `user-view-${user.userID}`;
-  const editId = `user-edit-${user.userID}`;
-  const rightsId = `user-rights-${user.userID}`;
+    const viewId = `user-view-${user.userID}`;
+    const editId = `user-edit-${user.userID}`;
+    const rightsId = `user-rights-${user.userID}`;
 
-  return (
-    <>
-      <Tooltip target={`#${viewId}`} position="top" />
-      <Tooltip target={`#${editId}`} position="top" />
-      <Tooltip target={`#${rightsId}`} position="top" />
+    return (
+      <>
+        <Tooltip target={`#${viewId}`} position="top" />
+        <Tooltip target={`#${editId}`} position="top" />
+        <Tooltip target={`#${rightsId}`} position="top" />
 
-      {view && (
-        <Button
-          id={viewId}
-          className="trash-icon p-0 ms-2"
-          data-pr-tooltip="View User"
-          onClick={() =>
-            navigate(
-              `${RoutePathConstant.private.userManagement}/view/${user.userID}`
-            )
-          }
-        >
-          <img src="/assets/images/eye.svg" alt="eye-icon" />
-        </Button>
-      )}
+        {view && (
+          <Button
+            id={viewId}
+            className="trash-icon p-0 ms-2"
+            data-pr-tooltip="View User"
+            onClick={() =>
+              navigate(
+                `${RoutePathConstant.private.userManagement}/view/${user.userID}`
+              )
+            }
+          >
+            <i className="icon-eye" />
+          </Button>
+        )}
 
-      {create && (
-        <Button
-          id={editId}
-          className="trash-icon p-0 ms-2"
-          data-pr-tooltip="Edit User"
-          onClick={() =>
-            navigate(
-              `${RoutePathConstant.private.userManagement}/edit/${user.userID}`
-            )
-          }
-        >
-          <img src="/assets/images/pencil.svg" alt="edit-icon" />
-        </Button>
-      )}
+        {create && (
+          <Button
+            id={editId}
+            className="trash-icon p-0 ms-2"
+            data-pr-tooltip="Edit User"
+            onClick={() =>
+              navigate(
+                `${RoutePathConstant.private.userManagement}/edit/${user.userID}`
+              )
+            }
+          >
+            <i className="icon-edit" />
+          </Button>
+        )}
 
-      {create && (
-        <Button
-          id={rightsId}
-          className="trash-icon p-0 ms-2 me-2"
-          data-pr-tooltip="Assign Rights"
-          onClick={() =>
-            navigate(
-              `${RoutePathConstant.private.userManagement}/rights/${user.userID}`
-            )
-          }
-        >
-          <img
-            src="/assets/images/security-user.svg"
-            alt="security-user-icon"
-          />
-        </Button>
-      )}
-    </>
-  );
-};
+        {create && (
+          <Button
+            id={rightsId}
+            className="trash-icon p-0 ms-2 me-2"
+            data-pr-tooltip="Assign Rights"
+            onClick={() =>
+              navigate(
+                `${RoutePathConstant.private.userManagement}/rights/${user.userID}`
+              )
+            }
+          >
+            <i className="icon-security-user" />
+          </Button>
+        )}
+      </>
+    );
+  };
 
   const statusBodyTemplate = (user: IUsersData): JSX.Element => {
     const statusClass = user.status ? "greenLine" : "redLine";
@@ -214,18 +203,9 @@ const UserManagement = () => {
                     <Button
                       className="btn btn-orange"
                       onClick={() => {
-                        if (
-                          !(userType === CLIENT_ROLE.USER_MANAGEMENT) &&
-                          !isContractSigned &&
-                          !hasSkippedContractAgreement &&
-                          shouldShowContractModal(contractEnforcementDate)
-                        ) {
-                          setShowContractAgreement(true);
-                        } else {
-                          navigate(
-                            RoutePathConstant.private.userManagementCreate
-                          );
-                        }
+                        navigate(
+                          RoutePathConstant.private.userManagementCreate
+                        );
                       }}
                       label="Add User"
                     />
@@ -238,7 +218,6 @@ const UserManagement = () => {
       </div>
       <div className="table-responsive">
         <DataTable
-          key={clickCounter}
           className="tableMain"
           value={usersData}
           emptyMessage="No users found"
@@ -277,17 +256,6 @@ const UserManagement = () => {
           totalRecords={totalRecords}
         />
       )}
-
-      <ContractAgreementModal
-        showContractAgreement={showContractAgreement && shouldShowContractModal(contractEnforcementDate)}
-        setShowContractAgreement={(value) => {
-          if (!value) {
-            setHasSkippedContractAgreement(true);
-            setClickCounter((prev) => prev + 1);
-          }
-          setShowContractAgreement(value);
-        }}
-      />
     </div>
   );
 };

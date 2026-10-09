@@ -222,7 +222,7 @@ const NotficationModal = ({
                     }}
                     title="Delete"
                   >
-                    <i className="pi pi-times" />
+                    <i className="pi pi-times clear-icon-btn" />
                   </button>
                 </div>
               ))

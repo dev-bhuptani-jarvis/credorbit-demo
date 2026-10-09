@@ -19,6 +19,7 @@ export interface IClientData {
 export interface ILoanApplicationData {
   loanApplicationID: string;
   loanApplicationCode: string;
+  loanJourneyStatus: number;
   bankName: string | null;
   loanTypeID: number;
   disbursementId: string;
@@ -35,8 +36,28 @@ export interface ILoanApplicationData {
   customerName: string;
   loanType: string | null;
   userID: string;
-  raisedQuery?: string | null;
   comments?: string | null;
+  raisedQuery?: string | null;
+  assignedUserDetails: IAssignedUserDetails | null;
+}
+
+export interface IAssignedUserDetails {
+  userID: string;
+  emailID: string;
+  userName: string;
+  mobileNumber: string | null;
+  phoneNumber: string;
+  designation: string;
+  userType: number;
+  roleID: number;
+  profilePicture: string | null;
+  panNumber: string | null;
+  gstNumber: string | null;
+  categoryID: string | null;
+  createdBy: string;
+  isActive: boolean;
+  parentID: string;
+  createdByID: string;
 }
 
 export interface IClientPartnerParams {
@@ -44,13 +65,25 @@ export interface IClientPartnerParams {
 }
 
 export interface IFetchCreditScoreBody {
-  otp: number;
+  otp: string;
   requestId: string;
   reservationId: string;
   partnerID: string;
 }
 
 export interface IResendOTPCreditScoreBody {
+  requestId: string;
+}
+
+export interface IFetchCreditScoreForEducationBody {
+  otp: string;
+  requestId: string;
+  partnerID: string;
+  loanApplicationID: string;
+  studentID: string;
+}
+
+export interface IResendOTPCreditScoreForEducationBody {
   requestId: string;
 }
 

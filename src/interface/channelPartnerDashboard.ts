@@ -34,6 +34,7 @@ export interface ILoanApplicationParams {
   userID: string;
   search?: string;
   statusFilter?: string;
+  parentUserId?: string;
 }
 
 export interface IGetAllLoanApplicationsResponse extends APIResponseEntity {
@@ -43,10 +44,20 @@ export interface IGetAllLoanApplicationsResponse extends APIResponseEntity {
 export interface IGetAllLoanApplicationsData {
   totalLoanApplications: number;
   loanApplications: ILoanApplicationData[];
+  totalCountByStatus: ITotalCountByStatusFilter[];
 }
 
 export interface IStatus {
   label: string;
   color: string;
   statusID?: number;
+}
+
+export interface ITotalCountByStatusFilter {
+  displayName: string;
+  displayOrder: number;
+  amount: number;
+  noOfApplications: number;
+  formattedAmount: string;
+  statusID: number;
 }

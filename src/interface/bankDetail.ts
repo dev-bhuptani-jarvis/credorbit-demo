@@ -51,6 +51,7 @@ export interface BankDocumentGroup {
 
 export interface UploadRequestBody {
   UploadedDocumentObjectList: BankDocumentGroup[];
+  studentID: string;
 }
 
 export interface IUploadBankDocumentResponse extends APIResponseEntity {

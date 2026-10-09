@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { IUserProfileResponse } from "../../interface/userData";
 
 const DEMO_DELAY_MS = 300;

@@ -34,4 +34,5 @@ export interface IClientMasterListingParams {
   parentID?: string;
   isShowOnlyActiveClients?: boolean;
   needCpAndSpClients?: boolean;
+  search?: string;
 }

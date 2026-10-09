@@ -16,6 +16,17 @@ export interface ILoanPropertyPayload {
     approxMarketValue?: string;
 }
 
+export interface ILoanPropertyRequestPayload {
+    propertyType: number;
+    size?: number;
+    pincode?: number;
+    address?: string;
+    location?: string;
+    ownership?: number;
+    saleDeedValue?: number;
+    approxMarketValue?: number;
+}
+
 export interface LoanValues {
     isSecuredLoanApp: boolean;
     loanCategory: number;
@@ -60,6 +71,7 @@ export interface LoanErrors {
 
 export interface IAddLoanApplication {
     clientID: string;
+    leadId?: string;
     loanTypeID: number;
     loanAmount: number;
     isSecuredLoanApp: boolean;
@@ -77,7 +89,7 @@ export interface IAddLoanApplication {
     salarySlipAvailableMonths?: number;
     averageGrossMonthlySalary?: number;
     businessVintage?: number;
-    properties?: ILoanPropertyPayload[];
+    properties?: ILoanPropertyRequestPayload[];
 }
 
 export interface IGetApplyForLoanResponse extends APIResponseEntity {

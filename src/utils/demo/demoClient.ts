@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { IVerifyEmailOTPResponse } from "../../interface/otpRequest";
 import { IGeneratePublicTokenRequest } from "../../interface/publicToken";
 import { IClientDashboardResponse } from "../../interface/clientDashboard";

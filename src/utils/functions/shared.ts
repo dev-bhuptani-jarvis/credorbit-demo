@@ -3,13 +3,31 @@ import { v4 as uuidv4 } from "uuid";
 import { environment } from "../constants/environments";
 import moment from "moment";
 import toast from "react-hot-toast";
-import { toasterPosition } from "../constants/constant";
+import { CLIENT_ROLE, toasterPosition } from "../constants/constant";
 import DOMPurify from "dompurify";
 import { validationMessages } from "../constants/messages";
-import { DEFAULT_LOAN_EMAIL_TEMPLATE } from "../constants/loanEmailTemplates";
-import { ISubmitApplicationToBankDetailsResponseData } from "../../interface/applyLoan";
+import { LoanStatusType, ReportTypeSignalR } from "../constants/enum";
+import { getClientDashboardAPI } from "../axios/apiServices";
+import { IClientDashboardData, IClientDashboardResponse } from "../../interface/clientDashboard";
+import { decryptVAPTData } from "./encryptDecrypt";
+import { setCustomerInfo } from "../../store/reducer/customerSlice";
 import store from "../../store";
+import { ReportTypeSignalrResponse } from "../../interface/signalr";
+import { setCount } from "../../store/reducer/countSlice";
 import { setReportMessage } from "../../store/reducer/reportMessageSlice";
+import { setUserData } from "../../store/reducer/userSlice";
+import { setWrongUser } from "../../store/reducer/wrongUserSlice";
+import { IGetWhiteLabelSettingsByUserIdResponseData, IWhiteLabelPermission } from "../../interface/whiteLabel";
+import {
+  applyWhiteLabelBranding,
+  emitWhiteLabelSettingsUpdated,
+} from "./whiteLabelBranding";
+import {
+  getDecryptedSessionStorage,
+  setEncryptedSessionStorage,
+} from "./sessionStorage";
+import { StorageKeyEnum } from "../constants/enum";
+import { UserData } from "../../interface/otpRequest";
 
 export const IsFormValid = (obj: object): boolean => {
   let count = 0;
@@ -20,28 +38,67 @@ export const IsFormValid = (obj: object): boolean => {
     }
   });
 
-  return count === 0 ? true : false;
+  return count === 0;
+};
+export const MAX_FILE_UPLOAD_SIZE_MB = 5;
+
+export const MAX_FILE_UPLOAD_SIZE_BYTES =
+  MAX_FILE_UPLOAD_SIZE_MB * 1024 * 1024;
+
+export const MAX_FILE_UPLOAD_NOTE = `Max ${MAX_FILE_UPLOAD_SIZE_MB} MB`;
+
+export const getFileSizeLimitErrorMessage = (
+  label = "File",
+): string => `${label} size should not exceed ${MAX_FILE_UPLOAD_SIZE_MB} MB.`;
+
+export const isFileSizeWithinLimit = (
+  file: File,
+  maxSizeInBytes = MAX_FILE_UPLOAD_SIZE_BYTES,
+): boolean => file.size <= maxSizeInBytes;
+
+export const PDF_FILE_ACCEPT = ".pdf,application/pdf";
+
+export const IMAGE_FILE_ACCEPT = ".jpg,.jpeg,.png,image/jpeg,image/png";
+
+export const isPdfFile = (file: File): boolean =>
+  file.type === "application/pdf" && file.name.toLowerCase().endsWith(".pdf");
+
+export const isImageFile = (file: File): boolean => {
+  const fileName = file.name.toLowerCase();
+
+  return (
+    (file.type === "image/jpeg" && (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg"))) ||
+    (file.type === "image/png" && fileName.endsWith(".png"))
+  );
 };
 
 export const restrictInputByPattern = (
   event: React.KeyboardEvent,
   pattern: RegExp
 ): void => {
+  const allowedControlKeys = [
+    "Backspace",
+    "Delete",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "ArrowDown",
+    "Tab",
+    "Home",
+    "End",
+    "Enter",
+  ];
+
+  if (
+    allowedControlKeys.includes(event.key) ||
+    event.ctrlKey ||
+    event.metaKey
+  ) {
+    return;
+  }
+
   if (!pattern.test(event.key)) {
     event.preventDefault();
-  }
-};
-
-export const handleErrors = (): void => {
-  // prevent production and staging console and warnings
-  if (
-    process.env.REACT_APP_NAME === "PRODUCTION" ||
-    process.env.REACT_APP_NAME === "STAGING"
-  ) {
-    console.log = () => { };
-    console.error = () => { };
-    console.debug = () => { };
-    console.warn = () => { };
   }
 };
 
@@ -63,7 +120,7 @@ export const toastSuccess = (message: string) => {
     position: toasterPosition,
     className: "toast-success",
     style: {
-      color: "#000",
+      color: "var(--color-text-black)",
       maxWidth: 500,
       padding: 10,
       fontWeight: 500,
@@ -79,7 +136,7 @@ export const toastError = (message: string) => {
   toast.error(message, {
     position: toasterPosition,
     style: {
-      color: "#000",
+      color: "var(--color-text-black)",
       maxWidth: 500,
       padding: 10,
       fontWeight: 500,
@@ -96,7 +153,7 @@ export const toastInfo = (message: string) => {
     position: toasterPosition,
     icon: "ℹ️",
     style: {
-      color: "#000",
+      color: "var(--color-text-black)",
       maxWidth: 500,
       padding: 10,
       fontWeight: 500,
@@ -113,7 +170,7 @@ export const toastSuccessWithExtraTime = (message: string) => {
     position: toasterPosition,
     className: "toast-success",
     style: {
-      color: "#000",
+      color: "var(--color-text-black)",
       maxWidth: 500,
       padding: 10,
       fontWeight: 500,
@@ -129,7 +186,7 @@ export const toastErrorWithExtraTime = (message: string) => {
   toast.error(message, {
     position: toasterPosition,
     style: {
-      color: "#000",
+      color: "var(--color-text-black)",
       maxWidth: 500,
       padding: 10,
       fontWeight: 500,
@@ -151,6 +208,18 @@ export const formatTime = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+};
+
+export const formatCourseTenure = (
+  value: number | string | null | undefined,
+): string => {
+  const totalMonths = Number(value || 0);
+
+  if (!totalMonths || totalMonths < 0) {
+    return "-";
+  }
+
+  return `${totalMonths} ${totalMonths === 1 ? "month" : "months"}`;
 };
 
 export const formatAadhaarNumber = (value: string): string => {
@@ -202,7 +271,33 @@ export const handleFileDownload = async (
   filePath: string,
   fileName: string
 ): Promise<void> => {
-  window.open(filePath, "_blank");
+  if (!filePath) {
+    toastError(validationMessages.filePathMissing);
+    return;
+  }
+
+  const response = await fetch(filePath);
+  const arrayBuffer = await response.arrayBuffer();
+
+  const pdfBlob = new Blob([arrayBuffer], {
+    type: "application/pdf",
+  });
+
+  const excelBlob = new Blob([arrayBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  const url = window.URL.createObjectURL(filePath.includes('.xlsx') ? excelBlob : pdfBlob);
+  const correctedFileName = filePath.includes('.xlsx') ? `${fileName}.xlsx` : `${fileName}.pdf`;
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = correctedFileName;
+
+  document.body.appendChild(a);
+  a.click();
+
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(a);
 };
 
 export const handleDownloadCSVData = async (
@@ -218,30 +313,39 @@ export const handleDownloadCSVData = async (
   const headers = Object.keys(headersMap);
 
   const csvRows = [
-    headers.join(","), // CSV Header Row
+    headers.join(","),
     ...data.map((row) =>
       headers
         .map((header) => {
           const value = row[headersMap[header]];
-          const formattedValue =
-            header === "Registration Date" || header === "Disbursed Date"
+
+          const shouldFormatDate =
+            header === "Registration Date" ||
+            header === "Sanctioned Date" ||
+            header === "Disbursed Date";
+
+          const formattedValue = shouldFormatDate
+            ? value && value !== "-" && moment(value).isValid()
               ? moment(value).format("Do MMMM YYYY")
-              : value;
+              : "-"
+            : value;
 
-          const safeValue =
-            typeof formattedValue === "string"
-              ? `"${formattedValue.replace(/"/g, '""')}"`
-              : `"${formattedValue ?? ""}"`;
-
-          return safeValue;
+          return `"${String(formattedValue ?? "").replace(/"/g, '""')}"`;
         })
         .join(",")
     ),
   ];
 
-  const csvContent = csvRows.join("\n");
+  // Join rows
+  const csvContent = csvRows.join("\r\n");
 
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  // Add UTF-8 BOM so Excel correctly displays ₹ and other Unicode characters
+  const csvWithBom = "\uFEFF" + csvContent;
+
+  const blob = new Blob([csvWithBom], {
+    type: "text/csv;charset=utf-8;",
+  });
+
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
@@ -250,6 +354,7 @@ export const handleDownloadCSVData = async (
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
+
   URL.revokeObjectURL(url);
 };
 
@@ -266,46 +371,8 @@ export const generateCaptcha = (): string => {
   return generatedCaptcha;
 };
 
-export const normalizeCmsContent = (content: string): string => {
-  if (!content) return "";
-
-  return content
-    .replace(/\uFEFF/g, "")
-    .replace(/\u200B/g, "")
-    .replace(/\u00A0/g, " ")
-    .replace(/ï»¿/g, "")
-    .replace(/â€œ/g, "\u201c")
-    .replace(/â€\u009D|â€\u009c|â€\u009d|â€/g, "\u201d")
-    .replace(/â€˜|â€\u0098/g, "\u2018")
-    .replace(/â€™|â€\u0099/g, "\u2019")
-    .replace(/â€“/g, "\u2013")
-    .replace(/â€”/g, "\u2014")
-    .replace(/â€¦/g, "\u2026")
-    .replace(/â€‘/g, "\u2011")
-    .replace(/Â/g, "");
-};
-
-export const cleanCmsContent = (content: string): string => {
-  if (!content) return "";
-
-  return content
-    .replace(/\uFEFF/g, "")
-    .replace(/\u200B/g, "")
-    .replace(/\u00A0/g, " ")
-    .replace(/\u00EF\u00BB\u00BF/g, "")
-    .replace(/\u00E2\u20AC\u0153/g, "\u201c")
-    .replace(/\u00E2\u20AC(?:\u009D|\u009C)/g, "\u201d")
-    .replace(/\u00E2\u20AC(?:\u02DC|\u0098)/g, "\u2018")
-    .replace(/\u00E2\u20AC(?:\u2122|\u0099)/g, "\u2019")
-    .replace(/\u00E2\u20AC\u201C/g, "\u2013")
-    .replace(/\u00E2\u20AC\u201D/g, "\u2014")
-    .replace(/\u00E2\u20AC\u00A6/g, "\u2026")
-    .replace(/\u00E2\u20AC\u2018/g, "\u2011")
-    .replace(/\u00C2/g, "");
-};
-
 export const sanitizeHTML = (html: string): string => {
-  return DOMPurify.sanitize(cleanCmsContent(html), {
+  return DOMPurify.sanitize(html, {
     USE_PROFILES: { html: true }
   });
 };
@@ -339,6 +406,34 @@ export const formatAadhar = (value: string) => {
   return digits.replace(/(\d{4})(?=\d)/g, "$1-");
 };
 
+export const normalizeGenderForPayload = (
+  value: string | null | undefined
+): string => {
+  const normalizedValue = (value || "").trim().toLowerCase();
+
+  if (
+    normalizedValue === "male" ||
+    normalizedValue === "female" ||
+    normalizedValue === "other"
+  ) {
+    return normalizedValue;
+  }
+
+  return "";
+};
+
+export const normalizeGenderForDisplay = (
+  value: string | null | undefined
+): "Male" | "Female" | "Other" | "" => {
+  const normalizedValue = normalizeGenderForPayload(value);
+
+  if (normalizedValue === "male") return "Male";
+  if (normalizedValue === "female") return "Female";
+  if (normalizedValue === "other") return "Other";
+
+  return "";
+};
+
 export const normalizeAadhar = (value = "") =>
   value.replace(/[^0-9]/g, "");
 
@@ -370,38 +465,308 @@ export const getFetchEligibilityStatus = (
   };
 };
 
-export const generateEmailFromTemplate = (
-  data: ISubmitApplicationToBankDetailsResponseData
-) => {
-  const template = DEFAULT_LOAN_EMAIL_TEMPLATE;
+export const fetchCreditAnalyticsDashboard = async (
+  reportType: ReportTypeSignalR, data: ReportTypeSignalrResponse
+): Promise<void> => {
+  switch (reportType) {
+    case ReportTypeSignalR.CreditAnalyticsReport:
+    case ReportTypeSignalR.IncomeTaxReport:
+      {
+        const response: IClientDashboardResponse =
+          await getClientDashboardAPI();
 
-  const formatAmount = (amount: number) =>
-    amount?.toLocaleString("en-IN");
+        if (!response) return;
 
+        if (response.statusCode === 200) {
+          const decryptedData = {
+            ...response.data,
+            gstNumber: response.data.gstNumber
+              ? decryptVAPTData(response.data.gstNumber)
+              : null,
+          };
 
-  const replacements: Record<string, string> = {
-    ApplicantName: data.applicantInfo.fullName,
-    LoanAmount: formatAmount(data.loanDetails.loanAmount),
-    LoanTenure: data.loanDetails.loanTenure?.toString() || "",
-    LoanPurpose: data.loanDetails.loanPurpose,
-    BankManagerName: data.loanDetails.managerEmail,
-    DocumentsUrl: data.packageZipUrl,
-    "Partner Name": data.cpInfo.fullName,
-    "Application ID": data.loanDetails.loanApplicationCode,
-    "Client Name": data.applicantInfo.fullName,
-    "Loan Type": data.loanDetails.loanType,
-    "Bank / NBFC": data.loanDetails.name,
-    Date: formatDate(new Date(), "DD MMM, YYYY"),
-    "Brand Display Name": "Credorbit",
-  };
+          const creditReportEligibility = getFetchEligibilityStatus(
+            decryptedData.creditReportDate
+          );
 
-  const applyReplacements = (text: string) =>
-    text.replace(/{{(.*?)}}/g, (_, key) => replacements[key] || "");
+          const incomeTaxReportEligibility = getFetchEligibilityStatus(
+            decryptedData.itrReportDate
+          );
 
-  return {
-    to: [data.loanDetails.managerEmail],
-    bcc: ["support@credorbit.com"],
-    subject: applyReplacements(template.subject),
-    body: applyReplacements(template.body)
-  };
+          const finalData: IClientDashboardData = {
+            ...decryptedData,
+            creditScoreRefetchedDays:
+              creditReportEligibility?.daysLeft,
+            incomeTaxRefetchedDays:
+              incomeTaxReportEligibility?.daysLeft,
+          };
+
+          store.dispatch(setCustomerInfo(finalData));
+
+          store.dispatch(setCount((prev: number) => prev + 1));
+
+          store.dispatch(setReportMessage({
+            title: "Report Update",
+            message: data?.message,
+          }));
+        } else {
+          toastError(response.message);
+        }
+        break;
+      }
+
+    case ReportTypeSignalR.BankingReportInProgress:
+    case ReportTypeSignalR.BankingReportCompleted:
+    case ReportTypeSignalR.GSTReport:
+    case ReportTypeSignalR.UNKNOW:
+      {
+        if (data?.statusCode === 409) {
+          store.dispatch(setWrongUser(true));
+          store.dispatch(setReportMessage({
+            title: "Report Update",
+            message: data?.message,
+          }));
+          return;
+        }
+
+        store.dispatch(setReportMessage({
+          title: "Report Update",
+          message: data?.message,
+        }));
+        store.dispatch(setCount((prev: number) => prev + 1));
+        break;
+      }
+
+    default:
+      store.dispatch(setReportMessage({
+        title: "Report Update",
+        message: data?.message,
+      }));
+      console.log("No action defined for report type:", reportType);
+      break;
+  }
 };
+
+export const updateWhiteLabelSettings = async (
+  data: ReportTypeSignalrResponse
+): Promise<void> => {
+  const currentUser = store.getState()?.user?.user;
+  const incomingSettings = data?.whiteLabelSettings;
+
+  if (!currentUser || !incomingSettings || !data?.whiteLabelUserId) {
+    return;
+  }
+
+  const mergeWhiteLabelUser = (user: UserData): UserData => ({
+    ...user,
+    whiteLabelSettings: {
+      ...user.whiteLabelSettings,
+      ...incomingSettings,
+      whiteLabelPermission: {
+        ...user.whiteLabelSettings?.whiteLabelPermission,
+        ...incomingSettings.whiteLabelPermission,
+      },
+    },
+  });
+
+  const updatedUser = mergeWhiteLabelUser(currentUser);
+
+  const impersonateUserDataRaw = getDecryptedSessionStorage(
+    StorageKeyEnum.CRED_ORBIT_IMPERSONATE_USER_DATA,
+  );
+
+  let impersonateUserData: UserData | null = null;
+
+  if (impersonateUserDataRaw) {
+    try {
+      impersonateUserData = JSON.parse(impersonateUserDataRaw) as UserData;
+    } catch (error) {
+      console.error(
+        "Failed to parse impersonated user data while updating white label settings.",
+        error,
+      );
+    }
+  }
+
+  const shouldRefreshImpersonateUser =
+    impersonateUserData &&
+    impersonateUserData.userID !== currentUser.userID &&
+    impersonateUserData.whiteLabelSettings?.whiteLabelUserId ===
+    data.whiteLabelUserId;
+
+  if (shouldRefreshImpersonateUser && impersonateUserData) {
+    const updatedImpersonateUser = mergeWhiteLabelUser(impersonateUserData);
+
+    setEncryptedSessionStorage(
+      StorageKeyEnum.CRED_ORBIT_IMPERSONATE_USER_DATA,
+      JSON.stringify(updatedImpersonateUser),
+    );
+  }
+
+  store.dispatch(setUserData(updatedUser));
+  applyWhiteLabelBranding(updatedUser.whiteLabelSettings);
+  emitWhiteLabelSettingsUpdated(data.whiteLabelUserId);
+
+  if (data.message) {
+    toastSuccess(data.message);
+  }
+};
+
+export const rgbToHex = (value: string): string => {
+  const matches = value.match(/\d+/g);
+
+  if (!matches || matches.length < 3) return value;
+
+  const [red, green, blue] = matches.slice(0, 3).map(Number);
+
+  return `#${[red, green, blue]
+    .map((channel) => channel.toString(16).padStart(2, "0"))
+    .join("")}`;
+};
+
+export const resolveColorValue = (value: string): string => {
+  if (typeof window === "undefined") return value;
+
+  if (value.startsWith("var(")) {
+    const variableName = value.slice(4, -1).trim();
+    const resolvedValue = getComputedStyle(document.documentElement)
+      .getPropertyValue(variableName)
+      .trim();
+
+    if (!resolvedValue) return value;
+
+    if (resolvedValue.startsWith("#")) return resolvedValue;
+
+    if (resolvedValue.startsWith("rgb")) return rgbToHex(resolvedValue);
+
+    return resolvedValue;
+  }
+
+  if (value.startsWith("rgb")) return rgbToHex(value);
+
+  return value;
+};
+
+export const getRoleName = (roleId: number): string => {
+  if (roleId === CLIENT_ROLE.SUPER_ADMIN) return "Admin";
+  return "User";
+};
+
+export const extractPermission = (
+  source?: IWhiteLabelPermission | IGetWhiteLabelSettingsByUserIdResponseData | null,
+): IWhiteLabelPermission | null => {
+  if (!source) return null;
+
+  // ✅ If nested structure
+  if ("whiteLabelPermission" in source) {
+    return source.whiteLabelPermission;
+  }
+
+  // ✅ Already flat permission
+  return source;
+};
+
+export const convertNumberToWords = (value: number): string => {
+  if (!Number.isFinite(value) || value <= 0) {
+    return "";
+  }
+
+  const belowTwenty = [
+    "",
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Five",
+    "Six",
+    "Seven",
+    "Eight",
+    "Nine",
+    "Ten",
+    "Eleven",
+    "Twelve",
+    "Thirteen",
+    "Fourteen",
+    "Fifteen",
+    "Sixteen",
+    "Seventeen",
+    "Eighteen",
+    "Nineteen",
+  ];
+
+  const tens = [
+    "",
+    "",
+    "Twenty",
+    "Thirty",
+    "Forty",
+    "Fifty",
+    "Sixty",
+    "Seventy",
+    "Eighty",
+    "Ninety",
+  ];
+
+  const convertBelowThousand = (num: number): string => {
+    if (num === 0) return "";
+    if (num < 20) return belowTwenty[num];
+    if (num < 100) {
+      return `${tens[Math.floor(num / 10)]}${num % 10 ? ` ${belowTwenty[num % 10]}` : ""
+        }`;
+    }
+
+    return `${belowTwenty[Math.floor(num / 100)]} Hundred${num % 100 ? ` ${convertBelowThousand(num % 100)}` : ""
+      }`;
+  };
+
+  let remainingValue = Math.floor(value);
+  const words: string[] = [];
+
+  if (remainingValue >= 10_000_000) {
+    const crore = Math.floor(remainingValue / 10_000_000);
+    words.push(`${convertNumberToWords(crore)} Crore`);
+    remainingValue %= 10_000_000;
+  }
+
+  if (remainingValue >= 100_000) {
+    const lakh = Math.floor(remainingValue / 100_000);
+    words.push(`${convertBelowThousand(lakh)} Lakh`);
+    remainingValue %= 100_000;
+  }
+
+  if (remainingValue >= 1_000) {
+    const thousand = Math.floor(remainingValue / 1_000);
+    words.push(`${convertBelowThousand(thousand)} Thousand`);
+    remainingValue %= 1_000;
+  }
+
+  if (remainingValue > 0) {
+    words.push(convertBelowThousand(remainingValue));
+  }
+
+  return words.join(" ").trim();
+};
+
+export const getLoanStatusClassName = (statusID?: number): string => {
+  switch (statusID) {
+    case LoanStatusType.PENDING:
+      return "status-pending";
+    case LoanStatusType.APPLIED:
+      return "status-applied";
+    case LoanStatusType.QUERY_RAISED:
+      return "status-query-raised";
+    case LoanStatusType.SANCTIONED:
+      return "status-sanctioned";
+    case LoanStatusType.PENDING_AT_CREDIT:
+      return "status-pending-at-credit";
+    case LoanStatusType.DISBURSED:
+      return "status-disbursed";
+    case LoanStatusType.REJECTED:
+      return "status-rejected";
+    default:
+      return "status-pending";
+  }
+};
+
+export const getApiErrorMessage = (message?: string | null): string =>
+  message?.trim() || "There is some internal server issue, please check after some time";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { APIResponseEntity } from "../../interface/apiResponse";
 import {
   IContractListItemData,

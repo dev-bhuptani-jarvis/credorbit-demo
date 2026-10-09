@@ -6,25 +6,46 @@ import {
   Permission,
   SideBarMenuItem,
 } from "../interface/sidebarPermission";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { IsNullOrEmptyArray } from "../utils/functions/nullCheck";
-import { StorageKeyEnum } from "../utils/constants/enum";
-import { getDecryptedSessionStorage } from "../utils/functions/sessionStorage";
+import {
+  getWhiteLabelPreviewSettings,
+  shouldApplyWhiteLabelBranding,
+  subscribeWhiteLabelPreviewChange,
+} from "../utils/functions/whiteLabelBranding";
+import { IGetWhiteLabelSettingsByUserIdResponseData } from "../interface/whiteLabel";
+import { dashboardRoute } from "../utils/functions/appRuntime";
+
+const SIDEBAR_TOGGLE_EVENT = "credoorbit:sidebar-toggle";
+const DESKTOP_BREAKPOINT = 992;
+const SIDEBAR_COLLAPSED_STORAGE_KEY = "credoorbit-sidebar-collapsed";
 
 const Sidebar = () => {
-  const educationPortalIcon = "/assets/images/user-master.svg";
-
   const [activeId, setActiveId] = useState<number | null>(null);
 
   const [menuTree, setMenuTree] = useState<MenuItem[]>([]);
+
+  const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false);
+
+  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState<boolean>(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return window.sessionStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) === "true";
+  });
+
+  const [hoveredMenuId, setHoveredMenuId] = useState<number | null>(null);
+
+  const hoverCloseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const location = useLocation();
 
   const navigate = useNavigate();
 
-  const { userType, permissions, isDefaultCpClient, userID, roleName } = useSelector(
+  const { userID, userType, permissions, isDefaultCpClient, whiteLabelSettings, isUserUnderMasterCP } = useSelector(
     (state: RootState) => state.user.user
   );
 
@@ -32,173 +53,136 @@ const Sidebar = () => {
     (state: RootState) => state.impersonateUser
   );
 
-  const impersonatedStudentId = getDecryptedSessionStorage(
-    StorageKeyEnum.CRED_ORBIT_IMPERSONATE_STUDENT_ID,
-  );
+  const [previewSettings, setPreviewSettings] =
+    useState<IGetWhiteLabelSettingsByUserIdResponseData | null>(
+      getWhiteLabelPreviewSettings(),
+    );
 
-  const isStudentPortalUser =
-    userID === "student-role-001" ||
-    roleName === "Student" ||
-    Boolean(impersonatedStudentId);
+  const effectiveWhiteLabelSettings = previewSettings || whiteLabelSettings;
 
-  const dashboardRoute = useCallback((): string => {
-    if (isStudentPortalUser) {
-      return RoutePathConstant.private.channelPartnerDashboard;
-    }
+  const canShowWhiteLabelUi = shouldApplyWhiteLabelBranding(effectiveWhiteLabelSettings);
 
+  const sidebarLogoSrc =
+    canShowWhiteLabelUi &&
+      effectiveWhiteLabelSettings?.isLogoUploaded &&
+      effectiveWhiteLabelSettings?.logoUrl
+      ? effectiveWhiteLabelSettings.logoUrl
+      : isDesktopCollapsed
+        ? "/assets/images/favicon.webp"
+        : "/assets/images/logo.jpg";
+
+  const reportsRoute = useMemo((): string => {
     switch (userType) {
       case CLIENT_ROLE.SUPER_ADMIN:
-        return RoutePathConstant.private.dashboard;
-      case CLIENT_ROLE.CUSTOMER:
-        return RoutePathConstant.private.clientDashboard;
-      case CLIENT_ROLE.SOURCING_PARTNER:
-        return RoutePathConstant.private.userMasterClientMaster;
-      default:
-        return RoutePathConstant.private.channelPartnerDashboard;
-    }
-  }, [isStudentPortalUser, userType]);
-
-  const reportsRoute = useCallback((): string => {
-    switch (userType) {
-      case CLIENT_ROLE.CHANNEL_PARTNER:
         return RoutePathConstant.private.reports;
-      case CLIENT_ROLE.CUSTOMER:
-        return RoutePathConstant.private.clientReports;
-      case CLIENT_ROLE.USER_MANAGEMENT:
+      case CLIENT_ROLE.STUDENT:
+        return userID
+          ? `${RoutePathConstant.private.reports}/${userID}`
+          : RoutePathConstant.private.reports;
+      case CLIENT_ROLE.EDUCATIONAL_INSTITUTE:
         return RoutePathConstant.private.reports;
       default:
-        return "";
+        return RoutePathConstant.private.reports;
     }
-  }, [userType]);
+  }, [userID, userType]);
 
-  const SideBarMenu = useMemo(
-    () => ({
-      Dashboard: {
-        icon: "icon-dashboard",
-        path: dashboardRoute(),
-      },
-      Profile: { icon: "icon-profile", path: RoutePathConstant.private.profile },
-      RoleMaster: {
-        icon: "icon-profile-user",
-        path: RoutePathConstant.private.roleMaster,
-      },
-      Reports: { icon: "/assets/images/reports.svg", path: reportsRoute() },
-      Policy: {
-        icon: "/assets/images/policy.svg",
-        path: RoutePathConstant.private.policy,
-      },
-      Support: { icon: "icon-support", path: RoutePathConstant.private.support },
-      PayOuts: { icon: "icon-support", path: RoutePathConstant.private.payouts },
-      Contracts: { icon: "icon-contract", path: "#" },
-      ContractChannelPartner: {
-        icon: "",
-        path: RoutePathConstant.private.contractChannelMaster,
-      },
-      ContractSourcingPartner: {
-        icon: "",
-        path: RoutePathConstant.private.contractSourcingPartner,
-      },
-      ContractClient: {
-        icon: "",
-        path: RoutePathConstant.private.contractClient,
-      },
-      UserMaster: { icon: "/assets/images/user-master.svg", path: "#" },
-      ChannelPartner: {
-        icon: "",
-        path: RoutePathConstant.private.userMasterChannelPartner,
-      },
-      ClientMaster: {
-        icon: "",
-        path: RoutePathConstant.private.userMasterClientMaster,
-      },
-      SourcingPartner: {
-        icon: "",
-        path: RoutePathConstant.private.userMasterSourcingPartner,
-      },
-      TermsAndConditions: {
-        icon: "icon-profile",
-        path: RoutePathConstant.private.termsConditions,
-      },
-      ChannelPartnerPayout: {
-        icon: "icon-profile",
-        path: RoutePathConstant.private.payouts,
-      },
-      SourcingPartnerPayout: {
-        icon: "icon-profile",
-        path: RoutePathConstant.private.sourcingPartnerPayouts,
-      },
-      ChannelPartnerReport: {
-        icon: "",
-        path: RoutePathConstant.private.channelPartnerReport,
-      },
-      GeographicalReport: {
-        icon: "",
-        path: RoutePathConstant.private.geographicalReport,
-      },
-      UserManagement: {
-        icon: "/assets/images/user-management.svg",
-        path: RoutePathConstant.private.userManagement,
-      },
-      Subscription: {
-        icon: "/assets/images/subscription.svg",
-        path: RoutePathConstant.private.subscription,
-      },
-      ManageUsers: {
-        icon: "/assets/images/user-management.svg",
-        path: RoutePathConstant.private.userManagement,
-      },
-      WalletAndReferral: {
-        icon: "/assets/images/subscription.svg",
-        path: RoutePathConstant.private.wallet,
-      },
-      EducationPortal: {
-        icon: educationPortalIcon,
-        path: "#",
-      },
-      ManageEducationInstitute: {
-        icon: "",
-        path: RoutePathConstant.private.educationManagedInstitute,
-      },
-      ManagedNBFC: {
-        icon: "",
-        path: RoutePathConstant.private.educationManagedNbfc,
-      },
-      ManageCourse: {
-        icon: "",
-        path: RoutePathConstant.private.educationManageCourse,
-      },
-      ManageStudents: {
-        icon: "",
-        path: RoutePathConstant.private.educationManageStudents,
-      },
-      EnrolledCourses: {
-        icon: "",
-        path: RoutePathConstant.private.studentEnrolledCourses,
-      },
-      NbfcStudentApplications: {
-        icon: "",
-        path: RoutePathConstant.private.educationNbfcStudentApplications,
-      },
-    }),
-    [dashboardRoute, educationPortalIcon, reportsRoute],
-  );
+  const sideBarMenu = useMemo<Record<string, SideBarMenuItem>>(() => ({
+    Dashboard: {
+      icon: "icon-dashboard",
+      path: dashboardRoute(userType),
+    },
+    Profile: { icon: "icon-profile", path: RoutePathConstant.private.profile },
+    RoleMaster: {
+      icon: "icon-profile-user",
+      path: RoutePathConstant.private.roleMaster,
+    },
+    Reports: { icon: "icon-reports", path: reportsRoute },
+    Policy: {
+      icon: "icon-policy",
+      path: RoutePathConstant.private.policy,
+    },
+    Support: { icon: "icon-support", path: RoutePathConstant.private.support },
+    Contracts: { icon: "icon-contract", path: "#" },
+    UserMaster: { icon: "icon-user-master", path: "#" },
+    TermsAndConditions: {
+      icon: "icon-profile",
+      path: RoutePathConstant.private.termsConditions,
+    },
+    UserManagement: {
+      icon: "icon-user-management",
+      path: RoutePathConstant.private.userManagement,
+    },
+    ManageUsers: {
+      icon: "icon-user-management",
+      path: RoutePathConstant.private.userManagement,
+    },
+    WhiteLabelOperations: {
+      icon: "icon-user-management",
+      path: RoutePathConstant.private.managedWhiteLabelling,
+    },
+    LoanApplicationManagement: {
+      icon: "icon-user-management",
+      path: RoutePathConstant.private.loanApplicationManagement,
+    },
+    NBFCOperations: {
+      icon: "icon-user-management",
+      path: RoutePathConstant.private.nbfcOperations,
+    },
+    StudentApplications: {
+      icon: "",
+      path: RoutePathConstant.private.educationNbfcStudentApplications,
+    },
+    EducationManagement: {
+      icon: "icon-user-management",
+      path: RoutePathConstant.private.educationManagement,
+    },
+    ManageCourses: {
+      icon: "",
+      path: RoutePathConstant.private.educationManageCourse,
+    },
+    ManageStudents: {
+      icon: "",
+      path: RoutePathConstant.private.educationManageStudents,
+    },
+    EducationPortal: {
+      icon: "icon-user-management",
+      path: RoutePathConstant.private.educationManagement,
+    },
+    ManageEducationInstitute: {
+      icon: "",
+      path: RoutePathConstant.private.educationManagedInstitute,
+    },
+    ManageNBFC: {
+      icon: "",
+      path: RoutePathConstant.private.educationManagedNbfc,
+    },
+    RunTimeLogs: {
+      icon: "icon-policy",
+      path: RoutePathConstant.private.runTimeLogs,
+    }
+  }), [reportsRoute, userType]);
 
   const buildMenuTree = useCallback((): MenuItem[] => {
-    const menuMapping: { [key: string]: SideBarMenuItem } = SideBarMenu;
     const itemMap: { [key: number]: MenuItem } = {};
 
     const menuItems: MenuItem[] = permissions
-      ?.filter((item: Permission) => item.list)
+      ?.filter((item: Permission) => {
+        if (!item.list) {
+          return false;
+        }
+
+        return true;
+      })
       ?.map((item: Permission) => {
         const menuItem: MenuItem = {
           id: item.rightID,
           parentId: item.parentID,
           name: item.rightName,
           displayName: item.displayName,
-          icon: menuMapping[item.rightName]?.icon || null,
+          icon: sideBarMenu[item.rightName]?.icon || null,
           path:
-            item.parentID === 0 && menuMapping[item.rightName]?.path !== "#"
-              ? menuMapping[item.rightName]?.path || null
+            item.parentID === 0 && sideBarMenu[item.rightName]?.path !== "#"
+              ? sideBarMenu[item.rightName]?.path || null
               : null,
           children: [],
           displayOrder: item.displayOrder,
@@ -207,18 +191,17 @@ const Sidebar = () => {
         itemMap[item.rightID] = menuItem;
         return menuItem;
       });
-
-    menuItems?.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    menuItems.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
     const menuTree: MenuItem[] = menuItems?.filter((item) => {
       if (item.parentId !== 0) {
         const parentItem = itemMap[item.parentId];
         if (parentItem) {
-          item.path = menuMapping[item.name]?.path || null;
+          item.path = sideBarMenu[item.name]?.path || null;
           item.icon = null;
           parentItem.children.push(item);
 
-          parentItem.children?.sort(
+          parentItem.children.sort(
             (a, b) => (a.displayOrder || 0) - (b.displayOrder || 0)
           );
           return false;
@@ -228,205 +211,133 @@ const Sidebar = () => {
     });
 
     return menuTree;
-  }, [permissions, SideBarMenu]);
+  }, [permissions, sideBarMenu]);
 
   const handleToggle = (id: number): void => {
+    if (isDesktopCollapsed) {
+      return;
+    }
+
     setActiveId((prevId) => (prevId === id ? null : id));
   };
 
-  useEffect(() => {
-    const toggleMenu = () => {
-      const sideMenu = document.getElementById("sidemenuMobile");
+  const handleHoverToggle = (id: number | null): void => {
+    if (!isDesktopCollapsed || window.innerWidth < DESKTOP_BREAKPOINT) {
+      return;
+    }
 
-      if (sideMenu) {
-        if (
-          sideMenu.style.display === "none" ||
-          sideMenu.style.display === ""
-        ) {
-          sideMenu.style.display = "block";
-        } else {
-          sideMenu.style.display = "";
-        }
+    if (hoverCloseTimeoutRef.current) {
+      clearTimeout(hoverCloseTimeoutRef.current);
+      hoverCloseTimeoutRef.current = null;
+    }
+
+    setHoveredMenuId(id);
+  };
+
+  const handleHoverLeave = (): void => {
+    if (!isDesktopCollapsed || window.innerWidth < DESKTOP_BREAKPOINT) {
+      return;
+    }
+
+    if (hoverCloseTimeoutRef.current) {
+      clearTimeout(hoverCloseTimeoutRef.current);
+    }
+
+    hoverCloseTimeoutRef.current = setTimeout(() => {
+      setHoveredMenuId(null);
+      hoverCloseTimeoutRef.current = null;
+    }, 180);
+  };
+
+  useEffect(() => {
+    const handleSidebarToggle = (): void => {
+      if (window.innerWidth < DESKTOP_BREAKPOINT) {
+        setIsMobileOpen((prevState) => !prevState);
+        return;
       }
+
+      setIsDesktopCollapsed((prevState) => {
+        const nextState = !prevState;
+        window.sessionStorage.setItem(
+          SIDEBAR_COLLAPSED_STORAGE_KEY,
+          String(nextState),
+        );
+
+        return nextState;
+      });
     };
 
-    const menuHldr = document.getElementById("menuHldr");
-    const closeMobile = document.getElementById("closeMobile");
-
-    if (menuHldr) menuHldr.addEventListener("click", toggleMenu);
-    if (closeMobile) closeMobile.addEventListener("click", toggleMenu);
+    window.addEventListener(SIDEBAR_TOGGLE_EVENT, handleSidebarToggle);
 
     return () => {
-      if (menuHldr) menuHldr.removeEventListener("click", toggleMenu);
-      if (closeMobile) closeMobile.removeEventListener("click", toggleMenu);
+      window.removeEventListener(SIDEBAR_TOGGLE_EVENT, handleSidebarToggle);
     };
+  }, []);
+
+  useEffect(() => {
+    const menuHldr = document.getElementById("menuHldr");
+
+    if (!menuHldr) {
+      return undefined;
+    }
+
+    const dispatchSidebarToggle = (event: Event): void => {
+      event.preventDefault();
+      window.dispatchEvent(new Event(SIDEBAR_TOGGLE_EVENT));
+    };
+
+    menuHldr.addEventListener("click", dispatchSidebarToggle);
+
+    return () => {
+      menuHldr.removeEventListener("click", dispatchSidebarToggle);
+    };
+  }, []);
+
+  useEffect(() => {
+    const syncPreviewSettings = (): void => {
+      setPreviewSettings(getWhiteLabelPreviewSettings());
+    };
+
+    syncPreviewSettings();
+
+    return subscribeWhiteLabelPreviewChange(syncPreviewSettings);
   }, []);
 
   useEffect(() => {
     let FinalSideBarArray: MenuItem[] = buildMenuTree();
 
-    FinalSideBarArray = FinalSideBarArray?.filter(
-      (item) => item.name !== "EducationalManagement"
-    );
-
-    if (userType === CLIENT_ROLE.SUPER_ADMIN) {
-      const hasEducationPortal = FinalSideBarArray.some(
-        (item) => item.name === "EducationPortal"
-      );
-
-      if (!hasEducationPortal) {
-        FinalSideBarArray.push({
-          id: 100001,
-          parentId: 0,
-          name: "EducationPortal",
-          displayName: "Education Portal",
-          icon: educationPortalIcon,
-          path: null,
-          children: [
-            {
-              id: 100002,
-              parentId: 100001,
-              name: "ManageEducationInstitute",
-              displayName: "Manage Education Institute",
-              icon: null,
-              path: RoutePathConstant.private.educationManagedInstitute,
-              children: [],
-              displayOrder: 1,
-            },
-            {
-              id: 100003,
-              parentId: 100001,
-              name: "ManagedNBFC",
-              displayName: "Manage NBFC",
-              icon: null,
-              path: RoutePathConstant.private.educationManagedNbfc,
-              children: [],
-              displayOrder: 2,
-            },
-          ],
-          displayOrder: 24,
-        });
-      }
+    if (isUserUnderMasterCP) {
+      FinalSideBarArray = FinalSideBarArray
+        .filter((item) => item.name !== "ContractChannelPartner")
+        .map((item) => ({
+          ...item,
+          children: item.children?.filter(
+            (child) => child.name !== "ContractChannelPartner"
+          ) || [],
+        }));
+    } else {
+      FinalSideBarArray = FinalSideBarArray
+        .filter((item) => item.name !== "MasterCPToCPContract")
+        .map((item) => ({
+          ...item,
+          children: item.children?.filter(
+            (child) => child.name !== "MasterCPToCPContract"
+          ) || [],
+        }))
     }
-
-    if (userID === "edu-inst-001") {
-      FinalSideBarArray = FinalSideBarArray?.filter(
-        (item) =>
-          item.name === "Dashboard" ||
-          item.name === "Profile" ||
-          item.name === "UserManagement" ||
-          item.name === "Support" ||
-          item.name === "TermsAndConditions" ||
-          item.name === "Policy",
-      );
-
-      FinalSideBarArray.push({
-        id: 100010,
-        parentId: 0,
-        name: "EducationManagement",
-        displayName: "Education Management",
-        icon: educationPortalIcon,
-        path: null,
-        children: [
-          {
-            id: 100011,
-            parentId: 100010,
-            name: "ManageCourse",
-            displayName: "Manage Course",
-            icon: null,
-            path: RoutePathConstant.private.educationManageCourse,
-            children: [],
-            displayOrder: 1,
-          },
-          {
-            id: 100012,
-            parentId: 100010,
-            name: "ManageStudents",
-            displayName: "Manage Students",
-            icon: null,
-            path: RoutePathConstant.private.educationManageStudents,
-            children: [],
-            displayOrder: 2,
-          }
-        ],
-        displayOrder: 6,
-      });
-    }
-
-    if (roleName === "NBFC User") {
-      FinalSideBarArray = FinalSideBarArray?.filter(
-        (item) =>
-          item.name === "Dashboard" ||
-          item.name === "Profile" ||
-          item.name === "Support" ||
-          item.name === "TermsAndConditions" ||
-          item.name === "Policy",
-      );
-
-      FinalSideBarArray.push({
-        id: 100030,
-        parentId: 0,
-        name: "EducationNBFC",
-        displayName: "NBFC Operations",
-        icon: educationPortalIcon,
-        path: null,
-        children: [
-          {
-            id: 100031,
-            parentId: 100030,
-            name: "NbfcStudentApplications",
-            displayName: "Student Applications",
-            icon: null,
-            path: RoutePathConstant.private.educationNbfcStudentApplications,
-            children: [],
-            displayOrder: 2,
-          },
-        ],
-        displayOrder: 6,
-      });
-    }
-
-    if (isStudentPortalUser) {
-      FinalSideBarArray = FinalSideBarArray?.filter(
-        (item) =>
-          item.name === "Dashboard" ||
-          item.name === "Reports" ||
-          item.name === "Profile" ||
-          item.name === "Support" ||
-          item.name === "TermsAndConditions" ||
-          item.name === "Policy",
-      );
-    }
-
-    if (userType === CLIENT_ROLE.CUSTOMER && !isDefaultCpClient) {
-      FinalSideBarArray = FinalSideBarArray?.filter(
-        (item) => item.name !== "Subscription"
-      );
-    }
-
-    FinalSideBarArray?.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
     setMenuTree(FinalSideBarArray);
-  }, [
-    buildMenuTree,
-    educationPortalIcon,
-    isDefaultCpClient,
-    isImpersonate,
-    isStudentPortalUser,
-    roleName,
-    userID,
-    userType,
-  ]);
+  }, [buildMenuTree, isImpersonate, permissions, userType, isDefaultCpClient, canShowWhiteLabelUi, isUserUnderMasterCP]);
 
   useEffect(() => {
     if (location.pathname === "/") {
-      navigate(dashboardRoute());
+      navigate(dashboardRoute(userType));
     }
-  }, [dashboardRoute, location.pathname, navigate]);
+  }, [location.pathname, navigate, userType]);
 
   useEffect(() => {
     // Auto-expand parent if a child route is active
-    const matchedParent = menuTree?.find((parent) =>
+    const matchedParent = menuTree.find((parent) =>
       parent.children?.some((child) =>
         location.pathname.startsWith(child.path || "")
       )
@@ -439,20 +350,68 @@ const Sidebar = () => {
     }
   }, [location.pathname, menuTree]);
 
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
+
+    document.body.classList.toggle("sidebar-collapsed", isDesktopCollapsed);
+
+    return () => {
+      document.body.classList.remove("sidebar-collapsed");
+    };
+  }, [isDesktopCollapsed]);
+
+  useEffect(() => {
+    const syncSidebarViewportState = (): void => {
+      if (window.innerWidth >= DESKTOP_BREAKPOINT) {
+        setIsMobileOpen(false);
+      } else {
+        setHoveredMenuId(null);
+      }
+    };
+
+    window.addEventListener("resize", syncSidebarViewportState);
+
+    return () => {
+      window.removeEventListener("resize", syncSidebarViewportState);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (hoverCloseTimeoutRef.current) {
+        clearTimeout(hoverCloseTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <div id="sidemenuMobile" className="sideMenuWrapper grey-bg">
+    <div
+      id="sidemenuMobile"
+      className={`sideMenuWrapper grey-bg ${isMobileOpen ? "is-mobile-open" : ""
+        } ${isDesktopCollapsed ? "is-collapsed" : ""}`}
+    >
       <div className="logoMain">
         <img
-          src="/assets/images/logo.svg"
-          alt=""
+          src={sidebarLogoSrc}
+          alt="Logo"
           loading="lazy"
           style={{ cursor: "pointer" }}
-          onClick={() => navigate(dashboardRoute())}
+          onClick={() => navigate(dashboardRoute(userType))}
         />
 
-        <Link to="#" className="closeMobile" id="closeMobile">
-          <i className="bi bi-x-circle" />
-        </Link>
+        <button
+          type="button"
+          className="closeMobile"
+          id="closeMobile"
+          style={{ border: 0, padding: 0, font: "inherit" }}
+          onClick={() => {
+            setIsMobileOpen(false);
+          }}
+        >
+          <i className="bi bi-x-circle" style={{ fontSize: '1.55em' }} />
+        </button>
       </div>
 
       <div className="leftNavHldr">
@@ -460,24 +419,34 @@ const Sidebar = () => {
           {!IsNullOrEmptyArray(menuTree) &&
             menuTree.map((item) => {
               const isParentActive = activeId === item.id;
+              const isHoverOpen = hoveredMenuId === item.id;
+              const isSubmenuVisible = isDesktopCollapsed
+                ? isHoverOpen
+                : isParentActive;
               const isChildActive = item.children?.some((child) =>
                 location.pathname.startsWith(child.path || "")
               );
 
               return (
-                <div className="accordion-item" key={item.id}>
+                <div
+                  className="accordion-item"
+                  key={item.id}
+                  onMouseEnter={() => handleHoverToggle(item.id)}
+                  onMouseLeave={handleHoverLeave}
+                >
                   {item.children && item.children.length > 0 ? (
                     <>
                       <h2
-                        className={`accordion-header ${
-                          isChildActive ? "parent-active" : ""
-                        }`}
+                        className={`accordion-header ${isChildActive ? "parent-active" : ""
+                          }`}
                       >
                         <button
-                          className={`accordion-button ${
-                            isParentActive ? "" : "collapsed"
-                          }`}
+                          className={`accordion-button ${isParentActive ? "" : "collapsed"
+                            }`}
+                          type="button"
                           onClick={() => handleToggle(item.id)}
+                          aria-label={item.displayName}
+                          title={isDesktopCollapsed ? item.displayName : undefined}
                         >
                           {item.icon?.includes("assets") ? (
                             <img
@@ -489,28 +458,36 @@ const Sidebar = () => {
                             <i className={item.icon || ""} />
                           )}
 
-                          <span className="ms-1">{item.displayName}</span>
+                          <span className="ms-1 sidebar-item-label">{item.displayName}</span>
                         </button>
                       </h2>
 
                       <div
-                        className={`accordion-collapse collapse ${
-                          isParentActive ? "show" : ""
-                        }`}
+                        className={`accordion-collapse collapse sidebar-submenu ${isSubmenuVisible ? "show" : ""
+                          }`}
+                        onMouseEnter={() => handleHoverToggle(item.id)}
+                        onMouseLeave={handleHoverLeave}
                       >
                         <div className="accordion-body">
+                          {isDesktopCollapsed && (
+                            <div className="sidebar-submenu-title">{item.displayName}</div>
+                          )}
                           <ul>
                             {item.children.map((subItem: MenuItem) => (
                               <li key={subItem.id}>
                                 <Link
-                                  className={`linkMain ${
-                                    location.pathname
-                                      .split("/")
-                                      .slice(0, 3)
-                                      .join("/")
-                                      .includes(subItem.path || "") && "active"
-                                  }`}
-                                  to={subItem.path || ""}
+                                  className={`linkMain ${subItem.path && location.pathname
+                                    .split("/")
+                                    .slice(0, 3)
+                                    .join("/")
+                                    .includes(subItem.path) ? "active" : ""
+                                    }`}
+                                  to={subItem.path || "#"}
+                                  onClick={() => {
+                                    if (window.innerWidth < DESKTOP_BREAKPOINT) {
+                                      setIsMobileOpen(false);
+                                    }
+                                  }}
                                 >
                                   {subItem.displayName}
                                 </Link>
@@ -523,14 +500,19 @@ const Sidebar = () => {
                   ) : (
                     <h2 className="accordion-header">
                       <Link
-                        className={`linkMain ${
-                          location.pathname
-                            .split("/")
-                            .slice(0, 3)
-                            .join("/")
-                            .includes(item.path || "") && "active"
-                        }`}
-                        to={item.path ?? ""}
+                        className={`linkMain ${item.path && location.pathname
+                          .split("/")
+                          .slice(0, 3)
+                          .join("/")
+                          .includes(item.path) ? "active" : ""
+                          }`}
+                        to={item.path ?? "#"}
+                        title={isDesktopCollapsed ? item.displayName : undefined}
+                        onClick={() => {
+                          if (window.innerWidth < DESKTOP_BREAKPOINT) {
+                            setIsMobileOpen(false);
+                          }
+                        }}
                       >
                         {item.icon?.includes("assets") ? (
                           <img
@@ -541,7 +523,7 @@ const Sidebar = () => {
                         ) : (
                           <i className={item.icon || ""} />
                         )}
-                        <span className="ms-1">{item.displayName}</span>
+                        <span className="ms-1 sidebar-item-label">{item.displayName}</span>
                       </Link>
                     </h2>
                   )}

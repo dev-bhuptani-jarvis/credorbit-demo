@@ -21,6 +21,14 @@ import { Checkbox } from "primereact/checkbox";
 import { RoutePathConstant } from "../../utils/constants/routePaths";
 import TableTitle from "../../components/TableTitle";
 import { decryptVAPTData } from "../../utils/functions/encryptDecrypt";
+import {
+  buildPermissionTableTree,
+  disableUserManagementPermissions,
+  getPermissionAvailability,
+  isPermissionBlockedByParent,
+  PermissionTableNode,
+  updatePermissionWithChildren,
+} from "../../utils/functions/permissionTree";
 
 const UserManagementRights = () => {
   const [rightsData, setRightsData] = useState<IUserRightData>({
@@ -31,6 +39,10 @@ const UserManagementRights = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const [clickCounter, setClickCounter] = useState<number>(0);
+
+  const [expandedRows, setExpandedRows] = useState<
+    Record<string, boolean> | PermissionTableNode[]
+  >({});
 
   const { id } = useParams<RouteParams>();
 
@@ -52,16 +64,19 @@ const UserManagementRights = () => {
 
     if (!response) return;
 
-    if (response && response.statusCode === 200 && response.data) {
+    if (response && response.statusCode === 200) {
+      const responseData = response.data as IUserRightData;
+
       const updatedPermissions = {
-        ...response.data,
-        userEmail: response.data.userEmail ? decryptVAPTData(response.data.userEmail) : "",
-        rolesAndRights: response.data.rolesAndRights.filter(
-          (permission) =>
-            typeof permission.create === "boolean" ||
-            typeof permission.view === "boolean" ||
-            typeof permission.list === "boolean"
-        ),
+        ...responseData,
+        userEmail: responseData.userEmail ? decryptVAPTData(responseData.userEmail) : "",
+        rolesAndRights: disableUserManagementPermissions(responseData.rolesAndRights)
+          .filter(getPermissionAvailability)
+          .map((permission) =>
+            permission.rightName === "Dashboard"
+              ? { ...permission, list: true }
+              : permission
+          ),
       };
 
       setRightsData(updatedPermissions);
@@ -79,40 +94,12 @@ const UserManagementRights = () => {
   ): void => {
     if (!rightsData.rolesAndRights) return;
 
-    const updatedPermissions = rightsData.rolesAndRights.map((permission) => {
-      if (permission.rightID !== rightId) return permission;
-
-      const updatedPermission = { ...permission };
-
-      if (action === "create" || action === "view") {
-        // Only update if action field is not null
-        if (updatedPermission[action] !== null) {
-          updatedPermission[action] = value;
-        }
-
-        if (value && updatedPermission.list !== null) {
-          // If create/view is checked, check list if list is not null
-          updatedPermission.list = true;
-        }
-      } else if (action === "list") {
-        // Only update list if it's not null
-        if (updatedPermission.list !== null) {
-          updatedPermission.list = value;
-        }
-
-        if (!value) {
-          // If list is unchecked, uncheck create and view only if they are not null
-          if (updatedPermission.create !== null) {
-            updatedPermission.create = false;
-          }
-          if (updatedPermission.view !== null) {
-            updatedPermission.view = false;
-          }
-        }
-      }
-
-      return updatedPermission;
-    });
+    const updatedPermissions = updatePermissionWithChildren(
+      rightsData.rolesAndRights,
+      action,
+      value,
+      rightId
+    );
 
     setClickCounter((prev) => prev + 1);
 
@@ -127,17 +114,27 @@ const UserManagementRights = () => {
       return null;
     }
 
+    const isDashboardList = role.rightName === "Dashboard" && action === "list";
+    const isDisabled = isDashboardList || isPermissionBlockedByParent(
+      rightsData.rolesAndRights,
+      role
+    );
+
     return (
       <div className="form-check">
         {typeof role[action] === "boolean" ? (
           <Checkbox
-            checked={!!role[action]}
+            className={isDisabled ? "checkbox-disabled" : ""}
+            disabled={isDisabled}
+            checked={isDashboardList ? true : !!role[action]}
             onChange={(e) =>
               handlePermissionChange(action, e.target.checked!, role.rightID)
             }
           />
         ) : (
-          <i className="bi bi-x-circle-fill" style={{ color: "#E5222D" }} />
+          <div className="danger-icon">
+            <i className="bi bi-x-circle-fill" />
+          </div>
         )}
       </div>
     );
@@ -145,6 +142,8 @@ const UserManagementRights = () => {
 
   const handleSave = async (): Promise<void> => {
     if (!rightsData.rolesAndRights || !id) return;
+
+    setLoading(true);
 
     const body: IUpdateUserRightBodyData = {
       userID: id,
@@ -159,25 +158,79 @@ const UserManagementRights = () => {
     if (response && response.statusCode === 200) {
       toastSuccess(response.message);
       navigate(RoutePathConstant.private.userManagement);
+    } else {
+      toastError(response.message)
     }
+
+    setLoading(false);
   };
 
   const handleReset = async (): Promise<void> => {
     if (!rightsData.rolesAndRights) return;
 
+    setLoading(true);
+
     const resetPermissions = rightsData.rolesAndRights.map((permission) => ({
       ...permission,
       create: permission.create === null ? null : false,
       view: permission.view === null ? null : false,
-      list: permission.list === null ? null : false,
+      list: permission.list === null ? null : permission.rightName === "Dashboard" ? true : false,
     }));
 
     setRightsData({ ...rightsData, rolesAndRights: resetPermissions });
+
+    setLoading(false);
   };
 
   useEffect(() => {
     fetchViewRoleApi();
   }, [id]);
+
+  const permissionTree = buildPermissionTableTree(rightsData.rolesAndRights);
+
+  const canExpandRow = (rowData: PermissionTableNode): boolean =>
+    rowData.children.length > 0;
+
+  const renderModuleCell = (
+    permission: IRolePermission,
+    isChild = false
+  ): JSX.Element => (
+    <div className={`permission-matrix-module ${isChild ? "permission-matrix-module-child" : ""}`}>
+      <span className="permission-matrix-module-title">
+        {permission.displayName}
+      </span>
+    </div>
+  );
+
+  const renderPermissionExpansion = (
+    rowData: PermissionTableNode
+  ): JSX.Element => (
+    <div className="permission-matrix-expansion">
+      <div className="permission-matrix-expansion-header">
+        <span>Sub-module</span>
+        <span>Create / Edit</span>
+        <span>View</span>
+        <span>List</span>
+      </div>
+
+      {rowData.children.map((childPermission) => (
+        <div className="permission-matrix-child-row" key={childPermission.rightID}>
+          <div className="permission-matrix-child-module">
+            {renderModuleCell(childPermission, true)}
+          </div>
+          <div className="permission-matrix-child-check" data-label="Create / Edit">
+            {renderCheckBoxes(childPermission, "create")}
+          </div>
+          <div className="permission-matrix-child-check" data-label="View">
+            {renderCheckBoxes(childPermission, "view")}
+          </div>
+          <div className="permission-matrix-child-check" data-label="List">
+            {renderCheckBoxes(childPermission, "list")}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="whiteBoxHldr p-24">
@@ -190,30 +243,53 @@ const UserManagementRights = () => {
       <h2 className="user-assign-rights">
         Rights List for User: {rightsData.userEmail}
       </h2>
+
       <div className="table-responsive">
         <DataTable
-          className="tableMain"
+          className="tableMain permission-matrix-table"
           key={clickCounter}
-          value={rightsData.rolesAndRights}
+          value={permissionTree}
+          dataKey="rightID"
+          expandedRows={expandedRows}
+          onRowToggle={(event) =>
+            setExpandedRows(
+              (event.data || {}) as Record<string, boolean> | PermissionTableNode[]
+            )
+          }
+          rowExpansionTemplate={renderPermissionExpansion}
           emptyMessage="No Role Found"
         >
-          <Column field="rightName" header="Module" />
+          <Column expander={canExpandRow} style={{ width: "3.5rem" }} />
           <Column
-            header="Create"
+            header="Module"
+            body={(role: PermissionTableNode) => renderModuleCell(role)}
+            style={{ width: "calc(43% - 3.5rem)" }}
+          />
+          <Column
+            header="Create / Edit"
             body={(role: IRolePermission) => renderCheckBoxes(role, "create")}
+            style={{ width: "19%" }}
+            bodyClassName="permission-matrix-check-cell"
+            headerClassName="permission-matrix-check-header"
           />
           <Column
             header="View"
             body={(role: IRolePermission) => renderCheckBoxes(role, "view")}
+            style={{ width: "19%" }}
+            bodyClassName="permission-matrix-check-cell"
+            headerClassName="permission-matrix-check-header"
           />
           <Column
             header="List"
             body={(role: IRolePermission) => renderCheckBoxes(role, "list")}
+            style={{ width: "19%" }}
+            bodyClassName="permission-matrix-check-cell"
+            headerClassName="permission-matrix-check-header"
           />
         </DataTable>
       </div>
 
-      <div className="col-sm-12 col-12 mt-4">
+      <div className="col-sm-12 col-12 mt-4 justify-content-end d-flex">
         <Button className="btn btn-orange me-3" onClick={handleSave}>
           Assign Rights
         </Button>

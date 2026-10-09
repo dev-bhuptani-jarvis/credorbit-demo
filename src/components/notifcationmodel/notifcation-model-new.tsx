@@ -96,12 +96,14 @@ const NotificationModalNew = ({
     >
       {/* HEADER */}
       <div className="notification-header">
-        <div className="notification-header-top">
-          <span>
-            You have <strong>{unReadNotificationCount}</strong> new
-            notifications
-          </span>
-        </div>
+        {unReadNotificationCount > 0 &&
+          <div className="notification-header-top">
+            <span>
+              You have <strong>{unReadNotificationCount}</strong> new
+              notifications
+            </span>
+          </div>
+        }
       </div>
 
       {/* BODY */}
@@ -110,9 +112,8 @@ const NotificationModalNew = ({
           unReadNotificationList.slice(0, 2).map((notification) => (
             <div
               key={notification.id}
-              className={`notification-item ${
-                notification.isRead ? "read" : "unread"
-              }`}
+              className={`notification-item ${notification.isRead ? "read" : "unread"
+                }`}
               onClick={() => {
                 if (!notification.isRead) {
                   updateNotification(notification.id, 2);
@@ -138,11 +139,12 @@ const NotificationModalNew = ({
               <button
                 className="delete-btn"
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
                   updateNotification(notification.id, 1);
                 }}
               >
-                <i className="pi pi-times"></i>
+                <i className="pi pi-times clear-icon-btn" />
               </button>
             </div>
           ))
@@ -155,23 +157,22 @@ const NotificationModalNew = ({
       </div>
 
       {/* FOOTER */}
-      {!IsNullOrEmptyArray(notificationList) && (
-        <div
-          className="notification-footer"
-          onClick={() => navigate(RoutePathConstant.private.notification)}
+      <div
+        className="notification-footer"
+        onClick={() => navigate(RoutePathConstant.private.notification)}
+      >
+        <button
+          className="show-all-link"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClose();
+            navigate(RoutePathConstant.private.notification);
+          }}
         >
-          <button
-            className="show-all-link"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose();
-              navigate(RoutePathConstant.private.notification);
-            }}
-          >
-            Show all notifications
-          </button>
-        </div>
-      )}
+          Show all notifications
+        </button>
+      </div>
     </div>
   );
 };

@@ -8,26 +8,19 @@ import { Button } from "primereact/button";
 import { useParams } from "react-router-dom";
 import {
   formatMobileNumber,
-  RouteParams,
+  RouteParams
 } from "../../utils/constants/constant";
-import {
-  getCpReportDetailsAPI,
-} from "../../utils/axios/apiServices";
 import { handleFileDownload, toastError } from "../../utils/functions/shared";
-import {
-  IChannelPartnerClientReportDetailData,
-  IChannelPartnerClientReportDetailResponse,
-  IClientDetailList,
-  IClientDetailListParams,
-} from "../../interface/reports";
 import TableTitle from "../../components/TableTitle";
 import moment from "moment";
 import { decryptVAPTData } from "../../utils/functions/encryptDecrypt";
 import { Tooltip } from "primereact/tooltip";
+import { downloadAllReportsAPI, getStudentReportDetailAPI } from "../../utils/axios/apiServices";
+import { IStudentReportDetailResponse, IStudentReportDetailResponseData, IStudentReports } from "../../interface/reports";
 
 const ReportDetails = () => {
-  const [clientDetail, setClientDetail] =
-    useState<IChannelPartnerClientReportDetailData>();
+  const [studentDetail, setStudentDetail] =
+    useState<IStudentReportDetailResponseData>();
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -40,18 +33,29 @@ const ReportDetails = () => {
 
     if (!id) return;
 
-    const params: IClientDetailListParams = {
-      clientID: id,
-      isClientDetailsRequired: true,
+    const params: { studentID: string, isStudentDetailsRequired: boolean } = {
+      studentID: id,
+      isStudentDetailsRequired: true
     };
 
-    const response: IChannelPartnerClientReportDetailResponse =
-      await getCpReportDetailsAPI(params);
+    const response: IStudentReportDetailResponse =
+      await getStudentReportDetailAPI(params);
 
     if (!response) return;
 
     if (response && response.statusCode === 200) {
-      setClientDetail(response.data);
+      const decryptedData = {
+        ...response.data,
+        mobileNumber: response.data.mobileNumber
+          ? decryptVAPTData(response.data.mobileNumber)
+          : "",
+        email: response.data.email ? decryptVAPTData(response.data.email) : "",
+        panNumber: response.data.panNumber
+          ? decryptVAPTData(response.data.panNumber)
+          : "",
+      };
+
+      setStudentDetail(decryptedData);
     } else {
       toastError(response.message);
     }
@@ -59,9 +63,10 @@ const ReportDetails = () => {
     setLoading(false);
   };
 
-  const actionBody = (clientInfo: IClientDetailList) => {
+  const actionBody = (studentInfo: IStudentReports) => {
+    console.log('studentInfo', studentInfo)
     const timestamp = moment().format("YYYYMMDD_HHmmss");
-    const downloadId = `client-detail-download-${clientInfo.reportType}`;
+    const downloadId = `student-detail-download-${studentInfo.reportType}`;
 
     return (
       <>
@@ -73,24 +78,60 @@ const ReportDetails = () => {
           data-pr-tooltip="Download Report"
           onClick={() =>
             handleFileDownload(
-              clientInfo.filePath,
-              `${clientInfo.name}_${clientDetail?.clientName}_${timestamp}`,
+              studentInfo.filePath,
+              `${studentInfo.name}_${timestamp}`,
             )
           }
         >
-          <img
-            src="/assets/images/download.svg"
-            alt="download-icon"
-            loading="lazy"
-          />
+          <i className="icon-download" />
         </Button>
       </>
     );
   };
 
+  const handleDownloadAllReports = async (): Promise<void> => {
+    if (!studentDetail?.studentID) return;
+
+    const reportTypes =
+      studentDetail?.studentReports
+        .map((report) => report.reportType)
+        .filter((type) => type !== undefined) || [];
+
+    if (studentDetail?.studentReports.length === 0) {
+      toastError("No valid report types found");
+      return;
+    }
+
+    setLoading(true);
+
+    const response: ArrayBuffer = await downloadAllReportsAPI(
+      reportTypes,
+      studentDetail?.studentID,
+    );
+
+    const blob = new Blob([response], { type: "application/zip" });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = `Reports-${studentDetail.studentName}.zip`;
+
+    document.body.appendChild(a);
+    a.click();
+
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+    setLoading(false);
+  };
+
   useEffect(() => {
     fetchChannelPartnerReportApi();
   }, [id]);
+
+  console.log('studentDetail', studentDetail)
 
   return (
     <div className="row">
@@ -107,20 +148,20 @@ const ReportDetails = () => {
                   <div className="borderBoxHldr p-24">
                     <div className="row">
                       <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                        <b>Client Code</b>
-                        <p className="text-break">{clientDetail?.clientCode}</p>
+                        <b>Student Code</b>
+                        <p className="text-break">{studentDetail?.studentCode}</p>
                       </div>
 
                       <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
-                        <b>Client Name</b>
-                        <p className="text-break">{clientDetail?.clientName}</p>
+                        <b>Student Name</b>
+                        <p className="text-break">{studentDetail?.studentName}</p>
                       </div>
 
-                      {clientDetail?.mobileNumber &&
+                      {studentDetail?.mobileNumber &&
                         <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                           <b>Mobile Number</b>
                           <p className="text-break">
-                            {formatMobileNumber(clientDetail?.mobileNumber)}
+                            {formatMobileNumber(studentDetail?.mobileNumber)}
                           </p>
                         </div>
                       }
@@ -128,19 +169,17 @@ const ReportDetails = () => {
                       <div className="col-lg-3 col-md-5 col-sm-6 col-12 mb-4">
                         <b>Email</b>
 
-                        <p className="text-break">{clientDetail?.email}</p>
-                      </div>
-
-                      <div className="col-lg-3 col-md-5 col-sm-6 col-12">
-                        <b>Channel Partner</b>
-                        <p className="text-break">
-                          {clientDetail?.channelPartner}
-                        </p>
+                        <p className="text-break">{studentDetail?.email}</p>
                       </div>
 
                       <div className="col-lg-3 col-md-5 col-sm-6 col-12">
                         <b>PAN Number</b>
-                        <p className="text-break">{clientDetail?.panNumber}</p>
+                        <p className="text-break">{studentDetail?.panNumber}</p>
+                      </div>
+
+                      <div className="col-lg-3 col-md-5 col-sm-6 col-12">
+                        <b>Institute</b>
+                        <p className="text-break">{studentDetail?.institute}</p>
                       </div>
                     </div>
                   </div>
@@ -151,7 +190,7 @@ const ReportDetails = () => {
                     <div className="table-responsive">
                       <DataTable
                         className="tableMain"
-                        value={clientDetail?.clientReports}
+                        value={studentDetail?.studentReports}
                         emptyMessage="No Report Found"
                       >
                         <Column
@@ -172,6 +211,15 @@ const ReportDetails = () => {
                 </div>
 
                 <div className="col-lg-6 col-sm-12 col-12 mt-4">
+                  <Button
+                    label="Download All Reports"
+                    className={`btn ${studentDetail?.studentReports?.length === 0
+                      ? "btn-orange-disabled"
+                      : "btn-orange"
+                      } me-2`}
+                    onClick={handleDownloadAllReports}
+                    disabled={studentDetail?.studentReports?.length === 0}
+                  />
                   <BackButton />
                 </div>
               </div>

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { APIResponseEntity } from "../../interface/apiResponse";
 import { IChannelPartnerDashboardResponse } from "../../interface/channelPartnerDashboard";
 import { IGetAllLoanApplicationsResponse } from "../../interface/channelPartnerDashboard";

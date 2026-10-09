@@ -1,5 +1,4 @@
 import { useState, useEffect, FormEvent } from "react";
-import { Link } from "react-router-dom";
 import {
   EMAIL_PATTERN,
   NUMBER_ONLY_PATTERN,
@@ -11,7 +10,6 @@ import {
   toastError,
   toastSuccess,
 } from "../../utils/functions/shared";
-import { RoutePathConstant } from "../../utils/constants/routePaths";
 import OtpModal from "../../components/otpModal";
 import { sendOTPAPI } from "../../utils/axios/apiServices";
 import {
@@ -24,8 +22,15 @@ import { Button } from "primereact/button";
 import { validationMessages } from "../../utils/constants/messages";
 import { generateCaptcha } from "../../utils/functions/shared";
 import { encryptVAPTData } from "../../utils/functions/encryptDecrypt";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
+import { IGetWhiteLabelSettingsByUserIdResponseData } from "../../interface/whiteLabel";
 
-const Login = () => {
+interface LoginProps {
+  whiteLabelSettings?: IGetWhiteLabelSettingsByUserIdResponseData | null;
+}
+
+const Login = ({ whiteLabelSettings: whiteLabelSettingsProp }: LoginProps) => {
   const [formValues, setFormValues] = useState<ISendOTPRequestBySignIn>({
     emailID: "",
     mobileNumber: "",
@@ -53,6 +58,13 @@ const Login = () => {
   >([]);
 
   const type = VerifyOTPType.LOGIN;
+
+  const { whiteLabelSettings } = useSelector((state: RootState) => state.user.user);
+  const publicWhiteLabelTenantId = useSelector(
+    (state: RootState) => state.user.publicWhiteLabelTenantId,
+  );
+  const effectiveWhiteLabelSettings =
+    whiteLabelSettingsProp || whiteLabelSettings;
 
   const validateCaptcha = (): boolean => {
     const enteredCaptcha: string = formValues.captcha?.trim() || "";
@@ -87,8 +99,8 @@ const Login = () => {
       errors.emailID = IsStringNullEmptyOrUndefined(value)
         ? validationMessages.emailRequired
         : !isValid
-        ? validationMessages.emailInvalid
-        : "";
+          ? validationMessages.emailInvalid
+          : "";
     } else if (fieldName === "mobileNumber") {
       const isValid: boolean =
         NUMBER_ONLY_PATTERN.test(value) && value.length === 10;
@@ -96,8 +108,8 @@ const Login = () => {
       errors.mobileNumber = IsStringNullEmptyOrUndefined(value)
         ? validationMessages.mobileNumberRequired
         : !isValid
-        ? validationMessages.mobileNumberInvalid
-        : "";
+          ? validationMessages.mobileNumberInvalid
+          : "";
     } else if (fieldName === "captcha") {
       errors.captcha = IsStringNullEmptyOrUndefined(value)
         ? validationMessages.captchaRequired
@@ -127,6 +139,9 @@ const Login = () => {
       mobileNumber: encryptVAPTData(formValues.mobileNumber),
       otpType: formValues.otpType,
       isFetchLinkedUsers: formValues.isFetchLinkedUsers,
+      whiteLabelTenantId:
+        effectiveWhiteLabelSettings?.id || publicWhiteLabelTenantId || "",
+      isEducationalPortal: true
     };
 
     const response: ISendOTPResponse = await sendOTPAPI(body);
@@ -139,6 +154,11 @@ const Login = () => {
       toastSuccess(response.message);
     } else {
       toastError(response.message);
+      setCaptcha(generateCaptcha());
+      setFormValues({
+        ...formValues,
+        captcha: "",
+      });
     }
 
     setLoading(false);
@@ -152,10 +172,9 @@ const Login = () => {
     <>
       {!showOTPModal && (
         <div className="row">
-          <div className="col-12 mb-4">
+          <div className="col-12 mb-4 primary-color">
             <h2 className="txt-24 mb-2">Welcome!</h2>
-
-            <p>Let's begin your journey with Credorbit.</p>
+            <p>Let's begin your journey with Schofee.</p>
           </div>
 
           <form
@@ -201,10 +220,11 @@ const Login = () => {
                 id="mobileNumber"
                 className="form-control"
                 name="mobileNumber"
-                maxLength={10}
+                inputMode="numeric"
+                autoComplete="tel"
                 value={formValues.mobileNumber}
                 onChange={(e) =>
-                  handleChange(e.target.name, e.target.value.trim())
+                  handleChange(e.target.name, e.target.value?.replace(/\D/g, "").slice(0, 10))
                 }
                 onKeyPress={(e) => {
                   if (!NUMBER_ONLY_PATTERN.test(e.key) && e.key !== "Enter") {
@@ -244,9 +264,9 @@ const Login = () => {
                     e.preventDefault();
                   }
                 }}
-                // onPaste={(e) => e.preventDefault()}
-                // onCopy={(e) => e.preventDefault()}
-                // onCut={(e) => e.preventDefault()}
+              // onPaste={(e) => e.preventDefault()}
+              // onCopy={(e) => e.preventDefault()}
+              // onCut={(e) => e.preventDefault()}
               />
               {isFormSubmitted && (
                 <span className="error">{formErrors.captcha}</span>
@@ -257,18 +277,19 @@ const Login = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className={`btn ${
-                  loading ? "btn-orange-disabled" : "btn-orange"
-                } w-100`}
+                className={`btn ${loading ? "btn-orange-disabled" : "btn-orange"
+                  } w-100`}
               >
                 {loading ? "Loading..." : "Sign in"}
               </Button>
             </div>
 
-            <div className="registerWrapper">
-              Don't have an account?{" "}
-              <Link to={RoutePathConstant.public.register}>Register</Link>
-            </div>
+            {/* {effectiveWhiteLabelSettings?.userType !== CLIENT_ROLE.CHANNEL_PARTNER &&
+              <div className="registerWrapper primary-color">
+                Don't have an account?{" "}
+                <Link to={RoutePathConstant.public.register}>Register</Link>
+              </div>
+            } */}
           </form>
         </div>
       )}
